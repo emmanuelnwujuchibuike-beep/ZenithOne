@@ -1,19 +1,20 @@
 /**
  * ZenithOne Credit Union — Authentication Module
- * Handles login, signup, logout, session management, and auth guards.
+ * Handles login, signup, logout, session guard, and password reset.
  */
 
-const PUBLIC_PAGES  = ['index.html', 'login.html', 'signup.html', 'forgot-password.html', ''];
+const PUBLIC_PAGES  = ['index.html','login.html','signup.html','forgot-password.html','reset-password.html',''];
 const PRIVATE_PAGES = ['dashboard.html','accounts.html','transactions.html','transfer.html','cards.html','investments.html','settings.html'];
 
-// ── Session Guard ──
+// ── Auth Guard ────────────────────────────────────────────────
 async function checkAuthGuard() {
-  if (!window._supabase) return;
-  const page = window.location.pathname.split('/').pop() || 'index.html';
-  const isPrivate = PRIVATE_PAGES.some(p => page.includes(p));
-  const isPublic  = PUBLIC_PAGES.some(p => page.includes(p));
+  const sb = window._supabase;
+  if (!sb) return;
 
-  const { data: { session } } = await window._supabase.auth.getSession();
+  const page      = window.location.pathname.split('/').pop() || 'index.html';
+  const isPrivate = PRIVATE_PAGES.some(p => page.includes(p));
+
+  const { data: { session } } = await sb.auth.getSession();
 
   if (isPrivate && !session) {
     window.location.href = 'login.html';
@@ -27,63 +28,92 @@ async function checkAuthGuard() {
   if (session) {
     populateUserUI(session.user);
     subscribeToRealtimeUpdates(session.user.id);
+    _updatePublicNav(true);
+  } else {
+    _updatePublicNav(false);
   }
 }
 
-// ── Populate UI with user data ──
+// ── Public nav: show Dashboard link when logged in ────────────
+function _updatePublicNav(loggedIn) {
+  if (!loggedIn) return;
+  const signIn = document.querySelector('.nav-actions a[href="login.html"]');
+  if (signIn) { signIn.href = 'dashboard.html'; signIn.textContent = 'Dashboard'; }
+  const open = document.querySelector('.nav-actions a[href="signup.html"].btn-primary');
+  if (open) open.style.display = 'none';
+  // Mobile drawer
+  const mSignIn = document.querySelector('.mnav-actions a[href="login.html"]');
+  if (mSignIn) { mSignIn.href = 'dashboard.html'; mSignIn.textContent = 'Go to Dashboard'; }
+  const mOpen = document.querySelector('.mnav-actions a[href="signup.html"]');
+  if (mOpen) mOpen.style.display = 'none';
+}
+
+// ── Populate UI with real user data ──────────────────────────
 async function populateUserUI(user) {
   if (!user) return;
-  const { data: profile } = await window._supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
 
-  const name = profile?.full_name || user.email?.split('@')[0] || 'User';
-  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+  // Start with metadata (available immediately, no extra round-trip)
+  let name = user.user_metadata?.full_name
+          || user.email?.split('@')[0]
+          || 'Member';
 
-  document.querySelectorAll('#sidebarName').forEach(el => el.textContent = name);
-  document.querySelectorAll('#sidebarAvatar, #topbarAvatar').forEach(el => el.textContent = initials);
+  // Fetch richer profile from DB
+  if (window._supabase) {
+    const { data: profile } = await window._supabase
+      .from('profiles')
+      .select('full_name, banking_tier')
+      .eq('id', user.id)
+      .single();
+    if (profile?.full_name) name = profile.full_name;
+  }
+
+  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+  // Sidebar name + avatar
+  document.querySelectorAll('.sidebar-user-name, #sidebarName').forEach(el => el.textContent = name);
+  document.querySelectorAll('.sidebar-avatar, #topbarAvatar').forEach(el => {
+    // Only replace placeholder initials (avoid overwriting icons)
+    if (/^[A-Z]{1,2}$/.test(el.textContent.trim())) el.textContent = initials;
+  });
   document.querySelectorAll('#welcomeName').forEach(el => el.textContent = name.split(' ')[0]);
   document.querySelectorAll('#cardholderName').forEach(el => el.textContent = name.toUpperCase());
 
-  // Last login
-  const lastLogin = document.getElementById('lastLogin');
-  if (lastLogin && user.last_sign_in_at) {
-    lastLogin.textContent = new Date(user.last_sign_in_at).toLocaleString('en-US', {
-      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+  const lastLoginEl = document.getElementById('lastLogin');
+  if (lastLoginEl && user.last_sign_in_at) {
+    lastLoginEl.textContent = new Date(user.last_sign_in_at).toLocaleString('en-US', {
+      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
     });
   }
 }
 
-// ── Login ──
+// ── Login form ────────────────────────────────────────────────
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+
     const email    = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value;
     const btn      = document.getElementById('loginBtn');
     const spinner  = document.getElementById('loginSpinner');
-    const errEl    = document.getElementById('loginError');
 
-    if (!email || !password) {
-      showLoginError('Please fill in all fields.');
-      return;
-    }
+    // Clear prior errors
+    document.getElementById('loginError').classList.add('hidden');
+    document.getElementById('emailError').classList.add('hidden');
+
+    if (!email || !password) { _showLoginError('Please fill in all fields.'); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       document.getElementById('emailError').classList.remove('hidden');
       return;
     }
 
-    document.getElementById('loginBtnText').textContent = 'Signing in...';
+    document.getElementById('loginBtnText').textContent = 'Signing in…';
     spinner.classList.remove('hidden');
     btn.disabled = true;
-    errEl.classList.add('hidden');
 
     if (!window._supabase) {
-      // Demo mode: simulate login
-      await new Promise(r => setTimeout(r, 1400));
+      // Demo mode
+      await new Promise(r => setTimeout(r, 1200));
       window.location.href = 'dashboard.html';
       return;
     }
@@ -91,7 +121,10 @@ if (loginForm) {
     const { error } = await window._supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      showLoginError(error.message);
+      const friendly = error.message.toLowerCase().includes('invalid')
+        ? 'Incorrect email or password. Please try again.'
+        : error.message;
+      _showLoginError(friendly);
       document.getElementById('loginBtnText').textContent = 'Sign In Securely';
       spinner.classList.add('hidden');
       btn.disabled = false;
@@ -101,82 +134,107 @@ if (loginForm) {
   });
 }
 
-function showLoginError(msg) {
+function _showLoginError(msg) {
   document.getElementById('loginErrorMsg').textContent = msg;
   document.getElementById('loginError').classList.remove('hidden');
 }
+// Expose so login.html inline script can call it too
+window.showLoginError = _showLoginError;
 
-// ── Sign Up ──
+// ── Sign Up ───────────────────────────────────────────────────
 async function createAccount() {
+  const sb = window._supabase;
+  if (!sb) return { success: true, demo: true }; // demo mode
+
   const email    = document.getElementById('signupEmail')?.value.trim();
   const password = document.getElementById('newPassword')?.value;
-  const firstName = document.getElementById('firstName')?.value.trim();
-  const lastName  = document.getElementById('lastName')?.value.trim();
+  const first    = document.getElementById('firstName')?.value.trim() || '';
+  const last     = document.getElementById('lastName')?.value.trim()  || '';
 
-  if (!window._supabase || !email || !password) return;
+  if (!email || !password) return { success: false, error: 'Email and password are required.' };
 
-  const { data, error } = await window._supabase.auth.signUp({
+  const { data, error } = await sb.auth.signUp({
     email,
     password,
     options: {
       data: {
-        full_name: `${firstName} ${lastName}`,
-        phone: document.getElementById('phone')?.value,
+        full_name:     `${first} ${last}`.trim(),
+        phone:         document.getElementById('phone')?.value?.trim()     || '',
+        address:       document.getElementById('address')?.value?.trim()   || '',
+        city:          document.getElementById('city')?.value?.trim()      || '',
+        state:         document.getElementById('state')?.value?.trim()     || '',
+        date_of_birth: document.getElementById('dob')?.value               || null,
+        ssn_last_four: document.getElementById('ssnLast4')?.value?.trim()  || '',
+        account_type:  window._signupAccountType || 'checking',
       },
-      emailRedirectTo: window.location.origin + '/dashboard.html',
     },
   });
 
-  if (error) {
-    showError(error.message);
-    return;
+  if (error) return { success: false, error: error.message };
+
+  // Supabase returns a user with empty identities if the email already exists
+  if (data.user?.identities?.length === 0) {
+    return { success: false, error: 'An account with this email already exists. Please sign in.' };
   }
 
-  if (data.user) {
-    await window._supabase.from('profiles').upsert({
-      id:          data.user.id,
-      full_name:   `${firstName} ${lastName}`,
-      phone:       document.getElementById('phone')?.value,
-      address:     document.getElementById('address')?.value,
-      city:        document.getElementById('city')?.value,
-      state:       document.getElementById('state')?.value,
-    });
-  }
+  return { success: true, user: data.user };
 }
 
-// ── OTP Verify ──
+// ── OTP Verify ───────────────────────────────────────────────
 async function verifyOTP(email, token) {
-  if (!window._supabase) {
-    showSuccess();
-    return;
-  }
-  const { error } = await window._supabase.auth.verifyOtp({ email, token, type: 'signup' });
+  const sb = window._supabase;
+  if (!sb) { showSuccess(); return; }
+
+  const { error } = await sb.auth.verifyOtp({ email, token, type: 'signup' });
+
   if (error) {
-    showError(error.message);
-    document.getElementById('verifyBtnText').textContent = 'Verify & Continue';
-    document.getElementById('verifySpinner').classList.add('hidden');
-    document.getElementById('verifyBtn').disabled = false;
+    if (typeof showError === 'function') showError(error.message);
+    const t = document.getElementById('verifyBtnText');
+    const s = document.getElementById('verifySpinner');
+    const b = document.getElementById('verifyBtn');
+    if (t) t.textContent = 'Verify & Continue';
+    if (s) s.classList.add('hidden');
+    if (b) b.disabled = false;
   } else {
     showSuccess();
   }
 }
 
-// ── Logout ──
+// ── Password Reset ────────────────────────────────────────────
+async function sendPasswordReset(email) {
+  const sb = window._supabase;
+  if (!sb) return { success: true, demo: true };
+  if (!email) return { success: false, error: 'Please enter your email address.' };
+
+  const origin   = window.location.origin;
+  const base     = window.location.pathname.replace(/forgot-password\.html.*/, '');
+  const redirect = `${origin}${base}reset-password.html`;
+
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: redirect });
+  return error ? { success: false, error: error.message } : { success: true };
+}
+
+async function updatePassword(newPassword) {
+  const sb = window._supabase;
+  if (!sb) return { success: true, demo: true };
+  const { error } = await sb.auth.updateUser({ password: newPassword });
+  return error ? { success: false, error: error.message } : { success: true };
+}
+
+// ── Logout ────────────────────────────────────────────────────
 async function logout() {
   if (window._supabase) await window._supabase.auth.signOut();
   window.location.href = 'login.html';
 }
 document.querySelectorAll('#logoutBtn').forEach(btn => btn?.addEventListener('click', logout));
 
-// ── Realtime account balance subscription ──
+// ── Realtime account balance subscription ────────────────────
 function subscribeToRealtimeUpdates(userId) {
   if (!window._supabase || !userId) return;
   window._supabase
-    .channel('accounts-changes')
+    .channel('accounts-realtime')
     .on('postgres_changes', {
-      event: '*',
-      schema: 'public',
-      table: 'accounts',
+      event: '*', schema: 'public', table: 'accounts',
       filter: `user_id=eq.${userId}`,
     }, (payload) => {
       if (typeof onAccountUpdate === 'function') onAccountUpdate(payload.new);
@@ -184,23 +242,25 @@ function subscribeToRealtimeUpdates(userId) {
     .subscribe();
 }
 
-// Run auth guard on page load
+// ── Bootstrap ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   if (window._supabase) {
     checkAuthGuard();
   } else {
     document.addEventListener('supabaseReady', checkAuthGuard);
-    // Fallback if Supabase not configured: allow demo mode
+
+    // Demo mode: if Supabase isn't configured after 1 s, populate with demo data
     setTimeout(() => {
       if (!window._supabase) {
-        const page = window.location.pathname.split('/').pop();
+        const page = window.location.pathname.split('/').pop() || '';
         if (PRIVATE_PAGES.some(p => page.includes(p))) {
-          const isDemo = true;
-          if (isDemo) {
-            populateUserUI({ email: 'demo@zenithonecreditunion.com', last_sign_in_at: new Date().toISOString() });
-          }
+          populateUserUI({
+            email: 'demo@zenithone.com',
+            user_metadata: { full_name: 'Alexandra Reynolds' },
+            last_sign_in_at: new Date().toISOString(),
+          });
         }
       }
-    }, 800);
+    }, 1000);
   }
 });

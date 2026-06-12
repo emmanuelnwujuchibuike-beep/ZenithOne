@@ -3,18 +3,11 @@
  * Returns aggregated balance, credit, rewards, and portfolio summary for a user.
  */
 
-import { serve }       from 'https://deno.land/std@0.177.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { cors, json, errJson, getAuthToken } from '../_shared/cors.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin':  '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
-  }
+Deno.serve(async (req: Request): Promise<Response> => {
+  if (req.method === 'OPTIONS') return cors();
 
   try {
     const supabase = createClient(
@@ -22,11 +15,7 @@ serve(async (req: Request) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
 
-    // Verify JWT
-    const authHeader = req.headers.get('Authorization');
-    if (!authHeader) throw new Error('Missing authorization header');
-
-    const token = authHeader.replace('Bearer ', '');
+    const token = getAuthToken(req);
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     if (authError || !user) throw new Error('Unauthorized');
 
@@ -42,7 +31,7 @@ serve(async (req: Request) => {
     if (accErr) throw accErr;
 
     // Aggregate balances
-    let totalBalance   = 0;
+    let totalBalance    = 0;
     let checkingBalance = 0;
     let savingsBalance  = 0;
     let mmBalance       = 0;
@@ -80,28 +69,20 @@ serve(async (req: Request) => {
       .eq('user_id', userId)
       .eq('read', false);
 
-    const summary = {
-      total_balance:         Math.round(totalBalance * 100) / 100,
-      checking_balance:      Math.round(checkingBalance * 100) / 100,
-      savings_balance:       Math.round(savingsBalance * 100) / 100,
-      money_market_balance:  Math.round(mmBalance * 100) / 100,
-      portfolio_value:       Math.round(portfolioValue * 100) / 100,
-      credit_available:      Math.round(creditAvailable * 100) / 100,
-      reward_points:         rewardPoints,
-      unread_notifications:  unreadNotifications || 0,
-      account_count:         (accounts || []).length,
-      last_updated:          new Date().toISOString(),
-    };
-
-    return new Response(JSON.stringify(summary), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
+    return json({
+      total_balance:        Math.round(totalBalance    * 100) / 100,
+      checking_balance:     Math.round(checkingBalance * 100) / 100,
+      savings_balance:      Math.round(savingsBalance  * 100) / 100,
+      money_market_balance: Math.round(mmBalance        * 100) / 100,
+      portfolio_value:      Math.round(portfolioValue  * 100) / 100,
+      credit_available:     Math.round(creditAvailable * 100) / 100,
+      reward_points:        rewardPoints,
+      unread_notifications: unreadNotifications || 0,
+      account_count:        (accounts || []).length,
+      last_updated:         new Date().toISOString(),
     });
 
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
-    });
+    return errJson(err);
   }
 });

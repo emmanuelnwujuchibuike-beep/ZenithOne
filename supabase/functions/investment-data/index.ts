@@ -3,16 +3,11 @@
  * Returns portfolio summary, holdings, and performance metrics.
  */
 
-import { serve }        from 'https://deno.land/std@0.177.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { cors, json, errJson, getAuthToken } from '../_shared/cors.ts';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin':  '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-serve(async (req: Request) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+Deno.serve(async (req: Request): Promise<Response> => {
+  if (req.method === 'OPTIONS') return cors();
 
   try {
     const supabase = createClient(
@@ -20,12 +15,10 @@ serve(async (req: Request) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
     );
 
-    const token = req.headers.get('Authorization')?.replace('Bearer ', '');
-    if (!token) throw new Error('Missing authorization');
+    const token = getAuthToken(req);
     const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
     if (authErr || !user) throw new Error('Unauthorized');
 
-    // Fetch all holdings
     const { data: holdings, error } = await supabase
       .from('investments')
       .select('*')
@@ -36,28 +29,24 @@ serve(async (req: Request) => {
 
     const inv = holdings || [];
 
-    // Aggregate portfolio metrics
-    const totalValue    = inv.reduce((s, i) => s + (i.total_value || 0), 0);
-    const totalCost     = inv.reduce((s, i) => s + (i.cost_basis  || 0), 0);
+    const totalValue    = inv.reduce((s: number, i: { total_value?: number }) => s + (i.total_value || 0), 0);
+    const totalCost     = inv.reduce((s: number, i: { cost_basis?:  number }) => s + (i.cost_basis  || 0), 0);
     const totalGainLoss = totalValue - totalCost;
     const gainLossPct   = totalCost > 0 ? ((totalGainLoss / totalCost) * 100) : 0;
 
     // Asset allocation
     const allocation: Record<string, number> = {};
-    for (const i of inv) {
-      const type = i.asset_type;
-      allocation[type] = (allocation[type] || 0) + (i.total_value || 0);
+    for (const i of inv as { asset_type: string; total_value?: number }[]) {
+      allocation[i.asset_type] = (allocation[i.asset_type] || 0) + (i.total_value || 0);
     }
     const allocationPct: Record<string, number> = {};
     for (const [type, val] of Object.entries(allocation)) {
       allocationPct[type] = totalValue > 0 ? Math.round((val / totalValue) * 1000) / 10 : 0;
     }
 
-    // Daily change (mock — in production, fetch from market data API)
     const dailyChange    = totalValue * 0.0031;
     const dailyChangePct = 0.31;
 
-    // YTD dividends (from dividend transactions)
     const yearStart = new Date(new Date().getFullYear(), 0, 1).toISOString();
     const { data: dividends } = await supabase
       .from('transactions')
@@ -67,9 +56,9 @@ serve(async (req: Request) => {
       .eq('transaction_type', 'credit')
       .gte('created_at', yearStart);
 
-    const dividendsYTD = (dividends || []).reduce((s, d) => s + d.amount, 0);
+    const dividendsYTD = (dividends || []).reduce((s: number, d: { amount: number }) => s + d.amount, 0);
 
-    return new Response(JSON.stringify({
+    return json({
       total_value:      Math.round(totalValue    * 100) / 100,
       total_cost:       Math.round(totalCost     * 100) / 100,
       total_gain_loss:  Math.round(totalGainLoss * 100) / 100,
@@ -81,15 +70,9 @@ serve(async (req: Request) => {
       allocation:       allocationPct,
       holding_count:    inv.length,
       last_updated:     new Date().toISOString(),
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
     });
 
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
-    });
+    return errJson(err);
   }
 });

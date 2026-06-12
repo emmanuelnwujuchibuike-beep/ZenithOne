@@ -13,8 +13,85 @@
 
 /* Default: hide toggle & overlay on desktop */
 #sidebarToggle { display: none; }
-.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(2,11,24,.7); backdrop-filter: blur(4px); z-index: 499; }
-.sidebar-overlay.open { display: block; }
+
+/* ── Dashboard Sidebar Overlay (smooth fade + blur) ── */
+.sidebar-overlay {
+  position: fixed; inset: 0;
+  background: rgba(2,11,24,.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 499;
+  opacity: 0; pointer-events: none;
+  transition: opacity .4s ease;
+}
+.sidebar-overlay.open { opacity: 1; pointer-events: all; }
+
+/* ── Toggle glows gold when sidebar is open ── */
+#sidebarToggle.is-open {
+  background: rgba(201,168,76,.12) !important;
+  color: var(--gold-400) !important;
+  border: 1px solid rgba(201,168,76,.25) !important;
+}
+
+/* ── Sidebar close button (hidden on desktop) ── */
+.sidebar-close-btn {
+  display: none;
+  width: 32px; height: 32px; border-radius: 8px;
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+  align-items: center; justify-content: center;
+  color: var(--slate-400); cursor: pointer; flex-shrink: 0;
+  transition: all var(--transition);
+  margin-left: auto;
+}
+.sidebar-close-btn:hover { background: rgba(201,168,76,.12); border-color: rgba(201,168,76,.3); color: var(--gold-400); }
+
+/* ── Premium mobile sidebar styling ── */
+@media (max-width: 1024px) {
+  .sidebar-close-btn { display: flex !important; }
+  .sidebar {
+    width: min(300px, 88vw) !important;
+    background: linear-gradient(180deg, #0d1e35 0%, #061225 100%) !important;
+    border-right: 1px solid rgba(201,168,76,.18) !important;
+    box-shadow: 12px 0 60px rgba(0,0,0,.7), inset 0 0 0 1px rgba(201,168,76,.06) !important;
+  }
+  .sidebar::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px; z-index: 1;
+    background: linear-gradient(90deg, var(--gold-500), var(--gold-400), transparent 70%);
+    pointer-events: none;
+  }
+  .sidebar-logo {
+    padding: 18px 18px 16px !important;
+    border-bottom: 1px solid rgba(201,168,76,.12) !important;
+    background: rgba(6,18,37,.55) !important;
+  }
+  /* User card floats to top */
+  .sidebar-footer {
+    order: -1 !important;
+    border-top: none !important;
+    border-bottom: 1px solid rgba(255,255,255,.06) !important;
+    padding: 14px 14px !important;
+  }
+  .sidebar-nav { order: 1 !important; padding: 10px 12px !important; }
+  .sidebar-user {
+    padding: 12px !important; border-radius: 12px !important;
+    background: rgba(201,168,76,.06) !important;
+    border: 1px solid rgba(201,168,76,.14) !important;
+  }
+  .sidebar-avatar { width: 40px !important; height: 40px !important; font-size: .9rem !important; }
+  .sidebar-user-name { font-size: .9rem !important; }
+  .sidebar-user-tier { font-size: .72rem !important; }
+  .sidebar-item {
+    min-height: 46px !important; padding: 12px 14px !important;
+    font-size: .9rem !important; margin-bottom: 3px !important; border-radius: 10px !important;
+  }
+  .sidebar-item.active {
+    background: rgba(201,168,76,.14) !important;
+    border: 1px solid rgba(201,168,76,.28) !important;
+  }
+  .sidebar-section { margin-bottom: 6px !important; }
+  .sidebar-section-label { padding: 0 14px !important; margin: 14px 0 6px !important; font-size: .63rem !important; }
+}
 
 /* Sidebar toggle always visible on ≤ 1024px */
 @media (max-width: 1024px) {
@@ -100,18 +177,12 @@
 
 /* ── 4. LANDING PAGE (index.html) ────────────────────────── */
 
-/* Hero */
-@media (max-width: 1200px) {
-  .hero-right { width: 340px !important; right: 32px !important; }
-}
+/* Hero — two-column flex layout, card always visible */
 @media (max-width: 1024px) {
-  .hero-right { display: none !important; }
-  .hero-content { padding-top: 120px !important; }
   .hero-headline { font-size: clamp(2.4rem, 6vw, 4.5rem) !important; }
 }
 @media (max-width: 768px) {
-  .hero { min-height: 90vh !important; }
-  .hero-content { padding: 100px 20px 60px !important; }
+  .hero { min-height: auto !important; }
   .hero-headline { font-size: clamp(2rem, 8vw, 3.2rem) !important; }
   .hero-sub { font-size: 1rem !important; margin: 20px 0 32px !important; }
   .hero-actions { gap: 10px !important; }
@@ -384,6 +455,12 @@
   .card-number { font-size: .85rem !important; letter-spacing: .12em !important; }
   [style*="grid-template-columns:repeat(2,1fr)"] { grid-template-columns: 1fr !important; }
   [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+}
+
+/* Mobile action strip — hide on desktop, show on mobile */
+.mobile-action-strip { display: none; }
+@media (max-width: 1024px) {
+  .mobile-action-strip { display: flex !important; }
 }
 
 /* ── 11. INVESTMENTS PAGE ────────────────────────────────── */

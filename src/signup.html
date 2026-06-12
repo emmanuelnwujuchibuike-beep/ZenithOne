@@ -116,11 +116,6 @@
         <div class="step-circle" id="step3-circle">3</div>
         <div class="step-label" id="step3-label">Security</div>
       </div>
-      <div class="step-connector" id="conn3"></div>
-      <div class="step-item">
-        <div class="step-circle" id="step4-circle">4</div>
-        <div class="step-label" id="step4-label">Verify</div>
-      </div>
     </div>
 
     <!-- Error banner -->
@@ -351,15 +346,17 @@
 <script src="js/auth.js"></script>
 <script>
 let currentStep = 1;
-let selectedAccountType = 'checking';
 let resendInterval;
+
+// Expose selected account type to auth.js createAccount()
+window._signupAccountType = 'checking';
 
 // Account type selection
 document.querySelectorAll('.account-type-item').forEach(item => {
   item.addEventListener('click', () => {
     document.querySelectorAll('.account-type-item').forEach(i => i.classList.remove('selected'));
     item.classList.add('selected');
-    selectedAccountType = item.dataset.type;
+    window._signupAccountType = item.dataset.type;
   });
 });
 
@@ -387,19 +384,31 @@ function validateStep2() {
   nextStep(3);
 }
 
-function validateStep3() {
+async function validateStep3() {
   const pass = document.getElementById('newPassword').value;
   const conf = document.getElementById('confirmPassword').value;
   if (pass.length < 12) { showError('Password must be at least 12 characters.'); return; }
-  if (pass !== conf) { document.getElementById('passMatchError').classList.remove('hidden'); return; }
+  if (pass !== conf)    { document.getElementById('passMatchError').classList.remove('hidden'); return; }
   document.getElementById('passMatchError').classList.add('hidden');
   if (!document.getElementById('agreeTerms').checked) { showError('You must agree to the Terms & Conditions to continue.'); return; }
   hideError();
-  document.getElementById('verifyEmailDisplay').textContent = document.getElementById('signupEmail').value;
-  nextStep(4);
-  startResendTimer();
-  // Actual Supabase signup happens here
-  if (typeof createAccount === 'function') createAccount();
+
+  // Show loading state
+  const btn = document.querySelector('#panel3 .btn-primary');
+  const origText = btn.textContent;
+  btn.textContent = 'Creating account…';
+  btn.disabled = true;
+
+  const result = await createAccount();
+
+  if (!result.success) {
+    showError(result.error || 'Account creation failed. Please try again.');
+    btn.textContent = origText;
+    btn.disabled = false;
+    return;
+  }
+
+  showSuccess();
 }
 
 function verifyCode() {
@@ -442,6 +451,8 @@ document.getElementById('newPassword').addEventListener('input', function() {
   if (/\d/.test(pass)) score++;
   if (/[^A-Za-z0-9]/.test(pass)) score++;
   score = Math.min(score, 4);
+  // Never show Strong/Very Strong for passwords under 12 chars — matches form validation
+  if (pass.length < 12 && score > 2) score = 2;
 
   const colors = ['', '#ef4444', '#f59e0b', '#3b82f6', '#22c55e'];
   const texts  = ['', 'Weak', 'Fair', 'Strong', 'Very Strong'];
@@ -465,17 +476,32 @@ document.querySelectorAll('#otpInputs input').forEach((input, i, arr) => {
 
 function startResendTimer() {
   let secs = 60;
-  document.getElementById('resendBtn').disabled = true;
+  const btn = document.getElementById('resendBtn');
+  btn.disabled = true;
+  btn.innerHTML = 'Resend in <span id="resendTimer">60</span>s';
   resendInterval = setInterval(() => {
     secs--;
-    document.getElementById('resendTimer').textContent = secs;
+    const timerEl = document.getElementById('resendTimer');
+    if (timerEl) timerEl.textContent = secs;
     if (secs <= 0) {
       clearInterval(resendInterval);
-      document.getElementById('resendBtn').disabled = false;
-      document.getElementById('resendBtn').innerHTML = 'Resend code';
+      btn.disabled = false;
+      btn.textContent = 'Resend code';
     }
   }, 1000);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('resendBtn').addEventListener('click', async function () {
+    if (this.disabled) return;
+    const email = document.getElementById('signupEmail').value;
+    if (window._supabase && email) {
+      await window._supabase.auth.resend({ type: 'signup', email });
+    }
+    clearInterval(resendInterval);
+    startResendTimer();
+  });
+});
 </script>
 </body>
 </html>

@@ -24,6 +24,7 @@
     <div class="sidebar-logo">
       <a href="index.html" class="sidebar-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></a>
       <div><div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div><div style="font-size:.55rem;letter-spacing:.18em;color:var(--gold-500);text-transform:uppercase;">Credit Union</div></div>
+      <button class="sidebar-close-btn" id="sidebarClose" aria-label="Close"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <nav class="sidebar-nav">
       <div class="sidebar-section">
@@ -71,8 +72,8 @@
 
     <div class="app-content">
 
-      <!-- Mobile action strip (hidden on desktop via show-mobile) -->
-      <div style="display:none;gap:10px;margin-bottom:20px;" class="mobile-action-strip">
+      <!-- Mobile action strip (shown on mobile, hidden on desktop) -->
+      <div class="mobile-action-strip" style="gap:10px;margin-bottom:20px;">
         <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="openTradeModal()">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-right:6px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>+ Trade
         </button>
@@ -176,12 +177,49 @@
 <script src="js/auth.js"></script>
 <script src="js/investments.js"></script>
 <script>
+// Real data loader — overwrites demo table when ready
+async function loadInvestmentsData() {
+  try {
+    const result = await callEdgeFunction('investment-data', {});
+    if (!result) return;
+    const holdings = result.holdings || [];
+    if (holdings.length === 0) {
+      document.getElementById('holdingsTable').innerHTML =
+        '<div style="padding:40px;text-align:center;color:var(--slate-500);">No holdings yet. Contact your advisor to start investing.</div>';
+      return;
+    }
+    document.getElementById('holdingsTable').innerHTML = holdings.map(h => {
+      const value    = h.total_value  || 0;
+      const cost     = h.cost_basis   || 0;
+      const gainLoss = value - cost;
+      const glPct    = cost > 0 ? ((gainLoss / cost) * 100).toFixed(2) : '0.00';
+      const isUp     = (h.daily_change_pct || 0) >= 0;
+      const isGain   = gainLoss >= 0;
+      const alloc    = h.allocation_pct || 0;
+      const sym      = (h.symbol || '???').slice(0, 4);
+      return `<div class="holding-row">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="symbol-badge">${sym}</div>
+          <div><div style="font-size:.875rem;font-weight:500;color:var(--white);">${h.symbol}</div><div style="font-size:.75rem;color:var(--slate-500);">${h.asset_name||''}</div></div>
+        </div>
+        <div style="text-align:right;"><div style="font-size:.875rem;color:var(--white);">$${(h.current_price||0).toLocaleString('en-US',{minimumFractionDigits:2})}</div><div style="font-size:.72rem;color:var(--slate-500);">${h.shares||0} shares</div></div>
+        <div style="text-align:right;font-size:.875rem;font-weight:500;color:${isUp?'var(--green-400)':'var(--red-400)'};">${isUp?'+':''}${(h.daily_change_pct||0).toFixed(2)}%</div>
+        <div style="text-align:right;font-family:var(--font-display);font-size:.95rem;">$${value.toLocaleString('en-US',{minimumFractionDigits:2})}</div>
+        <div style="text-align:right;font-size:.875rem;color:${isGain?'var(--green-400)':'var(--red-400)'};">${isGain?'+':''}$${Math.abs(gainLoss).toLocaleString('en-US',{minimumFractionDigits:0})}<div style="font-size:.7rem;">(${isGain?'+':''}${glPct}%)</div></div>
+        <div style="text-align:right;"><div style="font-size:.8rem;margin-bottom:4px;">${alloc}%</div><div class="allocation-bar" style="background:rgba(255,255,255,.06);"><div style="height:6px;border-radius:6px;width:${Math.min(alloc*3,100)}%;background:var(--gold-500);opacity:.7;"></div></div></div>
+      </div>`;
+    }).join('');
+  } catch(e) { console.warn('Failed to load investments:', e); }
+}
+window.addEventListener('load', loadInvestmentsData);
+
+// Demo holdings shown until real data loads
 const holdings = [
   { sym:'AAPL', name:'Apple Inc.',           type:'stock', price:212.40, chg:+1.24, shares:240,  cost:142.80, alloc:18.2 },
   { sym:'MSFT', name:'Microsoft Corp.',      type:'stock', price:438.90, chg:+0.82, shares:88,   cost:312.40, alloc:16.3 },
   { sym:'VTI',  name:'Vanguard Total Market',type:'etf',   price:262.18, chg:+0.48, shares:400,  cost:198.40, alloc:14.0 },
   { sym:'BRK.B',name:'Berkshire Hathaway',   type:'stock', price:420.60, chg:-0.15, shares:60,   cost:280.20, alloc:10.8 },
-  { sym:'NVDA', name:'NVIDIA Corp.',         type:'stock', price:1,220.50,chg:+3.40,shares:18,  cost:488.20, alloc:9.4  },
+  { sym:'NVDA', name:'NVIDIA Corp.',         type:'stock', price:1220.50, chg:+3.40,shares:18,  cost:488.20, alloc:9.4  },
   { sym:'BND',  name:'Vanguard Bond Market', type:'etf',   price:72.40,  chg:-0.08, shares:1400, cost:76.20,  alloc:8.6  },
   { sym:'GOOGL',name:'Alphabet Inc.',        type:'stock', price:178.42, chg:+0.62, shares:120,  cost:128.40, alloc:7.8  },
   { sym:'QQQ',  name:'Invesco QQQ Trust',    type:'etf',   price:455.80, chg:+0.96, shares:40,   cost:320.10, alloc:7.5  },
@@ -285,8 +323,16 @@ function openAdvisorModal() { alert('Schedule a call with your ZenithOne Credit 
 // Mobile sidebar
 (function(){
   const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
-  document.getElementById('sidebarToggle').addEventListener('click',()=>{s.classList.toggle('open');o.classList.toggle('open');});
-  o.addEventListener('click',()=>{s.classList.remove('open');o.classList.remove('open');});
+  const t=document.getElementById('sidebarToggle'),c=document.getElementById('sidebarClose');
+  function openNav()  { s.classList.add('open');    o.classList.add('open');    t.classList.add('is-open');    document.body.style.overflow='hidden'; }
+  function closeNav() { s.classList.remove('open'); o.classList.remove('open'); t.classList.remove('is-open'); document.body.style.overflow=''; }
+  t.addEventListener('click', () => s.classList.contains('open') ? closeNav() : openNav());
+  c.addEventListener('click', closeNav);
+  o.addEventListener('click', closeNav);
+  s.querySelectorAll('.sidebar-item').forEach(a => a.addEventListener('click', () => { if (window.innerWidth < 1025) closeNav(); }));
+  let _tx=0;
+  s.addEventListener('touchstart', e => { _tx=e.touches[0].clientX; }, { passive:true });
+  s.addEventListener('touchend',   e => { if (_tx - e.changedTouches[0].clientX > 60) closeNav(); }, { passive:true });
 })();
 </script>
 </body>

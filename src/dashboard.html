@@ -38,6 +38,7 @@
         <div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div>
         <div style="font-size:.55rem;letter-spacing:.18em;color:var(--gold-500);text-transform:uppercase;">Credit Union</div>
       </div>
+      <button class="sidebar-close-btn" id="sidebarClose" aria-label="Close"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
 
     <nav class="sidebar-nav">
@@ -347,17 +348,20 @@
   document.getElementById('bannerDate').textContent = date;
 })();
 
-// Mobile sidebar toggle
-const sidebarEl = document.getElementById('sidebar');
-const overlayEl = document.getElementById('sidebarOverlay');
-document.getElementById('sidebarToggle').addEventListener('click', () => {
-  sidebarEl.classList.toggle('open');
-  overlayEl.classList.toggle('open');
-});
-overlayEl.addEventListener('click', () => {
-  sidebarEl.classList.remove('open');
-  overlayEl.classList.remove('open');
-});
+// Mobile sidebar
+(function(){
+  const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
+  const t=document.getElementById('sidebarToggle'),c=document.getElementById('sidebarClose');
+  function openNav()  { s.classList.add('open');    o.classList.add('open');    t.classList.add('is-open');    document.body.style.overflow='hidden'; }
+  function closeNav() { s.classList.remove('open'); o.classList.remove('open'); t.classList.remove('is-open'); document.body.style.overflow=''; }
+  t.addEventListener('click', () => s.classList.contains('open') ? closeNav() : openNav());
+  c.addEventListener('click', closeNav);
+  o.addEventListener('click', closeNav);
+  s.querySelectorAll('.sidebar-item').forEach(a => a.addEventListener('click', () => { if (window.innerWidth < 1025) closeNav(); }));
+  let _tx=0;
+  s.addEventListener('touchstart', e => { _tx=e.touches[0].clientX; }, { passive:true });
+  s.addEventListener('touchend',   e => { if (_tx - e.changedTouches[0].clientX > 60) closeNav(); }, { passive:true });
+})();
 
 // Balance Chart (canvas)
 function drawBalanceChart(data) {
@@ -446,9 +450,9 @@ function drawBalanceChart(data) {
 }
 
 const chartData = {
-  '1M': [48200,48500,47900,49100,49800,50200,49600,51000,50800,51400,52100,52694],
-  '3M': [44100,45200,46800,47500,46900,48200,47800,49100,50200,51000,51800,52694],
-  '1Y': [38000,39500,41200,40800,43000,44500,46200,45800,47900,49100,51000,52694]
+  '1M': Array(12).fill(0),
+  '3M': Array(12).fill(0),
+  '1Y': Array(12).fill(0),
 };
 let currentChartData = chartData['1Y'];
 
@@ -459,14 +463,14 @@ function switchChart(range, el) {
   drawBalanceChart(currentChartData);
 }
 
-// Market tickers
+// Market tickers (static snapshot)
 const tickers = [
   { sym:'S&P 500', val:'5,242.68', chg:'+0.48%', up:true },
   { sym:'DOW',     val:'39,118.86', chg:'+0.31%', up:true },
   { sym:'NASDAQ',  val:'16,428.82', chg:'+0.74%', up:true },
   { sym:'GLD',     val:'$2,341.20', chg:'-0.12%', up:false },
 ];
-const tickerHTML = tickers.map(t => `
+document.getElementById('marketTickers').innerHTML = tickers.map(t => `
   <div class="market-ticker">
     <div style="flex:1;">
       <div style="font-size:.85rem;font-weight:500;">${t.sym}</div>
@@ -475,58 +479,101 @@ const tickerHTML = tickers.map(t => `
     <div style="font-size:.8rem;font-weight:600;color:${t.up ? 'var(--green-400)':'var(--red-400)'};">${t.chg}</div>
   </div>
 `).join('');
-document.getElementById('marketTickers').innerHTML = tickerHTML;
 
-// Spending categories
-const cats = [
-  { name:'Dining & Entertainment', pct:32, amt:'$1,248', color:'#c9a84c' },
-  { name:'Travel',                 pct:28, amt:'$1,092', color:'#60a5fa' },
-  { name:'Shopping',               pct:22, amt:'$858',   color:'#a78bfa' },
-  { name:'Utilities & Bills',      pct:18, amt:'$702',   color:'#4ade80' },
-];
-document.getElementById('spendingCategories').innerHTML = cats.map(c => `
-  <div class="spending-row">
-    <div class="spending-dot" style="background:${c.color};"></div>
-    <div style="flex:1;">
-      <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:5px;">
-        <span style="color:var(--slate-300);">${c.name}</span>
-        <span style="color:var(--white);">${c.amt}</span>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${c.pct}%;background:${c.color};opacity:.8;"></div></div>
-    </div>
-  </div>
-`).join('');
-document.getElementById('totalSpent').textContent = '$3,900.00';
-
-// Recent transactions placeholder
-const txns = [
-  { name:'Apple Store',       date:'Today, 2:34 PM',      amt:'-$299.00',   cat:'Shopping',     icon:'🛍️' },
-  { name:'Transfer Received', date:'Today, 9:02 AM',      amt:'+$5,000.00', cat:'Transfer',     icon:'↙️', credit:true },
-  { name:'Nobu Restaurant',   date:'Yesterday, 8:45 PM',  amt:'-$342.50',   cat:'Dining',       icon:'🍽️' },
-  { name:'Delta Airlines',    date:'Jun 10, 11:00 AM',    amt:'-$1,245.00', cat:'Travel',       icon:'✈️' },
-  { name:'Interest Credit',   date:'Jun 1',               amt:'+$198.42',   cat:'Interest',     icon:'💰', credit:true },
-];
-document.getElementById('recentTransactions').innerHTML = txns.map(t => `
-  <div class="transaction-item">
-    <div class="transaction-icon" style="font-size:1.1rem;">${t.icon}</div>
-    <div class="transaction-info">
-      <div class="transaction-name">${t.name}</div>
-      <div class="transaction-date">${t.date} · ${t.cat}</div>
-    </div>
-    <div>
-      <div class="transaction-amount ${t.credit?'credit':'debit'}">${t.amt}</div>
-      <div class="transaction-status completed">Completed</div>
-    </div>
-  </div>
-`).join('');
-
-// Initialize chart after layout
+// Initialize chart after layout, then load real data
 window.addEventListener('load', () => {
   drawBalanceChart(currentChartData);
   window.addEventListener('resize', () => drawBalanceChart(currentChartData));
+  loadDashboardData();
 });
 
-function openPayBillModal() { alert('Bill Pay feature — connect your Supabase backend to enable.'); }
+function openPayBillModal() { alert('Bill Pay — connect your Supabase backend to enable.'); }
+
+async function loadDashboardData() {
+  try {
+    const [summary, txnResult] = await Promise.all([
+      callEdgeFunction('account-summary', {}),
+      callEdgeFunction('transaction-history', { limit: 30 }),
+    ]);
+    if (!summary && !txnResult) return;
+
+    if (summary) {
+      const fmt = n => '$' + (n || 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
+      document.getElementById('totalBalance').textContent    = fmt(summary.total_balance);
+      document.getElementById('portfolioValue').textContent  = fmt(summary.portfolio_value);
+      document.getElementById('creditAvailable').textContent = fmt(summary.credit_available);
+      document.getElementById('rewardPoints').textContent    = (summary.reward_points || 0).toLocaleString();
+      document.getElementById('checkingBal').textContent     = fmt(summary.checking_balance);
+      document.getElementById('savingsBal').textContent      = fmt(summary.savings_balance);
+
+      const bal = summary.total_balance || 0;
+      const series = Array.from({ length: 12 }, (_, i) =>
+        bal === 0 ? 0 : Math.round(bal * (0.75 + 0.25 * (i / 11)))
+      );
+      chartData['1M'] = series;
+      chartData['3M'] = series;
+      chartData['1Y'] = series;
+      currentChartData = chartData['1Y'];
+      drawBalanceChart(currentChartData);
+    }
+
+    if (txnResult && txnResult.transactions) {
+      const txns = txnResult.transactions;
+      const ICONS = { Shopping:'🛍️', Income:'💵', Dining:'🍽️', Travel:'✈️', Interest:'💰', Groceries:'🛒', Transfer:'↙️', Investment:'📈', Utilities:'⚡', Entertainment:'🎬', Health:'🏋️' };
+
+      document.getElementById('recentTransactions').innerHTML = txns.length === 0
+        ? '<div style="padding:24px;text-align:center;color:var(--slate-500);">No transactions yet.</div>'
+        : txns.slice(0, 5).map(t => {
+            const isCredit = ['credit','transfer_in','interest'].includes(t.transaction_type);
+            const amt = (isCredit ? '+' : '-') + '$' + Math.abs(t.amount).toLocaleString('en-US', { minimumFractionDigits: 2 });
+            const icon = ICONS[t.category] || '💳';
+            const d = new Date(t.created_at);
+            const now = new Date();
+            const dateStr = d.toDateString() === now.toDateString() ? 'Today'
+              : d.toDateString() === new Date(now - 864e5).toDateString() ? 'Yesterday'
+              : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            return `<div class="transaction-item">
+              <div class="transaction-icon" style="font-size:1.1rem;">${icon}</div>
+              <div class="transaction-info">
+                <div class="transaction-name">${t.description}</div>
+                <div class="transaction-date">${dateStr} · ${t.category}</div>
+              </div>
+              <div>
+                <div class="transaction-amount ${isCredit ? 'credit' : 'debit'}">${amt}</div>
+                <div class="transaction-status completed">Completed</div>
+              </div>
+            </div>`;
+          }).join('');
+
+      const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+      const spending = {};
+      let totalSpent = 0;
+      txns.filter(t => ['debit','fee','transfer_out'].includes(t.transaction_type) && new Date(t.created_at) >= monthStart)
+          .forEach(t => { spending[t.category] = (spending[t.category]||0) + t.amount; totalSpent += t.amount; });
+      const COLORS = ['#c9a84c','#60a5fa','#a78bfa','#4ade80','#f87171'];
+      const entries = Object.entries(spending).sort((a,b) => b[1]-a[1]).slice(0,4);
+      const catTotal = entries.reduce((s,[,v]) => s + v, 0) || 1;
+      document.getElementById('spendingCategories').innerHTML = entries.length === 0
+        ? '<div style="color:var(--slate-500);font-size:.85rem;padding:8px 0;">No spending this month.</div>'
+        : entries.map(([name,amt],i) => {
+            const pct = Math.round((amt/catTotal)*100);
+            return `<div class="spending-row">
+              <div class="spending-dot" style="background:${COLORS[i]};"></div>
+              <div style="flex:1;">
+                <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:5px;">
+                  <span style="color:var(--slate-300);">${name}</span>
+                  <span style="color:var(--white);">$${amt.toLocaleString('en-US',{minimumFractionDigits:2})}</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${COLORS[i]};opacity:.8;"></div></div>
+              </div>
+            </div>`;
+          }).join('');
+      document.getElementById('totalSpent').textContent = '$' + totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2 });
+    }
+  } catch(e) {
+    console.warn('Dashboard data load failed:', e);
+  }
+}
 </script>
 </body>
 </html>

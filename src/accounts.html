@@ -21,6 +21,7 @@
         <div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div>
         <div style="font-size:.55rem;letter-spacing:.18em;color:var(--gold-500);text-transform:uppercase;">Credit Union</div>
       </div>
+      <button class="sidebar-close-btn" id="sidebarClose" aria-label="Close"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <nav class="sidebar-nav">
       <div class="sidebar-section">
@@ -68,7 +69,7 @@
 
     <div class="app-content">
       <!-- Mobile action strip (shown at ≤480px when topbar button is hidden) -->
-      <button onclick="openNewAccountModal()" class="btn btn-primary mobile-action-strip" style="display:none;width:100%;justify-content:center;margin-bottom:20px;">
+      <button onclick="openNewAccountModal()" class="btn btn-primary mobile-action-strip" style="width:100%;justify-content:center;margin-bottom:20px;">
         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-right:8px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Open New Account
       </button>
@@ -279,14 +280,98 @@
 <script>
 function openNewAccountModal() { document.getElementById('newAccountModal').classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function showAccountDetails(type) { alert('Account details for ' + type + ' — connect your Supabase backend to populate.'); }
+function showAccountDetails(type) { alert('Full account details — contact ZenithOne Private Banking at 1-888-763-9000.'); }
 function submitNewAccount() { alert('Account opening submitted. A representative will contact you within 24 hours.'); closeModal('newAccountModal'); }
 document.getElementById('newAccountModal').addEventListener('click', function(e) { if(e.target===this) closeModal('newAccountModal'); });
+
+async function loadAccountsData() {
+  const sb = window._supabase;
+  if (!sb) return;
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return;
+
+    const { data: accounts, error } = await sb
+      .from('accounts')
+      .select('id,account_type,account_number,balance,status,created_at')
+      .eq('user_id', session.user.id)
+      .eq('status', 'active')
+      .order('created_at');
+
+    if (error || !accounts) return;
+
+    const total = accounts.reduce((s, a) => s + (a.balance || 0), 0);
+    const fmt = n => '$' + (n || 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+    const netWorthEl = document.getElementById('netWorth');
+    if (netWorthEl) netWorthEl.textContent = fmt(total);
+
+    const countEl = document.querySelector('.stat-card:nth-child(2) .stat-value');
+    if (countEl) countEl.textContent = accounts.length;
+
+    const META = {
+      checking:     { label:'ZenithOne Private Checking', bg:'rgba(201,168,76,.12)', color:'var(--gold-400)', apy:'0.50%', icon:'<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>' },
+      savings:      { label:'High-Yield Savings',         bg:'rgba(96,165,250,.1)',  color:'var(--blue-400)', apy:'4.85%', icon:'<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>' },
+      money_market: { label:'Money Market Account',       bg:'rgba(167,139,250,.1)', color:'#a78bfa',          apy:'5.10%', icon:'<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>' },
+    };
+
+    document.getElementById('accountsContainer').innerHTML = accounts.map(acc => {
+      const m = META[acc.account_type] || META.checking;
+      const last4 = (acc.account_number || '0000').slice(-4);
+      const monthlyInterest = acc.account_type === 'savings'
+        ? `Earning ${fmt((acc.balance||0) * 0.0485 / 12)}/mo interest`
+        : `Available: ${fmt(acc.balance)}`;
+      return `<div class="card card-elevated">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div style="width:52px;height:52px;border-radius:14px;background:${m.bg};display:flex;align-items:center;justify-content:center;color:${m.color};">${m.icon}</div>
+            <div>
+              <div style="font-family:var(--font-display);font-size:1.3rem;">${m.label}</div>
+              <div style="font-size:.8rem;color:var(--slate-400);margin-top:2px;">Account •••• ${last4} · Routing 021000021</div>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-family:var(--font-display);font-size:2rem;">${fmt(acc.balance)}</div>
+            <div style="font-size:.8rem;color:var(--slate-400);">${monthlyInterest}</div>
+          </div>
+        </div>
+        <hr class="divider" style="margin:20px 0;" />
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;">
+          <div style="text-align:center;"><div style="font-size:.7rem;color:var(--slate-500);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Account Type</div><div style="font-size:.9rem;color:var(--white);">${acc.account_type.replace('_',' ').replace(/\b\w/g,c=>c.toUpperCase())}</div></div>
+          <div style="text-align:center;"><div style="font-size:.7rem;color:var(--slate-500);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Interest Rate</div><div style="font-size:.9rem;color:var(--gold-400);">${m.apy} APY</div></div>
+          <div style="text-align:center;"><div style="font-size:.7rem;color:var(--slate-500);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Status</div><div class="badge badge-green" style="display:inline-flex;">Active</div></div>
+          <div style="text-align:center;"><div style="font-size:.7rem;color:var(--slate-500);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Tier</div><div class="badge badge-gold" style="display:inline-flex;">Private</div></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <a href="transactions.html?account=${acc.account_type}" class="btn btn-ghost btn-sm">View Transactions</a>
+          <a href="transfer.html" class="btn btn-ghost btn-sm">Transfer Funds</a>
+          <button class="btn btn-ghost btn-sm" onclick="showAccountDetails('${acc.account_type}')">Account Details</button>
+        </div>
+      </div>`;
+    }).join('') || '<div class="card card-elevated" style="text-align:center;padding:40px;color:var(--slate-500);">No active accounts found. <a href="#" onclick="openNewAccountModal();return false;" style="color:var(--gold-500);">Open one now.</a></div>';
+
+  } catch(e) {
+    console.warn('Failed to load accounts:', e);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (window._supabase) loadAccountsData();
+  else document.addEventListener('supabaseReady', loadAccountsData, { once: true });
+});
 // Mobile sidebar
 (function(){
   const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
-  document.getElementById('sidebarToggle').addEventListener('click',()=>{s.classList.toggle('open');o.classList.toggle('open');});
-  o.addEventListener('click',()=>{s.classList.remove('open');o.classList.remove('open');});
+  const t=document.getElementById('sidebarToggle'),c=document.getElementById('sidebarClose');
+  function openNav()  { s.classList.add('open');    o.classList.add('open');    t.classList.add('is-open');    document.body.style.overflow='hidden'; }
+  function closeNav() { s.classList.remove('open'); o.classList.remove('open'); t.classList.remove('is-open'); document.body.style.overflow=''; }
+  t.addEventListener('click', () => s.classList.contains('open') ? closeNav() : openNav());
+  c.addEventListener('click', closeNav);
+  o.addEventListener('click', closeNav);
+  s.querySelectorAll('.sidebar-item').forEach(a => a.addEventListener('click', () => { if (window.innerWidth < 1025) closeNav(); }));
+  let _tx=0;
+  s.addEventListener('touchstart', e => { _tx=e.touches[0].clientX; }, { passive:true });
+  s.addEventListener('touchend',   e => { if (_tx - e.changedTouches[0].clientX > 60) closeNav(); }, { passive:true });
 })();
 </script>
 </body>

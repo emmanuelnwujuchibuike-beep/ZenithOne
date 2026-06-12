@@ -33,6 +33,7 @@
     <div class="sidebar-logo">
       <a href="index.html" class="sidebar-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></a>
       <div><div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div><div style="font-size:.55rem;letter-spacing:.18em;color:var(--gold-500);text-transform:uppercase;">Credit Union</div></div>
+      <button class="sidebar-close-btn" id="sidebarClose" aria-label="Close"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <nav class="sidebar-nav">
       <div class="sidebar-section">
@@ -362,12 +363,25 @@ function switchTransferTab(tab, el) {
   document.getElementById('panel-' + tab).classList.add('active');
 }
 
-const balances = { checking: 124582.74, savings: 892418.33, money_market: 1830292.11 };
+let balances = { checking: 0, savings: 0, money_market: 0 };
 
 function updateFromBalance() {
   const acc = document.getElementById('fromAccount').value;
-  document.getElementById('availableDisplay').textContent = 'Available: $' + balances[acc].toLocaleString('en-US',{minimumFractionDigits:2});
+  document.getElementById('availableDisplay').textContent = 'Available: $' + (balances[acc]||0).toLocaleString('en-US',{minimumFractionDigits:2});
 }
+
+async function loadTransferData() {
+  try {
+    const summary = await callEdgeFunction('account-summary', {});
+    if (!summary) return;
+    balances.checking     = summary.checking_balance     || 0;
+    balances.savings      = summary.savings_balance      || 0;
+    balances.money_market = summary.money_market_balance || 0;
+    updateFromBalance();
+  } catch(e) { console.warn('Failed to load balances:', e); }
+}
+
+window.addEventListener('load', loadTransferData);
 
 function setAmount(amt) { document.getElementById('transferAmount').value = amt; }
 function setAmountAll() {
@@ -419,6 +433,30 @@ function executeTransfer() {
   }
 }
 
+async function processTransfer() {
+  const from_account_type = document.getElementById('fromAccount').value;
+  const to_account_type   = document.getElementById('toAccount').value;
+  const amount            = parseFloat(document.getElementById('transferAmount').value);
+  const memo              = document.getElementById('transferMemo')?.value?.trim() || '';
+  try {
+    const result = await callEdgeFunction('transfer-funds', { from_account_type, to_account_type, amount, memo });
+    closeModal('confirmModal');
+    document.getElementById('confirmBtnText').textContent = 'Confirm Transfer';
+    document.getElementById('confirmSpinner').classList.add('hidden');
+    document.getElementById('confirmBtn').disabled = false;
+    alert('Transfer completed! Reference: #' + (result.reference || Date.now()));
+    loadTransferData();
+  } catch(err) {
+    let msg = 'Transfer failed. Please try again.';
+    try { const p = JSON.parse(err.message); msg = p.error || msg; } catch {}
+    document.getElementById('confirmBtnText').textContent = 'Confirm Transfer';
+    document.getElementById('confirmSpinner').classList.add('hidden');
+    document.getElementById('confirmBtn').disabled = false;
+    closeModal('confirmModal');
+    alert('Error: ' + msg);
+  }
+}
+
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 function openAddBeneficiaryModal() { document.getElementById('addBeneficiaryModal').classList.add('open'); }
 function saveBeneficiary() { alert('Recipient saved. Verification may take 1–2 business days.'); closeModal('addBeneficiaryModal'); }
@@ -461,8 +499,16 @@ function selectBeneficiary(id) {
 // Mobile sidebar
 (function(){
   const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
-  document.getElementById('sidebarToggle').addEventListener('click',()=>{s.classList.toggle('open');o.classList.toggle('open');});
-  o.addEventListener('click',()=>{s.classList.remove('open');o.classList.remove('open');});
+  const t=document.getElementById('sidebarToggle'),c=document.getElementById('sidebarClose');
+  function openNav()  { s.classList.add('open');    o.classList.add('open');    t.classList.add('is-open');    document.body.style.overflow='hidden'; }
+  function closeNav() { s.classList.remove('open'); o.classList.remove('open'); t.classList.remove('is-open'); document.body.style.overflow=''; }
+  t.addEventListener('click', () => s.classList.contains('open') ? closeNav() : openNav());
+  c.addEventListener('click', closeNav);
+  o.addEventListener('click', closeNav);
+  s.querySelectorAll('.sidebar-item').forEach(a => a.addEventListener('click', () => { if (window.innerWidth < 1025) closeNav(); }));
+  let _tx=0;
+  s.addEventListener('touchstart', e => { _tx=e.touches[0].clientX; }, { passive:true });
+  s.addEventListener('touchend',   e => { if (_tx - e.changedTouches[0].clientX > 60) closeNav(); }, { passive:true });
 })();
 </script>
 </body>

@@ -26,6 +26,7 @@
     <div class="sidebar-logo">
       <a href="index.html" class="sidebar-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></a>
       <div><div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div><div style="font-size:.55rem;letter-spacing:.18em;color:var(--gold-500);text-transform:uppercase;">Credit Union</div></div>
+      <button class="sidebar-close-btn" id="sidebarClose" aria-label="Close"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <nav class="sidebar-nav">
       <div class="sidebar-section">
@@ -156,27 +157,49 @@
 <script src="js/auth.js"></script>
 <script src="js/transactions.js"></script>
 <script>
-const allTransactions = [
-  { id:'TXN001', name:'Apple Store',          date:'2024-06-12', time:'2:34 PM', amount:-299.00,  type:'debit',   cat:'Shopping',   status:'completed', icon:'🛍️', account:'checking', ref:'#APL20240612' },
-  { id:'TXN002', name:'Payroll Deposit',       date:'2024-06-12', time:'9:02 AM', amount:18244.42, type:'credit',  cat:'Income',     status:'completed', icon:'💵', account:'checking', ref:'#PAY20240612' },
-  { id:'TXN003', name:'Nobu Restaurant',       date:'2024-06-11', time:'8:45 PM', amount:-342.50,  type:'debit',   cat:'Dining',     status:'completed', icon:'🍽️', account:'checking', ref:'#NOB20240611' },
-  { id:'TXN004', name:'Delta Airlines',        date:'2024-06-10', time:'11:00 AM',amount:-1245.00, type:'debit',   cat:'Travel',     status:'completed', icon:'✈️', account:'checking', ref:'#DLT20240610' },
-  { id:'TXN005', name:'Interest Credit',       date:'2024-06-01', time:'12:00 AM',amount:198.42,   type:'credit',  cat:'Interest',   status:'completed', icon:'💰', account:'savings',  ref:'#INT20240601' },
-  { id:'TXN006', name:'Whole Foods Market',    date:'2024-06-09', time:'5:22 PM', amount:-187.34,  type:'debit',   cat:'Groceries',  status:'completed', icon:'🛒', account:'checking', ref:'#WFM20240609' },
-  { id:'TXN007', name:'Transfer to Savings',   date:'2024-06-08', time:'10:00 AM',amount:-5000.00, type:'transfer',cat:'Transfer',   status:'completed', icon:'↗️', account:'checking', ref:'#TRF20240608' },
-  { id:'TXN008', name:'Transfer from Checking',date:'2024-06-08', time:'10:00 AM',amount:5000.00,  type:'credit',  cat:'Transfer',   status:'completed', icon:'↙️', account:'savings',  ref:'#TRF20240608' },
-  { id:'TXN009', name:'Saks Fifth Avenue',     date:'2024-06-07', time:'3:15 PM', amount:-892.00,  type:'debit',   cat:'Shopping',   status:'completed', icon:'👜', account:'checking', ref:'#SAK20240607' },
-  { id:'TXN010', name:'Equinox Membership',    date:'2024-06-05', time:'7:00 AM', amount:-200.00,  type:'debit',   cat:'Health',     status:'completed', icon:'🏋️', account:'checking', ref:'#EQX20240605' },
-  { id:'TXN011', name:'Dividend Payment',      date:'2024-06-01', time:'12:00 AM',amount:4820.00,  type:'credit',  cat:'Investment', status:'completed', icon:'📈', account:'savings',  ref:'#DIV20240601' },
-  { id:'TXN012', name:'Con Edison',            date:'2024-06-04', time:'8:00 AM', amount:-342.18,  type:'debit',   cat:'Utilities',  status:'completed', icon:'⚡', account:'checking', ref:'#CED20240604' },
-  { id:'TXN013', name:'Four Seasons Hotel',    date:'2024-06-03', time:'2:00 PM', amount:-2840.00, type:'debit',   cat:'Travel',     status:'completed', icon:'🏨', account:'checking', ref:'#FSH20240603' },
-  { id:'TXN014', name:'Wire Transfer Received',date:'2024-06-02', time:'11:30 AM',amount:50000.00, type:'credit',  cat:'Transfer',   status:'completed', icon:'🏦', account:'money_market',ref:'#WIR20240602' },
-  { id:'TXN015', name:'Netflix',               date:'2024-06-01', time:'12:01 AM',amount:-22.99,   type:'debit',   cat:'Entertainment',status:'completed',icon:'🎬',account:'checking', ref:'#NET20240601' },
-];
-
-let filtered = [...allTransactions];
+let allTransactions = [];
+let filtered = [];
 let currentPage = 1;
 const perPage = 10;
+
+const _TXN_ICONS = { Shopping:'🛍️', Income:'💵', Dining:'🍽️', Travel:'✈️', Interest:'💰', Groceries:'🛒', Transfer:'↙️', Investment:'📈', Utilities:'⚡', Entertainment:'🎬', Health:'🏋️', Fee:'🏦' };
+
+function _txnToRow(t) {
+  const isCredit = ['credit','transfer_in','interest'].includes(t.transaction_type);
+  const d = new Date(t.created_at);
+  return {
+    id:      t.id,
+    name:    t.description,
+    date:    d.toISOString().split('T')[0],
+    time:    d.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit' }),
+    amount:  isCredit ? t.amount : -t.amount,
+    type:    t.transaction_type,
+    cat:     t.category,
+    status:  t.status || 'completed',
+    icon:    _TXN_ICONS[t.category] || '💳',
+    account: t.account_type || '',
+    ref:     '#' + (t.reference_number || t.id.slice(0,8).toUpperCase()),
+  };
+}
+
+async function loadTransactionsFromAPI() {
+  try {
+    const result = await callEdgeFunction('transaction-history', { limit: 200 });
+    if (!result) return;
+    allTransactions = (result.transactions || []).map(_txnToRow);
+    filtered = [...allTransactions];
+    currentPage = 1;
+    renderTransactions();
+  } catch(e) {
+    console.warn('Failed to load transactions:', e);
+    if (allTransactions.length === 0) {
+      document.getElementById('transactionsList').innerHTML =
+        '<div style="padding:40px;text-align:center;color:var(--slate-500);">No transactions yet.</div>';
+    }
+  }
+}
+
+window.addEventListener('load', loadTransactionsFromAPI);
 
 function renderTransactions() {
   const start = (currentPage - 1) * perPage;
@@ -295,8 +318,16 @@ renderTransactions();
 // Mobile sidebar
 (function(){
   const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
-  document.getElementById('sidebarToggle').addEventListener('click',()=>{s.classList.toggle('open');o.classList.toggle('open');});
-  o.addEventListener('click',()=>{s.classList.remove('open');o.classList.remove('open');});
+  const t=document.getElementById('sidebarToggle'),c=document.getElementById('sidebarClose');
+  function openNav()  { s.classList.add('open');    o.classList.add('open');    t.classList.add('is-open');    document.body.style.overflow='hidden'; }
+  function closeNav() { s.classList.remove('open'); o.classList.remove('open'); t.classList.remove('is-open'); document.body.style.overflow=''; }
+  t.addEventListener('click', () => s.classList.contains('open') ? closeNav() : openNav());
+  c.addEventListener('click', closeNav);
+  o.addEventListener('click', closeNav);
+  s.querySelectorAll('.sidebar-item').forEach(a => a.addEventListener('click', () => { if (window.innerWidth < 1025) closeNav(); }));
+  let _tx=0;
+  s.addEventListener('touchstart', e => { _tx=e.touches[0].clientX; }, { passive:true });
+  s.addEventListener('touchend',   e => { if (_tx - e.changedTouches[0].clientX > 60) closeNav(); }, { passive:true });
 })();
 </script>
 </body>

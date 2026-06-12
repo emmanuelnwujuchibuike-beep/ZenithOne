@@ -284,8 +284,8 @@ document.getElementById('accountsContainer').innerHTML =
 
 function openNewAccountModal() { document.getElementById('newAccountModal').classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function showAccountDetails(type) { alert('Full account details — contact ZenithOne Private Banking at 1-888-763-9000.'); }
-function submitNewAccount() { alert('Account opening submitted. A representative will contact you within 24 hours.'); closeModal('newAccountModal'); }
+function showAccountDetails(type) { zenithToast('For full account details, contact ZenithOne Private Banking at 1-888-763-9000.', 'info'); }
+function submitNewAccount() { zenithToast('Account opening submitted. A representative will contact you within 24 hours.', 'success', 6000); closeModal('newAccountModal'); }
 document.getElementById('newAccountModal').addEventListener('click', function(e) { if(e.target===this) closeModal('newAccountModal'); });
 
 async function loadAccountsData() {

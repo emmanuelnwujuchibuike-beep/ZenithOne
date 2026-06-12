@@ -32,11 +32,11 @@ async function openNewAccount(type, initialDeposit, nickname) {
   try {
     const result = await callEdgeFunction('create-account', { type, initial_deposit: initialDeposit, nickname });
     if (result.success) {
-      alert(`Account opened! Account number: ${result.account_number}`);
+      zenithToast(`Account opened! Account number: ${result.account_number}`, 'success', 7000);
       loadAccounts();
     }
   } catch (err) {
-    alert('Failed to open account: ' + err.message);
+    zenithToast('Failed to open account: ' + err.message, 'error');
   }
 }
 

@@ -588,7 +588,7 @@ window.addEventListener('load', () => {
   loadDashboardData();
 });
 
-function openPayBillModal() { alert('Bill Pay — connect your Supabase backend to enable.'); }
+function openPayBillModal() { zenithToast('Bill Pay is coming soon. Contact ZenithOne Private Banking to arrange a payment.', 'info'); }
 
 // ═══ SECRET ADMIN PANEL ════════════════════════════════════════
 
@@ -780,7 +780,7 @@ async function submitAddFunds() {
     const res = await callEdgeFunction('admin-data', { action: 'add_funds', user_id: _addFundsUserId, account_type: accType, amount, note });
     closeAddFunds();
     await refreshAdminAll();
-    alert(res.message || 'Funds added successfully.');
+    zenithToast(res.message || 'Funds added successfully.', 'success');
   } catch(e) {
     let msg = 'Failed to add funds.';
     try { const p = JSON.parse(e.message); msg = p.error || msg; } catch {}

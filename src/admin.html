@@ -213,7 +213,7 @@ async function submitAddFunds() {
     });
     closeAddFunds();
     await refreshAll();
-    alert(res.message || 'Funds added successfully.');
+    zenithToast(res.message || 'Funds added successfully.', 'success');
   } catch(e) {
     let msg = 'Failed to add funds.';
     try { const p = JSON.parse(e.message); msg = p.error || msg; } catch {}

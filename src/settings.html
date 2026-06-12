@@ -382,7 +382,7 @@ async function saveSettings() {
     loadSettingsData();
   } catch(e) {
     if (saveBtn) { saveBtn.textContent = 'Save Changes'; saveBtn.disabled = false; }
-    alert('Failed to save changes: ' + (e.message || 'Please try again.'));
+    zenithToast('Failed to save changes: ' + (e.message || 'Please try again.'), 'error');
   }
 }
 
@@ -399,22 +399,28 @@ function _flashSaved() {
 
 async function changePassword() {
   const sb = window._supabase;
-  if (!sb) { alert('Not connected.'); return; }
+  if (!sb) { zenithToast('Not connected to server. Please reload.', 'error'); return; }
   const { data: { user } } = await sb.auth.getUser();
   if (!user?.email) return;
   const { error } = await sb.auth.resetPasswordForEmail(user.email);
-  if (error) alert('Error: ' + error.message);
-  else alert('Password reset email sent to ' + user.email + '. Check your inbox.');
+  if (error) zenithToast('Error: ' + error.message, 'error');
+  else zenithToast('Password reset email sent to ' + user.email + '. Check your inbox.', 'success', 6000);
 }
 
-function manage2FA()       { alert('2FA — Authenticator app, SMS backup codes, and recovery options coming soon.'); }
-function revokeSession(btn){ btn.closest('.session-item').style.opacity='.4'; alert('Session revoked.'); }
-function revokeAllSessions(){ alert('All other sessions have been signed out.'); }
-function downloadStatement(period){ alert('Statement download for ' + period + ' — connect document storage to enable.'); }
-function requestDataExport() { alert('Data export requested. You will receive a download link within 48 hours.'); }
-function requestAccountClosure() { if(confirm('Request account closure? A representative will contact you to confirm.')) alert('Request submitted. A representative will contact you within 3 business days.'); }
-function addExternalAccount() { alert('External account linking via Plaid — coming soon.'); }
-function unlinkAccount(btn) { if(confirm('Remove this linked account?')) btn.closest('[style]').style.opacity='.4'; }
+function manage2FA()       { zenithToast('Two-factor authentication — authenticator app and SMS options coming soon.', 'info'); }
+function revokeSession(btn){ btn.closest('.session-item').style.opacity='.4'; zenithToast('Session revoked successfully.', 'success'); }
+function revokeAllSessions(){ zenithToast('All other sessions have been signed out.', 'success'); }
+function downloadStatement(period){ zenithToast('Statement download for ' + period + ' — document storage coming soon.', 'info'); }
+function requestDataExport() { zenithToast('Data export requested. You will receive a download link within 48 hours.', 'success'); }
+async function requestAccountClosure() {
+  const ok = await zenithConfirm('Request account closure? A ZenithOne representative will contact you to confirm.', { title: 'Close Account', confirmLabel: 'Submit Request', type: 'warning' });
+  if (ok) zenithToast('Request submitted. A representative will contact you within 3 business days.', 'success', 6000);
+}
+function addExternalAccount() { zenithToast('External account linking via Plaid — coming soon.', 'info'); }
+async function unlinkAccount(btn) {
+  const ok = await zenithConfirm('Remove this linked account?', { title: 'Unlink Account', confirmLabel: 'Remove', type: 'warning' });
+  if (ok) btn.closest('[style]').style.opacity='.4';
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   if (window._supabase) loadSettingsData();

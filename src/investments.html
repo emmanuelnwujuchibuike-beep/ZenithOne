@@ -284,8 +284,8 @@ window.addEventListener('load', loadInvestmentsData);
   ctx.fillStyle='#475569'; ctx.font='10px Inter'; ctx.fillText('yet',cx,cy+12);
 })();
 
-function openTradeModal() { alert('Trading — connect to your Supabase investment edge function to enable live trading.'); }
-function openAdvisorModal() { alert('Schedule a call with your ZenithOne Credit Union Banking Advisor: 1-888-763-9000'); }
+function openTradeModal() { zenithToast('Live trading is coming soon. Contact your ZenithOne advisor to place orders manually.', 'info'); }
+function openAdvisorModal() { zenithToast('Schedule a call with your ZenithOne Banking Advisor: 1-888-763-9000', 'info', 7000); }
 // Mobile sidebar
 (function(){
   const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');

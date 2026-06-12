@@ -400,11 +400,11 @@ function swapAccounts() {
 
 function reviewTransfer() {
   const amt = parseFloat(document.getElementById('transferAmount').value);
-  if (!amt || amt <= 0) { alert('Please enter a valid transfer amount.'); return; }
+  if (!amt || amt <= 0) { zenithToast('Please enter a valid transfer amount.', 'error'); return; }
   const from = document.getElementById('fromAccount');
   const to   = document.getElementById('toAccount');
   const bal  = balances[from.value];
-  if (amt > bal) { alert('Insufficient funds. Available balance: $' + bal.toLocaleString('en-US',{minimumFractionDigits:2})); return; }
+  if (amt > bal) { zenithToast('Insufficient funds. Available balance: $' + bal.toLocaleString('en-US',{minimumFractionDigits:2}), 'error'); return; }
   document.getElementById('confirmAmount').textContent = '$' + amt.toLocaleString('en-US',{minimumFractionDigits:2});
   document.getElementById('confirmDetails').innerHTML = `
     <div class="confirm-row"><span style="color:var(--slate-400);">From</span><span>${from.options[from.selectedIndex].text.split('—')[0].trim()}</span></div>
@@ -428,7 +428,7 @@ function executeTransfer() {
   } else {
     setTimeout(() => {
       closeModal('confirmModal');
-      alert('Transfer completed successfully! Reference: #TRF' + Date.now());
+      zenithToast('Transfer completed successfully! Reference: #TRF' + Date.now(), 'success', 6000);
     }, 1800);
   }
 }
@@ -444,7 +444,7 @@ async function processTransfer() {
     document.getElementById('confirmBtnText').textContent = 'Confirm Transfer';
     document.getElementById('confirmSpinner').classList.add('hidden');
     document.getElementById('confirmBtn').disabled = false;
-    alert('Transfer completed! Reference: #' + (result.reference || Date.now()));
+    zenithToast('Transfer completed! Reference: #' + (result.reference || Date.now()), 'success', 6000);
     loadTransferData();
   } catch(err) {
     let msg = 'Transfer failed. Please try again.';
@@ -453,18 +453,18 @@ async function processTransfer() {
     document.getElementById('confirmSpinner').classList.add('hidden');
     document.getElementById('confirmBtn').disabled = false;
     closeModal('confirmModal');
-    alert('Error: ' + msg);
+    zenithToast(msg, 'error');
   }
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 function openAddBeneficiaryModal() { document.getElementById('addBeneficiaryModal').classList.add('open'); }
-function saveBeneficiary() { alert('Recipient saved. Verification may take 1–2 business days.'); closeModal('addBeneficiaryModal'); }
+function saveBeneficiary() { zenithToast('Recipient saved. Verification may take 1–2 business days.', 'success'); closeModal('addBeneficiaryModal'); }
 function submitZelle() {
   const r = document.getElementById('zelleRecipient').value;
   const a = document.getElementById('zelleAmount').value;
-  if (!r || !a) { alert('Please enter recipient and amount.'); return; }
-  alert(`Zelle payment of $${parseFloat(a).toFixed(2)} sent to ${r}.`);
+  if (!r || !a) { zenithToast('Please enter a recipient and amount.', 'error'); return; }
+  zenithToast(`Zelle payment of $${parseFloat(a).toFixed(2)} sent to ${r}.`, 'success');
 }
 
 // Render beneficiaries

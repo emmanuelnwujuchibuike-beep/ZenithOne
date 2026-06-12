@@ -52,5 +52,5 @@ function showTransferSuccess(amount, ref = '') {
 }
 
 function showTransferError(msg) {
-  alert('Transfer failed: ' + msg);
+  zenithToast('Transfer failed: ' + msg, 'error');
 }

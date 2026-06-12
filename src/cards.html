@@ -369,7 +369,7 @@ async function submitCardApplication() {
   try {
     const res = await callEdgeFunction('card-request', { card_type_key: _pendingCardKey });
     closeCardApply();
-    alert(`✅ Application submitted!\n\n${res.message}\n\nYou'll receive a confirmation email shortly.`);
+    zenithToast(`Application submitted! ${res.message} — A confirmation email is on its way.`, 'success', 6000);
   } catch(e) {
     let msg = 'Submission failed. Please try again.';
     try { const p = JSON.parse(e.message); msg = p.error || msg; } catch {}
@@ -451,7 +451,7 @@ async function toggleCardFreeze() {
     document.getElementById('freezeLabel').textContent = isFrozen ? 'Unfreeze' : 'Freeze';
     document.getElementById('freezeIcon').style.color = isFrozen ? 'var(--red-400)' : 'var(--gold-400)';
     document.getElementById('freezeIcon').style.background = isFrozen ? 'rgba(239,68,68,.12)' : 'rgba(201,168,76,.1)';
-    alert(isFrozen ? '🔒 Card frozen.' : '✅ Card unfrozen.');
+    zenithToast(isFrozen ? 'Card frozen.' : 'Card unfrozen.', isFrozen ? 'warning' : 'success');
     return;
   }
   const action = isFrozen ? 'unfreeze' : 'freeze';
@@ -461,11 +461,11 @@ async function toggleCardFreeze() {
     document.getElementById('freezeLabel').textContent = isFrozen ? 'Unfreeze' : 'Freeze';
     document.getElementById('freezeIcon').style.color = isFrozen ? 'var(--red-400)' : 'var(--gold-400)';
     document.getElementById('freezeIcon').style.background = isFrozen ? 'rgba(239,68,68,.12)' : 'rgba(201,168,76,.1)';
-    alert(isFrozen ? '🔒 Card frozen. All transactions declined until unfrozen.' : '✅ Card unfrozen. Transactions are now active.');
+    zenithToast(isFrozen ? 'Card frozen. All transactions are declined until unfrozen.' : 'Card unfrozen. Transactions are now active.', isFrozen ? 'warning' : 'success');
   } catch(e) {
     let msg = 'Operation failed. Please try again.';
     try { const p = JSON.parse(e.message); msg = p.error || msg; } catch {}
-    alert('Error: ' + msg);
+    zenithToast(msg, 'error');
   }
 }
 
@@ -474,22 +474,25 @@ function selectCard(index, btn) {
   btn.classList.replace('btn-ghost','btn-primary');
 }
 
-function showLimitsModal() { alert('Set daily/transaction spending limits — connect to Supabase Edge Function: card-operations'); }
-function showPinModal()   { alert('PIN management — connect to Supabase Edge Function: card-operations'); }
-function reportCard()     { if(confirm('Report this card as lost or stolen?')) alert('Card reported. A replacement will arrive in 2–4 business days.'); }
-function requestNewCard() { alert('Card request submitted. Processing takes 5–7 business days.'); }
+function showLimitsModal() { zenithToast('Spending limits — coming soon. Contact your ZenithOne advisor to set custom limits.', 'info'); }
+function showPinModal()    { zenithToast('PIN management — coming soon via secure in-app verification.', 'info'); }
+async function reportCard() {
+  const ok = await zenithConfirm('Report this card as lost or stolen? A replacement will be issued and this card will be immediately blocked.', { title: 'Report Lost / Stolen', confirmLabel: 'Report Card', type: 'error' });
+  if (ok) zenithToast('Card reported. A replacement will arrive in 2–4 business days.', 'success');
+}
+function requestNewCard() { zenithToast('Card request submitted. Processing takes 5–7 business days.', 'success'); }
 function redeemRewards()  {
   const pts = parseInt((document.getElementById('cardRewardPoints').textContent||'0').replace(/\D/g,''))||0;
-  if (pts === 0) { alert('You have no reward points to redeem yet.'); return; }
+  if (pts === 0) { zenithToast('You have no reward points to redeem yet.', 'info'); return; }
   const cash = (pts * 0.01).toFixed(2);
   const travel = (pts * 0.0125).toFixed(2);
-  alert(`${pts.toLocaleString()} points = $${cash} in cash back or $${travel} in travel value.`);
+  zenithToast(`${pts.toLocaleString()} points = $${cash} cash back or $${travel} in travel value.`, 'success', 6000);
 }
 
 function toggleSetting(type, val) {
   const trackId = type === 'international' ? 'intlTrack' : type === 'online' ? 'onlineTrack' : 'atmTrack';
   document.getElementById(trackId).style.background = val ? 'var(--gold-500)' : '#333';
-  setTimeout(() => alert(`${type.charAt(0).toUpperCase()+type.slice(1)} transactions ${val?'enabled':'disabled'}.`), 100);
+  zenithToast(`${type.charAt(0).toUpperCase()+type.slice(1)} transactions ${val ? 'enabled' : 'disabled'}.`, val ? 'success' : 'warning');
 }
 
 // Initialize toggle states

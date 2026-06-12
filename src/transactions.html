@@ -312,7 +312,7 @@ function exportCSV() {
   a.download = 'zenithone-transactions.csv';
   a.click();
 }
-function disputeTransaction() { closeModal('txnDetailModal'); alert('Dispute filed. A representative will review within 2 business days.'); }
+function disputeTransaction() { closeModal('txnDetailModal'); zenithToast('Dispute filed. A representative will review your case within 2 business days.', 'success', 6000); }
 
 renderTransactions();
 // Mobile sidebar

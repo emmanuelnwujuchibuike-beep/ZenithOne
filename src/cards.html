@@ -88,25 +88,125 @@
       </div>
 
       <!-- Card Apply Modal -->
-      <div id="cardApplyModal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;" onclick="if(event.target===this)closeCardApply()">
-        <div style="background:linear-gradient(160deg,#0a1525,#0d1e35);border:1px solid rgba(201,168,76,.25);border-radius:20px;padding:36px;width:440px;max-width:94vw;position:relative;" onclick="event.stopPropagation()">
-          <button onclick="closeCardApply()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;">✕</button>
-          <div id="applyCardVisual" style="margin-bottom:24px;border-radius:16px;padding:24px;border:1px solid rgba(201,168,76,.2);position:relative;overflow:hidden;">
-            <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.05) 50%,transparent 70%);background-size:200%;animation:lux-sh 4s infinite linear;"></div>
-            <div style="font-size:.6rem;letter-spacing:.2em;color:rgba(201,168,76,.5);text-transform:uppercase;margin-bottom:3px;">ZENITHONE</div>
-            <div id="applyCardName" style="font-size:1.1rem;font-family:var(--font-display);margin-bottom:16px;color:rgba(255,255,255,.9);"></div>
-            <div style="width:38px;height:28px;background:linear-gradient(135deg,#e8c96b,#9a7220);border-radius:4px;margin-bottom:14px;"></div>
-            <div style="font-size:.8rem;letter-spacing:.2em;color:rgba(255,255,255,.4);font-family:'Courier New',monospace;margin-bottom:12px;">•••• •••• •••• ••••</div>
-            <div id="applyCardHolder" style="font-size:.7rem;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;"></div>
+      <style>
+        #cardApplyModal { display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center; }
+        @media(min-width:600px){ #cardApplyModal{align-items:center;} }
+
+        .cam-sheet {
+          background:linear-gradient(160deg,#0b1628,#0e2040);
+          border:1px solid rgba(201,168,76,.18);
+          border-bottom:none;
+          border-radius:24px 24px 0 0;
+          width:100%;max-width:480px;
+          max-height:90dvh;
+          display:flex;flex-direction:column;
+          transform:translateY(100%);
+          transition:transform .35s cubic-bezier(.32,1.1,.6,1);
+          overflow:hidden;
+          position:relative;
+        }
+        @media(min-width:600px){
+          .cam-sheet{
+            border-radius:20px;border-bottom:1px solid rgba(201,168,76,.18);
+            max-width:460px;width:calc(100% - 32px);
+            transform:translateY(16px) scale(.97);opacity:0;
+            transition:transform .3s cubic-bezier(.34,1.56,.64,1),opacity .3s ease;
+          }
+        }
+        #cardApplyModal.open .cam-sheet      { transform:translateY(0); }
+        @media(min-width:600px){ #cardApplyModal.open .cam-sheet { transform:none;opacity:1; } }
+
+        .cam-drag { width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.15);margin:10px auto 0; }
+        @media(min-width:600px){ .cam-drag{display:none;} }
+
+        .cam-header {
+          display:flex;align-items:center;justify-content:space-between;
+          padding:16px 20px 12px;flex-shrink:0;
+        }
+        .cam-close {
+          width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.07);
+          border:none;color:rgba(255,255,255,.5);cursor:pointer;font-size:.9rem;
+          display:flex;align-items:center;justify-content:center;transition:background .15s;
+        }
+        .cam-close:hover { background:rgba(255,255,255,.14); }
+
+        .cam-scroll { overflow-y:auto;flex:1;padding:0 20px 24px;-webkit-overflow-scrolling:touch; }
+        .cam-scroll::-webkit-scrollbar { width:4px; }
+        .cam-scroll::-webkit-scrollbar-track { background:transparent; }
+        .cam-scroll::-webkit-scrollbar-thumb { background:rgba(201,168,76,.2);border-radius:2px; }
+
+        /* compact horizontal card strip */
+        .cam-card-strip {
+          border-radius:14px;padding:16px 18px;
+          position:relative;overflow:hidden;
+          display:flex;align-items:center;gap:16px;
+          margin-bottom:18px;
+          border:1px solid rgba(255,255,255,.08);
+        }
+        .cam-card-strip::before {
+          content:'';position:absolute;inset:0;
+          background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.05) 50%,transparent 70%);
+          background-size:200%;animation:lux-sh 4s infinite linear;
+          pointer-events:none;
+        }
+        .cam-chip { width:32px;height:24px;background:linear-gradient(135deg,#e8c96b,#9a7220);border-radius:4px;flex-shrink:0; }
+        .cam-card-info { flex:1;min-width:0; }
+        .cam-network-rings { display:flex;flex-shrink:0; }
+        .cam-network-rings span { width:20px;height:20px;border-radius:50%;display:block; }
+        .cam-network-rings span:first-child { background:rgba(201,168,76,.35);margin-right:-7px;z-index:1; }
+        .cam-network-rings span:last-child  { background:rgba(201,168,76,.6); }
+
+        .cam-benefits-grid { display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px; }
+        @media(max-width:360px){ .cam-benefits-grid{grid-template-columns:1fr;} }
+        .cam-benefit {
+          display:flex;align-items:flex-start;gap:7px;
+          background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+          border-radius:10px;padding:10px 12px;font-size:.78rem;color:rgba(255,255,255,.75);line-height:1.4;
+        }
+        .cam-benefit-icon { color:var(--gold-400);flex-shrink:0;margin-top:1px;font-size:.85rem; }
+
+        .cam-footer { padding:14px 20px 20px;flex-shrink:0;border-top:1px solid rgba(255,255,255,.06); }
+        @media(min-width:600px){ .cam-footer{padding:12px 20px 20px;} }
+      </style>
+
+      <div id="cardApplyModal" onclick="if(event.target===this)closeCardApply()">
+        <div class="cam-sheet" onclick="event.stopPropagation()">
+          <div class="cam-drag"></div>
+
+          <!-- Header -->
+          <div class="cam-header">
+            <div>
+              <div id="applyModalTitle" style="font-family:var(--font-display);font-size:1.1rem;color:rgba(255,255,255,.95);">Apply for Card</div>
+              <div id="applyModalFee" style="font-size:.78rem;color:var(--slate-400);margin-top:2px;"></div>
+            </div>
+            <button class="cam-close" onclick="closeCardApply()">✕</button>
           </div>
-          <div style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:6px;" id="applyModalTitle">Apply for Card</div>
-          <div style="font-size:.82rem;color:var(--slate-400);margin-bottom:20px;" id="applyModalFee"></div>
-          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px 18px;margin-bottom:20px;">
-            <div id="applyModalBenefits" style="font-size:.82rem;color:var(--slate-300);line-height:1.8;"></div>
+
+          <!-- Scrollable body -->
+          <div class="cam-scroll">
+            <!-- Compact card strip -->
+            <div id="applyCardVisual" class="cam-card-strip">
+              <div class="cam-chip"></div>
+              <div class="cam-card-info">
+                <div style="font-size:.55rem;letter-spacing:.2em;color:rgba(201,168,76,.5);text-transform:uppercase;margin-bottom:2px;">ZENITHONE</div>
+                <div id="applyCardName" style="font-size:.92rem;font-family:var(--font-display);color:rgba(255,255,255,.9);margin-bottom:4px;"></div>
+                <div id="applyCardHolder" style="font-size:.68rem;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;"></div>
+              </div>
+              <div class="cam-network-rings"><span></span><span></span></div>
+            </div>
+
+            <!-- Benefits grid -->
+            <div id="applyModalBenefits" class="cam-benefits-grid"></div>
+
+            <!-- Error -->
+            <div id="applyModalError" style="display:none;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:10px;padding:10px 14px;color:var(--red-400);font-size:.82rem;margin-bottom:14px;"></div>
           </div>
-          <div id="applyModalError" style="display:none;color:var(--red-400);font-size:.82rem;margin-bottom:12px;"></div>
-          <button class="btn btn-primary w-full" id="applySubmitBtn" onclick="submitCardApplication()" style="width:100%;padding:14px;">Apply Now</button>
-          <div style="font-size:.72rem;color:var(--slate-500);text-align:center;margin-top:12px;">Application is subject to credit review. You'll receive a confirmation email.</div>
+
+          <!-- Footer CTA -->
+          <div class="cam-footer">
+            <button class="btn btn-primary" id="applySubmitBtn" onclick="submitCardApplication()" style="width:100%;padding:15px;font-size:.9rem;letter-spacing:.06em;">Apply Now</button>
+            <div style="font-size:.7rem;color:var(--slate-500);text-align:center;margin-top:10px;">Subject to credit review. Confirmation email sent on submission.</div>
+          </div>
         </div>
       </div>
 
@@ -342,22 +442,29 @@ function openCardApply(key) {
   const c = CARD_CATALOG.find(x => x.key === key);
   if (!c) return;
   _pendingCardKey = key;
-  document.getElementById('applyCardVisual').style.background = c.gradient;
-  document.getElementById('applyCardName').textContent   = c.name;
+  const visual = document.getElementById('applyCardVisual');
+  visual.style.background = c.gradient;
+  // Keep the shimmer overlay by re-inserting it if needed
+  document.getElementById('applyCardName').textContent    = c.name;
   document.getElementById('applyModalTitle').textContent  = `Apply for ${c.name}`;
-  document.getElementById('applyModalFee').textContent   = c.fee === 0 ? 'No annual fee — completely free.' : `Annual fee: ${c.feeLabel}. Charged upon approval.`;
-  document.getElementById('applyModalBenefits').innerHTML = c.benefits.map(b => `<div style="display:flex;align-items:center;gap:8px;padding:3px 0;"><span style="color:var(--gold-400);flex-shrink:0;">✦</span> ${b}</div>`).join('');
+  document.getElementById('applyModalFee').textContent    = c.fee === 0 ? 'No annual fee — completely free' : `${c.feeLabel} annual fee · charged upon approval`;
+  document.getElementById('applyModalBenefits').innerHTML = c.benefits.map(b =>
+    `<div class="cam-benefit"><span class="cam-benefit-icon">✦</span>${b}</div>`
+  ).join('');
   document.getElementById('applyModalError').style.display = 'none';
   document.getElementById('applySubmitBtn').disabled = false;
   document.getElementById('applySubmitBtn').textContent = 'Apply Now';
-  // Set cardholder name from sidebar
-  const name = document.getElementById('sidebarName')?.textContent || 'CARD HOLDER';
+  const name = document.getElementById('sidebarName')?.textContent?.trim() || 'CARD HOLDER';
   document.getElementById('applyCardHolder').textContent = name.toUpperCase();
-  document.getElementById('cardApplyModal').style.display = 'flex';
+  const modal = document.getElementById('cardApplyModal');
+  modal.style.display = 'flex';
+  requestAnimationFrame(() => requestAnimationFrame(() => modal.classList.add('open')));
 }
 
 function closeCardApply() {
-  document.getElementById('cardApplyModal').style.display = 'none';
+  const modal = document.getElementById('cardApplyModal');
+  modal.classList.remove('open');
+  setTimeout(() => { modal.style.display = 'none'; }, 350);
   _pendingCardKey = null;
 }
 

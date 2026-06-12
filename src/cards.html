@@ -79,7 +79,7 @@
     <div class="app-content">
 
       <!-- CARD CATALOG (always shown) -->
-      <div id="cardCatalog" style="display:none;">
+      <div id="cardCatalog">
         <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-bottom:24px;">
           <div>
             <div style="font-family:var(--font-display);font-size:1.5rem;margin-bottom:4px;">ZenithOne Card Collection</div>
@@ -592,7 +592,6 @@ async function fetchUserCardState() {
 
 // ── Build catalog grid ────────────────────────────────────────────────────────
 function buildCardCatalog() {
-  document.getElementById('cardCatalog').style.display = '';
 
   // Show no-card banner only when truly nothing exists
   const hasAny = Object.keys(_ownedRequests).length + Object.keys(_pendingRequests).length;
@@ -611,7 +610,7 @@ function buildCardCatalog() {
       const label = pending.status === 'approved' ? 'APPROVED' : 'REQUESTED';
       const col   = pending.status === 'approved' ? '#60a5fa' : '#fbbf24';
       topBadge = `<div style="position:absolute;top:12px;right:12px;z-index:10;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);border-radius:20px;padding:3px 10px;font-size:.62rem;color:${col};letter-spacing:.08em;font-weight:600;">⏳ ${label}</div>`;
-      actionBtn = `<button class="btn btn-sm" style="width:100%;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);color:#fbbf24;font-size:.75rem;" onclick="openCardStatus('${c.key}')">View Request</button>`;
+      actionBtn = `<button class="btn btn-sm" style="width:100%;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);color:#fbbf24;font-size:.75rem;" onclick="openCardStatus('${c.key}')">View Status →</button>`;
     } else {
       actionBtn = `<button class="btn btn-ghost btn-sm" style="width:100%;border-color:rgba(201,168,76,.22);color:var(--gold-400);font-size:.75rem;" onclick="openCardApply('${c.key}')">Apply for This Card</button>`;
     }
@@ -798,6 +797,9 @@ async function loadCardsData() {
   }
 }
 
+// Render catalog immediately (no auth needed) so buttons are always visible.
+// supabaseReady re-renders with owned/requested badges once auth loads.
+document.addEventListener('DOMContentLoaded', buildCardCatalog);
 document.addEventListener('supabaseReady', loadCardsData, { once: true });
 
 async function toggleCardFreeze() {

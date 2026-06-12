@@ -242,6 +242,67 @@ function subscribeToRealtimeUpdates(userId) {
     .subscribe();
 }
 
+// ── Secret admin gesture: hold sidebar logo for 3 seconds ────
+(function attachAdminGesture() {
+  function init() {
+    const logo = document.querySelector('.sidebar-logo-mark');
+    if (!logo) return;
+
+    let holdTimer = null;
+    let progressEl = null;
+
+    function startHold(e) {
+      if (window.location.pathname.includes('admin.html')) return;
+      e.preventDefault();
+
+      progressEl = document.createElement('div');
+      progressEl.style.cssText = [
+        'position:fixed', 'bottom:24px', 'left:50%', 'transform:translateX(-50%)',
+        'background:rgba(201,168,76,.15)', 'border:1px solid rgba(201,168,76,.4)',
+        'border-radius:99px', 'padding:8px 20px', 'font-size:.75rem',
+        'letter-spacing:.1em', 'color:var(--gold-400)', 'z-index:9999',
+        'pointer-events:none', 'transition:opacity .2s',
+      ].join(';');
+      progressEl.textContent = 'Hold to access admin…';
+      document.body.appendChild(progressEl);
+
+      logo.style.transition = 'box-shadow .3s';
+      logo.style.boxShadow  = '0 0 0 0 rgba(201,168,76,0)';
+
+      let elapsed = 0;
+      holdTimer = setInterval(() => {
+        elapsed += 50;
+        const pct = elapsed / 3000;
+        logo.style.boxShadow = `0 0 ${Math.round(pct * 18)}px rgba(201,168,76,${(pct * .7).toFixed(2)})`;
+        if (elapsed >= 3000) {
+          clearInterval(holdTimer); holdTimer = null;
+          window.location.href = 'admin.html';
+        }
+      }, 50);
+    }
+
+    function cancelHold() {
+      if (holdTimer) { clearInterval(holdTimer); holdTimer = null; }
+      if (progressEl) { progressEl.remove(); progressEl = null; }
+      logo.style.boxShadow = '';
+    }
+
+    logo.addEventListener('mousedown',  startHold);
+    logo.addEventListener('touchstart', startHold, { passive: false });
+    logo.addEventListener('mouseup',    cancelHold);
+    logo.addEventListener('mouseleave', cancelHold);
+    logo.addEventListener('touchend',   cancelHold);
+    logo.addEventListener('touchcancel',cancelHold);
+    logo.addEventListener('contextmenu', e => e.preventDefault());
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+
 // ── Bootstrap ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   if (window._supabase) {

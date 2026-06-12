@@ -325,6 +325,90 @@
   </main>
 </div>
 
+<!-- ═══════ ADMIN OVERLAY (hidden, gesture-revealed) ═══════ -->
+<div id="adminOverlay" style="display:none;position:fixed;inset:0;z-index:500;background:var(--bg-primary,#080f1a);overflow-y:auto;">
+
+  <!-- Admin Topbar -->
+  <header style="position:sticky;top:0;z-index:10;background:rgba(8,15,26,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,76,.15);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div>
+      <div style="font-size:.6rem;letter-spacing:.2em;color:var(--gold-500);text-transform:uppercase;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);padding:3px 10px;border-radius:99px;">Admin Panel</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="btn btn-ghost btn-sm" onclick="refreshAdminAll()">Refresh</button>
+      <button onclick="closeAdminPanel()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--slate-300);border-radius:8px;padding:8px 16px;cursor:pointer;font-size:.85rem;">✕ Exit Admin</button>
+    </div>
+  </header>
+
+  <!-- Access Denied -->
+  <div id="adminAccessDenied" style="display:none;text-align:center;padding:80px 24px;">
+    <div style="font-size:3rem;margin-bottom:16px;">🔒</div>
+    <div style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:8px;">Access Denied</div>
+    <div style="color:var(--slate-400);margin-bottom:24px;">Your account does not have admin privileges.</div>
+    <button class="btn btn-primary" onclick="closeAdminPanel()">Back to Dashboard</button>
+  </div>
+
+  <!-- Admin Content -->
+  <div id="adminPanelContent" style="display:none;padding:28px;max-width:1400px;margin:0 auto;">
+
+    <!-- Stats -->
+    <div class="grid-4" style="gap:20px;margin-bottom:28px;">
+      <div class="stat-card"><div class="stat-icon gold"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="stat-value" id="aStatUsers">—</div><div class="stat-label">Total Members</div></div>
+      <div class="stat-card"><div class="stat-icon green"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="stat-value" id="aStatDeposits">—</div><div class="stat-label">Total Deposits</div></div>
+      <div class="stat-card"><div class="stat-icon blue"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div><div class="stat-value" id="aStatTxns">—</div><div class="stat-label">All Transactions</div></div>
+      <div class="stat-card"><div class="stat-icon gold"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div class="stat-value" id="aStatUpdated">—</div><div class="stat-label">Last Refreshed</div></div>
+    </div>
+
+    <!-- Two column -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+      <div class="card card-elevated">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><div style="font-family:var(--font-display);font-size:1.25rem;">Recent Activity</div><div style="font-size:.75rem;color:var(--slate-500);">All users</div></div>
+        <div id="aRecentTxns"><div style="color:var(--slate-500);font-size:.85rem;">Loading…</div></div>
+      </div>
+      <div class="card card-elevated">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><div style="font-family:var(--font-display);font-size:1.25rem;">Newest Members</div></div>
+        <div id="aRecentUsers"><div style="color:var(--slate-500);font-size:.85rem;">Loading…</div></div>
+      </div>
+    </div>
+
+    <!-- Members Table -->
+    <div class="card card-elevated">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div style="font-family:var(--font-display);font-size:1.25rem;">All Members</div>
+        <input type="search" id="aUserSearch" placeholder="Search members…" class="form-input" style="width:240px;padding:8px 12px;font-size:.85rem;" oninput="aFilterUsers()" />
+      </div>
+      <div id="aUsersTable"><div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading members…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Funds Modal -->
+<div id="addFundsModal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)closeAddFunds()">
+  <div class="card card-elevated" style="width:420px;max-width:94vw;padding:32px;position:relative;" onclick="event.stopPropagation()">
+    <button onclick="closeAddFunds()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;">✕</button>
+    <div style="font-family:var(--font-display);font-size:1.35rem;margin-bottom:4px;">Add Funds</div>
+    <div style="font-size:.8rem;color:var(--slate-500);margin-bottom:24px;">Credit a member's account directly.</div>
+    <div id="addFundsRecipient" style="font-size:.875rem;font-weight:500;color:var(--gold-400);margin-bottom:20px;"></div>
+    <div class="form-group" style="margin-bottom:16px;">
+      <label class="form-label">Account Type</label>
+      <select id="addFundsAccountType" class="form-input form-select"><option value="checking">Checking</option><option value="savings">Savings</option><option value="money_market">Money Market</option></select>
+    </div>
+    <div class="form-group" style="margin-bottom:16px;">
+      <label class="form-label">Amount (USD)</label>
+      <input type="number" id="addFundsAmount" class="form-input" placeholder="0.00" min="0.01" step="0.01" />
+    </div>
+    <div class="form-group" style="margin-bottom:24px;">
+      <label class="form-label">Note (optional)</label>
+      <input type="text" id="addFundsNote" class="form-input" placeholder="e.g. Welcome bonus" maxlength="120" />
+    </div>
+    <div id="addFundsError" style="display:none;color:var(--red-400);font-size:.82rem;margin-bottom:12px;"></div>
+    <div style="display:flex;gap:12px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeAddFunds()">Cancel</button>
+      <button class="btn btn-primary" id="addFundsSubmitBtn" onclick="submitAddFunds()">Add Funds</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/dashboard.js"></script>
@@ -479,6 +563,206 @@ window.addEventListener('load', () => {
 });
 
 function openPayBillModal() { alert('Bill Pay — connect your Supabase backend to enable.'); }
+
+// ═══ SECRET ADMIN PANEL ════════════════════════════════════════
+
+// Hold sidebar footer 3 seconds to open admin panel
+(function() {
+  function init() {
+    const target = document.querySelector('.sidebar-footer');
+    if (!target) return;
+    let timer = null, hint = null;
+
+    function startHold(e) {
+      e.preventDefault();
+      hint = document.createElement('div');
+      hint.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.35);border-radius:99px;padding:8px 22px;font-size:.75rem;letter-spacing:.1em;color:var(--gold-400);z-index:9999;pointer-events:none;';
+      hint.textContent = 'Hold for admin…';
+      document.body.appendChild(hint);
+
+      let pct = 0;
+      timer = setInterval(() => {
+        pct += 50 / 3000;
+        target.style.opacity = (0.4 + pct * 0.6).toFixed(2);
+        if (pct >= 1) {
+          clearInterval(timer); timer = null;
+          hint.remove(); hint = null;
+          target.style.opacity = '';
+          openAdminPanel();
+        }
+      }, 50);
+    }
+
+    function cancelHold() {
+      if (timer) { clearInterval(timer); timer = null; }
+      if (hint)  { hint.remove(); hint = null; }
+      target.style.opacity = '';
+    }
+
+    target.addEventListener('mousedown',   startHold);
+    target.addEventListener('touchstart',  startHold, { passive: false });
+    target.addEventListener('mouseup',     cancelHold);
+    target.addEventListener('mouseleave',  cancelHold);
+    target.addEventListener('touchend',    cancelHold);
+    target.addEventListener('touchcancel', cancelHold);
+    target.addEventListener('contextmenu', e => e.preventDefault());
+  }
+  document.readyState === 'loading'
+    ? document.addEventListener('DOMContentLoaded', init)
+    : init();
+})();
+
+async function openAdminPanel() {
+  const overlay = document.getElementById('adminOverlay');
+  overlay.style.display = '';
+  overlay.scrollTop = 0;
+  document.getElementById('adminAccessDenied').style.display  = 'none';
+  document.getElementById('adminPanelContent').style.display  = 'none';
+  try {
+    await refreshAdminAll();
+    document.getElementById('adminPanelContent').style.display = '';
+  } catch(e) {
+    let msg = e.message || '';
+    try { msg = JSON.parse(e.message).error || msg; } catch {}
+    if (msg.toLowerCase().includes('forbidden') || msg.toLowerCase().includes('unauthorized')) {
+      document.getElementById('adminAccessDenied').style.display = '';
+    }
+  }
+}
+
+function closeAdminPanel() {
+  document.getElementById('adminOverlay').style.display = 'none';
+}
+
+let _aAllUsers = [];
+let _addFundsUserId = null;
+
+async function aLoadStats() {
+  const data = await callEdgeFunction('admin-data', { action: 'stats' });
+  document.getElementById('aStatUsers').textContent    = (data.user_count || 0).toLocaleString();
+  document.getElementById('aStatDeposits').textContent = '$' + (data.total_deposits || 0).toLocaleString('en-US', { maximumFractionDigits: 0 });
+  document.getElementById('aStatTxns').textContent     = (data.transaction_count || 0).toLocaleString();
+  document.getElementById('aStatUpdated').textContent  = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+  const ICONS = { Shopping:'🛍️', Income:'💵', Dining:'🍽️', Travel:'✈️', Interest:'💰', Groceries:'🛒', Transfer:'↙️', Investment:'📈', Utilities:'⚡', Entertainment:'🎬' };
+  const txns = data.recent_transactions || [];
+  document.getElementById('aRecentTxns').innerHTML = txns.length === 0
+    ? '<div style="color:var(--slate-500);font-size:.85rem;">No transactions yet.</div>'
+    : txns.map(t => {
+        const isCredit = ['credit','transfer_in','interest'].includes(t.transaction_type);
+        const amt = (isCredit ? '+' : '-') + '$' + Math.abs(t.amount).toLocaleString('en-US', { minimumFractionDigits: 2 });
+        const d   = new Date(t.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        return `<div class="transaction-item"><div class="transaction-icon" style="font-size:1rem;">${ICONS[t.category]||'💳'}</div><div class="transaction-info"><div class="transaction-name" style="font-size:.85rem;">${t.description}</div><div class="transaction-date">${d}</div></div><div class="transaction-amount ${isCredit?'credit':'debit'}" style="font-size:.9rem;">${amt}</div></div>`;
+      }).join('');
+
+  const newUsers = data.recent_users || [];
+  document.getElementById('aRecentUsers').innerHTML = newUsers.length === 0
+    ? '<div style="color:var(--slate-500);font-size:.85rem;">No members yet.</div>'
+    : newUsers.map(u => {
+        const joined   = new Date(u.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const initials = (u.full_name || u.email || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+          <div style="width:36px;height:36px;border-radius:50%;background:rgba(201,168,76,.12);display:flex;align-items:center;justify-content:center;color:var(--gold-400);font-family:var(--font-display);font-size:.9rem;flex-shrink:0;">${initials}</div>
+          <div style="flex:1;min-width:0;"><div style="font-size:.875rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${u.full_name || '—'}</div><div style="font-size:.75rem;color:var(--slate-500);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${u.email || ''}</div></div>
+          <div style="font-size:.75rem;color:var(--slate-400);flex-shrink:0;">${joined}</div>
+        </div>`;
+      }).join('');
+}
+
+async function aLoadUsers() {
+  const data = await callEdgeFunction('admin-data', { action: 'users' });
+  _aAllUsers = data.users || [];
+  aRenderUsers(_aAllUsers);
+}
+
+function aRenderUsers(list) {
+  if (list.length === 0) {
+    document.getElementById('aUsersTable').innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">No members found.</div>';
+    return;
+  }
+  const fmt = n => '$' + (n || 0).toLocaleString('en-US', { maximumFractionDigits: 2 });
+  document.getElementById('aUsersTable').innerHTML = `
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:.85rem;">
+        <thead><tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+          <th style="text-align:left;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Member</th>
+          <th style="text-align:left;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Email</th>
+          <th style="text-align:right;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Balance</th>
+          <th style="text-align:right;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Accounts</th>
+          <th style="text-align:left;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Joined</th>
+          <th style="text-align:center;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Role</th>
+          <th style="text-align:center;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Actions</th>
+        </tr></thead>
+        <tbody>${list.map(u => {
+          const joined   = new Date(u.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+          const initials = (u.full_name || u.email || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+          const accTypes = (u.accounts || []).map(a => a.type).join(',');
+          return `<tr style="border-bottom:1px solid rgba(255,255,255,.04);" onmouseover="this.style.background='rgba(255,255,255,.03)'" onmouseout="this.style.background=''">
+            <td style="padding:12px;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:32px;height:32px;border-radius:50%;background:rgba(201,168,76,.1);display:flex;align-items:center;justify-content:center;color:var(--gold-400);font-family:var(--font-display);font-size:.8rem;flex-shrink:0;">${initials}</div><span style="color:var(--white);">${u.full_name || '—'}</span></div></td>
+            <td style="padding:12px;color:var(--slate-400);">${u.email || '—'}</td>
+            <td style="padding:12px;text-align:right;font-family:var(--font-display);">${fmt(u.total_balance)}</td>
+            <td style="padding:12px;text-align:right;color:var(--slate-400);">${(u.accounts || []).length}</td>
+            <td style="padding:12px;color:var(--slate-500);font-size:.8rem;">${joined}</td>
+            <td style="padding:12px;text-align:center;">${u.is_admin ? '<span class="badge badge-gold">Admin</span>' : '<span class="badge badge-neutral">Member</span>'}</td>
+            <td style="padding:12px;text-align:center;"><button class="btn btn-ghost btn-sm" style="font-size:.75rem;padding:5px 10px;color:var(--gold-400);border-color:rgba(201,168,76,.3);" onclick="openAddFunds('${u.id}','${(u.full_name||u.email||'User').replace(/'/g,"\\'")}','${accTypes}')">+ Add Funds</button></td>
+          </tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>`;
+}
+
+function aFilterUsers() {
+  const q = document.getElementById('aUserSearch').value.toLowerCase();
+  aRenderUsers(q ? _aAllUsers.filter(u => (u.full_name||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q)) : _aAllUsers);
+}
+
+async function refreshAdminAll() {
+  await Promise.all([aLoadStats(), aLoadUsers()]);
+}
+
+function openAddFunds(userId, userName, accTypes) {
+  _addFundsUserId = userId;
+  document.getElementById('addFundsRecipient').textContent = 'Member: ' + userName;
+  document.getElementById('addFundsAmount').value = '';
+  document.getElementById('addFundsNote').value   = '';
+  document.getElementById('addFundsError').style.display = 'none';
+  const sel   = document.getElementById('addFundsAccountType');
+  const types = accTypes ? accTypes.split(',').filter(Boolean) : [];
+  sel.innerHTML = types.length
+    ? types.map(t => `<option value="${t}">${t.charAt(0).toUpperCase()+t.slice(1).replace('_',' ')}</option>`).join('')
+    : '<option value="checking">Checking</option><option value="savings">Savings</option><option value="money_market">Money Market</option>';
+  document.getElementById('addFundsModal').style.display = 'flex';
+}
+
+function closeAddFunds() {
+  document.getElementById('addFundsModal').style.display = 'none';
+  _addFundsUserId = null;
+}
+
+async function submitAddFunds() {
+  const btn    = document.getElementById('addFundsSubmitBtn');
+  const errEl  = document.getElementById('addFundsError');
+  const amount = parseFloat(document.getElementById('addFundsAmount').value);
+  const accType = document.getElementById('addFundsAccountType').value;
+  const note   = document.getElementById('addFundsNote').value.trim();
+  errEl.style.display = 'none';
+  if (!_addFundsUserId || !accType || isNaN(amount) || amount <= 0) {
+    errEl.textContent = 'Please enter a valid amount.'; errEl.style.display = ''; return;
+  }
+  btn.disabled = true; btn.textContent = 'Processing…';
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'add_funds', user_id: _addFundsUserId, account_type: accType, amount, note });
+    closeAddFunds();
+    await refreshAdminAll();
+    alert(res.message || 'Funds added successfully.');
+  } catch(e) {
+    let msg = 'Failed to add funds.';
+    try { const p = JSON.parse(e.message); msg = p.error || msg; } catch {}
+    errEl.textContent = msg; errEl.style.display = '';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Add Funds';
+  }
+}
 
 async function loadDashboardData() {
   try {

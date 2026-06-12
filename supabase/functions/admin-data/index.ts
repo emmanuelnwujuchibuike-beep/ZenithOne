@@ -1,6 +1,5 @@
 /**
  * ZenithOne Credit Union — Admin Data Edge Function
- * Read-only admin dashboard: stats, users list, recent transactions.
  * Requires is_admin = true in the caller's profile.
  */
 
@@ -20,15 +19,23 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
     if (authErr || !user) throw new Error('Unauthorized');
 
-    const { data: profile } = await supabase
+    const { data: callerProfile } = await supabase
       .from('profiles')
       .select('is_admin')
       .eq('id', user.id)
       .single();
-    if (!profile?.is_admin) throw new Error('Forbidden: admin access required');
+    if (!callerProfile?.is_admin) throw new Error('Forbidden: admin access required');
 
     const body = await req.json() as { action?: string };
     const action = body.action ?? 'stats';
+
+    // Helper: build id→email map from auth.users (service role only)
+    async function getEmailMap(): Promise<Record<string, string>> {
+      const { data: { users: authUsers } } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+      const map: Record<string, string> = {};
+      for (const u of authUsers ?? []) map[u.id] = u.email ?? '';
+      return map;
+    }
 
     if (action === 'stats') {
       const [
@@ -36,38 +43,53 @@ Deno.serve(async (req: Request): Promise<Response> => {
         { count: txnCount },
         { data: accounts },
         { data: recentTxns },
-        { data: recentUsers },
+        { data: recentProfiles },
+        emailMap,
       ] = await Promise.all([
         supabase.from('profiles').select('*', { count: 'exact', head: true }),
         supabase.from('transactions').select('*', { count: 'exact', head: true }),
         supabase.from('accounts').select('balance').eq('status', 'active'),
-        supabase.from('transactions').select('id,description,amount,transaction_type,category,created_at,user_id').order('created_at', { ascending: false }).limit(20),
-        supabase.from('profiles').select('id,full_name,email,created_at').order('created_at', { ascending: false }).limit(5),
+        supabase.from('transactions')
+          .select('id,description,amount,transaction_type,category,created_at,user_id')
+          .order('created_at', { ascending: false }).limit(20),
+        supabase.from('profiles')
+          .select('id,full_name,created_at')
+          .order('created_at', { ascending: false }).limit(5),
+        getEmailMap(),
       ]);
 
       const totalDeposits = (accounts || []).reduce((s: number, a: { balance: number }) => s + (a.balance || 0), 0);
 
+      const recentUsers = (recentProfiles ?? []).map((p: Record<string, unknown>) => ({
+        ...p,
+        email: emailMap[p.id as string] ?? '',
+      }));
+
       return json({
-        user_count:           userCount   ?? 0,
-        transaction_count:    txnCount    ?? 0,
-        total_deposits:       Math.round(totalDeposits * 100) / 100,
-        recent_transactions:  recentTxns  ?? [],
-        recent_users:         recentUsers ?? [],
+        user_count:          userCount  ?? 0,
+        transaction_count:   txnCount   ?? 0,
+        total_deposits:      Math.round(totalDeposits * 100) / 100,
+        recent_transactions: recentTxns ?? [],
+        recent_users:        recentUsers,
       });
     }
 
     if (action === 'users') {
-      const { data: users, error: usersErr } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, banking_tier, created_at, is_admin')
-        .order('created_at', { ascending: false });
+      const [
+        { data: profiles, error: profErr },
+        { data: accounts },
+        emailMap,
+      ] = await Promise.all([
+        supabase.from('profiles')
+          .select('id, full_name, banking_tier, created_at, is_admin')
+          .order('created_at', { ascending: false }),
+        supabase.from('accounts')
+          .select('user_id, account_type, balance, status, account_number')
+          .eq('status', 'active'),
+        getEmailMap(),
+      ]);
 
-      if (usersErr) throw usersErr;
-
-      const { data: accounts } = await supabase
-        .from('accounts')
-        .select('user_id, account_type, balance, status, account_number')
-        .eq('status', 'active');
+      if (profErr) throw profErr;
 
       const accMap: Record<string, { type: string; balance: number; number: string }[]> = {};
       for (const a of accounts ?? []) {
@@ -76,10 +98,11 @@ Deno.serve(async (req: Request): Promise<Response> => {
       }
 
       return json({
-        users: (users ?? []).map((u: Record<string, unknown>) => ({
-          ...u,
-          accounts:      accMap[u.id as string] ?? [],
-          total_balance: (accMap[u.id as string] ?? []).reduce((s, a) => s + (a.balance || 0), 0),
+        users: (profiles ?? []).map((p: Record<string, unknown>) => ({
+          ...p,
+          email:         emailMap[p.id as string] ?? '',
+          accounts:      accMap[p.id as string] ?? [],
+          total_balance: (accMap[p.id as string] ?? []).reduce((s, a) => s + (a.balance || 0), 0),
         })),
       });
     }
@@ -106,7 +129,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
         .insert({
           user_id,
           account_id:       account.id,
-          transaction_type: 'deposit',
+          transaction_type: 'credit',
           amount,
           description:      note?.trim() || 'Admin credit',
           category:         'other',

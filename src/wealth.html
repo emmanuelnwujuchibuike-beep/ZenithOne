@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wealth Management — ZenithOne Credit Union</title>
+  <meta name="description" content="ZenithOne Credit Union's wealth management services — portfolio management, financial planning, trust & estate, and alternative investments for high-net-worth individuals." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <style>
+    .nav-link.active { color: var(--gold-400) !important; }
+    .page-hero { position:relative; padding:160px 0 100px; overflow:hidden; border-bottom:1px solid rgba(201,168,76,.1); }
+    .page-hero-bg { position:absolute; inset:0; z-index:0; background:radial-gradient(ellipse 120% 70% at 50% 0%, rgba(201,168,76,.1) 0%, transparent 55%), linear-gradient(180deg,#020b18 0%,#061225 70%,#0d1e35 100%); }
+    .page-hero-grid { position:absolute; inset:0; z-index:0; background-image:linear-gradient(rgba(201,168,76,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.03) 1px,transparent 1px); background-size:60px 60px; mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black 30%,transparent 80%); }
+    .page-hero-content { position:relative; z-index:1; }
+    .page-breadcrumb { font-size:.7rem; letter-spacing:.15em; text-transform:uppercase; color:var(--gold-500); margin-bottom:20px; display:inline-flex; align-items:center; gap:8px; }
+    .page-breadcrumb-dot { width:4px; height:4px; border-radius:50%; background:var(--gold-500); }
+    /* Wealth service cards */
+    .wealth-svc { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:32px; transition:all .4s; }
+    .wealth-svc:hover { border-color:rgba(201,168,76,.25); background:rgba(201,168,76,.03); transform:translateY(-4px); }
+    .wealth-svc-icon { width:52px; height:52px; border-radius:14px; background:rgba(201,168,76,.1); border:1px solid rgba(201,168,76,.18); display:flex; align-items:center; justify-content:center; color:var(--gold-400); margin-bottom:22px; }
+    .wealth-svc-title { font-family:var(--font-display); font-size:1.25rem; margin-bottom:10px; }
+    .wealth-svc-desc { font-size:.875rem; color:var(--slate-400); line-height:1.75; }
+    /* Stats intro */
+    .intro-grid { display:grid; grid-template-columns:1fr 1fr; gap:72px; align-items:center; }
+    .wealth-stat-big { font-family:var(--font-display); font-size:3rem; color:var(--gold-400); line-height:1; }
+    .wealth-stat-label { font-size:.78rem; color:var(--slate-500); letter-spacing:.06em; text-transform:uppercase; margin-top:6px; }
+    .wealth-stat-row { display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:40px; }
+    /* Process steps */
+    .process-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:0; position:relative; }
+    .process-steps::before { content:''; position:absolute; top:32px; left:12.5%; right:12.5%; height:1px; background:linear-gradient(90deg,transparent,rgba(201,168,76,.3),rgba(201,168,76,.3),rgba(201,168,76,.3),transparent); }
+    .process-step { text-align:center; padding:0 16px; position:relative; }
+    .process-num { width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg,rgba(201,168,76,.15),rgba(201,168,76,.05)); border:1px solid rgba(201,168,76,.3); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:1.4rem; color:var(--gold-400); margin:0 auto 20px; position:relative; z-index:1; }
+    .process-title { font-family:var(--font-display); font-size:1.1rem; margin-bottom:10px; }
+    .process-desc { font-size:.82rem; color:var(--slate-500); line-height:1.65; }
+    /* Advisors */
+    .advisor-card { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:28px; text-align:center; transition:all .4s; }
+    .advisor-card:hover { border-color:rgba(201,168,76,.2); transform:translateY(-4px); }
+    .advisor-avatar { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,var(--navy-600),var(--navy-500)); border:2px solid rgba(201,168,76,.2); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:1.8rem; color:var(--gold-400); margin:0 auto 18px; }
+    .advisor-name { font-family:var(--font-display); font-size:1.15rem; margin-bottom:4px; }
+    .advisor-title { font-size:.78rem; color:var(--gold-500); letter-spacing:.06em; margin-bottom:12px; }
+    .advisor-bio { font-size:.82rem; color:var(--slate-500); line-height:1.65; }
+    /* Performance chart */
+    .perf-bar-wrap { margin-bottom:16px; }
+    .perf-bar-label { display:flex; justify-content:space-between; font-size:.8rem; color:var(--slate-400); margin-bottom:6px; }
+    .perf-bar-track { height:8px; border-radius:8px; background:rgba(255,255,255,.06); overflow:hidden; }
+    .perf-bar-fill { height:100%; border-radius:8px; background:linear-gradient(90deg,var(--gold-600),var(--gold-400)); }
+    /* Tiers */
+    .tier-threshold { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:16px; padding:24px 28px; display:flex; align-items:center; justify-content:space-between; gap:20px; transition:all .3s; }
+    .tier-threshold:hover { border-color:rgba(201,168,76,.2); }
+    @media (max-width:1024px) { .intro-grid { grid-template-columns:1fr; gap:40px; } .process-steps { grid-template-columns:1fr 1fr; gap:32px; } .process-steps::before { display:none; } }
+    @media (max-width:640px)  { .page-hero { padding:130px 0 60px; } .process-steps { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+      <div><div class="nav-logo-text">ZENITHONE</div><div class="nav-logo-sub">Credit Union</div></div>
+    </a>
+    <div class="nav-links">
+      <a href="services.html"          class="nav-link">Services</a>
+      <a href="accounts-overview.html" class="nav-link">Accounts</a>
+      <a href="wealth.html"            class="nav-link active">Wealth</a>
+      <a href="about.html"             class="nav-link">About</a>
+      <a href="contact.html"           class="nav-link">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <a href="login.html"  class="btn btn-ghost btn-sm">Sign In</a>
+      <a href="signup.html" class="btn btn-primary btn-sm">Open Account</a>
+      <button class="nav-mobile-toggle" id="mobileToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+<div class="mobile-nav-overlay" id="mobileOverlay"></div>
+<div class="mobile-nav-drawer" id="mobileDrawer">
+  <div style="display:flex;flex-direction:column;gap:4px;">
+    <a href="services.html"          class="sidebar-item" style="border-radius:8px;">Services</a>
+    <a href="accounts-overview.html" class="sidebar-item" style="border-radius:8px;">Accounts</a>
+    <a href="wealth.html"            class="sidebar-item" style="border-radius:8px;">Wealth Management</a>
+    <a href="about.html"             class="sidebar-item" style="border-radius:8px;">About Us</a>
+    <a href="contact.html"           class="sidebar-item" style="border-radius:8px;">Contact</a>
+  </div>
+  <div style="margin-top:32px;display:flex;flex-direction:column;gap:10px;">
+    <a href="login.html"  class="btn btn-ghost" style="width:100%;justify-content:center;">Sign In</a>
+    <a href="signup.html" class="btn btn-primary" style="width:100%;justify-content:center;">Open Account</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-grid"></div>
+  <div class="container page-hero-content">
+    <div class="page-breadcrumb"><span>ZenithOne</span><span class="page-breadcrumb-dot"></span><span>Wealth Management</span></div>
+    <h1 class="display-lg animate-fadeInUp" style="max-width:900px;">Beyond Wealth<br/><em>Management</em></h1>
+    <p class="animate-fadeInUp delay-1" style="font-size:1.1rem;color:var(--slate-400);line-height:1.8;max-width:600px;margin:24px 0 40px;">We don't just manage money. We build strategies that grow, protect, and transfer wealth with precision — aligned to your vision, your timeline, and your legacy.</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;" class="animate-fadeInUp delay-2">
+      <a href="contact.html" class="btn btn-primary btn-xl">Schedule a Consultation</a>
+      <a href="investments.html" class="btn btn-outline btn-xl">View My Portfolio</a>
+    </div>
+  </div>
+</section>
+
+<!-- INTRO + STATS -->
+<section class="section">
+  <div class="container">
+    <div class="intro-grid reveal">
+      <div>
+        <div class="section-label">Our Philosophy</div>
+        <h2 class="display-md" style="margin:16px 0 24px;">Wealth Built on<br/><em>Conviction</em></h2>
+        <p style="color:var(--slate-400);line-height:1.85;margin-bottom:20px;">At ZenithOne, we believe wealth management is a deeply personal discipline. There is no template, no algorithm that replaces the judgment of an experienced advisor who truly understands your goals, your family, and your values.</p>
+        <p style="color:var(--slate-400);line-height:1.85;">Our investment philosophy is grounded in long-term thinking, disciplined diversification, and a relentless focus on risk-adjusted returns. We manage capital as if it were our own.</p>
+        <div style="margin-top:32px;display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="contact.html" class="btn btn-primary">Meet Your Advisor</a>
+          <a href="investments.html" class="btn btn-ghost">Explore Portfolio</a>
+        </div>
+      </div>
+      <div>
+        <div class="wealth-stat-row">
+          <div class="stat-card reveal"><div class="wealth-stat-big">$48B</div><div class="wealth-stat-label">Assets Under Management</div></div>
+          <div class="stat-card reveal delay-1"><div class="wealth-stat-big">137yr</div><div class="wealth-stat-label">Years of Excellence</div></div>
+          <div class="stat-card reveal delay-2"><div class="wealth-stat-big">18.2%</div><div class="wealth-stat-label">Avg. 5-Year Return</div></div>
+          <div class="stat-card reveal delay-3"><div class="wealth-stat-big">4,800+</div><div class="wealth-stat-label">Wealth Clients</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WEALTH SERVICES -->
+<section class="section" style="background:var(--navy-800);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:60px;" class="reveal">
+      <div class="section-label" style="justify-content:center;">Wealth Services</div>
+      <h2 class="display-md">A Complete Wealth <em>Ecosystem</em></h2>
+    </div>
+    <div class="grid-3" style="gap:24px;">
+      <div class="wealth-svc reveal">
+        <div class="wealth-svc-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+        <div class="wealth-svc-title">Portfolio Management</div>
+        <div class="wealth-svc-desc">Institutional-quality portfolio construction across equities, fixed income, alternatives, and real assets — managed with a long-term perspective and tax efficiency at every turn.</div>
+      </div>
+      <div class="wealth-svc reveal delay-1">
+        <div class="wealth-svc-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+        <div class="wealth-svc-title">Financial Planning</div>
+        <div class="wealth-svc-desc">Comprehensive plans covering retirement, education funding, insurance, cash flow optimization, and milestone planning — updated dynamically as your life evolves.</div>
+      </div>
+      <div class="wealth-svc reveal delay-2">
+        <div class="wealth-svc-icon"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="wealth-svc-title">Trust &amp; Estate</div>
+        <div class="wealth-svc-desc">Expert trust administration, estate planning, and fiduciary oversight to ensure your wealth transfers seamlessly and tax-efficiently to the next generation.</div>
+      </div>
+      <div class="wealth-svc reveal">
+        <div class="wealth-svc-icon" style="background:rgba(96,165,250,.1);border-color:rgba(96,165,250,.2);color:#60a5fa;"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+        <div class="wealth-svc-title">Tax Optimization</div>
+        <div class="wealth-svc-desc">Coordinated tax strategies spanning income, capital gains, estate, and charitable giving — developed in collaboration with your legal and accounting advisors.</div>
+      </div>
+      <div class="wealth-svc reveal delay-1">
+        <div class="wealth-svc-icon" style="background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.2);color:#34d399;"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
+        <div class="wealth-svc-title">Philanthropy</div>
+        <div class="wealth-svc-desc">Donor-advised funds, private foundations, and charitable giving strategies that align your philanthropic goals with maximum tax efficiency and meaningful impact.</div>
+      </div>
+      <div class="wealth-svc reveal delay-2">
+        <div class="wealth-svc-icon" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:#a78bfa;"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></div>
+        <div class="wealth-svc-title">Alternative Investments</div>
+        <div class="wealth-svc-desc">Access to private equity, hedge funds, venture capital, real estate partnerships, and other institutional alternatives typically reserved for the ultra-high-net-worth.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:64px;" class="reveal">
+      <div class="section-label" style="justify-content:center;">How It Works</div>
+      <h2 class="display-md">The ZenithOne <em>Process</em></h2>
+      <p style="color:var(--slate-400);max-width:500px;margin:16px auto 0;line-height:1.8;">A rigorous, proven process that we repeat continuously — always keeping your goals at the center.</p>
+    </div>
+    <div class="process-steps reveal">
+      <div class="process-step">
+        <div class="process-num">01</div>
+        <div class="process-title">Discover</div>
+        <div class="process-desc">An in-depth conversation about your financial life, goals, risk tolerance, time horizons, and what truly matters to you.</div>
+      </div>
+      <div class="process-step reveal delay-1">
+        <div class="process-num">02</div>
+        <div class="process-title">Design</div>
+        <div class="process-desc">Our team crafts a bespoke wealth strategy — investment policy statement, asset allocation, tax plan, and estate considerations.</div>
+      </div>
+      <div class="process-step reveal delay-2">
+        <div class="process-num">03</div>
+        <div class="process-title">Implement</div>
+        <div class="process-desc">Precise execution across all asset classes with institutional trading, tax-loss harvesting, and fee minimization built into every decision.</div>
+      </div>
+      <div class="process-step reveal delay-3">
+        <div class="process-num">04</div>
+        <div class="process-title">Monitor</div>
+        <div class="process-desc">Ongoing performance reporting, quarterly advisor reviews, and proactive rebalancing ensure your plan stays aligned with your evolving life.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PERFORMANCE -->
+<section class="section" style="background:var(--navy-800);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;" class="reveal">
+      <div>
+        <div class="section-label">Track Record</div>
+        <h2 class="display-md" style="margin:16px 0 24px;">Performance That<br/><em>Speaks for Itself</em></h2>
+        <p style="color:var(--slate-400);line-height:1.8;margin-bottom:32px;">Our balanced growth portfolio has consistently outperformed benchmark indices while managing downside risk — because preserving wealth is just as important as growing it.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div class="stat-card"><div style="font-family:var(--font-display);font-size:2rem;color:var(--gold-400);">+18.2%</div><div style="font-size:.72rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;">5-Year Annualized</div></div>
+          <div class="stat-card"><div style="font-family:var(--font-display);font-size:2rem;color:#4ade80;">+3.4%</div><div style="font-size:.72rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;">vs S&P 500 (YTD)</div></div>
+        </div>
+      </div>
+      <div class="card card-elevated reveal delay-1">
+        <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:24px;">Annual Returns vs Benchmark</div>
+        <div class="perf-bar-wrap"><div class="perf-bar-label"><span>2024 (YTD)</span><span style="color:var(--gold-400);">+22.1%</span></div><div class="perf-bar-track"><div class="perf-bar-fill" style="width:74%;"></div></div></div>
+        <div class="perf-bar-wrap"><div class="perf-bar-label"><span>2023</span><span style="color:var(--gold-400);">+19.8%</span></div><div class="perf-bar-track"><div class="perf-bar-fill" style="width:66%;"></div></div></div>
+        <div class="perf-bar-wrap"><div class="perf-bar-label"><span>2022</span><span style="color:#f87171;">-8.4%</span></div><div class="perf-bar-track"><div class="perf-bar-fill" style="width:28%;background:linear-gradient(90deg,rgba(248,113,113,.6),rgba(248,113,113,.3));"></div></div></div>
+        <div class="perf-bar-wrap"><div class="perf-bar-label"><span>2021</span><span style="color:var(--gold-400);">+26.2%</span></div><div class="perf-bar-track"><div class="perf-bar-fill" style="width:87%;"></div></div></div>
+        <div class="perf-bar-wrap" style="margin-bottom:0;"><div class="perf-bar-label"><span>2020</span><span style="color:var(--gold-400);">+15.6%</span></div><div class="perf-bar-track"><div class="perf-bar-fill" style="width:52%;"></div></div></div>
+        <p style="font-size:.68rem;color:var(--slate-600);margin-top:16px;">Past performance does not guarantee future results. Returns represent the balanced growth composite.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:56px;" class="reveal">
+      <div class="section-label" style="justify-content:center;">Our Advisors</div>
+      <h2 class="display-md">Exceptional People,<br/><em>Exceptional Results</em></h2>
+    </div>
+    <div class="grid-4" style="gap:24px;">
+      <div class="advisor-card reveal">
+        <div class="advisor-avatar">EM</div>
+        <div class="advisor-name">Eleanor Mitchell</div>
+        <div class="advisor-title">Chief Investment Officer</div>
+        <div class="advisor-bio">30+ years managing institutional portfolios. Former Goldman Sachs Managing Director. CFA Charterholder.</div>
+      </div>
+      <div class="advisor-card reveal delay-1">
+        <div class="advisor-avatar">JR</div>
+        <div class="advisor-name">James Rothwell</div>
+        <div class="advisor-title">Head of Private Banking</div>
+        <div class="advisor-bio">25 years in private banking. Specializes in ultra-high-net-worth clients and family office coordination.</div>
+      </div>
+      <div class="advisor-card reveal delay-2">
+        <div class="advisor-avatar">SC</div>
+        <div class="advisor-name">Sophia Chen</div>
+        <div class="advisor-title">Director, Wealth Planning</div>
+        <div class="advisor-bio">Tax attorney and CFP with expertise in estate planning, trust administration, and philanthropic strategies.</div>
+      </div>
+      <div class="advisor-card reveal delay-3">
+        <div class="advisor-avatar">DW</div>
+        <div class="advisor-name">David Whitmore</div>
+        <div class="advisor-title">Head of Alternatives</div>
+        <div class="advisor-bio">Former hedge fund manager with $2B+ in alternative investment sourcing. Expertise in private equity and venture.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MINIMUMS -->
+<section class="section" style="background:var(--navy-800);border-top:1px solid rgba(255,255,255,.04);">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:48px;" class="reveal">
+      <div class="section-label" style="justify-content:center;">Getting Started</div>
+      <h2 class="display-md">Investment <em>Minimums</em></h2>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;max-width:720px;margin:0 auto;">
+      <div class="tier-threshold reveal"><div><div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:4px;">Essential Wealth Planning</div><div style="font-size:.82rem;color:var(--slate-500);">Financial plan, goal setting, basic portfolio guidance</div></div><div style="font-family:var(--font-display);font-size:1.4rem;color:var(--gold-400);white-space:nowrap;">$50,000+</div></div>
+      <div class="tier-threshold reveal delay-1"><div><div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:4px;">Private Wealth Management</div><div style="font-size:.82rem;color:var(--slate-500);">Dedicated advisor, full planning, managed portfolio</div></div><div style="font-family:var(--font-display);font-size:1.4rem;color:var(--gold-400);white-space:nowrap;">$250,000+</div></div>
+      <div class="tier-threshold reveal delay-2" style="border-color:rgba(201,168,76,.2);"><div><div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:4px;">Ultra High Net Worth</div><div style="font-size:.82rem;color:var(--slate-500);">Senior CIO access, alternatives, family office services</div></div><div style="font-family:var(--font-display);font-size:1.4rem;color:var(--gold-400);white-space:nowrap;">$2,000,000+</div></div>
+      <div class="tier-threshold reveal delay-3" style="border-color:rgba(201,168,76,.3);background:rgba(201,168,76,.04);"><div><div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:4px;">Family Office Services</div><div style="font-size:.82rem;color:var(--slate-500);">Full family office coordination, legacy planning, multi-generation strategy</div></div><div style="font-family:var(--font-display);font-size:1.4rem;color:var(--gold-400);white-space:nowrap;">$10,000,000+</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section">
+  <div class="container">
+    <div class="cta-section reveal">
+      <div class="section-label" style="justify-content:center;">Begin Your Wealth Journey</div>
+      <h2 class="display-lg" style="margin-bottom:20px;">Your Legacy,<br/><em>Expertly Managed</em></h2>
+      <p style="color:#94a3b8;font-size:1.05rem;max-width:480px;margin:0 auto 40px;line-height:1.8;">Schedule a confidential consultation with one of our Senior Wealth Advisors. No obligation. No cost. Just clarity.</p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
+        <a href="contact.html" class="btn btn-primary btn-xl">Schedule Consultation</a>
+        <a href="tel:+18887639000" class="btn btn-outline btn-xl"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.85a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>1-888-763-9000</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="nav-logo" style="margin-bottom:0;">
+          <div class="nav-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+          <div><div class="nav-logo-text">ZENITHONE</div><div class="nav-logo-sub">Credit Union</div></div>
+        </div>
+        <p class="footer-brand-desc">ZenithOne Credit Union — A financial institution built on trust, innovation, and an unwavering commitment to our clients' prosperity since 1887.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Wealth Services</div>
+        <a href="wealth.html"   class="footer-link">Portfolio Management</a>
+        <a href="wealth.html"   class="footer-link">Financial Planning</a>
+        <a href="wealth.html"   class="footer-link">Trust &amp; Estate</a>
+        <a href="wealth.html"   class="footer-link">Alternatives</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Banking</div>
+        <a href="accounts-overview.html" class="footer-link">Accounts</a>
+        <a href="services.html"          class="footer-link">Services</a>
+        <a href="login.html"             class="footer-link">Online Banking</a>
+        <a href="signup.html"            class="footer-link">Open Account</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <a href="about.html"   class="footer-link">About ZenithOne</a>
+        <a href="contact.html" class="footer-link">Contact Us</a>
+        <a href="contact.html" class="footer-link">Branch Locations</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal">© 2024 ZenithOne Credit Union All rights reserved. Investment products are not FDIC insured, not a bank deposit, and may lose value. Past performance does not guarantee future results.</div>
+      <div class="footer-fdic"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>FDIC Insured · Member FDIC</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); });
+const toggle = document.getElementById('mobileToggle');
+const drawer = document.getElementById('mobileDrawer');
+const overlay = document.getElementById('mobileOverlay');
+function closeMobile() { drawer.classList.remove('open'); overlay.classList.remove('open'); }
+toggle.addEventListener('click', () => { drawer.classList.toggle('open'); overlay.classList.toggle('open'); });
+overlay.addEventListener('click', closeMobile);
+drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobile));
+const revealObserver = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }); }, {threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+</script>
+</body>
+</html>

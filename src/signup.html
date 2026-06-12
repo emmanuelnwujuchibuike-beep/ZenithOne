@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Open an Account — ZenithOne Credit Union</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <style>
+    body { min-height:100vh; display:flex; flex-direction:column; }
+    .signup-header {
+      background: var(--navy-950);
+      border-bottom: 1px solid rgba(201,168,76,.1);
+      padding: 0 40px;
+      height: 72px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .signup-wrap { flex:1; display:flex; align-items:center; justify-content:center; padding:48px 24px; }
+    .signup-box { width:100%; max-width:640px; }
+
+    /* Steps */
+    .steps { display:flex; align-items:center; gap:0; margin-bottom:40px; }
+    .step-item { display:flex; align-items:center; flex:1; }
+    .step-circle {
+      width: 36px; height: 36px; border-radius: 50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:.8rem; font-weight:600; flex-shrink:0;
+      border: 2px solid rgba(255,255,255,.1);
+      color: var(--slate-500);
+      transition: all var(--transition);
+    }
+    .step-circle.active   { background: var(--gold-500); border-color: var(--gold-500); color: var(--navy-900); }
+    .step-circle.done     { background: rgba(34,197,94,.15); border-color: rgba(34,197,94,.4); color: var(--green-400); }
+    .step-label { font-size:.75rem; margin-left:10px; color:var(--slate-500); white-space:nowrap; }
+    .step-label.active { color: var(--white); }
+    .step-connector { flex:1; height:1px; background:rgba(255,255,255,.06); margin:0 12px; }
+    .step-connector.done { background:rgba(34,197,94,.3); }
+
+    /* Step panels */
+    .step-panel { display:none; }
+    .step-panel.active { display:block; }
+    .step-title { font-family:var(--font-display); font-size:2rem; margin-bottom:8px; }
+    .step-subtitle { color:var(--slate-400); margin-bottom:32px; font-size:.9rem; }
+
+    .account-type-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:28px; }
+    .account-type-item {
+      border: 2px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      padding: 20px;
+      cursor: pointer;
+      transition: all var(--transition);
+      position: relative;
+    }
+    .account-type-item:hover { border-color: rgba(201,168,76,.3); background: rgba(201,168,76,.03); }
+    .account-type-item.selected { border-color: var(--gold-500); background: rgba(201,168,76,.07); }
+    .account-type-item.selected::after {
+      content: '✓';
+      position: absolute; top:12px; right:14px;
+      color: var(--gold-500); font-size:.85rem; font-weight:700;
+    }
+    .account-type-icon { width:38px; height:38px; border-radius:10px; background:rgba(201,168,76,.1); display:flex; align-items:center; justify-content:center; color:var(--gold-400); margin-bottom:12px; }
+    .account-type-name { font-size:.95rem; font-weight:500; margin-bottom:4px; }
+    .account-type-desc { font-size:.75rem; color:var(--slate-500); line-height:1.5; }
+
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+
+    .strength-bar { display:flex; gap:4px; margin-top:8px; }
+    .strength-segment { flex:1; height:3px; border-radius:3px; background:rgba(255,255,255,.06); transition:background .3s; }
+    .strength-text { font-size:.75rem; margin-top:6px; }
+
+    .terms-check { display:flex; align-items:flex-start; gap:12px; margin-top:8px; }
+    .terms-check input { accent-color:var(--gold-500); width:16px; height:16px; flex-shrink:0; margin-top:2px; }
+    .terms-check label { font-size:.8rem; color:var(--slate-400); line-height:1.5; cursor:pointer; }
+    .terms-check a { color:var(--gold-500); }
+
+    .success-screen { text-align:center; padding:40px 0; display:none; }
+    .success-icon { width:80px; height:80px; background:rgba(34,197,94,.1); border:2px solid rgba(34,197,94,.3); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 24px; color:var(--green-400); }
+
+    @media (max-width:600px) { .form-row{grid-template-columns:1fr;} .account-type-grid{grid-template-columns:1fr;} .steps{display:none;} }
+  </style>
+</head>
+<body>
+
+<header class="signup-header">
+  <a href="index.html" class="auth-brand" style="display:flex;align-items:center;gap:12px;">
+    <div class="nav-logo-mark">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    <div>
+      <div class="nav-logo-text">ZENITHONE</div>
+      <div class="nav-logo-sub">Credit Union</div>
+    </div>
+  </a>
+  <a href="login.html" style="font-size:.875rem;color:var(--slate-400);">Already have an account? <span style="color:var(--gold-500);">Sign In</span></a>
+</header>
+
+<div class="signup-wrap">
+  <div class="signup-box">
+
+    <!-- Progress Steps -->
+    <div class="steps" id="stepsBar">
+      <div class="step-item">
+        <div class="step-circle active" id="step1-circle">1</div>
+        <div class="step-label active" id="step1-label">Account Type</div>
+      </div>
+      <div class="step-connector" id="conn1"></div>
+      <div class="step-item">
+        <div class="step-circle" id="step2-circle">2</div>
+        <div class="step-label" id="step2-label">Personal Info</div>
+      </div>
+      <div class="step-connector" id="conn2"></div>
+      <div class="step-item">
+        <div class="step-circle" id="step3-circle">3</div>
+        <div class="step-label" id="step3-label">Security</div>
+      </div>
+      <div class="step-connector" id="conn3"></div>
+      <div class="step-item">
+        <div class="step-circle" id="step4-circle">4</div>
+        <div class="step-label" id="step4-label">Verify</div>
+      </div>
+    </div>
+
+    <!-- Error banner -->
+    <div class="alert alert-error hidden" id="signupError" style="margin-bottom:20px;">
+      <svg class="alert-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      <span id="signupErrorMsg"></span>
+    </div>
+
+    <!-- Step 1: Account Type -->
+    <div class="step-panel active" id="panel1">
+      <div class="step-title">Choose Your Account</div>
+      <div class="step-subtitle">Select the account type that best fits your financial goals.</div>
+
+      <div class="account-type-grid">
+        <div class="account-type-item selected" data-type="checking">
+          <div class="account-type-icon">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          </div>
+          <div class="account-type-name">Checking</div>
+          <div class="account-type-desc">Everyday spending, bill pay, and debit card access.</div>
+        </div>
+        <div class="account-type-item" data-type="savings">
+          <div class="account-type-icon">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="account-type-name">High-Yield Savings</div>
+          <div class="account-type-desc">Earn up to 4.85% APY with no withdrawal limits.</div>
+        </div>
+        <div class="account-type-item" data-type="money_market">
+          <div class="account-type-icon">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div class="account-type-name">Money Market</div>
+          <div class="account-type-desc">Premium rates with check-writing privileges.</div>
+        </div>
+        <div class="account-type-item" data-type="investment">
+          <div class="account-type-icon">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          </div>
+          <div class="account-type-name">Investment Account</div>
+          <div class="account-type-desc">Stocks, ETFs, bonds, and managed portfolios.</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary w-full btn-lg" onclick="nextStep(2)">Continue →</button>
+    </div>
+
+    <!-- Step 2: Personal Info -->
+    <div class="step-panel" id="panel2">
+      <div class="step-title">Personal Information</div>
+      <div class="step-subtitle">We need a few details to verify your identity as required by federal law.</div>
+
+      <div style="display:flex;flex-direction:column;gap:18px;">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name</label>
+            <input type="text" id="firstName" class="form-input" placeholder="Alexandra" autocomplete="given-name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name</label>
+            <input type="text" id="lastName" class="form-input" placeholder="Reynolds" autocomplete="family-name" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <div class="input-group">
+            <svg class="input-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="email" id="signupEmail" class="form-input" placeholder="you@example.com" autocomplete="email" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number</label>
+          <div class="input-group">
+            <svg class="input-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.24h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.85a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <input type="tel" id="phone" class="form-input" placeholder="+1 (555) 000-0000" autocomplete="tel" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Date of Birth</label>
+            <input type="date" id="dob" class="form-input form-select" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">SSN (Last 4 digits)</label>
+            <input type="text" id="ssnLast4" class="form-input" placeholder="XXXX" maxlength="4" pattern="\d{4}" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Home Address</label>
+          <input type="text" id="address" class="form-input" placeholder="123 Main Street" autocomplete="street-address" />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <input type="text" id="city" class="form-input" placeholder="New York" autocomplete="address-level2" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">State</label>
+            <select id="state" class="form-input form-select">
+              <option value="">Select state</option>
+              <option>AL</option><option>AK</option><option>AZ</option><option>AR</option>
+              <option>CA</option><option>CO</option><option>CT</option><option>DE</option>
+              <option>FL</option><option>GA</option><option>HI</option><option>ID</option>
+              <option>IL</option><option>IN</option><option>IA</option><option>KS</option>
+              <option>KY</option><option>LA</option><option>ME</option><option>MD</option>
+              <option>MA</option><option>MI</option><option>MN</option><option>MS</option>
+              <option>MO</option><option>MT</option><option>NE</option><option>NV</option>
+              <option>NH</option><option selected>NY</option><option>NC</option><option>ND</option>
+              <option>OH</option><option>OK</option><option>OR</option><option>PA</option>
+              <option>RI</option><option>SC</option><option>SD</option><option>TN</option>
+              <option>TX</option><option>UT</option><option>VT</option><option>VA</option>
+              <option>WA</option><option>WV</option><option>WI</option><option>WY</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:28px;">
+        <button class="btn btn-ghost" onclick="nextStep(1)" style="flex:1;">← Back</button>
+        <button class="btn btn-primary" onclick="validateStep2()" style="flex:2;">Continue →</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Security -->
+    <div class="step-panel" id="panel3">
+      <div class="step-title">Create Your Password</div>
+      <div class="step-subtitle">Your password must be at least 12 characters with uppercase, number, and symbol.</div>
+
+      <div style="display:flex;flex-direction:column;gap:18px;">
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <div class="input-group">
+            <svg class="input-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="newPassword" class="form-input" placeholder="Create a strong password" />
+            <button type="button" class="input-suffix clickable" onclick="togglePass('newPassword')">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="strength-bar" id="strengthBar">
+            <div class="strength-segment" id="s1"></div>
+            <div class="strength-segment" id="s2"></div>
+            <div class="strength-segment" id="s3"></div>
+            <div class="strength-segment" id="s4"></div>
+          </div>
+          <div class="strength-text" id="strengthText" style="color:var(--slate-500);">Enter a password to check strength</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <div class="input-group">
+            <svg class="input-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="confirmPassword" class="form-input" placeholder="Repeat your password" />
+          </div>
+          <div class="form-error hidden" id="passMatchError">Passwords do not match.</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Security Question</label>
+          <select class="form-input form-select" id="secQuestion">
+            <option value="">Select a security question...</option>
+            <option>What was the name of your first pet?</option>
+            <option>What city were you born in?</option>
+            <option>What is your mother's maiden name?</option>
+            <option>What was the make of your first car?</option>
+            <option>What was the name of your elementary school?</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Security Answer</label>
+          <input type="text" id="secAnswer" class="form-input" placeholder="Your answer" autocomplete="off" />
+        </div>
+
+        <div class="terms-check">
+          <input type="checkbox" id="agreeTerms" />
+          <label for="agreeTerms">I agree to ZenithOne's <a href="#">Terms &amp; Conditions</a>, <a href="#">Privacy Policy</a>, and <a href="#">Electronic Communications Consent</a>. I certify that I am a U.S. resident and the information I provided is accurate.</label>
+        </div>
+        <div class="terms-check">
+          <input type="checkbox" id="agreeMarketing" />
+          <label for="agreeMarketing">I agree to receive product updates, financial insights, and exclusive offers by email. (Optional)</label>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:28px;">
+        <button class="btn btn-ghost" onclick="nextStep(2)" style="flex:1;">← Back</button>
+        <button class="btn btn-primary" onclick="validateStep3()" style="flex:2;">Create Account →</button>
+      </div>
+    </div>
+
+    <!-- Step 4: Verify Email -->
+    <div class="step-panel" id="panel4">
+      <div class="step-title">Verify Your Email</div>
+      <div class="step-subtitle">We've sent a 6-digit verification code to <strong id="verifyEmailDisplay"></strong></div>
+
+      <div style="display:flex;gap:10px;margin:32px 0;justify-content:center;" id="otpInputs">
+        <input type="text" class="form-input" maxlength="1" style="width:52px;height:60px;text-align:center;font-size:1.5rem;padding:0;" />
+        <input type="text" class="form-input" maxlength="1" style="width:52px;height:60px;text-align:center;font-size:1.5rem;padding:0;" />
+        <input type="text" class="form-input" maxlength="1" style="width:52px;height:60px;text-align:center;font-size:1.5rem;padding:0;" />
+        <input type="text" class="form-input" maxlength="1" style="width:52px;height:60px;text-align:center;font-size:1.5rem;padding:0;" />
+        <input type="text" class="form-input" maxlength="1" style="width:52px;height:60px;text-align:center;font-size:1.5rem;padding:0;" />
+        <input type="text" class="form-input" maxlength="1" style="width:52px;height:60px;text-align:center;font-size:1.5rem;padding:0;" />
+      </div>
+
+      <button class="btn btn-primary w-full btn-lg" id="verifyBtn" onclick="verifyCode()">
+        <span id="verifyBtnText">Verify &amp; Continue</span>
+        <span class="spinner hidden" id="verifySpinner"></span>
+      </button>
+
+      <div style="text-align:center;margin-top:20px;font-size:.875rem;color:var(--slate-400);">
+        Didn't receive a code? <button style="background:none;border:none;color:var(--gold-500);cursor:pointer;font-size:.875rem;" id="resendBtn">Resend in <span id="resendTimer">60</span>s</button>
+      </div>
+    </div>
+
+    <!-- Success Screen -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">
+        <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+      </div>
+      <h2 style="font-family:var(--font-display);font-size:2rem;margin-bottom:12px;">Account Created!</h2>
+      <p style="color:var(--slate-400);max-width:400px;margin:0 auto 32px;line-height:1.7;">Welcome to ZenithOne Credit Union. Your account is ready. A relationship advisor will be in touch within 24 hours.</p>
+      <a href="dashboard.html" class="btn btn-primary btn-lg">Go to Dashboard →</a>
+    </div>
+
+  </div>
+</div>
+
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+let currentStep = 1;
+let selectedAccountType = 'checking';
+let resendInterval;
+
+// Account type selection
+document.querySelectorAll('.account-type-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.account-type-item').forEach(i => i.classList.remove('selected'));
+    item.classList.add('selected');
+    selectedAccountType = item.dataset.type;
+  });
+});
+
+function nextStep(n) {
+  document.getElementById(`panel${currentStep}`).classList.remove('active');
+  document.getElementById(`step${currentStep}-circle`).classList.remove('active');
+  document.getElementById(`step${currentStep}-circle`).classList.add('done');
+  document.getElementById(`step${currentStep}-circle`).innerHTML = '✓';
+  if (n > 1) document.getElementById(`conn${n-1}`).classList.add('done');
+
+  currentStep = n;
+  document.getElementById(`panel${n}`).classList.add('active');
+  document.getElementById(`step${n}-circle`).classList.add('active');
+  document.getElementById(`step${n}-label`).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateStep2() {
+  const fields = ['firstName','lastName','signupEmail','phone','dob','address','city','state'];
+  const empty = fields.find(id => !document.getElementById(id).value.trim());
+  if (empty) { showError('Please fill in all required fields.'); return; }
+  const email = document.getElementById('signupEmail').value;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Please enter a valid email address.'); return; }
+  hideError();
+  nextStep(3);
+}
+
+function validateStep3() {
+  const pass = document.getElementById('newPassword').value;
+  const conf = document.getElementById('confirmPassword').value;
+  if (pass.length < 12) { showError('Password must be at least 12 characters.'); return; }
+  if (pass !== conf) { document.getElementById('passMatchError').classList.remove('hidden'); return; }
+  document.getElementById('passMatchError').classList.add('hidden');
+  if (!document.getElementById('agreeTerms').checked) { showError('You must agree to the Terms & Conditions to continue.'); return; }
+  hideError();
+  document.getElementById('verifyEmailDisplay').textContent = document.getElementById('signupEmail').value;
+  nextStep(4);
+  startResendTimer();
+  // Actual Supabase signup happens here
+  if (typeof createAccount === 'function') createAccount();
+}
+
+function verifyCode() {
+  const inputs = document.querySelectorAll('#otpInputs input');
+  const code = Array.from(inputs).map(i => i.value).join('');
+  if (code.length < 6) { showError('Please enter the full 6-digit code.'); return; }
+  // Call Supabase OTP verification
+  if (typeof verifyOTP === 'function') {
+    verifyOTP(document.getElementById('signupEmail').value, code);
+  } else {
+    showSuccess();
+  }
+}
+
+function showSuccess() {
+  document.getElementById('stepsBar').style.display = 'none';
+  document.getElementById(`panel${currentStep}`).classList.remove('active');
+  document.getElementById('successScreen').style.display = 'block';
+}
+
+function showError(msg) {
+  const el = document.getElementById('signupError');
+  document.getElementById('signupErrorMsg').textContent = msg;
+  el.classList.remove('hidden');
+}
+function hideError() { document.getElementById('signupError').classList.add('hidden'); }
+
+function togglePass(id) {
+  const el = document.getElementById(id);
+  el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+// Password strength
+document.getElementById('newPassword').addEventListener('input', function() {
+  const pass = this.value;
+  let score = 0;
+  if (pass.length >= 8)  score++;
+  if (pass.length >= 12) score++;
+  if (/[A-Z]/.test(pass) && /[a-z]/.test(pass)) score++;
+  if (/\d/.test(pass)) score++;
+  if (/[^A-Za-z0-9]/.test(pass)) score++;
+  score = Math.min(score, 4);
+
+  const colors = ['', '#ef4444', '#f59e0b', '#3b82f6', '#22c55e'];
+  const texts  = ['', 'Weak', 'Fair', 'Strong', 'Very Strong'];
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById(`s${i}`).style.background = i <= score ? colors[score] : 'rgba(255,255,255,.06)';
+  }
+  const st = document.getElementById('strengthText');
+  st.textContent = pass.length ? `Strength: ${texts[score]}` : 'Enter a password to check strength';
+  st.style.color = colors[score] || 'var(--slate-500)';
+});
+
+// OTP auto-advance
+document.querySelectorAll('#otpInputs input').forEach((input, i, arr) => {
+  input.addEventListener('input', (e) => {
+    if (e.target.value && i < arr.length - 1) arr[i+1].focus();
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Backspace' && !e.target.value && i > 0) arr[i-1].focus();
+  });
+});
+
+function startResendTimer() {
+  let secs = 60;
+  document.getElementById('resendBtn').disabled = true;
+  resendInterval = setInterval(() => {
+    secs--;
+    document.getElementById('resendTimer').textContent = secs;
+    if (secs <= 0) {
+      clearInterval(resendInterval);
+      document.getElementById('resendBtn').disabled = false;
+      document.getElementById('resendBtn').innerHTML = 'Resend code';
+    }
+  }, 1000);
+}
+</script>
+</body>
+</html>

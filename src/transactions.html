@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transactions — ZenithOne Credit Union</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <style>
+    .filter-bar { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:24px; }
+    .search-wrap { position:relative; flex:1; min-width:200px; }
+    .search-wrap svg { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--slate-500); pointer-events:none; }
+    .search-wrap input { padding-left:40px; }
+    .txn-group-date { font-size:.75rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--slate-500); padding:16px 0 8px; }
+    .txn-row { display:grid; grid-template-columns:44px 1fr auto auto; align-items:center; gap:14px; padding:14px 16px; border-radius:12px; cursor:pointer; transition:background var(--transition); }
+    .txn-row:hover { background:rgba(255,255,255,.035); }
+    .txn-cat-icon { width:42px; height:42px; border-radius:12px; background:rgba(255,255,255,.06); display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+    .pagination { display:flex; align-items:center; justify-content:space-between; padding-top:20px; border-top:1px solid rgba(255,255,255,.06); margin-top:8px; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html" class="sidebar-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></a>
+      <div><div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div><div style="font-size:.55rem;letter-spacing:.18em;color:var(--gold-500);text-transform:uppercase;">Credit Union</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <a href="dashboard.html"    class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+        <a href="accounts.html"     class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Accounts</a>
+        <a href="transactions.html" class="sidebar-item active"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Transactions</a>
+        <a href="transfer.html"     class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>Transfer</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Finance</div>
+        <a href="cards.html"       class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>Cards</a>
+        <a href="investments.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Investments</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Account</div>
+        <a href="settings.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+        <button class="sidebar-item" id="logoutBtn" style="width:100%;text-align:left;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">AR</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Alexandra Reynolds</div>
+          <div class="sidebar-user-tier">Private Banking Client</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="app-main">
+    <header class="app-topbar">
+      <div class="app-topbar-left">
+        <button class="btn btn-icon btn-ghost" id="sidebarToggle"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <div class="app-topbar-title">Transactions</div>
+      </div>
+      <div class="app-topbar-right">
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+        </button>
+        <button class="btn btn-icon btn-ghost"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <div class="sidebar-avatar" style="cursor:pointer;">AR</div>
+      </div>
+    </header>
+
+    <div class="app-content">
+
+      <!-- Summary strip -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:28px;">
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--green-400);">+$18,244.42</div>
+          <div class="stat-label">Total Income (June)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" style="color:var(--red-400);">-$3,900.00</div>
+          <div class="stat-label">Total Spent (June)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">47</div>
+          <div class="stat-label">Transactions This Month</div>
+        </div>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="search-wrap">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="search" id="txnSearch" class="form-input" placeholder="Search transactions..." oninput="filterTransactions()" />
+        </div>
+        <select class="form-input form-select" id="filterAccount" style="width:180px;" onchange="filterTransactions()">
+          <option value="">All Accounts</option>
+          <option value="checking">Checking ••••4821</option>
+          <option value="savings">Savings ••••9103</option>
+          <option value="money_market">Money Market ••••3376</option>
+        </select>
+        <select class="form-input form-select" id="filterType" style="width:150px;" onchange="filterTransactions()">
+          <option value="">All Types</option>
+          <option value="credit">Credits</option>
+          <option value="debit">Debits</option>
+          <option value="transfer">Transfers</option>
+        </select>
+        <select class="form-input form-select" id="filterPeriod" style="width:140px;" onchange="filterTransactions()">
+          <option value="30">Last 30 days</option>
+          <option value="60">Last 60 days</option>
+          <option value="90">Last 90 days</option>
+          <option value="365">Last year</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" onclick="resetFilters()">Reset</button>
+      </div>
+
+      <!-- Transactions Table -->
+      <div class="card card-elevated">
+        <div id="transactionsList">
+          <!-- populated by JS -->
+        </div>
+        <div class="pagination">
+          <div style="font-size:.8rem;color:var(--slate-400);" id="paginationInfo">Showing 1–20 of 47 transactions</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-ghost btn-sm" id="prevPage" onclick="changePage(-1)" disabled>← Prev</button>
+            <div style="display:flex;gap:4px;" id="pageNumbers"></div>
+            <button class="btn btn-ghost btn-sm" id="nextPage" onclick="changePage(1)">Next →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Transaction Detail Modal -->
+<div class="modal-overlay" id="txnDetailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="txnDetailTitle">Transaction Details</div>
+      <button class="modal-close" onclick="closeModal('txnDetailModal')">✕</button>
+    </div>
+    <div class="modal-body" id="txnDetailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('txnDetailModal')">Close</button>
+      <button class="btn btn-primary" onclick="disputeTransaction()">Report Issue</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/transactions.js"></script>
+<script>
+const allTransactions = [
+  { id:'TXN001', name:'Apple Store',          date:'2024-06-12', time:'2:34 PM', amount:-299.00,  type:'debit',   cat:'Shopping',   status:'completed', icon:'🛍️', account:'checking', ref:'#APL20240612' },
+  { id:'TXN002', name:'Payroll Deposit',       date:'2024-06-12', time:'9:02 AM', amount:18244.42, type:'credit',  cat:'Income',     status:'completed', icon:'💵', account:'checking', ref:'#PAY20240612' },
+  { id:'TXN003', name:'Nobu Restaurant',       date:'2024-06-11', time:'8:45 PM', amount:-342.50,  type:'debit',   cat:'Dining',     status:'completed', icon:'🍽️', account:'checking', ref:'#NOB20240611' },
+  { id:'TXN004', name:'Delta Airlines',        date:'2024-06-10', time:'11:00 AM',amount:-1245.00, type:'debit',   cat:'Travel',     status:'completed', icon:'✈️', account:'checking', ref:'#DLT20240610' },
+  { id:'TXN005', name:'Interest Credit',       date:'2024-06-01', time:'12:00 AM',amount:198.42,   type:'credit',  cat:'Interest',   status:'completed', icon:'💰', account:'savings',  ref:'#INT20240601' },
+  { id:'TXN006', name:'Whole Foods Market',    date:'2024-06-09', time:'5:22 PM', amount:-187.34,  type:'debit',   cat:'Groceries',  status:'completed', icon:'🛒', account:'checking', ref:'#WFM20240609' },
+  { id:'TXN007', name:'Transfer to Savings',   date:'2024-06-08', time:'10:00 AM',amount:-5000.00, type:'transfer',cat:'Transfer',   status:'completed', icon:'↗️', account:'checking', ref:'#TRF20240608' },
+  { id:'TXN008', name:'Transfer from Checking',date:'2024-06-08', time:'10:00 AM',amount:5000.00,  type:'credit',  cat:'Transfer',   status:'completed', icon:'↙️', account:'savings',  ref:'#TRF20240608' },
+  { id:'TXN009', name:'Saks Fifth Avenue',     date:'2024-06-07', time:'3:15 PM', amount:-892.00,  type:'debit',   cat:'Shopping',   status:'completed', icon:'👜', account:'checking', ref:'#SAK20240607' },
+  { id:'TXN010', name:'Equinox Membership',    date:'2024-06-05', time:'7:00 AM', amount:-200.00,  type:'debit',   cat:'Health',     status:'completed', icon:'🏋️', account:'checking', ref:'#EQX20240605' },
+  { id:'TXN011', name:'Dividend Payment',      date:'2024-06-01', time:'12:00 AM',amount:4820.00,  type:'credit',  cat:'Investment', status:'completed', icon:'📈', account:'savings',  ref:'#DIV20240601' },
+  { id:'TXN012', name:'Con Edison',            date:'2024-06-04', time:'8:00 AM', amount:-342.18,  type:'debit',   cat:'Utilities',  status:'completed', icon:'⚡', account:'checking', ref:'#CED20240604' },
+  { id:'TXN013', name:'Four Seasons Hotel',    date:'2024-06-03', time:'2:00 PM', amount:-2840.00, type:'debit',   cat:'Travel',     status:'completed', icon:'🏨', account:'checking', ref:'#FSH20240603' },
+  { id:'TXN014', name:'Wire Transfer Received',date:'2024-06-02', time:'11:30 AM',amount:50000.00, type:'credit',  cat:'Transfer',   status:'completed', icon:'🏦', account:'money_market',ref:'#WIR20240602' },
+  { id:'TXN015', name:'Netflix',               date:'2024-06-01', time:'12:01 AM',amount:-22.99,   type:'debit',   cat:'Entertainment',status:'completed',icon:'🎬',account:'checking', ref:'#NET20240601' },
+];
+
+let filtered = [...allTransactions];
+let currentPage = 1;
+const perPage = 10;
+
+function renderTransactions() {
+  const start = (currentPage - 1) * perPage;
+  const page = filtered.slice(start, start + perPage);
+
+  // Group by date
+  const grouped = {};
+  page.forEach(t => {
+    const d = new Date(t.date).toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    if (!grouped[d]) grouped[d] = [];
+    grouped[d].push(t);
+  });
+
+  let html = '';
+  for (const [date, txns] of Object.entries(grouped)) {
+    html += `<div class="txn-group-date">${date}</div>`;
+    txns.forEach(t => {
+      const isCredit = t.amount > 0;
+      const amtStr = (isCredit ? '+' : '') + '$' + Math.abs(t.amount).toLocaleString('en-US',{minimumFractionDigits:2});
+      html += `
+        <div class="txn-row" onclick="showTxnDetail('${t.id}')">
+          <div class="txn-cat-icon">${t.icon}</div>
+          <div>
+            <div style="font-size:.9rem;font-weight:500;color:var(--white);">${t.name}</div>
+            <div style="font-size:.75rem;color:var(--slate-500);margin-top:2px;">${t.time} · ${t.cat} · ${t.account}</div>
+          </div>
+          <div class="badge ${t.status==='completed'?'badge-neutral':t.status==='pending'?'badge-gold':'badge-red'}" style="font-size:.65rem;">${t.status}</div>
+          <div style="text-align:right;">
+            <div style="font-family:var(--font-display);font-size:1rem;color:${isCredit?'var(--green-400)':'var(--white)'};">${amtStr}</div>
+            <div style="font-size:.7rem;color:var(--slate-600);">${t.ref}</div>
+          </div>
+        </div>`;
+    });
+  }
+  if (!html) html = '<div style="padding:40px;text-align:center;color:var(--slate-500);">No transactions found.</div>';
+  document.getElementById('transactionsList').innerHTML = html;
+
+  // Pagination
+  const total = filtered.length;
+  const pages = Math.ceil(total / perPage);
+  document.getElementById('paginationInfo').textContent = `Showing ${start+1}–${Math.min(start+perPage,total)} of ${total} transactions`;
+  document.getElementById('prevPage').disabled = currentPage === 1;
+  document.getElementById('nextPage').disabled = currentPage >= pages;
+
+  let pHtml = '';
+  for (let i=1;i<=pages;i++) {
+    pHtml += `<button class="btn btn-sm ${i===currentPage?'btn-primary':'btn-ghost'}" onclick="goToPage(${i})">${i}</button>`;
+  }
+  document.getElementById('pageNumbers').innerHTML = pHtml;
+}
+
+function filterTransactions() {
+  const q = document.getElementById('txnSearch').value.toLowerCase();
+  const acc = document.getElementById('filterAccount').value;
+  const type = document.getElementById('filterType').value;
+  const days = parseInt(document.getElementById('filterPeriod').value);
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+
+  filtered = allTransactions.filter(t => {
+    const matchQ = !q || t.name.toLowerCase().includes(q) || t.cat.toLowerCase().includes(q);
+    const matchAcc = !acc || t.account === acc;
+    const matchType = !type || (type==='credit' && t.amount>0) || (type==='debit' && t.amount<0) || (type==='transfer' && t.cat==='Transfer');
+    const matchDate = new Date(t.date) >= cutoff;
+    return matchQ && matchAcc && matchType && matchDate;
+  });
+  currentPage = 1;
+  renderTransactions();
+}
+
+function changePage(dir) { currentPage += dir; renderTransactions(); }
+function goToPage(p) { currentPage = p; renderTransactions(); }
+function resetFilters() {
+  document.getElementById('txnSearch').value = '';
+  document.getElementById('filterAccount').value = '';
+  document.getElementById('filterType').value = '';
+  document.getElementById('filterPeriod').value = '30';
+  filtered = [...allTransactions];
+  currentPage = 1;
+  renderTransactions();
+}
+
+function showTxnDetail(id) {
+  const t = allTransactions.find(x => x.id === id);
+  if (!t) return;
+  const isCredit = t.amount > 0;
+  document.getElementById('txnDetailTitle').textContent = t.name;
+  document.getElementById('txnDetailBody').innerHTML = `
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:2.5rem;margin-bottom:8px;">${t.icon}</div>
+      <div style="font-family:var(--font-display);font-size:2.2rem;color:${isCredit?'var(--green-400)':'var(--white)'};">${(isCredit?'+':'-')}$${Math.abs(t.amount).toLocaleString('en-US',{minimumFractionDigits:2})}</div>
+      <div class="badge ${t.status==='completed'?'badge-green':'badge-gold'}" style="margin-top:8px;">${t.status}</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      ${[['Date',t.date+' at '+t.time],['Category',t.cat],['Account',t.account],['Reference',t.ref],['Type',t.type]].map(([l,v])=>`
+        <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+          <span style="font-size:.8rem;color:var(--slate-400);">${l}</span>
+          <span style="font-size:.875rem;color:var(--white);">${v}</span>
+        </div>`).join('')}
+    </div>`;
+  document.getElementById('txnDetailModal').classList.add('open');
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function exportCSV() {
+  const rows = [['ID','Name','Date','Amount','Type','Category','Status','Reference'],...filtered.map(t=>[t.id,t.name,t.date,t.amount,t.type,t.cat,t.status,t.ref])];
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'zenithone-transactions.csv';
+  a.click();
+}
+function disputeTransaction() { closeModal('txnDetailModal'); alert('Dispute filed. A representative will review within 2 business days.'); }
+
+renderTransactions();
+// Mobile sidebar
+(function(){
+  const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
+  document.getElementById('sidebarToggle').addEventListener('click',()=>{s.classList.toggle('open');o.classList.toggle('open');});
+  o.addEventListener('click',()=>{s.classList.remove('open');o.classList.remove('open');});
+})();
+</script>
+</body>
+</html>

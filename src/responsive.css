@@ -1,0 +1,693 @@
+/* ============================================================
+   MERIDIAN PRIVATE BANK — Comprehensive Responsive Stylesheet
+   Breakpoints:
+     1200px  large tablet / small desktop
+     1024px  tablet landscape
+      768px  tablet portrait / large mobile
+      640px  mobile
+      480px  small mobile
+      375px  very small mobile
+   ============================================================ */
+
+/* ── 1. UNIVERSAL APP LAYOUT ─────────────────────────────── */
+
+/* Default: hide toggle & overlay on desktop */
+#sidebarToggle { display: none; }
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(2,11,24,.7); backdrop-filter: blur(4px); z-index: 499; }
+.sidebar-overlay.open { display: block; }
+
+/* Sidebar toggle always visible on ≤ 1024px */
+@media (max-width: 1024px) {
+  #sidebarToggle { display: flex !important; }
+  .app-main { margin-left: 0 !important; }
+  .sidebar {
+    transform: translateX(-100%);
+    z-index: 500;
+    box-shadow: 4px 0 40px rgba(0,0,0,.6);
+  }
+  .sidebar.open { transform: translateX(0); }
+}
+
+@media (max-width: 768px) {
+  .app-topbar { padding: 0 16px !important; height: 60px !important; }
+  .app-topbar-title { font-size: 1.1rem !important; }
+  .app-content { padding: 16px !important; }
+}
+
+@media (max-width: 480px) {
+  .app-content { padding: 12px !important; }
+  .sidebar { width: 280px !important; }
+}
+
+/* ── 2. GLOBAL COMPONENTS ────────────────────────────────── */
+
+/* Cards */
+@media (max-width: 480px) {
+  .card, .card-elevated { padding: 18px !important; border-radius: 14px !important; }
+  .stat-card { padding: 16px !important; }
+  .stat-value { font-size: 1.5rem !important; }
+}
+
+/* Grids */
+@media (max-width: 1024px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 640px) {
+  .grid-4 { grid-template-columns: 1fr 1fr !important; }
+  .grid-3 { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 480px) {
+  .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr !important; }
+}
+
+/* Buttons */
+@media (max-width: 480px) {
+  .btn-xl { padding: 14px 24px !important; font-size: .9rem !important; }
+  .btn-lg { padding: 13px 22px !important; }
+}
+
+/* Modal */
+@media (max-width: 640px) {
+  .modal { border-radius: 16px 16px 0 0 !important; max-height: 95vh !important; }
+  .modal-overlay { align-items: flex-end !important; padding: 0 !important; }
+  .modal-header { padding: 20px !important; }
+  .modal-body   { padding: 20px !important; }
+  .modal-footer { padding: 16px 20px !important; }
+}
+
+/* Form rows */
+@media (max-width: 640px) {
+  .form-row { grid-template-columns: 1fr !important; }
+}
+
+/* Tabs */
+@media (max-width: 480px) {
+  .tabs { gap: 2px !important; }
+  .tab-item { padding: 8px 8px !important; font-size: .75rem !important; }
+}
+
+/* ── 3. PUBLIC NAV ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .nav-links { display: none !important; }
+  .nav-actions .btn-ghost.nav-signin { display: none !important; }
+  .nav-mobile-toggle { display: flex !important; }
+  .nav-inner { height: 64px !important; }
+}
+@media (max-width: 480px) {
+  .nav-inner { padding: 0 16px !important; }
+  .nav-logo-text { font-size: 1.2rem !important; }
+}
+
+/* ── 4. LANDING PAGE (index.html) ────────────────────────── */
+
+/* Hero */
+@media (max-width: 1200px) {
+  .hero-right { width: 340px !important; right: 32px !important; }
+}
+@media (max-width: 1024px) {
+  .hero-right { display: none !important; }
+  .hero-content { padding-top: 120px !important; }
+  .hero-headline { font-size: clamp(2.4rem, 6vw, 4.5rem) !important; }
+}
+@media (max-width: 768px) {
+  .hero { min-height: 90vh !important; }
+  .hero-content { padding: 100px 20px 60px !important; }
+  .hero-headline { font-size: clamp(2rem, 8vw, 3.2rem) !important; }
+  .hero-sub { font-size: 1rem !important; margin: 20px 0 32px !important; }
+  .hero-actions { gap: 10px !important; }
+  .hero-actions .btn-xl { flex: 1; text-align: center !important; }
+  .hero-trust { margin-top: 40px !important; gap: 12px !important; }
+  .hero-trust-item { font-size: .75rem !important; }
+}
+@media (max-width: 480px) {
+  .hero-headline { font-size: 2.2rem !important; }
+  .hero-actions { flex-direction: column !important; }
+  .hero-actions .btn-xl { width: 100% !important; justify-content: center !important; }
+  .hero-eyebrow { font-size: .65rem !important; }
+  .hero-trust { gap: 10px !important; }
+}
+
+/* Stats strip */
+@media (max-width: 768px) {
+  .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 0 !important; }
+  .stats-item:nth-child(1)::after,
+  .stats-item:nth-child(3)::after { display: none !important; }
+  .stats-item:nth-child(2) { border-bottom: 1px solid rgba(201,168,76,.12); }
+  .stats-value { font-size: 2rem !important; }
+}
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr 1fr !important; }
+  .stats-value { font-size: 1.6rem !important; }
+  .stats-label { font-size: .65rem !important; }
+}
+
+/* Services */
+@media (max-width: 1024px) {
+  /* .grid-3 already handled above */
+}
+@media (max-width: 640px) {
+  .service-card { padding: 22px !important; }
+}
+
+/* Account tiers */
+@media (max-width: 1024px) {
+  .tier-cards-wrap { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 640px) {
+  .tier-cards-wrap { grid-template-columns: 1fr !important; max-width: 400px !important; margin: 0 auto !important; }
+}
+
+/* Security section */
+@media (max-width: 1024px) {
+  .security-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+}
+
+/* Testimonials */
+@media (max-width: 640px) {
+  .testimonial-card { padding: 22px !important; }
+  .testimonial-text { font-size: .95rem !important; }
+}
+
+/* Awards */
+@media (max-width: 640px) {
+  .awards-grid { grid-template-columns: 1fr 1fr !important; }
+}
+
+/* CTA */
+@media (max-width: 768px) {
+  .cta-section { padding: 52px 24px !important; border-radius: 16px !important; }
+  .cta-section h2 { font-size: clamp(1.8rem, 6vw, 2.8rem) !important; }
+}
+@media (max-width: 480px) {
+  .cta-section { padding: 40px 20px !important; }
+  .cta-section .hero-actions { flex-direction: column !important; }
+  .cta-section .btn-xl { width: 100% !important; }
+}
+
+/* Footer */
+@media (max-width: 1024px) {
+  .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px !important; }
+}
+@media (max-width: 640px) {
+  .footer-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
+  .footer-bottom { flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
+}
+
+/* ── 5. AUTH PAGES (login, signup) ───────────────────────── */
+@media (max-width: 768px) {
+  .auth-left { width: 100% !important; min-height: 100vh !important; }
+  .auth-right { display: none !important; }
+  body.auth-page { flex-direction: column !important; }
+}
+@media (max-width: 480px) {
+  .auth-left { padding: 28px 20px !important; }
+  .auth-form-section { padding: 12px 0 !important; }
+}
+
+/* Signup steps */
+@media (max-width: 640px) {
+  .signup-wrap { padding: 32px 16px !important; }
+  .signup-box { max-width: 100% !important; }
+  .steps { gap: 0 !important; }
+  .step-label { display: none !important; }
+  .account-type-grid { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 480px) {
+  .account-type-grid { grid-template-columns: 1fr !important; }
+  .signup-header { padding: 0 16px !important; }
+  #otpInputs { gap: 6px !important; }
+  #otpInputs input { width: 42px !important; height: 52px !important; font-size: 1.3rem !important; }
+}
+
+/* ── 6. DASHBOARD ────────────────────────────────────────── */
+@media (max-width: 1280px) {
+  /* Middle row: chart takes full width, quick actions stack */
+  .dash-middle-row { grid-template-columns: 1fr !important; }
+  .dash-bottom-row { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 1024px) {
+  .dash-stat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .dash-middle-row { grid-template-columns: 1fr !important; }
+  .dash-bottom-row { grid-template-columns: 1fr !important; }
+  .dash-right-panel { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 20px !important; }
+}
+@media (max-width: 768px) {
+  .dash-stat-grid { grid-template-columns: 1fr 1fr !important; }
+  .dash-bottom-row { grid-template-columns: 1fr !important; }
+  .welcome-banner { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; padding: 18px 20px !important; }
+  .dash-right-panel { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 480px) {
+  .dash-stat-grid { grid-template-columns: 1fr 1fr !important; }
+  .quick-actions-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 8px !important; }
+  .quick-action { padding: 12px 6px !important; }
+  .quick-action-icon { width: 38px !important; height: 38px !important; }
+  .quick-action-label { font-size: .68rem !important; }
+  .chart-container { height: 180px !important; }
+  #balanceChart { height: 180px !important; }
+}
+
+/* Dashboard inline grid overrides */
+@media (max-width: 1280px) {
+  [style*="grid-template-columns:1fr 380px"],
+  [style*="grid-template-columns: 1fr 380px"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+@media (max-width: 1024px) {
+  [style*="grid-template-columns:1fr 1fr 320px"],
+  [style*="grid-template-columns: 1fr 1fr 320px"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+@media (max-width: 768px) {
+  [style*="grid-template-columns:repeat(4,1fr)"],
+  [style*="grid-template-columns: repeat(4,1fr)"],
+  [style*="grid-template-columns: repeat(4, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+@media (max-width: 480px) {
+  [style*="grid-template-columns:repeat(4,1fr)"],
+  [style*="grid-template-columns: repeat(4, 1fr)"],
+  [style*="grid-template-columns:repeat(3,1fr)"],
+  [style*="grid-template-columns: repeat(3, 1fr)"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* ── 7. ACCOUNTS PAGE ────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .accounts-stat-row { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 768px) {
+  .account-card-header { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+  .account-card-header > div:last-child { text-align: left !important; }
+  .account-details-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  .wire-info-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+}
+@media (max-width: 480px) {
+  .account-details-grid { grid-template-columns: 1fr 1fr !important; }
+  .account-actions { flex-wrap: wrap !important; }
+  .account-actions .btn { flex: 1; min-width: 120px !important; }
+}
+
+/* Account inline grid overrides */
+@media (max-width: 768px) {
+  [style*="grid-template-columns:repeat(4,1fr)"],
+  [style*="grid-template-columns: repeat(4, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  [style*="grid-template-columns:repeat(3,1fr)"],
+  [style*="grid-template-columns: repeat(3, 1fr)"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+@media (max-width: 480px) {
+  [style*="grid-template-columns:repeat(4,1fr)"],
+  [style*="grid-template-columns: repeat(4, 1fr)"],
+  [style*="grid-template-columns:repeat(3,1fr)"],
+  [style*="grid-template-columns: repeat(3, 1fr)"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* ── 8. TRANSACTIONS PAGE ────────────────────────────────── */
+@media (max-width: 768px) {
+  .filter-bar { flex-direction: column !important; align-items: stretch !important; }
+  .filter-bar .search-wrap { min-width: 100% !important; }
+  .filter-bar select { width: 100% !important; }
+  .txn-row { grid-template-columns: 36px 1fr auto !important; gap: 10px !important; }
+  .txn-row .badge { display: none !important; }
+  .pagination { flex-direction: column !important; gap: 12px !important; align-items: flex-start !important; }
+  #pageNumbers { display: none !important; }
+}
+@media (max-width: 480px) {
+  .txn-group-date { font-size: .7rem !important; }
+  .txn-row { padding: 10px 8px !important; }
+  .transaction-name { font-size: .82rem !important; }
+  .transaction-date { font-size: .68rem !important; }
+  .transaction-amount { font-size: .92rem !important; }
+  .filter-bar .btn { width: 100% !important; }
+}
+
+/* Transaction summary cards */
+@media (max-width: 768px) {
+  [style*="grid-template-columns:repeat(3,1fr)"] { grid-template-columns: 1fr !important; }
+}
+
+/* ── 9. TRANSFER PAGE ────────────────────────────────────── */
+@media (max-width: 768px) {
+  .transfer-tabs { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; scrollbar-width: none !important; }
+  .transfer-tabs::-webkit-scrollbar { display: none !important; }
+  .transfer-tab { white-space: nowrap !important; flex-shrink: 0 !important; padding: 12px 16px !important; }
+  .amount-input-big { font-size: 2.5rem !important; }
+  .confirm-row { font-size: .8rem !important; }
+}
+@media (max-width: 480px) {
+  .transfer-tabs .transfer-tab { font-size: .75rem !important; padding: 10px 12px !important; }
+  .amount-input-big { font-size: 2rem !important; }
+  .swap-btn { margin: 4px auto !important; }
+  [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+  .wire-option-label { padding: 10px !important; font-size: .8rem !important; }
+}
+
+/* Zelle layout */
+@media (max-width: 480px) {
+  #panel-zelle .card-elevated { padding: 28px 16px !important; }
+}
+
+/* ── 10. CARDS PAGE ──────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .cards-layout { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 768px) {
+  [style*="grid-template-columns:320px 1fr"],
+  [style*="grid-template-columns: 320px 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+  .card-actions-row { gap: 8px !important; }
+  .card-action-btn { padding: 12px 8px !important; }
+  .card-action-icon { width: 38px !important; height: 38px !important; }
+  .card-action-label { font-size: .68rem !important; }
+}
+@media (max-width: 640px) {
+  .bank-card-visual { min-height: 180px !important; }
+  .card-number { font-size: .95rem !important; letter-spacing: .14em !important; }
+  .grid-2 { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 480px) {
+  .grid-2 { grid-template-columns: 1fr !important; }
+  .bank-card-visual { padding: 20px !important; }
+  .card-number { font-size: .85rem !important; letter-spacing: .12em !important; }
+  [style*="grid-template-columns:repeat(2,1fr)"] { grid-template-columns: 1fr !important; }
+  [style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+}
+
+/* ── 11. INVESTMENTS PAGE ────────────────────────────────── */
+@media (max-width: 1024px) {
+  .investments-top-row { grid-template-columns: 1fr 1fr !important; }
+  [style*="grid-template-columns:1fr 300px"],
+  [style*="grid-template-columns: 1fr 300px"] {
+    grid-template-columns: 1fr !important;
+  }
+  #allocationChart { width: 160px !important; height: 160px !important; }
+}
+@media (max-width: 768px) {
+  /* Holdings table — scroll horizontally */
+  .holdings-scroll-wrap {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .holding-row {
+    grid-template-columns: 1fr 80px 80px !important;
+    min-width: auto !important;
+  }
+  .holding-row > *:nth-child(4),
+  .holding-row > *:nth-child(5),
+  .holding-row > *:nth-child(6) { display: none !important; }
+  .holding-row-header > *:nth-child(4),
+  .holding-row-header > *:nth-child(5),
+  .holding-row-header > *:nth-child(6) { display: none !important; }
+}
+@media (max-width: 640px) {
+  [style*="grid-template-columns:repeat(4,1fr)"],
+  [style*="grid-template-columns: repeat(4, 1fr)"] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  #portfolioChart { height: 160px !important; }
+}
+@media (max-width: 480px) {
+  .holding-row { grid-template-columns: 1fr 80px !important; }
+  .holding-row > *:nth-child(3),
+  .holding-row-header > *:nth-child(3) { display: none !important; }
+}
+
+/* ── 12. SETTINGS PAGE ───────────────────────────────────── */
+@media (max-width: 1024px) {
+  .settings-layout { grid-template-columns: 1fr !important; gap: 16px !important; }
+  .settings-nav { display: flex !important; flex-wrap: wrap !important; gap: 6px !important; background: rgba(255,255,255,.03) !important; border: 1px solid rgba(255,255,255,.06) !important; border-radius: 14px !important; padding: 12px !important; }
+  .settings-nav .settings-nav-item { flex: none !important; padding: 8px 14px !important; border-radius: 8px !important; font-size: .8rem !important; }
+  .settings-nav .settings-nav-item svg { display: none !important; }
+}
+@media (max-width: 640px) {
+  .settings-nav { gap: 4px !important; }
+  .settings-nav .settings-nav-item { padding: 7px 10px !important; font-size: .75rem !important; }
+  .settings-row { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+  .settings-row .toggle-switch { margin-top: 4px !important; }
+  .settings-row select { width: 100% !important; }
+  [style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 480px) {
+  .avatar-upload { width: 68px !important; height: 68px !important; font-size: 1.6rem !important; }
+  [style*="grid-template-columns: 100px 1fr"] { grid-template-columns: 80px 1fr !important; }
+}
+
+/* ── 13. BANK CARD VISUAL ────────────────────────────────── */
+@media (max-width: 640px) {
+  .bank-card-visual { min-height: 170px !important; border-radius: 16px !important; }
+}
+@media (max-width: 480px) {
+  .bank-card-visual { padding: 18px !important; min-height: 160px !important; }
+  .card-number { font-size: .82rem !important; letter-spacing: .12em !important; margin-bottom: 12px !important; }
+  .card-network-circle { width: 26px !important; height: 26px !important; }
+}
+
+/* ── 14. STAT CARDS — All pages ──────────────────────────── */
+@media (max-width: 640px) {
+  .stat-value { font-size: 1.35rem !important; }
+  .stat-change { font-size: .72rem !important; }
+  .stat-label { font-size: .72rem !important; }
+  .stat-icon { width: 38px !important; height: 38px !important; margin-bottom: 12px !important; }
+}
+
+/* ── 15. SECTION HEADINGS ────────────────────────────────── */
+@media (max-width: 640px) {
+  .display-lg { font-size: 2.2rem !important; }
+  .display-md { font-size: 1.7rem !important; }
+  .display-sm { font-size: 1.4rem !important; }
+  .section { padding: 56px 0 !important; }
+  .section-sm { padding: 40px 0 !important; }
+}
+@media (max-width: 480px) {
+  .display-lg { font-size: 1.9rem !important; }
+  .section { padding: 44px 0 !important; }
+}
+
+/* ── 16. TRANSACTION ITEMS — App pages ───────────────────── */
+@media (max-width: 480px) {
+  .transaction-item { padding: 10px 0 !important; gap: 10px !important; }
+  .transaction-icon { width: 36px !important; height: 36px !important; font-size: .95rem !important; }
+}
+
+/* ── 17. DATA TABLE ──────────────────────────────────────── */
+@media (max-width: 768px) {
+  .data-table-wrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
+  .data-table { min-width: 600px !important; }
+}
+
+/* ── 18. MOBILE UTILITIES ────────────────────────────────── */
+.hide-mobile  { display: block !important; }
+.show-mobile  { display: none  !important; }
+
+@media (max-width: 768px) {
+  .hide-mobile { display: none   !important; }
+  .show-mobile { display: block  !important; }
+  .hide-tablet { display: none   !important; }
+}
+@media (max-width: 480px) {
+  .hide-sm { display: none !important; }
+}
+
+/* ── 19. TOUCH & INTERACTION ─────────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+  .btn { min-height: 44px !important; }
+  .btn-sm { min-height: 38px !important; }
+  .sidebar-item { min-height: 44px !important; }
+  .tab-item { min-height: 40px !important; }
+  .form-input { min-height: 46px !important; }
+  .transaction-item { padding: 12px 0 !important; }
+}
+
+/* ── 20. SCROLLBAR (mobile) ──────────────────────────────── */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar { width: 3px !important; height: 3px !important; }
+}
+
+/* ── 21. APP TOPBAR — RESPONSIVE TITLE ──────────────────── */
+@media (max-width: 640px) {
+  .app-topbar-title { font-size: 1rem !important; }
+  .app-topbar { gap: 8px !important; }
+}
+
+/* ── 22. FOOTER (Public) ─────────────────────────────────── */
+@media (max-width: 480px) {
+  .footer { padding: 48px 0 28px !important; }
+  .footer-fdic { font-size: .65rem !important; }
+  .footer-legal { font-size: .7rem !important; }
+}
+
+/* ── 23. SECTION LABEL ───────────────────────────────────── */
+@media (max-width: 480px) {
+  .section-label { font-size: .68rem !important; }
+}
+
+/* ── 24. BENEFICIARY ITEMS ───────────────────────────────── */
+@media (max-width: 480px) {
+  .beneficiary-item { padding: 10px !important; gap: 10px !important; }
+}
+
+/* ── 25. PAGE-SPECIFIC SECTION: SIGNUP HEADER ───────────── */
+@media (max-width: 480px) {
+  .signup-header h1, .signup-header .nav-logo-text { font-size: 1rem !important; }
+}
+
+/* ── 26. INVESTMENTS ALLOCATION (mobile donut) ───────────── */
+@media (max-width: 480px) {
+  #allocationChart { width: 130px !important; height: 130px !important; }
+}
+
+/* ── 27. TOPBAR — Mobile overflow prevention ─────────────────── */
+/* Prevent lateral overflow on the app shell */
+.app-layout { overflow-x: hidden; }
+.app-main   { overflow-x: hidden; }
+
+@media (max-width: 640px) {
+  /* Hide date pill (saves ~170px, not critical on mobile) */
+  #topbarDate { display: none !important; }
+  /* Secondary topbar buttons explicitly opt-in to early hiding via this class */
+  .topbar-btn-secondary { display: none !important; }
+}
+@media (max-width: 480px) {
+  /* On very small phones (≤480px) hide all text action buttons in topbar.
+     Core actions are surfaced via mobile action strips in the page body.  */
+  .app-topbar-right > .btn-sm:not(.btn-icon) { display: none !important; }
+  /* Always keep notification bell visible */
+  .app-topbar-right .notif-dot { display: flex !important; }
+  .app-topbar-right { gap: 6px !important; }
+  .app-topbar-left  { gap: 6px !important; }
+  /* Truncate very long page titles (e.g. "Investment Portfolio") */
+  .app-topbar-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px !important;
+  }
+}
+
+/* ── 28. DASHBOARD — Welcome banner compact ──────────────────── */
+@media (max-width: 640px) {
+  .welcome-banner { padding: 16px 18px !important; gap: 12px !important; }
+}
+@media (max-width: 480px) {
+  /* Hide last-login section, keep the greeting */
+  .welcome-banner > div:last-child { display: none !important; }
+  .welcome-banner [style*="font-size:1.5rem"] { font-size: 1.1rem !important; }
+}
+
+/* ── 29. ACCOUNTS — Large inline balance amounts ─────────────── */
+/* Targets font-family:var(--font-display);font-size:2rem in account
+   card headers — distinct from .stat-value which uses a class      */
+@media (max-width: 640px) {
+  [style*="font-size:2rem"][style*="font-family:var(--font-display)"] {
+    font-size: 1.5rem !important;
+  }
+}
+@media (max-width: 480px) {
+  [style*="font-size:2rem"][style*="font-family:var(--font-display)"] {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* ── 30. INVESTMENTS — Top row single column at mid-mobile ───── */
+@media (max-width: 768px) {
+  .investments-top-row { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 480px) {
+  #portfolioChart { height: 130px !important; }
+}
+
+/* ── 31. TRANSFER — Panel padding on very small screens ─────── */
+@media (max-width: 480px) {
+  #panel-internal .card-elevated,
+  #panel-external .card-elevated,
+  #panel-wire     .card-elevated,
+  #panel-zelle    .card-elevated { padding: 20px 14px !important; }
+}
+
+/* ── 32. STAT CARDS — Overflow on very small screens ─────────── */
+@media (max-width: 375px) {
+  .stat-card   { padding: 14px !important; }
+  .stat-value  { font-size: 1.1rem !important; }
+  .stat-change {
+    font-size: .62rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+}
+
+/* ── 33. BALANCE CHART — height on very small screens ───────── */
+@media (max-width: 375px) {
+  .chart-container { height: 150px !important; }
+  #balanceChart    { height: 150px !important; }
+}
+
+/* ── 34. TYPOGRAPHY — very small screens ─────────────────────── */
+@media (max-width: 375px) {
+  .display-lg { font-size: 1.7rem !important; }
+  .display-md { font-size: 1.4rem !important; }
+}
+
+/* ── 35. CARDS PAGE — action row wrap on small mobile ─────────── */
+@media (max-width: 480px) {
+  .card-actions-row { flex-wrap: wrap !important; }
+  .card-action-btn  { min-width: calc(50% - 6px) !important; flex: none !important; }
+}
+
+/* ── 36. FLEX — prevent topbar shrinkage / overflow ──────────── */
+.app-topbar-left, .app-topbar-right { flex-shrink: 0; min-width: 0; }
+
+/* ── 37. MOBILE ACTION STRIPS — show when topbar buttons are hidden ─ */
+@media (max-width: 640px) {
+  .mobile-action-strip { display: flex !important; }
+}
+
+/* ── 38. SETTINGS — inline save button on mobile ─────────────── */
+/* At ≤480px topbar "Save Changes" is hidden; show an inline version */
+.settings-save-mobile { display: none; }
+@media (max-width: 480px) {
+  .settings-save-mobile { display: block !important; margin-bottom: 20px; }
+}
+
+/* ── 39. CARDS PAGE — card selector buttons stay accessible ──── */
+/* The card selector (Black/Debit) buttons use .btn-sm but are NOT in
+   .app-topbar-right, so the ≤480px rule does not affect them         */
+
+/* ── 40. TRANSACTION FILTER — select widths on mobile ───────── */
+@media (max-width: 640px) {
+  .filter-bar select[style*="width:180px"],
+  .filter-bar select[style*="width:150px"],
+  .filter-bar select[style*="width:140px"] { width: 100% !important; }
+}
+
+/* ── 41. ACCOUNT CARD HEADER — text wrapping at small sizes ─── */
+@media (max-width: 480px) {
+  /* Account name in card header */
+  [style*="font-family:var(--font-display);font-size:1.3rem"] {
+    font-size: 1.05rem !important;
+  }
+}
+
+/* ── 42. HOLDING ROW — always has min-width for scroll ───────── */
+@media (max-width: 640px) {
+  .holdings-scroll-wrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; }
+  .holding-row { min-width: 480px !important; }
+  .holding-row-header { min-width: 480px !important; }
+}
+@media (max-width: 480px) {
+  .holding-row, .holding-row-header { min-width: 320px !important; }
+}

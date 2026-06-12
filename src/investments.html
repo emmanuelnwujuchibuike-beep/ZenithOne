@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Investments — ZenithOne Credit Union</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <style>
+    .holding-row { display:grid; grid-template-columns:1fr 100px 100px 100px 100px 80px; align-items:center; gap:16px; padding:14px 16px; border-radius:12px; transition:background var(--transition); }
+    .holding-row:hover { background:rgba(255,255,255,.03); }
+    .holding-row-header { grid-template-columns:1fr 100px 100px 100px 100px 80px; }
+    .symbol-badge { width:40px; height:40px; border-radius:10px; background:rgba(201,168,76,.1); display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700; color:var(--gold-400); font-family:monospace; }
+    .allocation-bar { height:6px; border-radius:6px; }
+    .pie-slice { display:flex; align-items:center; gap:10px; padding:8px 0; font-size:.85rem; }
+    .pie-dot { width:12px; height:12px; border-radius:3px; flex-shrink:0; }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html" class="sidebar-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></a>
+      <div><div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div><div style="font-size:.55rem;letter-spacing:.18em;color:var(--gold-500);text-transform:uppercase;">Credit Union</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <a href="dashboard.html"    class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+        <a href="accounts.html"     class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Accounts</a>
+        <a href="transactions.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Transactions</a>
+        <a href="transfer.html"     class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>Transfer</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Finance</div>
+        <a href="cards.html"       class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>Cards</a>
+        <a href="investments.html" class="sidebar-item active"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Investments</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Account</div>
+        <a href="settings.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+        <button class="sidebar-item" id="logoutBtn" style="width:100%;text-align:left;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">AR</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Alexandra Reynolds</div>
+          <div class="sidebar-user-tier">Private Banking Client</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="app-main">
+    <header class="app-topbar">
+      <div class="app-topbar-left">
+        <button class="btn btn-icon btn-ghost" id="sidebarToggle"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <div class="app-topbar-title">Investment Portfolio</div>
+      </div>
+      <div class="app-topbar-right">
+        <button class="btn btn-ghost btn-sm topbar-btn-secondary" onclick="openTradeModal()">+ Trade</button>
+        <button class="btn btn-primary btn-sm" onclick="openAdvisorModal()">Speak to Advisor</button>
+        <div class="sidebar-avatar" style="cursor:pointer;">AR</div>
+      </div>
+    </header>
+
+    <div class="app-content">
+
+      <!-- Mobile action strip (hidden on desktop via show-mobile) -->
+      <div style="display:none;gap:10px;margin-bottom:20px;" class="mobile-action-strip">
+        <button class="btn btn-ghost btn-sm" style="flex:1;" onclick="openTradeModal()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-right:6px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>+ Trade
+        </button>
+        <button class="btn btn-primary btn-sm" style="flex:1;" onclick="openAdvisorModal()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-right:6px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Speak to Advisor
+        </button>
+      </div>
+
+      <!-- Portfolio Stats -->
+      <div class="grid-4" style="gap:20px;margin-bottom:28px;">
+        <div class="stat-card">
+          <div class="stat-icon gold"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <div class="stat-value">$1,842,694</div>
+          <div class="stat-label">Total Portfolio Value</div>
+          <div class="stat-change up"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>+$57,420 (3.22%) MTD</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="stat-value" style="color:var(--green-400);">+$284,192</div>
+          <div class="stat-label">Total Gain/Loss</div>
+          <div class="stat-change up">+18.24% all-time return</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+          <div class="stat-value">$4,820</div>
+          <div class="stat-label">Dividends (YTD)</div>
+          <div class="stat-change up">Next dividend: Jul 15</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon gold"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div class="stat-value">7.4%</div>
+          <div class="stat-label">Beta (Portfolio)</div>
+          <div class="stat-change" style="color:var(--slate-500);">Moderately aggressive</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 300px;gap:24px;margin-bottom:24px;">
+
+        <!-- Portfolio Chart -->
+        <div class="card card-elevated">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+            <div><div style="font-family:var(--font-display);font-size:1.25rem;">Performance</div><div style="font-size:.8rem;color:var(--slate-400);">vs. S&P 500</div></div>
+            <div class="tabs" style="flex:none;width:auto;">
+              <div class="tab-item active">1M</div>
+              <div class="tab-item">3M</div>
+              <div class="tab-item">YTD</div>
+              <div class="tab-item">1Y</div>
+            </div>
+          </div>
+          <canvas id="portfolioChart" height="200"></canvas>
+        </div>
+
+        <!-- Allocation -->
+        <div class="card card-elevated">
+          <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:20px;">Asset Allocation</div>
+          <canvas id="allocationChart" width="200" height="200" style="display:block;margin:0 auto 20px;"></canvas>
+          <div>
+            <div class="pie-slice"><div class="pie-dot" style="background:#c9a84c;"></div><span style="flex:1;color:var(--slate-300);">Equities</span><span style="font-weight:500;">52%</span></div>
+            <div class="pie-slice"><div class="pie-dot" style="background:#60a5fa;"></div><span style="flex:1;color:var(--slate-300);">Fixed Income</span><span style="font-weight:500;">24%</span></div>
+            <div class="pie-slice"><div class="pie-dot" style="background:#a78bfa;"></div><span style="flex:1;color:var(--slate-300);">Alternatives</span><span style="font-weight:500;">14%</span></div>
+            <div class="pie-slice"><div class="pie-dot" style="background:#4ade80;"></div><span style="flex:1;color:var(--slate-300);">Real Estate</span><span style="font-weight:500;">7%</span></div>
+            <div class="pie-slice"><div class="pie-dot" style="background:#f87171;"></div><span style="flex:1;color:var(--slate-300);">Cash</span><span style="font-weight:500;">3%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Holdings Table -->
+      <div class="card card-elevated">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <div style="font-family:var(--font-display);font-size:1.25rem;">Holdings</div>
+          <div style="display:flex;gap:8px;">
+            <div class="tabs" style="flex:none;width:auto;">
+              <div class="tab-item active">All</div>
+              <div class="tab-item">Stocks</div>
+              <div class="tab-item">ETFs</div>
+              <div class="tab-item">Bonds</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="holdings-scroll-wrap">
+        <!-- Header -->
+        <div class="holding-row holding-row-header" style="border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:10px;margin-bottom:4px;">
+          <div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.06em;">Symbol / Name</div>
+          <div style="font-size:.7rem;color:var(--slate-500);text-align:right;">Price</div>
+          <div style="font-size:.7rem;color:var(--slate-500);text-align:right;">Change</div>
+          <div style="font-size:.7rem;color:var(--slate-500);text-align:right;">Value</div>
+          <div style="font-size:.7rem;color:var(--slate-500);text-align:right;">Gain/Loss</div>
+          <div style="font-size:.7rem;color:var(--slate-500);text-align:right;">Alloc.</div>
+        </div>
+
+        <div id="holdingsTable"></div>
+        </div><!-- /holdings-scroll-wrap -->
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/investments.js"></script>
+<script>
+const holdings = [
+  { sym:'AAPL', name:'Apple Inc.',           type:'stock', price:212.40, chg:+1.24, shares:240,  cost:142.80, alloc:18.2 },
+  { sym:'MSFT', name:'Microsoft Corp.',      type:'stock', price:438.90, chg:+0.82, shares:88,   cost:312.40, alloc:16.3 },
+  { sym:'VTI',  name:'Vanguard Total Market',type:'etf',   price:262.18, chg:+0.48, shares:400,  cost:198.40, alloc:14.0 },
+  { sym:'BRK.B',name:'Berkshire Hathaway',   type:'stock', price:420.60, chg:-0.15, shares:60,   cost:280.20, alloc:10.8 },
+  { sym:'NVDA', name:'NVIDIA Corp.',         type:'stock', price:1,220.50,chg:+3.40,shares:18,  cost:488.20, alloc:9.4  },
+  { sym:'BND',  name:'Vanguard Bond Market', type:'etf',   price:72.40,  chg:-0.08, shares:1400, cost:76.20,  alloc:8.6  },
+  { sym:'GOOGL',name:'Alphabet Inc.',        type:'stock', price:178.42, chg:+0.62, shares:120,  cost:128.40, alloc:7.8  },
+  { sym:'QQQ',  name:'Invesco QQQ Trust',    type:'etf',   price:455.80, chg:+0.96, shares:40,   cost:320.10, alloc:7.5  },
+  { sym:'REZ',  name:'iShares Resi. RE ETF', type:'etf',   price:88.20,  chg:-0.22, shares:240,  cost:74.40,  alloc:4.4  },
+];
+
+document.getElementById('holdingsTable').innerHTML = holdings.map(h => {
+  const value = h.price * h.shares;
+  const costBasis = h.cost * h.shares;
+  const gainLoss = value - costBasis;
+  const glPct = ((gainLoss / costBasis) * 100).toFixed(2);
+  const isUp = h.chg >= 0;
+  const isGain = gainLoss >= 0;
+  return `
+    <div class="holding-row">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="symbol-badge">${h.sym.slice(0,4)}</div>
+        <div>
+          <div style="font-size:.875rem;font-weight:500;color:var(--white);">${h.sym}</div>
+          <div style="font-size:.75rem;color:var(--slate-500);">${h.name}</div>
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:.875rem;color:var(--white);">$${h.price.toLocaleString('en-US',{minimumFractionDigits:2})}</div>
+        <div style="font-size:.72rem;color:var(--slate-500);">${h.shares} shares</div>
+      </div>
+      <div style="text-align:right;font-size:.875rem;font-weight:500;color:${isUp?'var(--green-400)':'var(--red-400)'};">${isUp?'+':''}${h.chg}%</div>
+      <div style="text-align:right;font-family:var(--font-display);font-size:.95rem;">$${value.toLocaleString('en-US',{minimumFractionDigits:2})}</div>
+      <div style="text-align:right;font-size:.875rem;color:${isGain?'var(--green-400)':'var(--red-400)'};">${isGain?'+':''}$${Math.abs(gainLoss).toLocaleString('en-US',{minimumFractionDigits:0})}<div style="font-size:.7rem;">(${isGain?'+':''}${glPct}%)</div></div>
+      <div style="text-align:right;">
+        <div style="font-size:.8rem;margin-bottom:4px;">${h.alloc}%</div>
+        <div class="allocation-bar" style="background:rgba(255,255,255,.06);"><div style="height:6px;border-radius:6px;width:${h.alloc*3}%;background:var(--gold-500);opacity:.7;"></div></div>
+      </div>
+    </div>`;
+}).join('');
+
+// Portfolio chart
+(function() {
+  const canvas = document.getElementById('portfolioChart');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.parentElement.offsetWidth - 32;
+  canvas.height = 200;
+  const W = canvas.width, H = canvas.height;
+  const pad = { top:16, right:16, bottom:30, left:50 };
+
+  const portfolioData = [1620,1645,1688,1702,1698,1712,1740,1756,1744,1762,1790,1842];
+  const sp500Data     = [1600,1618,1640,1655,1648,1660,1675,1688,1680,1695,1710,1725];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  function drawLine(data, color, dashed=false) {
+    const min = 1580, max = 1860, range = max-min;
+    const cW = W-pad.left-pad.right, cH = H-pad.top-pad.bottom;
+    const pts = data.map((v,i)=>({ x:pad.left+(cW/(data.length-1))*i, y:pad.top+cH*(1-(v-min)/range) }));
+    if(dashed) ctx.setLineDash([6,4]); else ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x,pts[0].y);
+    pts.slice(1).forEach((p,i)=>{
+      const c1x=(pts[i].x+p.x)/2, c1y=pts[i].y, c2x=(pts[i].x+p.x)/2, c2y=p.y;
+      ctx.bezierCurveTo(c1x,c1y,c2x,c2y,p.x,p.y);
+    });
+    ctx.strokeStyle=color; ctx.lineWidth=2; ctx.stroke(); ctx.setLineDash([]);
+    // Labels
+    ctx.fillStyle='#475569'; ctx.font='10px Inter'; ctx.textAlign='center';
+    pts.forEach((p,i)=>ctx.fillText(months[i],p.x,H-4));
+  }
+
+  ctx.clearRect(0,0,W,H);
+  drawLine(sp500Data,'rgba(100,116,139,.5)',true);
+  drawLine(portfolioData,'#c9a84c',false);
+
+  // Legend
+  ctx.fillStyle='#c9a84c'; ctx.fillRect(pad.left,8,20,2);
+  ctx.fillStyle='#94a3b8'; ctx.font='11px Inter'; ctx.textAlign='left'; ctx.fillText('My Portfolio',pad.left+24,12);
+  ctx.strokeStyle='rgba(100,116,139,.5)'; ctx.setLineDash([4,3]); ctx.beginPath(); ctx.moveTo(pad.left+120,8); ctx.lineTo(pad.left+140,8); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillText('S&P 500',pad.left+144,12);
+})();
+
+// Donut/pie chart
+(function() {
+  const canvas = document.getElementById('allocationChart');
+  const ctx = canvas.getContext('2d');
+  const cx=100,cy=100,r=75,inner=45;
+  const slices=[{v:52,c:'#c9a84c'},{v:24,c:'#60a5fa'},{v:14,c:'#a78bfa'},{v:7,c:'#4ade80'},{v:3,c:'#f87171'}];
+  let angle = -Math.PI/2;
+  slices.forEach(s=>{
+    const sweep=(s.v/100)*Math.PI*2;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,angle,angle+sweep);
+    ctx.closePath();
+    ctx.fillStyle=s.c; ctx.fill();
+    angle+=sweep;
+  });
+  ctx.beginPath(); ctx.arc(cx,cy,inner,0,Math.PI*2); ctx.fillStyle='#0d1e35'; ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='bold 18px Cormorant Garamond'; ctx.textAlign='center'; ctx.fillText('$1.84M',cx,cy-4);
+  ctx.fillStyle='#94a3b8'; ctx.font='10px Inter'; ctx.fillText('Portfolio',cx,cy+12);
+})();
+
+function openTradeModal() { alert('Trading — connect to your Supabase investment edge function to enable live trading.'); }
+function openAdvisorModal() { alert('Schedule a call with your ZenithOne Credit Union Banking Advisor: 1-888-763-9000'); }
+// Mobile sidebar
+(function(){
+  const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
+  document.getElementById('sidebarToggle').addEventListener('click',()=>{s.classList.toggle('open');o.classList.toggle('open');});
+  o.addEventListener('click',()=>{s.classList.remove('open');o.classList.remove('open');});
+})();
+</script>
+</body>
+</html>

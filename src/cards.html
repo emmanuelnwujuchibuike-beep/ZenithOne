@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cards — ZenithOne Credit Union</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <style>
+    .card-preview-wrap { perspective:1000px; cursor:pointer; }
+    .card-preview-inner { transform-style:preserve-3d; transition:transform .6s cubic-bezier(.4,0,.2,1); }
+    .card-preview-wrap.flipped .card-preview-inner { transform:rotateY(180deg); }
+    .card-face { backface-visibility:hidden; }
+    .card-back { position:absolute; inset:0; backface-visibility:hidden; transform:rotateY(180deg); border-radius:18px; overflow:hidden; }
+    .card-magnetic-strip { height:48px; background:#111; margin-bottom:16px; margin-top:20px; }
+    .card-cvv-strip { background:rgba(255,255,255,.9); height:36px; display:flex; align-items:center; padding:0 16px; justify-content:flex-end; }
+    .card-limit-bar { position:relative; height:8px; border-radius:8px; background:rgba(255,255,255,.08); overflow:hidden; margin-top:8px; }
+    .card-limit-fill { position:absolute; left:0; top:0; height:100%; border-radius:8px; background:linear-gradient(90deg,var(--gold-500),var(--gold-400)); }
+    .card-action-btn { display:flex; flex-direction:column; align-items:center; gap:8px; padding:16px 12px; border-radius:14px; cursor:pointer; transition:all var(--transition); border:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.03); flex:1; }
+    .card-action-btn:hover { background:rgba(201,168,76,.06); border-color:rgba(201,168,76,.25); }
+    .card-action-icon { width:42px; height:42px; border-radius:12px; background:rgba(201,168,76,.1); color:var(--gold-400); display:flex; align-items:center; justify-content:center; }
+    .card-action-label { font-size:.75rem; color:var(--slate-300); }
+    .reward-tier-item { display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html" class="sidebar-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></a>
+      <div><div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div><div style="font-size:.55rem;letter-spacing:.18em;color:var(--gold-500);text-transform:uppercase;">Credit Union</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <a href="dashboard.html"    class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+        <a href="accounts.html"     class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Accounts</a>
+        <a href="transactions.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Transactions</a>
+        <a href="transfer.html"     class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>Transfer</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Finance</div>
+        <a href="cards.html"       class="sidebar-item active"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>Cards</a>
+        <a href="investments.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Investments</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Account</div>
+        <a href="settings.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+        <button class="sidebar-item" id="logoutBtn" style="width:100%;text-align:left;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">AR</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Alexandra Reynolds</div>
+          <div class="sidebar-user-tier">Private Banking Client</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="app-main">
+    <header class="app-topbar">
+      <div class="app-topbar-left">
+        <button class="btn btn-icon btn-ghost" id="sidebarToggle"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <div class="app-topbar-title">Cards</div>
+      </div>
+      <div class="app-topbar-right">
+        <button class="btn btn-primary btn-sm" onclick="requestNewCard()">+ Request Card</button>
+        <div class="sidebar-avatar" style="cursor:pointer;">AR</div>
+      </div>
+    </header>
+
+    <div class="app-content">
+      <div style="display:grid;grid-template-columns:320px 1fr;gap:28px;align-items:start;">
+
+        <!-- Card Visual + Selector -->
+        <div>
+          <div style="display:flex;gap:10px;margin-bottom:16px;justify-content:center;">
+            <button class="btn btn-sm btn-primary" onclick="selectCard(0,this)" id="cardBtn0">Black Card</button>
+            <button class="btn btn-sm btn-ghost"   onclick="selectCard(1,this)" id="cardBtn1">Debit Card</button>
+          </div>
+
+          <!-- Black Card -->
+          <div class="card-preview-wrap" id="cardWrap0" onclick="document.getElementById('cardWrap0').classList.toggle('flipped')">
+            <div class="card-preview-inner" style="position:relative;min-height:200px;">
+              <div class="card-face">
+                <div class="bank-card-visual black">
+                  <div style="position:absolute;top:28px;left:28px;right:28px;display:flex;justify-content:space-between;align-items:flex-start;">
+                    <svg width="36" height="26" viewBox="0 0 36 28"><rect width="36" height="28" rx="4" fill="url(#chip3)"/><defs><linearGradient id="chip3" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8c96b"/><stop offset="100%" stop-color="#c9a84c"/></linearGradient></defs><rect x="2" y="8" width="32" height="12" rx="1" fill="rgba(255,255,255,.15)"/></svg>
+                    <div style="text-align:right;">
+                      <div style="font-size:.55rem;color:rgba(255,255,255,.3);letter-spacing:.15em;">ZENITHONE</div>
+                      <div style="font-size:.65rem;color:rgba(255,255,255,.3);">BLACK</div>
+                    </div>
+                  </div>
+                  <div style="margin-top:56px;">
+                    <div class="card-number">•••• •••• •••• 7842</div>
+                    <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+                      <div><div style="font-size:.6rem;color:rgba(255,255,255,.35);text-transform:uppercase;">A. REYNOLDS</div></div>
+                      <div class="card-network"><div class="card-network-circle"></div><div class="card-network-circle"></div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-back" style="background:linear-gradient(135deg,#0a0a0a,#1a1a1a);">
+                <div class="card-magnetic-strip"></div>
+                <div style="padding:0 24px;">
+                  <div class="card-cvv-strip">
+                    <span style="font-family:monospace;font-size:.9rem;color:#000;">•••</span>
+                  </div>
+                  <div style="margin-top:12px;font-size:.7rem;color:rgba(255,255,255,.3);line-height:1.6;text-align:center;">This card is property of ZenithOne Credit Union. If found, please return to any ZenithOne branch. Member FDIC.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:.72rem;color:var(--slate-500);margin-top:10px;">Click card to flip</div>
+
+          <!-- Card Actions -->
+          <div style="display:flex;gap:10px;margin-top:20px;">
+            <div class="card-action-btn" onclick="toggleCardFreeze()">
+              <div class="card-action-icon" id="freezeIcon">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M4.93 4.93l14.14 14.14M2 12h20M4.93 19.07l14.14-14.14"/></svg>
+              </div>
+              <div class="card-action-label" id="freezeLabel">Freeze</div>
+            </div>
+            <div class="card-action-btn" onclick="showLimitsModal()">
+              <div class="card-action-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+              <div class="card-action-label">Limits</div>
+            </div>
+            <div class="card-action-btn" onclick="showPinModal()">
+              <div class="card-action-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+              <div class="card-action-label">PIN</div>
+            </div>
+            <div class="card-action-btn" onclick="reportCard()">
+              <div class="card-action-icon" style="background:rgba(239,68,68,.1);color:var(--red-400);"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div>
+              <div class="card-action-label">Report</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Details Panel -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+
+          <!-- Card Stats -->
+          <div class="grid-2" style="gap:16px;">
+            <div class="stat-card">
+              <div class="stat-icon gold"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div>
+              <div class="stat-value">$42,500</div>
+              <div class="stat-label">Credit Limit</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div>
+              <div class="stat-value">$38,720</div>
+              <div class="stat-label">Available Credit</div>
+            </div>
+          </div>
+
+          <!-- Credit Utilization -->
+          <div class="card card-elevated">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+              <div style="font-family:var(--font-display);font-size:1.1rem;">Credit Utilization</div>
+              <div class="badge badge-green">Excellent</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:8px;">
+              <span style="color:var(--slate-400);">$3,780 used of $42,500</span>
+              <span style="color:var(--white);font-weight:500;">8.9%</span>
+            </div>
+            <div class="progress-bar" style="height:10px;"><div class="progress-fill" style="width:8.9%;background:var(--green-400);"></div></div>
+            <div style="font-size:.75rem;color:var(--slate-500);margin-top:10px;">Keeping utilization below 30% improves your credit score.</div>
+          </div>
+
+          <!-- Card Details -->
+          <div class="card card-elevated">
+            <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:16px;">Card Information</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+              <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Card Type</div><div style="font-size:.9rem;">ZenithOne Black Visa®</div></div>
+              <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Card Number</div><div style="font-size:.9rem;font-family:monospace;">•••• •••• •••• 7842</div></div>
+              <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Expiry</div><div style="font-size:.9rem;">09/29</div></div>
+              <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Status</div><div class="badge badge-green" style="display:inline-flex;">Active</div></div>
+              <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Billing Cycle</div><div style="font-size:.9rem;">Closes 28th monthly</div></div>
+              <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Payment Due</div><div style="font-size:.9rem;color:var(--gold-400);">July 15, 2024</div></div>
+            </div>
+          </div>
+
+          <!-- Rewards -->
+          <div class="card card-elevated">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+              <div style="font-family:var(--font-display);font-size:1.1rem;">ZenithOne Rewards</div>
+              <div style="font-family:var(--font-display);font-size:1.5rem;color:var(--gold-400);">124,840 pts</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0;">
+              <div class="reward-tier-item">
+                <div style="width:36px;height:36px;border-radius:10px;background:rgba(201,168,76,.1);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">✈️</div>
+                <div style="flex:1;"><div style="font-size:.85rem;font-weight:500;">Travel</div><div style="font-size:.75rem;color:var(--slate-400);">3× points on airlines, hotels</div></div>
+                <div style="font-size:.85rem;color:var(--gold-400);">3×</div>
+              </div>
+              <div class="reward-tier-item">
+                <div style="width:36px;height:36px;border-radius:10px;background:rgba(201,168,76,.1);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">🍽️</div>
+                <div style="flex:1;"><div style="font-size:.85rem;font-weight:500;">Dining</div><div style="font-size:.75rem;color:var(--slate-400);">2× points on restaurants</div></div>
+                <div style="font-size:.85rem;color:var(--gold-400);">2×</div>
+              </div>
+              <div class="reward-tier-item" style="border-bottom:none;">
+                <div style="width:36px;height:36px;border-radius:10px;background:rgba(201,168,76,.1);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">🛍️</div>
+                <div style="flex:1;"><div style="font-size:.85rem;font-weight:500;">Everything Else</div><div style="font-size:.75rem;color:var(--slate-400);">1.5× points on all purchases</div></div>
+                <div style="font-size:.85rem;color:var(--gold-400);">1.5×</div>
+              </div>
+            </div>
+            <button class="btn btn-outline w-full btn-sm" style="margin-top:16px;" onclick="redeemRewards()">Redeem Points</button>
+          </div>
+
+          <!-- Spending Controls -->
+          <div class="card card-elevated">
+            <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:16px;">Spending Controls</div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div><div style="font-size:.875rem;font-weight:500;">International Transactions</div><div style="font-size:.75rem;color:var(--slate-400);">Allow purchases outside the US</div></div>
+                <label style="position:relative;display:inline-block;width:46px;height:26px;">
+                  <input type="checkbox" checked style="opacity:0;width:0;height:0;" id="intlToggle" onchange="toggleSetting('international',this.checked)" />
+                  <span style="position:absolute;cursor:pointer;inset:0;background:#333;border-radius:26px;transition:.3s;" id="intlTrack"></span>
+                </label>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div><div style="font-size:.875rem;font-weight:500;">Online Purchases</div><div style="font-size:.75rem;color:var(--slate-400);">Allow card-not-present transactions</div></div>
+                <label style="position:relative;display:inline-block;width:46px;height:26px;">
+                  <input type="checkbox" checked style="opacity:0;width:0;height:0;" id="onlineToggle" onchange="toggleSetting('online',this.checked)" />
+                  <span style="position:absolute;cursor:pointer;inset:0;background:#333;border-radius:26px;transition:.3s;" id="onlineTrack"></span>
+                </label>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div><div style="font-size:.875rem;font-weight:500;">ATM Cash Advances</div><div style="font-size:.75rem;color:var(--slate-400);">Withdraw cash from ATMs</div></div>
+                <label style="position:relative;display:inline-block;width:46px;height:26px;">
+                  <input type="checkbox" style="opacity:0;width:0;height:0;" id="atmToggle" onchange="toggleSetting('atm',this.checked)" />
+                  <span style="position:absolute;cursor:pointer;inset:0;background:#333;border-radius:26px;transition:.3s;" id="atmTrack"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/cards.js"></script>
+<script>
+let isFrozen = false;
+
+function toggleCardFreeze() {
+  isFrozen = !isFrozen;
+  document.getElementById('freezeLabel').textContent = isFrozen ? 'Unfreeze' : 'Freeze';
+  document.getElementById('freezeIcon').style.color = isFrozen ? 'var(--red-400)' : 'var(--gold-400)';
+  document.getElementById('freezeIcon').style.background = isFrozen ? 'rgba(239,68,68,.12)' : 'rgba(201,168,76,.1)';
+  alert(isFrozen ? '🔒 Card frozen. All transactions declined until unfrozen.' : '✅ Card unfrozen. Transactions are now active.');
+}
+
+function selectCard(index, btn) {
+  document.querySelectorAll('[id^=cardBtn]').forEach(b => b.classList.replace('btn-primary','btn-ghost'));
+  btn.classList.replace('btn-ghost','btn-primary');
+}
+
+function showLimitsModal() { alert('Set daily/transaction spending limits — connect to Supabase Edge Function: card-operations'); }
+function showPinModal()   { alert('PIN management — connect to Supabase Edge Function: card-operations'); }
+function reportCard()     { if(confirm('Report this card as lost or stolen?')) alert('Card reported. A replacement will arrive in 2–4 business days.'); }
+function requestNewCard() { alert('Card request submitted. Processing takes 5–7 business days.'); }
+function redeemRewards()  { alert('124,840 points = $1,248.40 in cash back or $1,560 in travel value.'); }
+
+function toggleSetting(type, val) {
+  const trackId = type === 'international' ? 'intlTrack' : type === 'online' ? 'onlineTrack' : 'atmTrack';
+  document.getElementById(trackId).style.background = val ? 'var(--gold-500)' : '#333';
+  setTimeout(() => alert(`${type.charAt(0).toUpperCase()+type.slice(1)} transactions ${val?'enabled':'disabled'}.`), 100);
+}
+
+// Initialize toggle states
+['intl','online','atm'].forEach(id => {
+  const el = document.getElementById(id+'Toggle');
+  const track = document.getElementById(id+'Track');
+  if (el && el.checked) track.style.background = 'var(--gold-500)';
+});
+// Mobile sidebar
+(function(){
+  const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
+  document.getElementById('sidebarToggle').addEventListener('click',()=>{s.classList.toggle('open');o.classList.toggle('open');});
+  o.addEventListener('click',()=>{s.classList.remove('open');o.classList.remove('open');});
+})();
+</script>
+</body>
+</html>

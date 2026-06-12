@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transfer — ZenithOne Credit Union</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <style>
+    .transfer-tabs { display:flex; gap:0; border-bottom:1px solid rgba(255,255,255,.06); margin-bottom:32px; }
+    .transfer-tab { padding:14px 24px; font-size:.875rem; color:var(--slate-400); cursor:pointer; border-bottom:2px solid transparent; transition:all var(--transition); }
+    .transfer-tab:hover { color:var(--white); }
+    .transfer-tab.active { color:var(--gold-400); border-bottom-color:var(--gold-500); }
+    .transfer-panel { display:none; } .transfer-panel.active { display:block; }
+    .amount-input-big { background:transparent; border:none; outline:none; font-family:var(--font-display); font-size:3.5rem; color:var(--white); width:100%; text-align:center; placeholder-color:rgba(255,255,255,.2); }
+    .amount-input-big::placeholder { color:rgba(255,255,255,.15); }
+    .account-select-item { display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:12px; cursor:pointer; border:2px solid rgba(255,255,255,.06); transition:all var(--transition); margin-bottom:8px; }
+    .account-select-item:hover { border-color:rgba(201,168,76,.3); }
+    .account-select-item.selected { border-color:var(--gold-500); background:rgba(201,168,76,.07); }
+    .beneficiary-item { display:flex; align-items:center; gap:14px; padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,.06); cursor:pointer; transition:all var(--transition); }
+    .beneficiary-item:hover { border-color:rgba(201,168,76,.3); background:rgba(201,168,76,.04); }
+    .confirm-row { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.05); font-size:.875rem; }
+    .confirm-row:last-child { border-bottom:none; }
+    .swap-btn { width:40px; height:40px; border-radius:50%; background:rgba(201,168,76,.1); border:1px solid rgba(201,168,76,.3); display:flex; align-items:center; justify-content:center; color:var(--gold-400); cursor:pointer; margin:8px auto; transition:all var(--transition); }
+    .swap-btn:hover { background:rgba(201,168,76,.2); transform:rotate(180deg); }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html" class="sidebar-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></a>
+      <div><div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div><div style="font-size:.55rem;letter-spacing:.18em;color:var(--gold-500);text-transform:uppercase;">Credit Union</div></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <a href="dashboard.html"    class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+        <a href="accounts.html"     class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Accounts</a>
+        <a href="transactions.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Transactions</a>
+        <a href="transfer.html"     class="sidebar-item active"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>Transfer</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Finance</div>
+        <a href="cards.html"       class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>Cards</a>
+        <a href="investments.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Investments</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Account</div>
+        <a href="settings.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+        <button class="sidebar-item" id="logoutBtn" style="width:100%;text-align:left;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">AR</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Alexandra Reynolds</div>
+          <div class="sidebar-user-tier">Private Banking Client</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="app-main">
+    <header class="app-topbar">
+      <div class="app-topbar-left">
+        <button class="btn btn-icon btn-ghost" id="sidebarToggle"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <div class="app-topbar-title">Transfer Funds</div>
+      </div>
+      <div class="app-topbar-right">
+        <button class="btn btn-ghost btn-sm" onclick="openAddBeneficiaryModal()">+ Add Recipient</button>
+        <button class="btn btn-icon btn-ghost"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+        <div class="sidebar-avatar" style="cursor:pointer;">AR</div>
+      </div>
+    </header>
+
+    <div class="app-content">
+      <div style="max-width:780px;margin:0 auto;">
+
+        <!-- Transfer Tabs -->
+        <div class="transfer-tabs">
+          <div class="transfer-tab active" onclick="switchTransferTab('internal',this)">Between My Accounts</div>
+          <div class="transfer-tab" onclick="switchTransferTab('external',this)">To Someone Else</div>
+          <div class="transfer-tab" onclick="switchTransferTab('wire',this)">Wire Transfer</div>
+          <div class="transfer-tab" onclick="switchTransferTab('zelle',this)">Zelle®</div>
+        </div>
+
+        <!-- INTERNAL -->
+        <div class="transfer-panel active" id="panel-internal">
+          <div class="card card-elevated">
+            <div style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:20px;">Internal Transfer</div>
+
+            <div class="form-group" style="margin-bottom:4px;">
+              <label class="form-label">From Account</label>
+              <select class="form-input form-select" id="fromAccount" onchange="updateFromBalance()">
+                <option value="checking">Checking ••••4821 — Balance: $124,582.74</option>
+                <option value="savings">High-Yield Savings ••••9103 — Balance: $892,418.33</option>
+                <option value="money_market">Money Market ••••3376 — Balance: $1,830,292.11</option>
+              </select>
+            </div>
+
+            <div class="swap-btn" onclick="swapAccounts()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+            </div>
+
+            <div class="form-group" style="margin-bottom:28px;">
+              <label class="form-label">To Account</label>
+              <select class="form-input form-select" id="toAccount">
+                <option value="savings">High-Yield Savings ••••9103 — Balance: $892,418.33</option>
+                <option value="checking">Checking ••••4821 — Balance: $124,582.74</option>
+                <option value="money_market">Money Market ••••3376 — Balance: $1,830,292.11</option>
+              </select>
+            </div>
+
+            <!-- Amount -->
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;text-align:center;margin-bottom:24px;">
+              <div style="font-size:.75rem;color:var(--slate-500);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Transfer Amount</div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
+                <span style="font-family:var(--font-display);font-size:2.5rem;color:var(--slate-400);">$</span>
+                <input type="number" id="transferAmount" class="amount-input-big" placeholder="0.00" min="0.01" step="0.01" />
+              </div>
+              <div style="font-size:.8rem;color:var(--slate-500);margin-top:8px;" id="availableDisplay">Available: $124,582.74</div>
+              <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+                <button class="btn btn-ghost btn-sm" onclick="setAmount(100)">$100</button>
+                <button class="btn btn-ghost btn-sm" onclick="setAmount(500)">$500</button>
+                <button class="btn btn-ghost btn-sm" onclick="setAmount(1000)">$1,000</button>
+                <button class="btn btn-ghost btn-sm" onclick="setAmount(5000)">$5,000</button>
+                <button class="btn btn-ghost btn-sm" onclick="setAmountAll()">All</button>
+              </div>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+              <div class="form-group">
+                <label class="form-label">Transfer Date</label>
+                <input type="date" id="transferDate" class="form-input" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Memo (optional)</label>
+                <input type="text" id="transferMemo" class="form-input" placeholder="e.g., Monthly savings" />
+              </div>
+            </div>
+
+            <div class="alert alert-info" style="margin-bottom:20px;">
+              <svg class="alert-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+              Internal transfers are free and process immediately. Funds are available within minutes.
+            </div>
+
+            <button class="btn btn-primary w-full btn-lg" onclick="reviewTransfer()">Review Transfer</button>
+          </div>
+        </div>
+
+        <!-- EXTERNAL -->
+        <div class="transfer-panel" id="panel-external">
+          <div class="card card-elevated">
+            <div style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:20px;">External Transfer (ACH)</div>
+
+            <div class="form-group" style="margin-bottom:20px;">
+              <label class="form-label">From Account</label>
+              <select class="form-input form-select">
+                <option>Checking ••••4821 — $124,582.74</option>
+                <option>High-Yield Savings ••••9103 — $892,418.33</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom:20px;">
+              <label class="form-label">Recipient</label>
+              <div id="beneficiariesList" style="margin-bottom:12px;"></div>
+              <button class="btn btn-outline btn-sm" onclick="openAddBeneficiaryModal()">+ Add New Recipient</button>
+            </div>
+
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;text-align:center;margin-bottom:24px;">
+              <div style="font-size:.75rem;color:var(--slate-500);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Amount</div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
+                <span style="font-family:var(--font-display);font-size:2.5rem;color:var(--slate-400);">$</span>
+                <input type="number" id="extAmount" class="amount-input-big" placeholder="0.00" min="0.01" />
+              </div>
+              <div style="font-size:.8rem;color:var(--slate-500);margin-top:8px;">ACH limit: $50,000/day for external transfers</div>
+            </div>
+
+            <div class="alert alert-warning" style="margin-bottom:20px;">
+              <svg class="alert-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+              External ACH transfers take 1–3 business days. Wire transfers are faster for same-day processing.
+            </div>
+            <button class="btn btn-primary w-full btn-lg" onclick="reviewTransfer()">Continue</button>
+          </div>
+        </div>
+
+        <!-- WIRE -->
+        <div class="transfer-panel" id="panel-wire">
+          <div class="card card-elevated">
+            <div style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:8px;">Domestic &amp; International Wire</div>
+            <div style="font-size:.875rem;color:var(--slate-400);margin-bottom:24px;">Domestic wires process same day if submitted before 4PM ET. International wires process next business day.</div>
+            <div style="display:flex;flex-direction:column;gap:18px;">
+              <div class="form-group">
+                <label class="form-label">From Account</label>
+                <select class="form-input form-select"><option>Checking ••••4821 — $124,582.74</option></select>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div class="form-group">
+                  <label class="form-label">Beneficiary Name</label>
+                  <input type="text" class="form-input" placeholder="Full legal name" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Bank Name</label>
+                  <input type="text" class="form-input" placeholder="Receiving bank name" />
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div class="form-group">
+                  <label class="form-label">Routing / ABA Number</label>
+                  <input type="text" class="form-input" placeholder="9-digit ABA number" maxlength="9" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Account Number</label>
+                  <input type="text" class="form-input" placeholder="Recipient account number" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Wire Type</label>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                  <label style="display:flex;align-items:center;gap:10px;padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:10px;cursor:pointer;" class="wire-option-label">
+                    <input type="radio" name="wireType" value="domestic" checked style="accent-color:var(--gold-500);" /> Domestic USD ($25 fee)
+                  </label>
+                  <label style="display:flex;align-items:center;gap:10px;padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:10px;cursor:pointer;" class="wire-option-label">
+                    <input type="radio" name="wireType" value="international" style="accent-color:var(--gold-500);" /> International ($45 fee)
+                  </label>
+                </div>
+              </div>
+              <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;text-align:center;">
+                <div style="font-size:.75rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Wire Amount</div>
+                <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
+                  <span style="font-family:var(--font-display);font-size:2.5rem;color:var(--slate-400);">$</span>
+                  <input type="number" class="amount-input-big" placeholder="0.00" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Wire Purpose / Message</label>
+                <input type="text" class="form-input" placeholder="e.g., Invoice payment, Real estate purchase" />
+              </div>
+            </div>
+            <button class="btn btn-primary w-full btn-lg" style="margin-top:24px;" onclick="reviewTransfer()">Submit Wire Transfer</button>
+          </div>
+        </div>
+
+        <!-- ZELLE -->
+        <div class="transfer-panel" id="panel-zelle">
+          <div class="card card-elevated" style="text-align:center;padding:48px;">
+            <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#6c3be4,#4c1d95);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem;">Z</div>
+            <h3 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:12px;">Zelle® Payments</h3>
+            <p style="color:var(--slate-400);max-width:400px;margin:0 auto 28px;line-height:1.75;">Send money instantly to anyone with a U.S. bank account using their email address or mobile phone number. No fees.</p>
+            <div style="max-width:380px;margin:0 auto;display:flex;flex-direction:column;gap:16px;">
+              <div class="form-group">
+                <label class="form-label">Recipient Email or Phone</label>
+                <div class="input-group">
+                  <svg class="input-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  <input type="text" id="zelleRecipient" class="form-input" placeholder="email@example.com or +1 (555) 000-0000" />
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
+                <span style="font-family:var(--font-display);font-size:2.5rem;color:var(--slate-400);">$</span>
+                <input type="number" id="zelleAmount" class="amount-input-big" placeholder="0.00" style="font-size:2.5rem;" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Note (optional)</label>
+                <input type="text" class="form-input" placeholder="What's it for?" />
+              </div>
+              <button class="btn btn-primary w-full btn-lg" onclick="submitZelle()">Send with Zelle®</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Transfers -->
+        <div class="card card-elevated" style="margin-top:24px;">
+          <div style="font-family:var(--font-display);font-size:1.2rem;margin-bottom:16px;">Recent Transfers</div>
+          <div>
+            <div class="transaction-item">
+              <div class="transaction-icon" style="font-size:1.1rem;">↗️</div>
+              <div class="transaction-info"><div class="transaction-name">Transfer to Savings</div><div class="transaction-date">Jun 8, 2024 · Internal</div></div>
+              <div><div class="transaction-amount debit">-$5,000.00</div><div class="transaction-status completed">Completed</div></div>
+            </div>
+            <div class="transaction-item">
+              <div class="transaction-icon" style="font-size:1.1rem;">🏦</div>
+              <div class="transaction-info"><div class="transaction-name">Wire — J. Richardson Capital</div><div class="transaction-date">Jun 2, 2024 · Incoming Wire</div></div>
+              <div><div class="transaction-amount credit">+$50,000.00</div><div class="transaction-status completed">Completed</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Confirm Transfer</div>
+      <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="font-family:var(--font-display);font-size:2.8rem;color:var(--white);" id="confirmAmount">$0.00</div>
+        <div style="font-size:.8rem;color:var(--slate-400);margin-top:4px;">Transfer Amount</div>
+      </div>
+      <div id="confirmDetails"></div>
+      <div class="alert alert-warning" style="margin-top:16px;">
+        <svg class="alert-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        Please verify all transfer details. This action cannot be undone.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('confirmModal')">Cancel</button>
+      <button class="btn btn-primary" id="confirmBtn" onclick="executeTransfer()">
+        <span id="confirmBtnText">Confirm Transfer</span>
+        <span class="spinner hidden" id="confirmSpinner"></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Beneficiary Modal -->
+<div class="modal-overlay" id="addBeneficiaryModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Add New Recipient</div>
+      <button class="modal-close" onclick="closeModal('addBeneficiaryModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="beneName" class="form-input" placeholder="Recipient's legal name" /></div>
+        <div class="form-group"><label class="form-label">Nickname</label><input type="text" id="beneNick" class="form-input" placeholder="e.g., John's Chase" /></div>
+        <div class="form-group"><label class="form-label">Bank Name</label><input type="text" id="beneBank" class="form-input" placeholder="e.g., Chase Bank" /></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div class="form-group"><label class="form-label">Routing Number</label><input type="text" id="beneRouting" class="form-input" placeholder="9-digit ABA" maxlength="9" /></div>
+          <div class="form-group"><label class="form-label">Account Number</label><input type="text" id="beneAccNum" class="form-input" placeholder="Account number" /></div>
+        </div>
+        <div class="form-group"><label class="form-label">Account Type</label><select class="form-input form-select"><option>Checking</option><option>Savings</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('addBeneficiaryModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveBeneficiary()">Save Recipient</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/transfer.js"></script>
+<script>
+// Set today's date as default
+document.getElementById('transferDate').value = new Date().toISOString().split('T')[0];
+
+function switchTransferTab(tab, el) {
+  document.querySelectorAll('.transfer-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.transfer-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+
+const balances = { checking: 124582.74, savings: 892418.33, money_market: 1830292.11 };
+
+function updateFromBalance() {
+  const acc = document.getElementById('fromAccount').value;
+  document.getElementById('availableDisplay').textContent = 'Available: $' + balances[acc].toLocaleString('en-US',{minimumFractionDigits:2});
+}
+
+function setAmount(amt) { document.getElementById('transferAmount').value = amt; }
+function setAmountAll() {
+  const acc = document.getElementById('fromAccount').value;
+  document.getElementById('transferAmount').value = balances[acc];
+}
+
+function swapAccounts() {
+  const from = document.getElementById('fromAccount');
+  const to = document.getElementById('toAccount');
+  const tmp = from.value;
+  from.value = to.value;
+  to.value = tmp;
+  updateFromBalance();
+}
+
+function reviewTransfer() {
+  const amt = parseFloat(document.getElementById('transferAmount').value);
+  if (!amt || amt <= 0) { alert('Please enter a valid transfer amount.'); return; }
+  const from = document.getElementById('fromAccount');
+  const to   = document.getElementById('toAccount');
+  const bal  = balances[from.value];
+  if (amt > bal) { alert('Insufficient funds. Available balance: $' + bal.toLocaleString('en-US',{minimumFractionDigits:2})); return; }
+  document.getElementById('confirmAmount').textContent = '$' + amt.toLocaleString('en-US',{minimumFractionDigits:2});
+  document.getElementById('confirmDetails').innerHTML = `
+    <div class="confirm-row"><span style="color:var(--slate-400);">From</span><span>${from.options[from.selectedIndex].text.split('—')[0].trim()}</span></div>
+    <div class="confirm-row"><span style="color:var(--slate-400);">To</span><span>${to.options[to.selectedIndex].text.split('—')[0].trim()}</span></div>
+    <div class="confirm-row"><span style="color:var(--slate-400);">Date</span><span>${document.getElementById('transferDate').value}</span></div>
+    <div class="confirm-row"><span style="color:var(--slate-400);">Fee</span><span style="color:var(--green-400);">Free</span></div>
+    <div class="confirm-row"><span style="color:var(--slate-400);">Processing</span><span>Immediate</span></div>
+  `;
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+function executeTransfer() {
+  const btn = document.getElementById('confirmBtn');
+  const spinner = document.getElementById('confirmSpinner');
+  document.getElementById('confirmBtnText').textContent = 'Processing...';
+  spinner.classList.remove('hidden');
+  btn.disabled = true;
+  // Call Supabase Edge Function: transfer-funds
+  if (typeof processTransfer === 'function') {
+    processTransfer();
+  } else {
+    setTimeout(() => {
+      closeModal('confirmModal');
+      alert('Transfer completed successfully! Reference: #TRF' + Date.now());
+    }, 1800);
+  }
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function openAddBeneficiaryModal() { document.getElementById('addBeneficiaryModal').classList.add('open'); }
+function saveBeneficiary() { alert('Recipient saved. Verification may take 1–2 business days.'); closeModal('addBeneficiaryModal'); }
+function submitZelle() {
+  const r = document.getElementById('zelleRecipient').value;
+  const a = document.getElementById('zelleAmount').value;
+  if (!r || !a) { alert('Please enter recipient and amount.'); return; }
+  alert(`Zelle payment of $${parseFloat(a).toFixed(2)} sent to ${r}.`);
+}
+
+// Render beneficiaries
+const beneficiaries = [
+  { id:'b1', nick:'John Chase',       name:'John Richardson',    bank:'Chase Bank',     last4:'6234' },
+  { id:'b2', nick:'Apex Ventures LLC',name:'Apex Ventures LLC',  bank:'Citibank',       last4:'9871' },
+];
+let selectedBene = null;
+document.getElementById('beneficiariesList').innerHTML = beneficiaries.map(b => `
+  <div class="beneficiary-item" id="bene-${b.id}" onclick="selectBeneficiary('${b.id}')">
+    <div style="width:40px;height:40px;border-radius:50%;background:rgba(201,168,76,.12);display:flex;align-items:center;justify-content:center;color:var(--gold-400);font-family:var(--font-display);font-size:1rem;">${b.nick[0]}</div>
+    <div style="flex:1;"><div style="font-size:.9rem;font-weight:500;">${b.nick}</div><div style="font-size:.75rem;color:var(--slate-400);">${b.bank} · ••••${b.last4}</div></div>
+    <div id="check-${b.id}" style="color:var(--gold-400);display:none;">✓</div>
+  </div>`).join('');
+
+function selectBeneficiary(id) {
+  beneficiaries.forEach(b => {
+    document.getElementById('bene-' + b.id).style.borderColor = '';
+    document.getElementById('bene-' + b.id).style.background = '';
+    document.getElementById('check-' + b.id).style.display = 'none';
+  });
+  selectedBene = id;
+  document.getElementById('bene-' + id).style.borderColor = 'var(--gold-500)';
+  document.getElementById('bene-' + id).style.background = 'rgba(201,168,76,.07)';
+  document.getElementById('check-' + id).style.display = '';
+}
+
+// Close modals on overlay click
+['confirmModal','addBeneficiaryModal'].forEach(id => {
+  document.getElementById(id).addEventListener('click', function(e) { if(e.target===this) closeModal(id); });
+});
+// Mobile sidebar
+(function(){
+  const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
+  document.getElementById('sidebarToggle').addEventListener('click',()=>{s.classList.toggle('open');o.classList.toggle('open');});
+  o.addEventListener('click',()=>{s.classList.remove('open');o.classList.remove('open');});
+})();
+</script>
+</body>
+</html>

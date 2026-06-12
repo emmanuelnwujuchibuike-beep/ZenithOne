@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Services — ZenithOne Credit Union</title>
+  <meta name="description" content="Explore the full suite of ultra-premium banking, lending, investment, and wealth services offered by ZenithOne Credit Union." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <style>
+    .nav-link.active { color: var(--gold-400) !important; }
+    /* Page hero */
+    .page-hero { position:relative; padding:160px 0 100px; overflow:hidden; border-bottom:1px solid rgba(201,168,76,.1); }
+    .page-hero-bg { position:absolute; inset:0; z-index:0; background:radial-gradient(ellipse 120% 70% at 50% 0%, rgba(201,168,76,.1) 0%, transparent 55%), linear-gradient(180deg,#020b18 0%,#061225 70%,#0d1e35 100%); }
+    .page-hero-grid { position:absolute; inset:0; z-index:0; background-image:linear-gradient(rgba(201,168,76,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.03) 1px,transparent 1px); background-size:60px 60px; mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black 30%,transparent 80%); }
+    .page-hero-content { position:relative; z-index:1; }
+    .page-breadcrumb { font-size:.7rem; letter-spacing:.15em; text-transform:uppercase; color:var(--gold-500); margin-bottom:20px; display:inline-flex; align-items:center; gap:8px; }
+    .page-breadcrumb-dot { width:4px; height:4px; border-radius:50%; background:var(--gold-500); }
+    /* Service cards */
+    .svc-card { background:rgba(255,255,255,.025); border:1px solid rgba(255,255,255,.06); border-radius:20px; padding:32px 28px; transition:all .4s cubic-bezier(.4,0,.2,1); position:relative; overflow:hidden; }
+    .svc-card::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(201,168,76,.04),transparent 60%); opacity:0; transition:opacity .3s; border-radius:inherit; }
+    .svc-card:hover { border-color:rgba(201,168,76,.3); transform:translateY(-4px); box-shadow:0 20px 60px rgba(0,0,0,.4); }
+    .svc-card:hover::before { opacity:1; }
+    .svc-icon { width:56px; height:56px; border-radius:16px; background:rgba(201,168,76,.1); border:1px solid rgba(201,168,76,.2); display:flex; align-items:center; justify-content:center; color:var(--gold-400); margin-bottom:24px; }
+    .svc-title { font-family:var(--font-display); font-size:1.35rem; margin-bottom:10px; color:var(--white); }
+    .svc-desc { font-size:.875rem; color:var(--slate-400); line-height:1.75; margin-bottom:20px; }
+    .svc-features { list-style:none; padding:0; margin:0; }
+    .svc-features li { font-size:.8rem; color:var(--slate-400); padding:6px 0; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.04); }
+    .svc-features li:last-child { border-bottom:none; }
+    .svc-check { color:var(--gold-500); flex-shrink:0; }
+    .svc-arrow { display:inline-flex; align-items:center; gap:6px; font-size:.8rem; color:var(--gold-500); margin-top:20px; transition:gap .2s; }
+    .svc-card:hover .svc-arrow { gap:12px; }
+    /* Spotlight */
+    .spotlight { background:linear-gradient(135deg,rgba(201,168,76,.06) 0%,rgba(36,71,110,.15) 100%); border:1px solid rgba(201,168,76,.15); border-radius:24px; padding:56px; }
+    .spotlight-grid { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:center; }
+    .spotlight-stat { text-align:center; padding:24px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:16px; }
+    .spotlight-stat-value { font-family:var(--font-display); font-size:2.2rem; color:var(--gold-400); }
+    .spotlight-stat-label { font-size:.75rem; color:var(--slate-500); letter-spacing:.06em; text-transform:uppercase; margin-top:4px; }
+    .spotlight-stats { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:32px; }
+    .feature-line { display:flex; align-items:flex-start; gap:16px; padding:16px 0; border-bottom:1px solid rgba(255,255,255,.05); }
+    .feature-line:last-child { border-bottom:none; }
+    .feature-line-icon { width:40px; height:40px; border-radius:10px; background:rgba(201,168,76,.1); display:flex; align-items:center; justify-content:center; color:var(--gold-400); flex-shrink:0; margin-top:2px; }
+    .feature-line-title { font-size:.9rem; font-weight:500; color:var(--white); margin-bottom:4px; }
+    .feature-line-desc { font-size:.8rem; color:var(--slate-500); line-height:1.6; }
+    /* Digital feature */
+    .digital-grid { display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center; }
+    .digital-feature-item { display:flex; gap:18px; margin-bottom:28px; }
+    .digital-feature-icon { width:46px; height:46px; border-radius:12px; background:rgba(96,165,250,.1); border:1px solid rgba(96,165,250,.15); display:flex; align-items:center; justify-content:center; color:#60a5fa; flex-shrink:0; }
+    .digital-mockup { background:rgba(13,30,53,.8); border:1px solid rgba(201,168,76,.15); border-radius:20px; padding:32px; }
+    .digital-stat-row { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+    /* Rates banner */
+    .rates-banner { background:linear-gradient(90deg,rgba(201,168,76,.12),rgba(201,168,76,.04)); border:1px solid rgba(201,168,76,.2); border-radius:16px; padding:28px 36px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px; }
+    .rate-item { text-align:center; }
+    .rate-value { font-family:var(--font-display); font-size:2rem; color:var(--gold-400); }
+    .rate-label { font-size:.72rem; color:var(--slate-500); letter-spacing:.06em; text-transform:uppercase; margin-top:2px; }
+    @media (max-width:1024px) { .spotlight-grid,.digital-grid { grid-template-columns:1fr; } }
+    @media (max-width:768px) { .spotlight { padding:32px 24px; } .rates-banner { flex-direction:column; align-items:flex-start; } }
+    @media (max-width:640px) { .page-hero { padding:130px 0 60px; } }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+      <div><div class="nav-logo-text">ZENITHONE</div><div class="nav-logo-sub">Credit Union</div></div>
+    </a>
+    <div class="nav-links">
+      <a href="services.html"          class="nav-link active">Services</a>
+      <a href="accounts-overview.html" class="nav-link">Accounts</a>
+      <a href="wealth.html"            class="nav-link">Wealth</a>
+      <a href="about.html"             class="nav-link">About</a>
+      <a href="contact.html"           class="nav-link">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <a href="login.html"  class="btn btn-ghost btn-sm">Sign In</a>
+      <a href="signup.html" class="btn btn-primary btn-sm">Open Account</a>
+      <button class="nav-mobile-toggle" id="mobileToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+<div class="mobile-nav-overlay" id="mobileOverlay"></div>
+<div class="mobile-nav-drawer" id="mobileDrawer">
+  <div style="display:flex;flex-direction:column;gap:4px;">
+    <a href="services.html"          class="sidebar-item" style="border-radius:8px;">Services</a>
+    <a href="accounts-overview.html" class="sidebar-item" style="border-radius:8px;">Accounts</a>
+    <a href="wealth.html"            class="sidebar-item" style="border-radius:8px;">Wealth Management</a>
+    <a href="about.html"             class="sidebar-item" style="border-radius:8px;">About Us</a>
+    <a href="contact.html"           class="sidebar-item" style="border-radius:8px;">Contact</a>
+  </div>
+  <div style="margin-top:32px;display:flex;flex-direction:column;gap:10px;">
+    <a href="login.html"  class="btn btn-ghost" style="width:100%;justify-content:center;">Sign In</a>
+    <a href="signup.html" class="btn btn-primary" style="width:100%;justify-content:center;">Open Account</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ HERO -->
+<section class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-grid"></div>
+  <div class="container page-hero-content">
+    <div class="page-breadcrumb"><span>ZenithOne</span><span class="page-breadcrumb-dot"></span><span>Services</span></div>
+    <h1 class="display-lg animate-fadeInUp" style="max-width:820px;">Every Service.<br/><em>One Bank.</em></h1>
+    <p class="animate-fadeInUp delay-1" style="font-size:1.1rem;color:var(--slate-400);line-height:1.8;max-width:580px;margin:24px 0 40px;">From everyday banking to sophisticated wealth strategies, ZenithOne delivers an unmatched suite of financial services designed to grow and protect your legacy across generations.</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;" class="animate-fadeInUp delay-2">
+      <a href="signup.html" class="btn btn-primary btn-xl">Open an Account</a>
+      <a href="contact.html" class="btn btn-outline btn-xl">Talk to an Advisor</a>
+    </div>
+  </div>
+</section>
+
+<!-- Current Rates Banner -->
+<div class="section-sm" style="background:var(--navy-800);border-bottom:1px solid rgba(255,255,255,.06);">
+  <div class="container">
+    <div class="rates-banner">
+      <div>
+        <div style="font-size:.72rem;color:var(--gold-500);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;">Current Rates — Effective June 2026</div>
+        <div style="font-size:.85rem;color:var(--slate-400);">Rates subject to change. FDIC insured up to applicable limits.</div>
+      </div>
+      <div style="display:flex;gap:40px;flex-wrap:wrap;">
+        <div class="rate-item"><div class="rate-value">4.85%</div><div class="rate-label">HY Savings APY</div></div>
+        <div class="rate-item"><div class="rate-value">5.10%</div><div class="rate-label">12-Mo CD APY</div></div>
+        <div class="rate-item"><div class="rate-value">0%</div><div class="rate-label">Monthly Fees</div></div>
+        <div class="rate-item"><div class="rate-value">$0</div><div class="rate-label">ATM Fees</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ SERVICES GRID -->
+<section class="section" id="services-grid">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:60px;" class="reveal">
+      <div class="section-label" style="justify-content:center;">What We Offer</div>
+      <h2 class="display-md" style="margin-bottom:18px;">A Complete Financial Universe</h2>
+      <p style="color:var(--slate-400);font-size:1rem;max-width:520px;margin:0 auto;line-height:1.8;">Eight core disciplines. One dedicated relationship manager. Seamless integration across every aspect of your financial life.</p>
+    </div>
+
+    <div class="grid-4" style="gap:24px;">
+
+      <!-- Private Banking -->
+      <div class="svc-card reveal">
+        <div class="svc-icon"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="svc-title">Private Banking</div>
+        <div class="svc-desc">Exclusive, relationship-driven banking for high-net-worth individuals with dedicated personal bankers available 24/7.</div>
+        <ul class="svc-features">
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Dedicated Relationship Manager</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Priority Concierge Service</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Custom Interest Rates</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Fee-Free Transactions</li>
+        </ul>
+        <a href="signup.html" class="svc-arrow">Explore Private Banking <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+
+      <!-- Wealth Management -->
+      <div class="svc-card reveal delay-1">
+        <div class="svc-icon" style="background:rgba(96,165,250,.1);border-color:rgba(96,165,250,.2);color:#60a5fa;"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+        <div class="svc-title">Wealth Management</div>
+        <div class="svc-desc">Holistic financial planning and portfolio management tailored to your long-term goals, risk tolerance, and generational ambitions.</div>
+        <ul class="svc-features">
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Portfolio Construction</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Risk Management</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Tax-Efficient Strategies</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Quarterly Reviews</li>
+        </ul>
+        <a href="wealth.html" class="svc-arrow" style="color:#60a5fa;">Explore Wealth <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+
+      <!-- Investment Advisory -->
+      <div class="svc-card reveal delay-2">
+        <div class="svc-icon" style="background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.2);color:#a78bfa;"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <div class="svc-title">Investment Advisory</div>
+        <div class="svc-desc">Access to institutional-grade investment strategies, alternative assets, and curated opportunities not available through traditional channels.</div>
+        <ul class="svc-features">
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Equities &amp; Fixed Income</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Private Equity Access</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Alternative Investments</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Real Assets &amp; REITs</li>
+        </ul>
+        <a href="signup.html" class="svc-arrow" style="color:#a78bfa;">Start Investing <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+
+      <!-- Credit & Lending -->
+      <div class="svc-card reveal delay-3">
+        <div class="svc-icon" style="background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.2);color:#4ade80;"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+        <div class="svc-title">Credit &amp; Lending</div>
+        <div class="svc-desc">Bespoke lending solutions from personal credit lines to complex commercial financing, with terms structured around your unique situation.</div>
+        <ul class="svc-features">
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Jumbo Mortgages</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Securities-Backed Lines</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Commercial Real Estate</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Letters of Credit</li>
+        </ul>
+        <a href="signup.html" class="svc-arrow" style="color:#4ade80;">Apply for Credit <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+
+      <!-- Digital Banking -->
+      <div class="svc-card reveal">
+        <div class="svc-icon" style="background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.2);color:#fbbf24;"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+        <div class="svc-title">Digital Banking</div>
+        <div class="svc-desc">Award-winning mobile and online banking platform with real-time alerts, AI-powered insights, and biometric security built in.</div>
+        <ul class="svc-features">
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Real-Time Notifications</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Instant Transfers</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Bill Pay &amp; Zelle</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Spending Analytics</li>
+        </ul>
+        <a href="login.html" class="svc-arrow" style="color:#fbbf24;">Access Portal <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+
+      <!-- Global Services -->
+      <div class="svc-card reveal delay-1">
+        <div class="svc-icon" style="background:rgba(244,114,182,.1);border-color:rgba(244,114,182,.2);color:#f472b6;"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+        <div class="svc-title">Global Services</div>
+        <div class="svc-desc">International wire transfers, multi-currency accounts, and foreign exchange services for clients with global financial interests.</div>
+        <ul class="svc-features">
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>180+ Currency Pairs</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>SWIFT Wire Network</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Offshore Accounts</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>FX Hedging</li>
+        </ul>
+        <a href="signup.html" class="svc-arrow" style="color:#f472b6;">Go Global <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+
+      <!-- Trust & Estate -->
+      <div class="svc-card reveal delay-2">
+        <div class="svc-icon" style="background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.2);color:#34d399;"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="svc-title">Trust &amp; Estate</div>
+        <div class="svc-desc">Comprehensive trust administration, estate planning, and fiduciary services to protect, grow, and transfer wealth across generations.</div>
+        <ul class="svc-features">
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Trust Administration</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Estate Planning</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Charitable Giving</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Generational Transfer</li>
+        </ul>
+        <a href="wealth.html" class="svc-arrow" style="color:#34d399;">Learn More <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+
+      <!-- Insurance -->
+      <div class="svc-card reveal delay-3">
+        <div class="svc-icon" style="background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.2);color:#f87171;"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+        <div class="svc-title">Insurance &amp; Protection</div>
+        <div class="svc-desc">Tailored insurance solutions — from life and disability to property and liability — underwritten to protect everything you've built.</div>
+        <ul class="svc-features">
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Life Insurance</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>High-Value Property</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Liability Coverage</li>
+          <li><svg class="svc-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Business Continuity</li>
+        </ul>
+        <a href="contact.html" class="svc-arrow" style="color:#f87171;">Get Coverage <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ PRIVATE BANKING SPOTLIGHT -->
+<section class="section" style="background:var(--navy-800);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);">
+  <div class="container">
+    <div class="spotlight reveal">
+      <div class="spotlight-grid">
+        <div>
+          <div class="section-label">Featured Service</div>
+          <h2 class="display-md" style="margin:16px 0 20px;">Private Banking<br/><em>Redefined</em></h2>
+          <p style="color:var(--slate-400);line-height:1.8;margin-bottom:32px;">ZenithOne Credit Union Banking is not merely an account — it is a dedicated financial partnership. Your Relationship Manager acts as a single point of contact for every financial need, coordinating across all of our disciplines to serve you seamlessly.</p>
+
+          <div class="feature-line">
+            <div class="feature-line-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+            <div><div class="feature-line-title">24/7 Concierge Access</div><div class="feature-line-desc">Dedicated direct line to your banker — not a call center. Every hour, every day.</div></div>
+          </div>
+          <div class="feature-line">
+            <div class="feature-line-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+            <div><div class="feature-line-title">Preferential Pricing</div><div class="feature-line-desc">Institutional rates on loans, deposits, foreign exchange, and investment products.</div></div>
+          </div>
+          <div class="feature-line">
+            <div class="feature-line-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div><div class="feature-line-title">White-Glove Security</div><div class="feature-line-desc">Multi-layer fraud monitoring, biometric verification, and military-grade encryption on every transaction.</div></div>
+          </div>
+          <div class="feature-line">
+            <div class="feature-line-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <div><div class="feature-line-title">Family Office Integration</div><div class="feature-line-desc">Seamlessly coordinate banking, investments, legal, and tax across all family members.</div></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="spotlight-stats">
+            <div class="spotlight-stat reveal"><div class="spotlight-stat-value">$250K+</div><div class="spotlight-stat-label">Minimum to Open</div></div>
+            <div class="spotlight-stat reveal delay-1"><div class="spotlight-stat-value">0</div><div class="spotlight-stat-label">Monthly Fees</div></div>
+            <div class="spotlight-stat reveal delay-2"><div class="spotlight-stat-value">1</div><div class="spotlight-stat-label">Dedicated Manager</div></div>
+            <div class="spotlight-stat reveal delay-3"><div class="spotlight-stat-value">24/7</div><div class="spotlight-stat-label">Availability</div></div>
+          </div>
+          <div style="margin-top:28px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:24px;">
+            <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:16px;">ZenithOne Black Card</div>
+            <div class="bank-card-visual black" style="margin-bottom:0;min-height:160px;border-radius:14px;">
+              <div style="position:absolute;top:20px;left:20px;right:20px;display:flex;justify-content:space-between;">
+                <svg width="32" height="24" viewBox="0 0 36 28"><rect width="36" height="28" rx="4" fill="url(#chipS)"/><defs><linearGradient id="chipS" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8c96b"/><stop offset="100%" stop-color="#c9a84c"/></linearGradient></defs><rect x="2" y="8" width="32" height="12" rx="1" fill="rgba(255,255,255,.15)"/></svg>
+                <span style="font-family:var(--font-display);font-size:.75rem;color:rgba(255,255,255,.35);">ZENITHONE BLACK</span>
+              </div>
+              <div style="margin-top:50px;padding:0 8px;">
+                <div style="font-size:.85rem;letter-spacing:.18em;color:rgba(255,255,255,.65);font-family:'Courier New',monospace;">•••• •••• •••• 7842</div>
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:12px;">
+                  <div style="font-size:.65rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;">No Pre-Set Limit</div>
+                  <div class="card-network"><div class="card-network-circle"></div><div class="card-network-circle"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:12px;">
+            <a href="signup.html" class="btn btn-primary" style="flex:1;justify-content:center;">Apply Now</a>
+            <a href="contact.html" class="btn btn-ghost" style="flex:1;justify-content:center;">Contact Us</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ DIGITAL BANKING -->
+<section class="section">
+  <div class="container">
+    <div class="digital-grid reveal">
+      <div>
+        <div class="section-label">Digital Banking</div>
+        <h2 class="display-md" style="margin:16px 0 20px;">Banking at the<br/><em>Speed of Now</em></h2>
+        <p style="color:var(--slate-400);line-height:1.8;margin-bottom:40px;">Our award-winning digital platform puts the full power of private banking in your pocket. Execute transfers, monitor investments, and communicate with your advisor — all from one elegant interface.</p>
+
+        <div class="digital-feature-item">
+          <div class="digital-feature-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div><div style="font-weight:500;margin-bottom:4px;">Real-Time Portfolio Monitoring</div><div style="font-size:.85rem;color:var(--slate-500);line-height:1.6;">Track every asset, transaction, and balance change the moment it happens.</div></div>
+        </div>
+        <div class="digital-feature-item">
+          <div class="digital-feature-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div><div style="font-weight:500;margin-bottom:4px;">Military-Grade Security</div><div style="font-size:.85rem;color:var(--slate-500);line-height:1.6;">256-bit AES encryption, biometric login, and behavioral fraud detection.</div></div>
+        </div>
+        <div class="digital-feature-item">
+          <div class="digital-feature-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+          <div><div style="font-weight:500;margin-bottom:4px;">AI-Powered Insights</div><div style="font-size:.85rem;color:var(--slate-500);line-height:1.6;">Personalized financial recommendations based on your patterns and goals.</div></div>
+        </div>
+        <div class="digital-feature-item" style="margin-bottom:0;">
+          <div class="digital-feature-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          <div><div style="font-weight:500;margin-bottom:4px;">In-App Advisor Chat</div><div style="font-size:.85rem;color:var(--slate-500);line-height:1.6;">Secure messaging with your Relationship Manager — anytime, anywhere.</div></div>
+        </div>
+      </div>
+      <div class="digital-mockup reveal delay-1">
+        <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:20px;color:var(--gold-400);">Live Portfolio Snapshot</div>
+        <div class="digital-stat-row"><span style="font-size:.85rem;color:var(--slate-400);">Total Balance</span><span style="font-family:var(--font-display);font-size:1.2rem;color:var(--white);">$4,812,694</span></div>
+        <div class="digital-stat-row"><span style="font-size:.85rem;color:var(--slate-400);">Portfolio Return (YTD)</span><span style="color:#4ade80;font-weight:500;">+18.24%</span></div>
+        <div class="digital-stat-row"><span style="font-size:.85rem;color:var(--slate-400);">Available Credit</span><span style="font-family:var(--font-display);font-size:1rem;color:var(--white);">$250,000</span></div>
+        <div class="digital-stat-row"><span style="font-size:.85rem;color:var(--slate-400);">Reward Points</span><span style="color:var(--gold-400);font-weight:500;">184,200 pts</span></div>
+        <div class="digital-stat-row" style="border-bottom:none;"><span style="font-size:.85rem;color:var(--slate-400);">Security Status</span><span class="badge badge-green">Verified</span></div>
+        <div style="margin-top:24px;padding:18px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.15);border-radius:12px;">
+          <div style="font-size:.75rem;color:var(--gold-500);font-weight:500;margin-bottom:6px;">AI Insight</div>
+          <div style="font-size:.82rem;color:var(--slate-300);line-height:1.6;">Your portfolio is beating the S&P 500 by 4.2% this quarter. Consider rebalancing your fixed income exposure to maintain target allocation.</div>
+        </div>
+        <a href="signup.html" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:20px;">Access Your Dashboard</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ CTA -->
+<section class="section">
+  <div class="container">
+    <div class="cta-section reveal">
+      <div class="section-label" style="justify-content:center;">Ready to Begin</div>
+      <h2 class="display-lg" style="margin-bottom:20px;">Your Financial Future<br/><em>Starts Here</em></h2>
+      <p style="color:#94a3b8;font-size:1.05rem;max-width:480px;margin:0 auto 40px;line-height:1.8;">Open your account in minutes. Every service, every advisor, every resource — dedicated to you.</p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
+        <a href="signup.html"  class="btn btn-primary btn-xl">Open Account Today</a>
+        <a href="contact.html" class="btn btn-outline btn-xl">Speak to an Advisor</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="nav-logo" style="margin-bottom:0;">
+          <div class="nav-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+          <div><div class="nav-logo-text">ZENITHONE</div><div class="nav-logo-sub">Credit Union</div></div>
+        </div>
+        <p class="footer-brand-desc">ZenithOne Credit Union — A financial institution built on trust, innovation, and an unwavering commitment to our clients' prosperity since 1887.</p>
+        <div style="display:flex;gap:12px;margin-top:20px;">
+          <a href="#" class="btn btn-icon btn-ghost" style="border:1px solid rgba(255,255,255,.08);" aria-label="Twitter"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.736l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+          <a href="#" class="btn btn-icon btn-ghost" style="border:1px solid rgba(255,255,255,.08);" aria-label="LinkedIn"><svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Personal</div>
+        <a href="accounts-overview.html" class="footer-link">Checking Accounts</a>
+        <a href="accounts-overview.html" class="footer-link">Savings Accounts</a>
+        <a href="accounts-overview.html" class="footer-link">Credit Cards</a>
+        <a href="services.html"          class="footer-link">Mortgages</a>
+        <a href="services.html"          class="footer-link">Auto Loans</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Business</div>
+        <a href="services.html" class="footer-link">Business Checking</a>
+        <a href="services.html" class="footer-link">Commercial Loans</a>
+        <a href="services.html" class="footer-link">Treasury Management</a>
+        <a href="services.html" class="footer-link">Merchant Services</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Wealth &amp; Company</div>
+        <a href="wealth.html"   class="footer-link">Wealth Management</a>
+        <a href="wealth.html"   class="footer-link">Investment Advisory</a>
+        <a href="about.html"    class="footer-link">About ZenithOne</a>
+        <a href="contact.html"  class="footer-link">Contact Us</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal">© 2024 ZenithOne Credit Union All rights reserved. Member FDIC. Equal Housing Lender. Investment products are not FDIC insured, not a bank deposit, and may lose value.</div>
+      <div class="footer-fdic"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>FDIC Insured · Member FDIC</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); });
+const toggle = document.getElementById('mobileToggle');
+const drawer = document.getElementById('mobileDrawer');
+const overlay = document.getElementById('mobileOverlay');
+function closeMobile() { drawer.classList.remove('open'); overlay.classList.remove('open'); }
+toggle.addEventListener('click', () => { drawer.classList.toggle('open'); overlay.classList.toggle('open'); });
+overlay.addEventListener('click', closeMobile);
+drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobile));
+const revealObserver = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }); }, {threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+</script>
+</body>
+</html>

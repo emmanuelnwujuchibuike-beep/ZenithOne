@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Us — ZenithOne Credit Union</title>
+  <meta name="description" content="Learn the story of ZenithOne Credit Union — 137 years of banking excellence, integrity, and innovation for America's most discerning clients." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <style>
+    .nav-link.active { color: var(--gold-400) !important; }
+    .page-hero { position:relative; padding:160px 0 100px; overflow:hidden; border-bottom:1px solid rgba(201,168,76,.1); }
+    .page-hero-bg { position:absolute; inset:0; z-index:0; background:radial-gradient(ellipse 120% 70% at 50% 0%, rgba(201,168,76,.1) 0%, transparent 55%), linear-gradient(180deg,#020b18 0%,#061225 70%,#0d1e35 100%); }
+    .page-hero-grid { position:absolute; inset:0; z-index:0; background-image:linear-gradient(rgba(201,168,76,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.03) 1px,transparent 1px); background-size:60px 60px; mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black 30%,transparent 80%); }
+    .page-hero-content { position:relative; z-index:1; }
+    .page-breadcrumb { font-size:.7rem; letter-spacing:.15em; text-transform:uppercase; color:var(--gold-500); margin-bottom:20px; display:inline-flex; align-items:center; gap:8px; }
+    .page-breadcrumb-dot { width:4px; height:4px; border-radius:50%; background:var(--gold-500); }
+    /* Mission strip */
+    .mission-strip { background:linear-gradient(90deg,rgba(201,168,76,.08),rgba(201,168,76,.04)); border-top:1px solid rgba(201,168,76,.12); border-bottom:1px solid rgba(201,168,76,.12); padding:40px 0; }
+    .mission-item { text-align:center; padding:0 24px; }
+    .mission-number { font-family:var(--font-display); font-size:2.8rem; color:var(--gold-400); line-height:1; }
+    .mission-desc { font-size:.78rem; color:var(--slate-500); letter-spacing:.06em; text-transform:uppercase; margin-top:6px; }
+    /* Timeline */
+    .timeline { position:relative; padding-left:40px; }
+    .timeline::before { content:''; position:absolute; left:0; top:0; bottom:0; width:1px; background:linear-gradient(180deg,transparent,rgba(201,168,76,.3) 10%,rgba(201,168,76,.3) 90%,transparent); }
+    .timeline-item { position:relative; padding-bottom:48px; }
+    .timeline-item:last-child { padding-bottom:0; }
+    .timeline-dot { position:absolute; left:-49px; top:4px; width:18px; height:18px; border-radius:50%; background:var(--navy-700); border:2px solid rgba(201,168,76,.4); display:flex; align-items:center; justify-content:center; }
+    .timeline-dot-inner { width:6px; height:6px; border-radius:50%; background:var(--gold-500); }
+    .timeline-year { font-size:.72rem; color:var(--gold-500); letter-spacing:.1em; text-transform:uppercase; margin-bottom:8px; }
+    .timeline-title { font-family:var(--font-display); font-size:1.2rem; margin-bottom:8px; }
+    .timeline-text { font-size:.875rem; color:var(--slate-400); line-height:1.75; }
+    /* Values */
+    .value-card { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:18px; padding:32px; }
+    .value-icon { font-family:var(--font-display); font-size:2.5rem; color:var(--gold-400); margin-bottom:16px; line-height:1; }
+    .value-title { font-family:var(--font-display); font-size:1.2rem; margin-bottom:10px; }
+    .value-text { font-size:.875rem; color:var(--slate-400); line-height:1.75; }
+    /* Leadership */
+    .leader-card { background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:18px; overflow:hidden; transition:all .4s; }
+    .leader-card:hover { border-color:rgba(201,168,76,.2); transform:translateY(-4px); }
+    .leader-header { background:linear-gradient(135deg,var(--navy-700),var(--navy-600)); padding:28px; text-align:center; }
+    .leader-initials { width:72px; height:72px; border-radius:50%; background:rgba(201,168,76,.15); border:2px solid rgba(201,168,76,.25); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-size:1.6rem; color:var(--gold-400); margin:0 auto 14px; }
+    .leader-name { font-family:var(--font-display); font-size:1.15rem; margin-bottom:4px; }
+    .leader-title { font-size:.75rem; color:var(--gold-500); letter-spacing:.07em; text-transform:uppercase; }
+    .leader-body { padding:20px; }
+    .leader-bio { font-size:.82rem; color:var(--slate-400); line-height:1.7; }
+    /* Awards */
+    .award-item { display:flex; gap:20px; align-items:center; padding:20px 24px; background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:14px; }
+    .award-year { font-family:var(--font-display); font-size:1.6rem; color:var(--gold-400); min-width:60px; }
+    .award-info-title { font-size:.95rem; font-weight:500; margin-bottom:2px; }
+    .award-info-body  { font-size:.78rem; color:var(--slate-500); }
+    @media (max-width:1024px) { .intro-two-col { grid-template-columns:1fr !important; gap:40px; } }
+    @media (max-width:640px)  { .page-hero { padding:130px 0 60px; } .timeline { padding-left:24px; } .timeline-dot { left:-33px; } }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+      <div><div class="nav-logo-text">ZENITHONE</div><div class="nav-logo-sub">Credit Union</div></div>
+    </a>
+    <div class="nav-links">
+      <a href="services.html"          class="nav-link">Services</a>
+      <a href="accounts-overview.html" class="nav-link">Accounts</a>
+      <a href="wealth.html"            class="nav-link">Wealth</a>
+      <a href="about.html"             class="nav-link active">About</a>
+      <a href="contact.html"           class="nav-link">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <a href="login.html"  class="btn btn-ghost btn-sm">Sign In</a>
+      <a href="signup.html" class="btn btn-primary btn-sm">Open Account</a>
+      <button class="nav-mobile-toggle" id="mobileToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+<div class="mobile-nav-overlay" id="mobileOverlay"></div>
+<div class="mobile-nav-drawer" id="mobileDrawer">
+  <div style="display:flex;flex-direction:column;gap:4px;">
+    <a href="services.html"          class="sidebar-item" style="border-radius:8px;">Services</a>
+    <a href="accounts-overview.html" class="sidebar-item" style="border-radius:8px;">Accounts</a>
+    <a href="wealth.html"            class="sidebar-item" style="border-radius:8px;">Wealth Management</a>
+    <a href="about.html"             class="sidebar-item" style="border-radius:8px;">About Us</a>
+    <a href="contact.html"           class="sidebar-item" style="border-radius:8px;">Contact</a>
+  </div>
+  <div style="margin-top:32px;display:flex;flex-direction:column;gap:10px;">
+    <a href="login.html"  class="btn btn-ghost" style="width:100%;justify-content:center;">Sign In</a>
+    <a href="signup.html" class="btn btn-primary" style="width:100%;justify-content:center;">Open Account</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-grid"></div>
+  <div class="container page-hero-content">
+    <div class="page-breadcrumb"><span>ZenithOne</span><span class="page-breadcrumb-dot"></span><span>Our Story</span></div>
+    <h1 class="display-lg animate-fadeInUp" style="max-width:780px;">The ZenithOne<br/><em>Story</em></h1>
+    <p class="animate-fadeInUp delay-1" style="font-size:1.1rem;color:var(--slate-400);line-height:1.8;max-width:580px;margin:24px 0 40px;">For 137 years, ZenithOne has stood at the intersection of tradition and innovation — a bank trusted by generations of American families to protect, grow, and transfer their most important asset: wealth.</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;" class="animate-fadeInUp delay-2">
+      <a href="contact.html" class="btn btn-primary btn-xl">Meet Our Team</a>
+      <a href="signup.html"  class="btn btn-outline btn-xl">Become a Client</a>
+    </div>
+  </div>
+</section>
+
+<!-- MISSION STRIP -->
+<div class="mission-strip">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;">
+      <div class="mission-item reveal"><div class="mission-number">1887</div><div class="mission-desc">Founded in New York</div></div>
+      <div class="mission-item reveal delay-1"><div class="mission-number">$48B</div><div class="mission-desc">Assets Under Management</div></div>
+      <div class="mission-item reveal delay-2"><div class="mission-number">32</div><div class="mission-desc">Offices Nationwide</div></div>
+      <div class="mission-item reveal delay-3"><div class="mission-number">4,800+</div><div class="mission-desc">Clients Served</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MISSION + VISION -->
+<section class="section">
+  <div class="container">
+    <div class="intro-two-col reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center;">
+      <div>
+        <div class="section-label">Our Mission</div>
+        <h2 class="display-md" style="margin:16px 0 24px;">Banking the Way It<br/><em>Was Meant to Be</em></h2>
+        <p style="color:var(--slate-400);line-height:1.85;margin-bottom:20px;">ZenithOne was founded on a single, enduring premise: that the relationship between a bank and its client should be built on unwavering trust, deep expertise, and a genuine commitment to the client's wellbeing — not the bank's profitability.</p>
+        <p style="color:var(--slate-400);line-height:1.85;margin-bottom:20px;">Today, that founding principle guides every decision we make, from the products we offer to the advisors we hire to the technology we build.</p>
+        <div style="padding:24px;background:rgba(201,168,76,.04);border-left:3px solid var(--gold-500);border-radius:0 12px 12px 0;margin-top:28px;">
+          <p style="font-family:var(--font-display);font-size:1.15rem;font-style:italic;color:var(--gold-300);line-height:1.7;">"A bank should exist to serve its clients. Every other consideration — profit, growth, reputation — follows from that." <span style="font-family:var(--font-body);font-size:.78rem;color:var(--slate-500);display:block;margin-top:10px;">— Elias Zenith, Founder, 1887</span></p>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:20px;">
+        <div class="card card-elevated reveal delay-1" style="display:flex;gap:20px;align-items:flex-start;">
+          <div style="width:44px;height:44px;min-width:44px;border-radius:12px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;color:var(--gold-400);"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div><div style="font-family:var(--font-display);font-size:1.05rem;margin-bottom:6px;">Security First</div><div style="font-size:.85rem;color:var(--slate-400);line-height:1.7;">Your assets are protected by multi-layered security, rigorous regulatory compliance, and over a century of institutional resilience.</div></div>
+        </div>
+        <div class="card card-elevated reveal delay-2" style="display:flex;gap:20px;align-items:flex-start;">
+          <div style="width:44px;height:44px;min-width:44px;border-radius:12px;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.2);display:flex;align-items:center;justify-content:center;color:#60a5fa;"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+          <div><div style="font-family:var(--font-display);font-size:1.05rem;margin-bottom:6px;">Long-Term Thinking</div><div style="font-size:.85rem;color:var(--slate-400);line-height:1.7;">We don't optimize for quarterly earnings. We optimize for our clients' multigenerational financial health.</div></div>
+        </div>
+        <div class="card card-elevated reveal delay-3" style="display:flex;gap:20px;align-items:flex-start;">
+          <div style="width:44px;height:44px;min-width:44px;border-radius:12px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);display:flex;align-items:center;justify-content:center;color:#34d399;"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div><div style="font-family:var(--font-display);font-size:1.05rem;margin-bottom:6px;">People Over Products</div><div style="font-size:.85rem;color:var(--slate-400);line-height:1.7;">Relationships, not transactions. Every client gets a dedicated advisor who knows them by name and understands their goals.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HISTORY TIMELINE -->
+<section class="section" style="background:var(--navy-800);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:72px;" class="reveal">
+      <div>
+        <div class="section-label">Our History</div>
+        <h2 class="display-md" style="margin:16px 0 24px;">137 Years of<br/><em>Milestones</em></h2>
+        <p style="color:var(--slate-400);line-height:1.8;">From a single office on Wall Street to a nationwide presence — our history is one of steady, principled growth, never chasing trends, always serving clients.</p>
+      </div>
+      <div class="timeline reveal delay-1">
+        <div class="timeline-item">
+          <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+          <div class="timeline-year">1887</div>
+          <div class="timeline-title">Founded by Elias Zenith</div>
+          <div class="timeline-text">Established at 14 Wall Street, New York City, with $2 million in founding capital. The bank's charter stated its purpose plainly: "to serve the financial needs of individuals and families with honesty and excellence."</div>
+        </div>
+        <div class="timeline-item reveal delay-1">
+          <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+          <div class="timeline-year">1929</div>
+          <div class="timeline-title">Survived the Great Crash</div>
+          <div class="timeline-text">While hundreds of banks failed in 1929 and 1930, ZenithOne remained solvent — owing to its conservative lending practices, modest leverage, and deep client relationships that prevented bank runs.</div>
+        </div>
+        <div class="timeline-item reveal delay-2">
+          <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+          <div class="timeline-year">1968</div>
+          <div class="timeline-title">National Expansion</div>
+          <div class="timeline-text">Opened offices in Boston, Chicago, and San Francisco — the first steps in becoming a truly national private bank, while maintaining the boutique client experience that defines ZenithOne.</div>
+        </div>
+        <div class="timeline-item reveal delay-3">
+          <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+          <div class="timeline-year">1995</div>
+          <div class="timeline-title">Wealth Management Launch</div>
+          <div class="timeline-text">Formally established the ZenithOne Wealth Management division, bringing institutional investment capabilities to private clients for the first time and crossing $1 billion in AUM within 18 months.</div>
+        </div>
+        <div class="timeline-item reveal">
+          <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+          <div class="timeline-year">2018</div>
+          <div class="timeline-title">Digital Transformation</div>
+          <div class="timeline-text">Launched ZenithOne Digital — a proprietary banking platform combining AI-powered insights with the personalized service our clients have always known. Rated #1 private bank app by Financial Times readers.</div>
+        </div>
+        <div class="timeline-item reveal delay-1">
+          <div class="timeline-dot"><div class="timeline-dot-inner"></div></div>
+          <div class="timeline-year">2024</div>
+          <div class="timeline-title">$48B in Assets, 137 Years Strong</div>
+          <div class="timeline-text">Today, ZenithOne manages $48 billion in client assets across 32 offices, serving 4,800+ private banking and wealth management clients — with the same founding commitment: clients first, always.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CORE VALUES -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:60px;" class="reveal">
+      <div class="section-label" style="justify-content:center;">Core Values</div>
+      <h2 class="display-md">What We Stand <em>For</em></h2>
+    </div>
+    <div class="grid-3" style="gap:24px;">
+      <div class="value-card reveal"><div class="value-icon">⚖</div><div class="value-title">Integrity</div><div class="value-text">We say what we do and do what we say. No hidden fees, no conflicted advice, no fine print surprises. Our fiduciary standard applies to every relationship, every transaction.</div></div>
+      <div class="value-card reveal delay-1"><div class="value-icon">◆</div><div class="value-title">Excellence</div><div class="value-text">We hire the best, train them rigorously, and hold ourselves to a standard that is simply higher than our competition. Excellence is not a goal — it is a baseline expectation.</div></div>
+      <div class="value-card reveal delay-2"><div class="value-icon">∞</div><div class="value-title">Continuity</div><div class="value-text">We are in the business of building wealth that outlasts any single person or market cycle. Our decisions reflect a 100-year time horizon, not a 90-day earnings cycle.</div></div>
+      <div class="value-card reveal"><div class="value-icon">◯</div><div class="value-title">Inclusion</div><div class="value-text">Wealth should not be gatekept. We welcome clients at every stage of their financial journey and offer products that grow with them — from their first account to their estate.</div></div>
+      <div class="value-card reveal delay-1"><div class="value-icon">⊕</div><div class="value-title">Innovation</div><div class="value-text">Tradition is not the same as rigidity. We embrace technology, new asset classes, and evolving client needs — always asking how we can deliver more value without compromising trust.</div></div>
+      <div class="value-card reveal delay-2"><div class="value-icon">♦</div><div class="value-title">Responsibility</div><div class="value-text">Banks shape communities. We invest in sustainable businesses, support local philanthropy, and ensure our actions benefit not just our clients but the broader society we serve.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- LEADERSHIP -->
+<section class="section" style="background:var(--navy-800);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:56px;" class="reveal">
+      <div class="section-label" style="justify-content:center;">Leadership</div>
+      <h2 class="display-md">The Team Behind<br/><em>ZenithOne</em></h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;">
+      <div class="leader-card reveal">
+        <div class="leader-header"><div class="leader-initials">CH</div><div class="leader-name">Charles Harrison</div><div class="leader-title">Chairman &amp; CEO</div></div>
+        <div class="leader-body"><div class="leader-bio">34-year ZenithOne veteran. Steered the bank through the 2008 crisis with zero losses to client accounts. Former chair of the American Bankers Association.</div></div>
+      </div>
+      <div class="leader-card reveal delay-1">
+        <div class="leader-header"><div class="leader-initials">EM</div><div class="leader-name">Eleanor Mitchell</div><div class="leader-title">Chief Investment Officer</div></div>
+        <div class="leader-body"><div class="leader-bio">30 years managing institutional portfolios. Former Goldman Sachs MD. CFA Charterholder. Named one of Forbes' "Most Powerful Women in Finance" three times.</div></div>
+      </div>
+      <div class="leader-card reveal delay-2">
+        <div class="leader-header"><div class="leader-initials">MS</div><div class="leader-name">Margaret Sullivan</div><div class="leader-title">Chief Operating Officer</div></div>
+        <div class="leader-body"><div class="leader-bio">Oversees all operational divisions with a focus on client experience, technology, and regulatory excellence. MBA, Wharton. 20+ years in financial services.</div></div>
+      </div>
+      <div class="leader-card reveal">
+        <div class="leader-header"><div class="leader-initials">JR</div><div class="leader-name">James Rothwell</div><div class="leader-title">Head of Private Banking</div></div>
+        <div class="leader-body"><div class="leader-bio">25 years in private banking. Leads ZenithOne's relationship management teams and holds personal client relationships with the bank's largest accounts.</div></div>
+      </div>
+      <div class="leader-card reveal delay-1">
+        <div class="leader-header"><div class="leader-initials">SC</div><div class="leader-name">Sophia Chen</div><div class="leader-title">Chief Legal Officer</div></div>
+        <div class="leader-body"><div class="leader-bio">Tax attorney, CFP, and fiduciary specialist. Architect of ZenithOne's compliance framework. Former partner at Sullivan &amp; Cromwell LLP, specializing in financial regulation.</div></div>
+      </div>
+      <div class="leader-card reveal delay-2">
+        <div class="leader-header"><div class="leader-initials">DW</div><div class="leader-name">David Whitmore</div><div class="leader-title">Chief Technology Officer</div></div>
+        <div class="leader-body"><div class="leader-bio">Former VP of Engineering at Stripe. Led ZenithOne's digital transformation and AI platform launch in 2018. Holds 12 fintech patents.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AWARDS -->
+<section class="section">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;" class="reveal">
+      <div>
+        <div class="section-label">Recognition</div>
+        <h2 class="display-md" style="margin:16px 0 24px;">Awards &amp; <em>Recognition</em></h2>
+        <p style="color:var(--slate-400);line-height:1.8;margin-bottom:32px;">Industry recognition that reflects what clients have always known — ZenithOne simply does banking better.</p>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="award-item reveal"><div class="award-year">2024</div><div><div class="award-info-title">Best Private Bank — USA</div><div class="award-info-body">Global Finance Magazine Annual Awards</div></div></div>
+          <div class="award-item reveal delay-1"><div class="award-year">2024</div><div><div class="award-info-title">#1 Client Satisfaction, Private Banking</div><div class="award-info-body">J.D. Power US Private Banking Satisfaction Study</div></div></div>
+          <div class="award-item reveal delay-2"><div class="award-year">2023</div><div><div class="award-info-title">Best Wealth Management Platform</div><div class="award-info-body">Financial Times Banking Innovation Awards</div></div></div>
+          <div class="award-item reveal delay-3"><div class="award-year">2022</div><div><div class="award-info-title">Most Trusted Private Bank</div><div class="award-info-body">Euromoney Private Banking Survey</div></div></div>
+          <div class="award-item reveal"><div class="award-year">2021</div><div><div class="award-info-title">Best ESG Banking Commitment</div><div class="award-info-body">American Banker Awards for Excellence</div></div></div>
+        </div>
+      </div>
+      <div class="reveal delay-2">
+        <div class="card card-elevated" style="text-align:center;padding:40px;">
+          <div style="font-family:var(--font-display);font-size:3.5rem;color:var(--gold-400);margin-bottom:8px;">A+</div>
+          <div style="font-size:.82rem;color:var(--slate-500);letter-spacing:.06em;text-transform:uppercase;margin-bottom:24px;">Moody's Credit Rating</div>
+          <div style="height:1px;background:rgba(255,255,255,.06);margin:24px 0;"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;text-align:center;">
+            <div><div style="font-family:var(--font-display);font-size:2rem;color:var(--gold-400);">4.9/5</div><div style="font-size:.72rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;">Client Rating</div></div>
+            <div><div style="font-family:var(--font-display);font-size:2rem;color:var(--gold-400);">99.8%</div><div style="font-size:.72rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;">Client Retention</div></div>
+            <div><div style="font-family:var(--font-display);font-size:2rem;color:var(--gold-400);">137yr</div><div style="font-size:.72rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;">Track Record</div></div>
+            <div><div style="font-family:var(--font-display);font-size:2rem;color:var(--gold-400);">0</div><div style="font-size:.72rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.06em;margin-top:4px;">Regulatory Fines</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section" style="background:var(--navy-800);border-top:1px solid rgba(255,255,255,.04);">
+  <div class="container">
+    <div class="cta-section reveal">
+      <div class="section-label" style="justify-content:center;">Join the Family</div>
+      <h2 class="display-lg" style="margin-bottom:20px;">Become Part of the<br/><em>ZenithOne Legacy</em></h2>
+      <p style="color:#94a3b8;font-size:1.05rem;max-width:480px;margin:0 auto 40px;line-height:1.8;">One conversation with a ZenithOne advisor is worth more than a thousand hours of self-directed research. Let's start yours.</p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
+        <a href="signup.html"  class="btn btn-primary btn-xl">Open Account Today</a>
+        <a href="contact.html" class="btn btn-outline btn-xl">Speak with an Advisor</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="nav-logo" style="margin-bottom:0;">
+          <div class="nav-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+          <div><div class="nav-logo-text">ZENITHONE</div><div class="nav-logo-sub">Credit Union</div></div>
+        </div>
+        <p class="footer-brand-desc">ZenithOne Credit Union — A financial institution built on trust, innovation, and an unwavering commitment to our clients' prosperity since 1887.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <a href="about.html"   class="footer-link">Our Story</a>
+        <a href="about.html"   class="footer-link">Leadership</a>
+        <a href="about.html"   class="footer-link">Awards</a>
+        <a href="contact.html" class="footer-link">Careers</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Services</div>
+        <a href="accounts-overview.html" class="footer-link">Personal Banking</a>
+        <a href="services.html"          class="footer-link">All Services</a>
+        <a href="wealth.html"            class="footer-link">Wealth Management</a>
+        <a href="signup.html"            class="footer-link">Open Account</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Contact</div>
+        <a href="contact.html" class="footer-link">Get in Touch</a>
+        <a href="contact.html" class="footer-link">Branch Locations</a>
+        <a href="contact.html" class="footer-link">Private Banking</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal">© 2024 ZenithOne Credit Union All rights reserved. Member FDIC. Equal Housing Lender.</div>
+      <div class="footer-fdic"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>FDIC Insured · Member FDIC</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); });
+const toggle = document.getElementById('mobileToggle');
+const drawer = document.getElementById('mobileDrawer');
+const overlay = document.getElementById('mobileOverlay');
+function closeMobile() { drawer.classList.remove('open'); overlay.classList.remove('open'); }
+toggle.addEventListener('click', () => { drawer.classList.toggle('open'); overlay.classList.toggle('open'); });
+overlay.addEventListener('click', closeMobile);
+drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobile));
+const revealObserver = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }); }, {threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+</script>
+</body>
+</html>

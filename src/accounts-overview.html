@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accounts — ZenithOne Credit Union</title>
+  <meta name="description" content="Explore ZenithOne Credit Union's full range of checking, savings, money market, and CD accounts with industry-leading rates and no hidden fees." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <style>
+    .nav-link.active { color: var(--gold-400) !important; }
+    .page-hero { position:relative; padding:160px 0 100px; overflow:hidden; border-bottom:1px solid rgba(201,168,76,.1); }
+    .page-hero-bg { position:absolute; inset:0; z-index:0; background:radial-gradient(ellipse 120% 70% at 50% 0%, rgba(201,168,76,.1) 0%, transparent 55%), linear-gradient(180deg,#020b18 0%,#061225 70%,#0d1e35 100%); }
+    .page-hero-grid { position:absolute; inset:0; z-index:0; background-image:linear-gradient(rgba(201,168,76,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.03) 1px,transparent 1px); background-size:60px 60px; mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black 30%,transparent 80%); }
+    .page-hero-content { position:relative; z-index:1; }
+    .page-breadcrumb { font-size:.7rem; letter-spacing:.15em; text-transform:uppercase; color:var(--gold-500); margin-bottom:20px; display:inline-flex; align-items:center; gap:8px; }
+    .page-breadcrumb-dot { width:4px; height:4px; border-radius:50%; background:var(--gold-500); }
+    /* Account tier cards */
+    .acct-card { border-radius:22px; overflow:hidden; position:relative; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.02); transition:all .4s; display:flex; flex-direction:column; }
+    .acct-card:hover { transform:translateY(-6px); box-shadow:0 24px 64px rgba(0,0,0,.5); }
+    .acct-card.featured { border-color:rgba(201,168,76,.35); box-shadow:0 0 40px rgba(201,168,76,.12); }
+    .acct-header { padding:32px 28px 24px; }
+    .acct-badge { display:inline-block; font-size:.65rem; letter-spacing:.15em; text-transform:uppercase; padding:4px 12px; border-radius:9999px; margin-bottom:16px; }
+    .acct-badge.std  { background:rgba(255,255,255,.08); color:var(--slate-300); }
+    .acct-badge.plus { background:rgba(96,165,250,.1); color:#60a5fa; border:1px solid rgba(96,165,250,.2); }
+    .acct-badge.priv { background:rgba(201,168,76,.12); color:var(--gold-400); border:1px solid rgba(201,168,76,.25); }
+    .acct-badge.wealth { background:rgba(201,168,76,.2); color:var(--gold-400); border:1px solid rgba(201,168,76,.4); }
+    .acct-name { font-family:var(--font-display); font-size:1.6rem; margin-bottom:8px; }
+    .acct-min { font-size:.8rem; color:var(--slate-500); }
+    .acct-apy { font-family:var(--font-display); font-size:2.6rem; color:var(--gold-400); line-height:1; margin:20px 0 4px; }
+    .acct-apy-label { font-size:.7rem; color:var(--slate-500); letter-spacing:.06em; text-transform:uppercase; }
+    .acct-body { padding:0 28px 28px; flex:1; }
+    .acct-feature { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.04); font-size:.875rem; color:var(--slate-300); }
+    .acct-feature:last-of-type { border-bottom:none; }
+    .acct-check { color:var(--gold-500); flex-shrink:0; margin-top:1px; }
+    .acct-footer { padding:0 28px 28px; }
+    .featured-label { position:absolute; top:0; right:0; background:linear-gradient(135deg,var(--gold-500),var(--gold-400)); color:var(--navy-900); font-size:.6rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; padding:6px 18px; border-bottom-left-radius:12px; }
+    /* Rates table */
+    .rates-table { width:100%; border-collapse:collapse; }
+    .rates-table th { font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--slate-500); padding:14px 20px; text-align:left; border-bottom:1px solid rgba(255,255,255,.06); }
+    .rates-table td { padding:16px 20px; font-size:.9rem; color:var(--slate-300); border-bottom:1px solid rgba(255,255,255,.04); }
+    .rates-table tr:last-child td { border-bottom:none; }
+    .rates-table tr:hover td { background:rgba(255,255,255,.02); }
+    .rate-highlight { color:var(--gold-400); font-family:var(--font-display); font-size:1.05rem; }
+    /* Compare table */
+    .compare-table { width:100%; border-collapse:collapse; }
+    .compare-table th { padding:16px 20px; font-size:.8rem; font-weight:600; color:var(--white); text-align:center; background:rgba(255,255,255,.04); }
+    .compare-table th:first-child { text-align:left; color:var(--slate-500); font-weight:400; }
+    .compare-table td { padding:14px 20px; font-size:.875rem; color:var(--slate-400); border-bottom:1px solid rgba(255,255,255,.04); text-align:center; }
+    .compare-table td:first-child { text-align:left; color:var(--slate-300); font-weight:500; }
+    .compare-table tr:last-child td { border-bottom:none; }
+    .compare-yes { color:#4ade80; }
+    .compare-no  { color:rgba(255,255,255,.2); }
+    .compare-table .col-featured { background:rgba(201,168,76,.04); }
+    @media (max-width:1024px) { .acct-cards-grid { grid-template-columns:1fr 1fr !important; } }
+    @media (max-width:640px)  { .acct-cards-grid { grid-template-columns:1fr !important; } .page-hero { padding:130px 0 60px; } }
+    @media (max-width:768px)  { .rates-scroll { overflow-x:auto; } }
+  </style>
+</head>
+<body>
+
+<nav class="nav" id="mainNav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">
+      <div class="nav-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+      <div><div class="nav-logo-text">ZENITHONE</div><div class="nav-logo-sub">Credit Union</div></div>
+    </a>
+    <div class="nav-links">
+      <a href="services.html"          class="nav-link">Services</a>
+      <a href="accounts-overview.html" class="nav-link active">Accounts</a>
+      <a href="wealth.html"            class="nav-link">Wealth</a>
+      <a href="about.html"             class="nav-link">About</a>
+      <a href="contact.html"           class="nav-link">Contact</a>
+    </div>
+    <div class="nav-actions">
+      <a href="login.html"  class="btn btn-ghost btn-sm">Sign In</a>
+      <a href="signup.html" class="btn btn-primary btn-sm">Open Account</a>
+      <button class="nav-mobile-toggle" id="mobileToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</nav>
+<div class="mobile-nav-overlay" id="mobileOverlay"></div>
+<div class="mobile-nav-drawer" id="mobileDrawer">
+  <div style="display:flex;flex-direction:column;gap:4px;">
+    <a href="services.html"          class="sidebar-item" style="border-radius:8px;">Services</a>
+    <a href="accounts-overview.html" class="sidebar-item" style="border-radius:8px;">Accounts</a>
+    <a href="wealth.html"            class="sidebar-item" style="border-radius:8px;">Wealth Management</a>
+    <a href="about.html"             class="sidebar-item" style="border-radius:8px;">About Us</a>
+    <a href="contact.html"           class="sidebar-item" style="border-radius:8px;">Contact</a>
+  </div>
+  <div style="margin-top:32px;display:flex;flex-direction:column;gap:10px;">
+    <a href="login.html"  class="btn btn-ghost" style="width:100%;justify-content:center;">Sign In</a>
+    <a href="signup.html" class="btn btn-primary" style="width:100%;justify-content:center;">Open Account</a>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="page-hero-bg"></div>
+  <div class="page-hero-grid"></div>
+  <div class="container page-hero-content">
+    <div class="page-breadcrumb"><span>ZenithOne</span><span class="page-breadcrumb-dot"></span><span>Accounts</span></div>
+    <h1 class="display-lg animate-fadeInUp" style="max-width:820px;">Accounts Designed<br/><em>Around Your Life</em></h1>
+    <p class="animate-fadeInUp delay-1" style="font-size:1.1rem;color:var(--slate-400);line-height:1.8;max-width:580px;margin:24px 0 40px;">From everyday checking to high-yield savings and premium private accounts — every ZenithOne account delivers exceptional rates, zero fees, and the personalized service you deserve.</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;" class="animate-fadeInUp delay-2">
+      <a href="signup.html" class="btn btn-primary btn-xl">Open an Account</a>
+      <div style="font-size:.82rem;color:var(--slate-500);display:flex;align-items:center;gap:8px;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>FDIC insured · No hidden fees · Open in 5 minutes</div>
+    </div>
+  </div>
+</section>
+
+<!-- ACCOUNT TIERS -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:60px;" class="reveal">
+      <div class="section-label" style="justify-content:center;">Account Tiers</div>
+      <h2 class="display-md" style="margin-bottom:18px;">Choose Your <em>Level</em></h2>
+      <p style="color:var(--slate-400);max-width:520px;margin:0 auto;line-height:1.8;">Every ZenithOne account includes FDIC insurance, 24/7 digital access, and no surprise fees. Your tier unlocks additional privileges and personalized attention.</p>
+    </div>
+
+    <div class="acct-cards-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;align-items:start;">
+
+      <div class="acct-card reveal">
+        <div class="acct-header">
+          <div class="acct-badge std">Essential</div>
+          <div class="acct-name">ZenithOne Essential</div>
+          <div class="acct-min">No minimum balance</div>
+          <div class="acct-apy">Free</div>
+          <div class="acct-apy-label">Monthly Maintenance</div>
+        </div>
+        <div class="acct-body">
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Free checking account</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Free debit card</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Mobile check deposit</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Zelle &amp; bill pay</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>2 free ATM withdrawals/mo</div>
+        </div>
+        <div class="acct-footer"><a href="signup.html" class="btn btn-ghost" style="width:100%;justify-content:center;">Open Free Account</a></div>
+      </div>
+
+      <div class="acct-card reveal delay-1">
+        <div class="acct-header">
+          <div class="acct-badge plus">Plus</div>
+          <div class="acct-name">ZenithOne Plus</div>
+          <div class="acct-min">$5,000 average daily balance</div>
+          <div class="acct-apy">1.25%</div>
+          <div class="acct-apy-label">APY on Checking Balance</div>
+        </div>
+        <div class="acct-body">
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Interest-bearing checking</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Unlimited free ATMs</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Overdraft protection</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Priority customer service</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Free wire transfers (2/mo)</div>
+        </div>
+        <div class="acct-footer"><a href="signup.html" class="btn btn-ghost" style="width:100%;justify-content:center;">Open Plus Account</a></div>
+      </div>
+
+      <div class="acct-card featured reveal delay-2" style="position:relative;">
+        <div class="featured-label">Most Popular</div>
+        <div class="acct-header">
+          <div class="acct-badge priv">Private</div>
+          <div class="acct-name">ZenithOne Private</div>
+          <div class="acct-min">$50,000 minimum balance</div>
+          <div class="acct-apy">2.85%</div>
+          <div class="acct-apy-label">APY on Full Balance</div>
+        </div>
+        <div class="acct-body">
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Dedicated Relationship Manager</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Unlimited free wires &amp; ACH</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>ZenithOne Black Mastercard</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Airport lounge access worldwide</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Investment account included</div>
+        </div>
+        <div class="acct-footer"><a href="signup.html" class="btn btn-primary" style="width:100%;justify-content:center;">Open Private Account</a></div>
+      </div>
+
+      <div class="acct-card reveal delay-3">
+        <div class="acct-header">
+          <div class="acct-badge wealth">Wealth</div>
+          <div class="acct-name">ZenithOne Wealth</div>
+          <div class="acct-min">$250,000+ relationship minimum</div>
+          <div class="acct-apy">Custom</div>
+          <div class="acct-apy-label">Negotiated Rate</div>
+        </div>
+        <div class="acct-body">
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Senior Private Banker assigned</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>All Private account benefits</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Family office coordination</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Concierge travel &amp; lifestyle</div>
+          <div class="acct-feature"><svg class="acct-check" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Full wealth management suite</div>
+        </div>
+        <div class="acct-footer"><a href="contact.html" class="btn btn-ghost" style="width:100%;justify-content:center;">Request Invitation</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SAVINGS & CD RATES -->
+<section class="section" style="background:var(--navy-800);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:52px;" class="reveal">
+      <div class="section-label" style="justify-content:center;">Current Rates</div>
+      <h2 class="display-md">Rates That <em>Work for You</em></h2>
+      <p style="color:var(--slate-400);max-width:500px;margin:16px auto 0;line-height:1.8;">Competitive rates across all deposit products. Updated June 2026. FDIC insured up to applicable limits.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;">
+      <!-- Savings -->
+      <div class="card card-elevated reveal">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:28px;">
+          <div style="width:48px;height:48px;border-radius:12px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.2);display:flex;align-items:center;justify-content:center;color:#4ade80;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div>
+            <div style="font-family:var(--font-display);font-size:1.2rem;">Savings Accounts</div>
+            <div style="font-size:.75rem;color:var(--slate-500);">High-Yield &amp; Money Market</div>
+          </div>
+        </div>
+        <div class="rates-scroll">
+          <table class="rates-table">
+            <thead><tr><th>Account</th><th>APY</th><th>Minimum</th></tr></thead>
+            <tbody>
+              <tr><td>High-Yield Savings</td><td class="rate-highlight">4.85%</td><td>$500</td></tr>
+              <tr><td>Money Market</td><td class="rate-highlight">4.20%</td><td>$10,000</td></tr>
+              <tr><td>Private Savings</td><td class="rate-highlight">4.65%</td><td>$50,000</td></tr>
+              <tr><td>Wealth Savings</td><td class="rate-highlight">Negotiated</td><td>$250,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CDs -->
+      <div class="card card-elevated reveal delay-1">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:28px;">
+          <div style="width:48px;height:48px;border-radius:12px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;color:var(--gold-400);">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <div>
+            <div style="font-family:var(--font-display);font-size:1.2rem;">Certificates of Deposit</div>
+            <div style="font-size:.75rem;color:var(--slate-500);">Fixed-Term, FDIC Insured</div>
+          </div>
+        </div>
+        <div class="rates-scroll">
+          <table class="rates-table">
+            <thead><tr><th>Term</th><th>APY</th><th>Minimum</th></tr></thead>
+            <tbody>
+              <tr><td>3-Month CD</td><td class="rate-highlight">4.50%</td><td>$1,000</td></tr>
+              <tr><td>6-Month CD</td><td class="rate-highlight">4.75%</td><td>$1,000</td></tr>
+              <tr><td>12-Month CD</td><td class="rate-highlight">5.10%</td><td>$1,000</td></tr>
+              <tr><td>24-Month CD</td><td class="rate-highlight">4.90%</td><td>$5,000</td></tr>
+              <tr><td>60-Month CD</td><td class="rate-highlight">4.65%</td><td>$10,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:.72rem;color:var(--slate-600);margin-top:20px;text-align:center;">APY = Annual Percentage Yield. Rates effective as of June 1, 2026. Subject to change without notice. Minimum balance requirements apply to earn stated APY.</p>
+  </div>
+</section>
+
+<!-- FEATURES COMPARISON -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:52px;" class="reveal">
+      <div class="section-label" style="justify-content:center;">Side by Side</div>
+      <h2 class="display-md">Compare <em>All Accounts</em></h2>
+    </div>
+    <div class="card card-elevated reveal" style="overflow:hidden;padding:0;">
+      <div style="overflow-x:auto;">
+        <table class="compare-table" style="min-width:700px;">
+          <thead>
+            <tr>
+              <th style="background:rgba(255,255,255,.02);">Feature</th>
+              <th>Essential</th>
+              <th>Plus</th>
+              <th class="col-featured" style="background:rgba(201,168,76,.06);">Private ⭐</th>
+              <th>Wealth</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Monthly Fee</td><td>$0</td><td>$0*</td><td class="col-featured">$0</td><td>$0</td></tr>
+            <tr><td>Minimum Balance</td><td>None</td><td>$5,000</td><td class="col-featured">$50,000</td><td>$250,000</td></tr>
+            <tr><td>Checking APY</td><td>—</td><td>1.25%</td><td class="col-featured" style="color:var(--gold-400);">2.85%</td><td style="color:var(--gold-400);">Custom</td></tr>
+            <tr><td>ATM Fees Refunded</td><td>2/month</td><td>Unlimited</td><td class="col-featured"><svg class="compare-yes" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></td><td><svg class="compare-yes" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></td></tr>
+            <tr><td>Free Wire Transfers</td><td><svg class="compare-no" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td><td>2/month</td><td class="col-featured">Unlimited</td><td>Unlimited</td></tr>
+            <tr><td>Dedicated Banker</td><td><svg class="compare-no" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td><td><svg class="compare-no" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td><td class="col-featured"><svg class="compare-yes" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></td><td>Senior Banker</td></tr>
+            <tr><td>Premium Debit Card</td><td>Standard</td><td>Silver</td><td class="col-featured" style="color:var(--gold-400);">Black Card</td><td style="color:var(--gold-400);">Black Card+</td></tr>
+            <tr><td>Lounge Access</td><td><svg class="compare-no" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td><td><svg class="compare-no" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td><td class="col-featured">1,300+ Lounges</td><td>Unlimited</td></tr>
+            <tr><td>Investment Account</td><td><svg class="compare-no" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></td><td>Add-on</td><td class="col-featured"><svg class="compare-yes" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></td><td>Full Suite</td></tr>
+            <tr><td style="border-bottom:none;"></td><td style="border-bottom:none;"><a href="signup.html" class="btn btn-ghost btn-sm" style="white-space:nowrap;">Open</a></td><td style="border-bottom:none;"><a href="signup.html" class="btn btn-ghost btn-sm" style="white-space:nowrap;">Open</a></td><td class="col-featured" style="border-bottom:none;"><a href="signup.html" class="btn btn-primary btn-sm" style="white-space:nowrap;">Open</a></td><td style="border-bottom:none;"><a href="contact.html" class="btn btn-ghost btn-sm" style="white-space:nowrap;">Apply</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="padding:16px 24px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.04);font-size:.72rem;color:var(--slate-600);">*Monthly fee waived with $5,000 average daily balance.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section">
+  <div class="container">
+    <div class="cta-section reveal">
+      <div class="section-label" style="justify-content:center;">Join ZenithOne</div>
+      <h2 class="display-lg" style="margin-bottom:20px;">Open Your Account<br/><em>in Minutes</em></h2>
+      <p style="color:#94a3b8;font-size:1.05rem;max-width:480px;margin:0 auto 40px;line-height:1.8;">No application fee. No minimum opening deposit on Essential accounts. FDIC insured. Open online in under 5 minutes.</p>
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;">
+        <a href="signup.html" class="btn btn-primary btn-xl">Open Account Today</a>
+        <a href="contact.html" class="btn btn-outline btn-xl">Compare with an Advisor</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="nav-logo" style="margin-bottom:0;">
+          <div class="nav-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+          <div><div class="nav-logo-text">ZENITHONE</div><div class="nav-logo-sub">Credit Union</div></div>
+        </div>
+        <p class="footer-brand-desc">ZenithOne Credit Union — A financial institution built on trust, innovation, and an unwavering commitment to our clients' prosperity since 1887.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Personal</div>
+        <a href="accounts-overview.html" class="footer-link">Checking Accounts</a>
+        <a href="accounts-overview.html" class="footer-link">Savings Accounts</a>
+        <a href="accounts-overview.html" class="footer-link">CDs &amp; Money Market</a>
+        <a href="services.html"          class="footer-link">Credit Cards</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Services</div>
+        <a href="services.html" class="footer-link">Private Banking</a>
+        <a href="services.html" class="footer-link">Lending</a>
+        <a href="services.html" class="footer-link">Global Services</a>
+        <a href="wealth.html"   class="footer-link">Investments</a>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <a href="about.html"   class="footer-link">About ZenithOne</a>
+        <a href="wealth.html"  class="footer-link">Wealth Management</a>
+        <a href="contact.html" class="footer-link">Contact Us</a>
+        <a href="signup.html"  class="footer-link">Open Account</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-legal">© 2024 ZenithOne Credit Union All rights reserved. Member FDIC. Equal Housing Lender. Rates and terms are subject to change without notice.</div>
+      <div class="footer-fdic"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>FDIC Insured · Member FDIC</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const nav = document.getElementById('mainNav');
+window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 60); });
+const toggle = document.getElementById('mobileToggle');
+const drawer = document.getElementById('mobileDrawer');
+const overlay = document.getElementById('mobileOverlay');
+function closeMobile() { drawer.classList.remove('open'); overlay.classList.remove('open'); }
+toggle.addEventListener('click', () => { drawer.classList.toggle('open'); overlay.classList.toggle('open'); });
+overlay.addEventListener('click', closeMobile);
+drawer.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobile));
+const revealObserver = new IntersectionObserver((entries) => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }); }, {threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+</script>
+</body>
+</html>

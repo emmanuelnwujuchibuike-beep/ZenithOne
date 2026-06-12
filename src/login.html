@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — ZenithOne Credit Union</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <style>
+    body { display:flex; min-height:100vh; }
+    .auth-left {
+      width: 480px; flex-shrink: 0;
+      background: var(--navy-950);
+      border-right: 1px solid rgba(201,168,76,.12);
+      display: flex; flex-direction: column;
+      padding: 40px;
+    }
+    .auth-right {
+      flex: 1;
+      background: radial-gradient(ellipse 120% 80% at 70% 30%, rgba(201,168,76,.08) 0%, transparent 55%),
+                  linear-gradient(135deg, var(--navy-800) 0%, var(--navy-900) 100%);
+      display: flex; align-items: center; justify-content: center;
+      padding: 40px; position: relative; overflow: hidden;
+    }
+    .auth-right-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(201,168,76,.03) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(201,168,76,.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+    }
+    .auth-brand { display:flex; align-items:center; gap:12px; margin-bottom:auto; }
+    .auth-form-section { flex:1; display:flex; flex-direction:column; justify-content:center; padding: 20px 0; }
+    .auth-footer-note { font-size:.75rem; color:var(--slate-600); line-height:1.6; }
+
+    .divider-text {
+      display:flex; align-items:center; gap:12px;
+      font-size:.75rem; color:var(--slate-600); margin:20px 0;
+    }
+    .divider-text::before, .divider-text::after { content:''; flex:1; height:1px; background:rgba(255,255,255,.06); }
+
+    .security-badges { display:flex; gap:12px; margin-top:24px; flex-wrap:wrap; }
+    .sec-badge { display:flex; align-items:center; gap:6px; font-size:.7rem; color:var(--slate-500); }
+
+    @media (max-width:768px) { .auth-left{width:100%;} .auth-right{display:none;} }
+  </style>
+</head>
+<body>
+<div class="auth-left">
+  <a href="index.html" class="auth-brand">
+    <div class="nav-logo-mark">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    <div>
+      <div class="nav-logo-text">ZENITHONE</div>
+      <div class="nav-logo-sub">Credit Union</div>
+    </div>
+  </a>
+
+  <div class="auth-form-section">
+    <h1 style="font-family:var(--font-display);font-size:2.2rem;margin-bottom:8px;">Welcome back</h1>
+    <p style="color:var(--slate-400);font-size:.9rem;margin-bottom:36px;">Sign in to access your accounts and portfolio.</p>
+
+    <!-- Error alert -->
+    <div class="alert alert-error hidden" id="loginError" style="margin-bottom:20px;">
+      <svg class="alert-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      <span id="loginErrorMsg">Invalid email or password.</span>
+    </div>
+
+    <form id="loginForm" novalidate>
+      <div style="display:flex;flex-direction:column;gap:18px;">
+        <div class="form-group">
+          <label class="form-label" for="email">Email Address</label>
+          <div class="input-group">
+            <svg class="input-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input id="email" type="email" class="form-input" placeholder="you@example.com" autocomplete="email" required />
+          </div>
+          <div class="form-error hidden" id="emailError">Please enter a valid email address.</div>
+        </div>
+
+        <div class="form-group">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <label class="form-label" for="password">Password</label>
+            <a href="forgot-password.html" style="font-size:.75rem;color:var(--gold-500);">Forgot password?</a>
+          </div>
+          <div class="input-group">
+            <svg class="input-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input id="password" type="password" class="form-input" placeholder="••••••••••" autocomplete="current-password" required />
+            <button type="button" class="input-suffix clickable" id="togglePwd" tabindex="-1">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" id="eyeIcon"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+          <div class="form-error hidden" id="passwordError">Password is required.</div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;">
+          <input type="checkbox" id="rememberMe" style="accent-color:var(--gold-500);width:16px;height:16px;" />
+          <label for="rememberMe" style="font-size:.875rem;color:var(--slate-300);cursor:pointer;">Remember this device for 30 days</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-full" style="margin-top:4px;padding:14px;" id="loginBtn">
+          <span id="loginBtnText">Sign In Securely</span>
+          <span class="spinner hidden" id="loginSpinner"></span>
+        </button>
+      </div>
+    </form>
+
+    <div class="divider-text">or continue with</div>
+
+    <button class="btn btn-outline w-full" id="biometricBtn" style="padding:14px;gap:12px;">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 6a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"/><path d="M7 19.5C7.5 17 9.5 15.5 12 15.5s4.5 1.5 5 4"/></svg>
+      Sign in with Biometrics
+    </button>
+
+    <p style="text-align:center;margin-top:28px;font-size:.875rem;color:var(--slate-400);">
+      New to ZenithOne? <a href="signup.html" style="color:var(--gold-500);font-weight:500;">Open an account →</a>
+    </p>
+
+    <div class="security-badges">
+      <div class="sec-badge">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        256-bit SSL
+      </div>
+      <div class="sec-badge">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        2FA Enabled
+      </div>
+      <div class="sec-badge">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+        FDIC Insured
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-footer-note">
+    By signing in, you agree to our <a href="#" style="color:var(--slate-400);text-decoration:underline;">Terms of Service</a> and acknowledge our <a href="#" style="color:var(--slate-400);text-decoration:underline;">Privacy Policy</a>. ZenithOne Credit Union Member FDIC.
+  </div>
+</div>
+
+<!-- Right decorative panel -->
+<div class="auth-right">
+  <div class="auth-right-grid"></div>
+  <div style="position:relative;z-index:1;max-width:460px;text-align:center;">
+    <div style="font-family:var(--font-display);font-size:3rem;color:rgba(255,255,255,.06);margin-bottom:-20px;">❝</div>
+    <blockquote style="font-family:var(--font-display);font-size:1.5rem;line-height:1.6;color:rgba(255,255,255,.85);font-style:italic;">
+      "The trust we place in our bank mirrors the trust we have in our future."
+    </blockquote>
+    <div style="margin-top:28px;display:flex;align-items:center;justify-content:center;gap:12px;">
+      <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gold-600),var(--gold-400));display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.1rem;color:var(--navy-900);">EM</div>
+      <div style="text-align:left;">
+        <div style="font-size:.9rem;font-weight:500;">Eleanor Maxwell</div>
+        <div style="font-size:.75rem;color:var(--slate-400);">ZenithOne Black Card Member since 2018</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:48px;">
+      <div style="background:rgba(13,30,53,.7);border:1px solid rgba(201,168,76,.15);border-radius:16px;padding:20px;backdrop-filter:blur(12px);">
+        <div style="font-family:var(--font-display);font-size:1.8rem;color:var(--white);">$48B+</div>
+        <div style="font-size:.75rem;color:var(--slate-400);margin-top:4px;">Assets Under Management</div>
+      </div>
+      <div style="background:rgba(13,30,53,.7);border:1px solid rgba(201,168,76,.15);border-radius:16px;padding:20px;backdrop-filter:blur(12px);">
+        <div style="font-family:var(--font-display);font-size:1.8rem;color:var(--white);">4.85%</div>
+        <div style="font-size:.75rem;color:var(--slate-400);margin-top:4px;">APY Money Market</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+// Toggle password visibility
+document.getElementById('togglePwd').addEventListener('click', function() {
+  const input = document.getElementById('password');
+  input.type = input.type === 'password' ? 'text' : 'password';
+  document.getElementById('eyeIcon').innerHTML = input.type === 'password'
+    ? '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>'
+    : '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+});
+</script>
+</body>
+</html>

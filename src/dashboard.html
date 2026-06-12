@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — ZenithOne Credit Union</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <style>
+    .chart-container { position:relative; height:220px; width:100%; }
+    .mini-chart { display:flex; align-items:flex-end; gap:6px; height:60px; }
+    .mini-bar { flex:1; border-radius:3px 3px 0 0; min-width:6px; transition:all .3s; }
+    .quick-action { display:flex; flex-direction:column; align-items:center; gap:8px; padding:16px 12px; border-radius:14px; cursor:pointer; transition:all var(--transition); border:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.03); }
+    .quick-action:hover { background:rgba(201,168,76,.08); border-color:rgba(201,168,76,.3); }
+    .quick-action-icon { width:44px; height:44px; border-radius:12px; background:rgba(201,168,76,.1); color:var(--gold-400); display:flex; align-items:center; justify-content:center; }
+    .quick-action-label { font-size:.75rem; color:var(--slate-300); text-align:center; font-weight:500; }
+    .account-card-mini { display:flex; align-items:center; justify-content:space-between; padding:16px; border-radius:12px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); cursor:pointer; transition:all var(--transition); margin-bottom:8px; }
+    .account-card-mini:hover { background:rgba(201,168,76,.05); border-color:rgba(201,168,76,.2); }
+    .spending-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+    .spending-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+    .market-ticker { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+    .welcome-banner { background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(36,71,110,.2)); border:1px solid rgba(201,168,76,.2); border-radius:16px; padding:24px 28px; margin-bottom:28px; display:flex; align-items:center; justify-content:space-between; }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+  <!-- ═══════ SIDEBAR ═══════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html" class="sidebar-logo-mark">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </a>
+      <div>
+        <div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div>
+        <div style="font-size:.55rem;letter-spacing:.18em;color:var(--gold-500);text-transform:uppercase;">Credit Union</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <a href="dashboard.html"     class="sidebar-item active">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a href="accounts.html"      class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          Accounts
+        </a>
+        <a href="transactions.html"  class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          Transactions
+        </a>
+        <a href="transfer.html"      class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+          Transfer
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Finance</div>
+        <a href="cards.html"         class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+          Cards
+        </a>
+        <a href="investments.html"   class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Investments
+          <span class="sidebar-badge">+3.2%</span>
+        </a>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Account</div>
+        <a href="settings.html"      class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </a>
+        <button class="sidebar-item" id="logoutBtn" style="width:100%;text-align:left;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebarAvatar">AR</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarName">Alexandra Reynolds</div>
+          <div class="sidebar-user-tier">Private Banking Client</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ═══════ MAIN ═══════ -->
+  <main class="app-main">
+    <!-- Topbar -->
+    <header class="app-topbar">
+      <div class="app-topbar-left">
+        <button class="btn btn-icon btn-ghost" id="sidebarToggle">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="app-topbar-title">Dashboard</div>
+      </div>
+      <div class="app-topbar-right">
+        <div style="font-size:.75rem;color:var(--slate-400);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);padding:6px 14px;border-radius:8px;" id="topbarDate"></div>
+        <button class="btn btn-icon btn-ghost notif-dot" id="notifBtn">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+        <div class="sidebar-avatar" style="cursor:pointer;" id="topbarAvatar">AR</div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="app-content">
+
+      <!-- Welcome Banner -->
+      <div class="welcome-banner" id="welcomeBanner">
+        <div>
+          <div style="font-family:var(--font-display);font-size:1.5rem;margin-bottom:4px;">Good <span id="timeGreeting">morning</span>, <span id="welcomeName">Alexandra</span> 👋</div>
+          <div style="font-size:.875rem;color:var(--slate-400);">Here's your financial overview for <span id="bannerDate">today</span>.</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:.75rem;color:var(--slate-500);margin-bottom:4px;">Last login</div>
+          <div style="font-size:.85rem;color:var(--slate-300)" id="lastLogin">Today, 9:24 AM</div>
+          <div class="badge badge-green" style="margin-top:6px;">Secure Session</div>
+        </div>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="grid-4" style="gap:20px;margin-bottom:28px;">
+        <div class="stat-card">
+          <div class="stat-icon gold">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="stat-value" id="totalBalance">$0.00</div>
+          <div class="stat-label">Total Balance</div>
+          <div class="stat-change up" id="balanceChange">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            +2.4% this month
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+          </div>
+          <div class="stat-value" id="portfolioValue">$0.00</div>
+          <div class="stat-label">Portfolio Value</div>
+          <div class="stat-change up" id="portfolioChange">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            +3.2% this month
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+          </div>
+          <div class="stat-value" id="creditAvailable">$0.00</div>
+          <div class="stat-label">Available Credit</div>
+          <div class="stat-change" style="color:var(--slate-500);">Cards ending in •7842</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon gold">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div class="stat-value" id="rewardPoints">0</div>
+          <div class="stat-label">Reward Points</div>
+          <div class="stat-change up">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            +840 this month
+          </div>
+        </div>
+      </div>
+
+      <!-- Middle row -->
+      <div style="display:grid;grid-template-columns:1fr 380px;gap:24px;margin-bottom:24px;">
+
+        <!-- Account Balance Chart -->
+        <div class="card card-elevated">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+            <div>
+              <div style="font-family:var(--font-display);font-size:1.25rem;">Balance History</div>
+              <div style="font-size:.8rem;color:var(--slate-400);margin-top:2px;">Last 12 months</div>
+            </div>
+            <div class="tabs" style="width:auto;flex:none;">
+              <div class="tab-item active" onclick="switchChart('1M',this)">1M</div>
+              <div class="tab-item" onclick="switchChart('3M',this)">3M</div>
+              <div class="tab-item" onclick="switchChart('1Y',this)">1Y</div>
+            </div>
+          </div>
+          <canvas id="balanceChart" class="chart-container" height="220"></canvas>
+        </div>
+
+        <!-- Quick Actions + My Accounts -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <!-- Quick Actions -->
+          <div class="card card-elevated">
+            <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:18px;">Quick Actions</div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+              <a href="transfer.html" class="quick-action">
+                <div class="quick-action-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg></div>
+                <div class="quick-action-label">Send</div>
+              </a>
+              <a href="transfer.html?type=receive" class="quick-action">
+                <div class="quick-action-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M8 18l4 4 4-4M8 6l4-4 4 4"/></svg></div>
+                <div class="quick-action-label">Receive</div>
+              </a>
+              <a href="cards.html" class="quick-action">
+                <div class="quick-action-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div>
+                <div class="quick-action-label">Cards</div>
+              </a>
+              <button class="quick-action" onclick="openPayBillModal()">
+                <div class="quick-action-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="quick-action-label">Pay Bill</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- My Accounts mini -->
+          <div class="card card-elevated" style="flex:1;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+              <div style="font-family:var(--font-display);font-size:1.1rem;">My Accounts</div>
+              <a href="accounts.html" style="font-size:.75rem;color:var(--gold-500);">View all</a>
+            </div>
+            <div id="accountsList">
+              <!-- Populated by JS -->
+              <div class="account-card-mini">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(201,168,76,.12);display:flex;align-items:center;justify-content:center;color:var(--gold-400);">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+                  </div>
+                  <div>
+                    <div style="font-size:.85rem;font-weight:500;">Checking ••••4821</div>
+                    <div style="font-size:.72rem;color:var(--slate-500);">ZenithOne Private</div>
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-family:var(--font-display);font-size:1rem;" id="checkingBal">$0.00</div>
+                  <div class="badge badge-green" style="font-size:.6rem;padding:2px 6px;">Active</div>
+                </div>
+              </div>
+              <div class="account-card-mini">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(96,165,250,.1);display:flex;align-items:center;justify-content:center;color:var(--blue-400);">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  </div>
+                  <div>
+                    <div style="font-size:.85rem;font-weight:500;">High-Yield Savings ••••9103</div>
+                    <div style="font-size:.72rem;color:var(--slate-500);">4.85% APY</div>
+                  </div>
+                </div>
+                <div style="text-align:right;">
+                  <div style="font-family:var(--font-display);font-size:1rem;" id="savingsBal">$0.00</div>
+                  <div class="badge badge-green" style="font-size:.6rem;padding:2px 6px;">Active</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom row -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 320px;gap:24px;">
+
+        <!-- Recent Transactions -->
+        <div class="card card-elevated">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+            <div style="font-family:var(--font-display);font-size:1.25rem;">Recent Transactions</div>
+            <a href="transactions.html" style="font-size:.75rem;color:var(--gold-500);">View all</a>
+          </div>
+          <div id="recentTransactions">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Spending by Category -->
+        <div class="card card-elevated">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+            <div style="font-family:var(--font-display);font-size:1.25rem;">Spending</div>
+            <div style="font-size:.75rem;color:var(--slate-500);">This Month</div>
+          </div>
+          <div style="margin-bottom:20px;">
+            <div style="font-family:var(--font-display);font-size:1.8rem;" id="totalSpent">$0.00</div>
+            <div style="font-size:.75rem;color:var(--slate-400);margin-top:2px;">Total spent this month</div>
+          </div>
+          <div id="spendingCategories">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Market Snapshot + Card -->
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <!-- Bank Card -->
+          <div class="bank-card-visual black" style="padding:22px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;">
+              <svg width="32" height="24" viewBox="0 0 36 28"><rect width="36" height="28" rx="4" fill="url(#chip2)"/><defs><linearGradient id="chip2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8c96b"/><stop offset="100%" stop-color="#c9a84c"/></linearGradient></defs><rect x="2" y="8" width="32" height="12" rx="1" fill="rgba(255,255,255,.15)"/></svg>
+              <span style="font-family:var(--font-display);font-size:.85rem;color:rgba(255,255,255,.4);">ZENITHONE BLACK</span>
+            </div>
+            <div style="font-size:.9rem;letter-spacing:.18em;color:rgba(255,255,255,.7);margin-bottom:16px;font-family:'Courier New',monospace;">•••• •••• •••• 7842</div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+              <div>
+                <div style="font-size:.65rem;color:rgba(255,255,255,.4);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Cardholder</div>
+                <div style="font-size:.8rem;color:rgba(255,255,255,.7);letter-spacing:.06em;text-transform:uppercase;" id="cardholderName">A. REYNOLDS</div>
+              </div>
+              <div class="card-network">
+                <div class="card-network-circle"></div>
+                <div class="card-network-circle"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Market Snapshot -->
+          <div class="card card-elevated" style="flex:1;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+              <div style="font-family:var(--font-display);font-size:1.1rem;">Markets</div>
+              <div style="font-size:.65rem;color:var(--slate-500);letter-spacing:.05em;">LIVE</div>
+            </div>
+            <div id="marketTickers">
+              <!-- populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /app-content -->
+  </main>
+</div>
+
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/dashboard.js"></script>
+<script>
+// Date/time greeting
+(function() {
+  const hour = new Date().getHours();
+  document.getElementById('timeGreeting').textContent = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+  const date = new Date().toLocaleDateString('en-US', opts);
+  document.getElementById('topbarDate').textContent = date;
+  document.getElementById('bannerDate').textContent = date;
+})();
+
+// Mobile sidebar toggle
+const sidebarEl = document.getElementById('sidebar');
+const overlayEl = document.getElementById('sidebarOverlay');
+document.getElementById('sidebarToggle').addEventListener('click', () => {
+  sidebarEl.classList.toggle('open');
+  overlayEl.classList.toggle('open');
+});
+overlayEl.addEventListener('click', () => {
+  sidebarEl.classList.remove('open');
+  overlayEl.classList.remove('open');
+});
+
+// Balance Chart (canvas)
+function drawBalanceChart(data) {
+  const canvas = document.getElementById('balanceChart');
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.parentElement.offsetWidth;
+  canvas.height = 220;
+  const W = canvas.width, H = canvas.height;
+  const pad = { top:20, right:20, bottom:36, left:60 };
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top - pad.bottom;
+  const min = Math.min(...data) * .98;
+  const max = Math.max(...data) * 1.02;
+  const range = max - min;
+
+  ctx.clearRect(0,0,W,H);
+
+  // Grid lines
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + (cH / 4) * i;
+    ctx.strokeStyle = 'rgba(255,255,255,.04)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+    const val = max - (range/4)*i;
+    ctx.fillStyle = '#64748b';
+    ctx.font = '11px Inter';
+    ctx.fillText('$'+Math.round(val/1000)+'k', 0, y+4);
+  }
+  ctx.setLineDash([]);
+
+  // Gradient fill
+  const grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
+  grad.addColorStop(0, 'rgba(201,168,76,.18)');
+  grad.addColorStop(1, 'rgba(201,168,76,0)');
+
+  // Points
+  const pts = data.map((v,i) => ({
+    x: pad.left + (cW/(data.length-1))*i,
+    y: pad.top + cH * (1-(v-min)/range)
+  }));
+
+  // Fill
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i=1;i<pts.length;i++) {
+    const cp1x = (pts[i-1].x+pts[i].x)/2, cp1y = pts[i-1].y;
+    const cp2x = (pts[i-1].x+pts[i].x)/2, cp2y = pts[i].y;
+    ctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,pts[i].x,pts[i].y);
+  }
+  ctx.lineTo(pts[pts.length-1].x, H-pad.bottom);
+  ctx.lineTo(pts[0].x, H-pad.bottom);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i=1;i<pts.length;i++) {
+    const cp1x=(pts[i-1].x+pts[i].x)/2,cp1y=pts[i-1].y;
+    const cp2x=(pts[i-1].x+pts[i].x)/2,cp2y=pts[i].y;
+    ctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,pts[i].x,pts[i].y);
+  }
+  ctx.strokeStyle = '#c9a84c';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  // Month labels
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  pts.forEach((p,i) => {
+    ctx.fillStyle = '#64748b';
+    ctx.font = '11px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText(months[i % 12], p.x, H - 6);
+  });
+
+  // Dot on last point
+  ctx.beginPath();
+  ctx.arc(pts[pts.length-1].x, pts[pts.length-1].y, 5, 0, Math.PI*2);
+  ctx.fillStyle = '#c9a84c';
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+const chartData = {
+  '1M': [48200,48500,47900,49100,49800,50200,49600,51000,50800,51400,52100,52694],
+  '3M': [44100,45200,46800,47500,46900,48200,47800,49100,50200,51000,51800,52694],
+  '1Y': [38000,39500,41200,40800,43000,44500,46200,45800,47900,49100,51000,52694]
+};
+let currentChartData = chartData['1Y'];
+
+function switchChart(range, el) {
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentChartData = chartData[range];
+  drawBalanceChart(currentChartData);
+}
+
+// Market tickers
+const tickers = [
+  { sym:'S&P 500', val:'5,242.68', chg:'+0.48%', up:true },
+  { sym:'DOW',     val:'39,118.86', chg:'+0.31%', up:true },
+  { sym:'NASDAQ',  val:'16,428.82', chg:'+0.74%', up:true },
+  { sym:'GLD',     val:'$2,341.20', chg:'-0.12%', up:false },
+];
+const tickerHTML = tickers.map(t => `
+  <div class="market-ticker">
+    <div style="flex:1;">
+      <div style="font-size:.85rem;font-weight:500;">${t.sym}</div>
+      <div style="font-size:.75rem;color:var(--slate-400);">${t.val}</div>
+    </div>
+    <div style="font-size:.8rem;font-weight:600;color:${t.up ? 'var(--green-400)':'var(--red-400)'};">${t.chg}</div>
+  </div>
+`).join('');
+document.getElementById('marketTickers').innerHTML = tickerHTML;
+
+// Spending categories
+const cats = [
+  { name:'Dining & Entertainment', pct:32, amt:'$1,248', color:'#c9a84c' },
+  { name:'Travel',                 pct:28, amt:'$1,092', color:'#60a5fa' },
+  { name:'Shopping',               pct:22, amt:'$858',   color:'#a78bfa' },
+  { name:'Utilities & Bills',      pct:18, amt:'$702',   color:'#4ade80' },
+];
+document.getElementById('spendingCategories').innerHTML = cats.map(c => `
+  <div class="spending-row">
+    <div class="spending-dot" style="background:${c.color};"></div>
+    <div style="flex:1;">
+      <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:5px;">
+        <span style="color:var(--slate-300);">${c.name}</span>
+        <span style="color:var(--white);">${c.amt}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${c.pct}%;background:${c.color};opacity:.8;"></div></div>
+    </div>
+  </div>
+`).join('');
+document.getElementById('totalSpent').textContent = '$3,900.00';
+
+// Recent transactions placeholder
+const txns = [
+  { name:'Apple Store',       date:'Today, 2:34 PM',      amt:'-$299.00',   cat:'Shopping',     icon:'🛍️' },
+  { name:'Transfer Received', date:'Today, 9:02 AM',      amt:'+$5,000.00', cat:'Transfer',     icon:'↙️', credit:true },
+  { name:'Nobu Restaurant',   date:'Yesterday, 8:45 PM',  amt:'-$342.50',   cat:'Dining',       icon:'🍽️' },
+  { name:'Delta Airlines',    date:'Jun 10, 11:00 AM',    amt:'-$1,245.00', cat:'Travel',       icon:'✈️' },
+  { name:'Interest Credit',   date:'Jun 1',               amt:'+$198.42',   cat:'Interest',     icon:'💰', credit:true },
+];
+document.getElementById('recentTransactions').innerHTML = txns.map(t => `
+  <div class="transaction-item">
+    <div class="transaction-icon" style="font-size:1.1rem;">${t.icon}</div>
+    <div class="transaction-info">
+      <div class="transaction-name">${t.name}</div>
+      <div class="transaction-date">${t.date} · ${t.cat}</div>
+    </div>
+    <div>
+      <div class="transaction-amount ${t.credit?'credit':'debit'}">${t.amt}</div>
+      <div class="transaction-status completed">Completed</div>
+    </div>
+  </div>
+`).join('');
+
+// Initialize chart after layout
+window.addEventListener('load', () => {
+  drawBalanceChart(currentChartData);
+  window.addEventListener('resize', () => drawBalanceChart(currentChartData));
+});
+
+function openPayBillModal() { alert('Bill Pay feature — connect your Supabase backend to enable.'); }
+</script>
+</body>
+</html>

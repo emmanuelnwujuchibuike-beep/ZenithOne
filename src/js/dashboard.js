@@ -21,27 +21,22 @@ async function loadDashboardData() {
 }
 
 function renderDashboardStats(data) {
-  animateNumber('totalBalance',   data.total_balance   || 1047001.17, '$', '');
-  animateNumber('portfolioValue', data.portfolio_value || 1842694.00, '$', '');
-  animateNumber('creditAvailable',data.credit_available|| 38720.00,   '$', '');
-  animateNumber('rewardPoints',   data.reward_points   || 124840,      '',  '');
-  if (data.checking_balance !== undefined)
-    document.getElementById('checkingBal').textContent = '$' + data.checking_balance.toLocaleString('en-US',{minimumFractionDigits:2});
-  if (data.savings_balance !== undefined)
-    document.getElementById('savingsBal').textContent  = '$' + data.savings_balance.toLocaleString('en-US',{minimumFractionDigits:2});
+  animateNumber('totalBalance',    data.total_balance    ?? 0, '$', '');
+  animateNumber('portfolioValue',  data.portfolio_value  ?? 0, '$', '');
+  animateNumber('creditAvailable', data.credit_available ?? 0, '$', '');
+  animateNumber('rewardPoints',    data.reward_points    ?? 0, '',  '');
+  const fmt = n => '$' + (n ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
+  const cb = document.getElementById('checkingBal');
+  const sb = document.getElementById('savingsBal');
+  if (cb) cb.textContent = fmt(data.checking_balance);
+  if (sb) sb.textContent = fmt(data.savings_balance);
 }
 
 function loadDemoData() {
-  animateNumber('totalBalance',    1047001.17,  '$', '');
-  animateNumber('portfolioValue',  1842694.00,  '$', '');
-  animateNumber('creditAvailable',   38720.00,  '$', '');
-  animateNumber('rewardPoints',       124840,    '',  '');
-  setTimeout(() => {
-    const cb = document.getElementById('checkingBal');
-    const sb = document.getElementById('savingsBal');
-    if (cb) cb.textContent = '$124,582.74';
-    if (sb) sb.textContent = '$892,418.33';
-  }, 800);
+  animateNumber('totalBalance',    0, '$', '');
+  animateNumber('portfolioValue',  0, '$', '');
+  animateNumber('creditAvailable', 0, '$', '');
+  animateNumber('rewardPoints',    0, '',  '');
 }
 
 function animateNumber(elId, end, prefix, suffix) {

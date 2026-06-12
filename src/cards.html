@@ -71,7 +71,7 @@
         <div class="app-topbar-title">Cards</div>
       </div>
       <div class="app-topbar-right">
-        <button class="btn btn-primary btn-sm" onclick="document.getElementById('cardCatalog').scrollIntoView({behavior:'smooth'})">Manage Card</button>
+        <button class="btn btn-primary btn-sm" onclick="openMyCards()">Manage Card</button>
         <div class="sidebar-avatar" style="cursor:pointer;">AR</div>
       </div>
     </header>
@@ -358,6 +358,66 @@
         </div>
         <div style="font-family:var(--font-display);font-size:1.05rem;color:rgba(255,255,255,.8);margin-bottom:6px;">No cards owned or acquired</div>
         <div style="font-size:.82rem;color:var(--slate-400);line-height:1.6;">Browse the ZenithOne card collection below and apply for the card that fits your lifestyle.</div>
+      </div>
+
+      <!-- ═══ MY CARDS MODAL ══════════════════════════════════════════════ -->
+      <style>
+        @keyframes z-spin { to { transform: rotate(360deg); } }
+        .mc-action {
+          display:flex;flex-direction:column;align-items:center;justify-content:center;
+          gap:6px;padding:12px 6px;border-radius:12px;
+          background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+          cursor:pointer;transition:background .15s,border-color .15s;font-size:.68rem;
+          color:rgba(255,255,255,.65);text-align:center;
+        }
+        .mc-action:hover { background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14); }
+        .mc-action.danger { color:var(--red-400); }
+        .mc-action.danger:hover { background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25); }
+        .mc-action svg { flex-shrink:0; }
+        .mc-amount-form {
+          display:none;margin-top:12px;background:rgba(255,255,255,.03);
+          border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:16px;
+        }
+        .mc-input {
+          width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+          border-radius:8px;padding:10px 14px;color:#fff;font-size:.88rem;outline:none;
+          box-sizing:border-box;
+        }
+        .mc-input:focus { border-color:rgba(201,168,76,.4); }
+        #myCardsModal { display:none;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.88);backdrop-filter:blur(10px);overflow-y:auto; }
+      </style>
+
+      <div id="myCardsModal" onclick="if(event.target===this)closeMyCards()">
+        <div style="max-width:580px;margin:0 auto;min-height:100%;padding:28px 16px 48px;display:flex;flex-direction:column;">
+
+          <!-- Header -->
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
+            <div>
+              <div style="font-family:var(--font-display);font-size:1.5rem;color:#fff;">My Cards</div>
+              <div id="myCardsSubtitle" style="font-size:.8rem;color:var(--slate-400);margin-top:3px;"></div>
+            </div>
+            <button onclick="closeMyCards()" style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.6);cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.14)'" onmouseout="this.style.background='rgba(255,255,255,.08)'">✕</button>
+          </div>
+
+          <!-- Loading -->
+          <div id="myCardsLoading" style="text-align:center;padding:80px 0;color:var(--slate-400);">
+            <div style="width:36px;height:36px;border:2px solid rgba(201,168,76,.15);border-top-color:var(--gold-400);border-radius:50%;animation:z-spin 1s linear infinite;margin:0 auto 16px;"></div>
+            Loading your cards…
+          </div>
+
+          <!-- No cards -->
+          <div id="myCardsEmpty" style="display:none;text-align:center;padding:80px 0;">
+            <div style="width:72px;height:72px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+              <svg width="28" height="28" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="3"/><path d="M1 10h22"/></svg>
+            </div>
+            <div style="font-family:var(--font-display);font-size:1.1rem;color:rgba(255,255,255,.7);margin-bottom:10px;">No cards owned</div>
+            <div style="font-size:.84rem;color:var(--slate-500);line-height:1.6;max-width:300px;margin:0 auto;">You don't have any active cards yet. Browse the collection and apply for a card.</div>
+            <button onclick="closeMyCards()" class="btn btn-primary" style="margin-top:24px;padding:12px 28px;">Browse Cards</button>
+          </div>
+
+          <!-- Cards list -->
+          <div id="myCardsList" style="display:none;flex-direction:column;gap:28px;"></div>
+        </div>
       </div>
 
       <!-- USER HAS CARDS: existing card management -->
@@ -850,6 +910,257 @@ function toggleSetting(type, val) {
   const trackId = type === 'international' ? 'intlTrack' : type === 'online' ? 'onlineTrack' : 'atmTrack';
   document.getElementById(trackId).style.background = val ? 'var(--gold-500)' : '#333';
   zenithToast(`${type.charAt(0).toUpperCase()+type.slice(1)} transactions ${val ? 'enabled' : 'disabled'}.`, val ? 'success' : 'warning');
+}
+
+// ═══ MY CARDS MODAL ══════════════════════════════════════════════════════════
+let _myCards = [];
+
+function openMyCards() {
+  const modal = document.getElementById('myCardsModal');
+  modal.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('myCardsLoading').style.display = '';
+  document.getElementById('myCardsEmpty').style.display   = 'none';
+  document.getElementById('myCardsList').style.display    = 'none';
+  _loadMyCards();
+}
+
+function closeMyCards() {
+  document.getElementById('myCardsModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+async function _loadMyCards() {
+  try {
+    const result = await callEdgeFunction('card-operations', { action: 'list' });
+    _myCards = (result?.cards || []).filter(c => c.status !== 'cancelled');
+    document.getElementById('myCardsLoading').style.display = 'none';
+    if (_myCards.length === 0) {
+      document.getElementById('myCardsEmpty').style.display = '';
+      document.getElementById('myCardsSubtitle').textContent = 'No active cards';
+    } else {
+      document.getElementById('myCardsSubtitle').textContent = `${_myCards.length} card${_myCards.length > 1 ? 's' : ''} active`;
+      _renderMyCards();
+      document.getElementById('myCardsList').style.display = 'flex';
+    }
+  } catch(e) {
+    document.getElementById('myCardsLoading').style.display = 'none';
+    document.getElementById('myCardsEmpty').style.display   = '';
+    document.getElementById('myCardsSubtitle').textContent  = 'No active cards';
+  }
+}
+
+function _cardGradient(card) {
+  const tier = (card.card_tier || '').toLowerCase();
+  if (tier.includes('black_gold') || tier.includes('black gold')) return 'linear-gradient(135deg,#1a0a00 0%,#3d2000 60%,#c9a84c 100%)';
+  if (tier.includes('black'))    return 'linear-gradient(135deg,#111827 0%,#000000 100%)';
+  if (tier.includes('titanium')) return 'linear-gradient(135deg,#9ca3af 0%,#6b7280 100%)';
+  if (tier.includes('platinum')) return 'linear-gradient(135deg,#64748b 0%,#334155 100%)';
+  if (tier.includes('gold'))     return 'linear-gradient(135deg,#b8860b 0%,#6b4f06 100%)';
+  if (tier.includes('business')) return 'linear-gradient(135deg,#1e3a5f 0%,#0a1929 100%)';
+  if ((card.card_type||'').toLowerCase() === 'debit') return 'linear-gradient(135deg,#1e293b 0%,#0f172a 100%)';
+  return 'linear-gradient(135deg,#1a3a5c 0%,#0d2840 100%)';
+}
+
+function _statusColor(status) {
+  if (status === 'active')  return { bg:'rgba(74,222,128,.1)', border:'rgba(74,222,128,.25)', color:'#4ade80' };
+  if (status === 'frozen')  return { bg:'rgba(96,165,250,.1)',  border:'rgba(96,165,250,.25)',  color:'#60a5fa' };
+  if (status === 'blocked') return { bg:'rgba(239,68,68,.1)',   border:'rgba(239,68,68,.25)',   color:'#f87171' };
+  return { bg:'rgba(148,163,184,.1)', border:'rgba(148,163,184,.2)', color:'#94a3b8' };
+}
+
+function _renderMyCards() {
+  const list = document.getElementById('myCardsList');
+  list.innerHTML = _myCards.map((card, i) => {
+    const grad  = _cardGradient(card);
+    const sc    = _statusColor(card.status);
+    const last4 = card.card_number_last_four || '••••';
+    const exp   = card.expiry_month && card.expiry_year
+      ? String(card.expiry_month).padStart(2,'0') + '/' + String(card.expiry_year).slice(-2)
+      : _previewExpiry();
+    const name  = card.cardholder_name || document.getElementById('sidebarName')?.textContent?.trim() || 'CARD HOLDER';
+    const isFrozen = card.status === 'frozen';
+    const isBlocked = card.status === 'blocked';
+    const canAct = card.status === 'active' || card.status === 'frozen';
+    const fmt   = n => '$' + (n||0).toLocaleString('en-US',{minimumFractionDigits:2});
+
+    return `
+    <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:20px;overflow:hidden;" id="mc-card-${card.id}">
+
+      <!-- Premium card visual -->
+      <div style="position:relative;aspect-ratio:1.586/1;overflow:hidden;cursor:default;"
+           onmousemove="(function(el,e){var r=el.getBoundingClientRect();var x=(e.clientX-r.left)/r.width-.5;var y=(e.clientY-r.top)/r.height-.5;el.style.transform='perspective(700px) rotateY('+(x*10)+'deg) rotateX('+(-y*6)+'deg)';}).call(this,this,event)"
+           onmouseleave="this.style.transform=''" style="background:${grad};">
+        <div style="position:absolute;inset:0;background:${grad};"></div>
+        <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.09) 50%,transparent 75%);background-size:200%;animation:lux-sh 4s infinite linear;pointer-events:none;z-index:2;"></div>
+        <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 25% 35%,rgba(255,255,255,.07) 0%,transparent 55%);pointer-events:none;z-index:2;"></div>
+        <div style="position:absolute;inset:0;border-radius:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.4);pointer-events:none;z-index:5;"></div>
+        <div style="position:absolute;inset:0;padding:clamp(14px,4%,22px) clamp(16px,5%,26px);display:flex;flex-direction:column;justify-content:space-between;z-index:6;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div>
+              <div style="font-size:clamp(.45rem,.9vw,.6rem);letter-spacing:.28em;color:rgba(201,168,76,.75);text-transform:uppercase;font-weight:700;">ZENITHONE</div>
+              <div style="font-size:clamp(.38rem,.7vw,.5rem);letter-spacing:.15em;color:rgba(255,255,255,.28);text-transform:uppercase;margin-top:1px;">CREDIT UNION</div>
+            </div>
+            <div style="background:${sc.bg};border:1px solid ${sc.border};border-radius:20px;padding:3px 10px;font-size:.58rem;color:${sc.color};letter-spacing:.1em;font-weight:600;text-transform:uppercase;">${card.status}</div>
+          </div>
+          <div>
+            <div style="width:clamp(28px,6%,38px);height:clamp(20px,4.5%,28px);background:linear-gradient(135deg,#e8c96b,#9a7220);border-radius:4px;margin-bottom:clamp(8px,2%,14px);box-shadow:0 2px 6px rgba(0,0,0,.3);"></div>
+          </div>
+          <div>
+            <div style="font-family:'Courier New',monospace;font-size:clamp(.75rem,2vw,1rem);letter-spacing:.2em;color:rgba(255,255,255,.88);margin-bottom:clamp(8px,2%,14px);">${last4 === '••••' ? '•••• •••• •••• ••••' : `•••• •••• •••• ${last4}`}</div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+              <div>
+                <div style="font-size:.5rem;color:rgba(255,255,255,.28);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;">Card Holder</div>
+                <div style="font-size:.7rem;color:rgba(255,255,255,.75);letter-spacing:.1em;text-transform:uppercase;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${name}</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-size:.5rem;color:rgba(255,255,255,.28);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;">Expires</div>
+                <div style="font-size:.7rem;color:rgba(255,255,255,.75);font-family:'Courier New',monospace;letter-spacing:.12em;">${exp}</div>
+              </div>
+              <div style="display:flex;"><div style="width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,.38);margin-right:-8px;"></div><div style="width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,.65);"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card details row -->
+      <div style="padding:16px 18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-bottom:1px solid rgba(255,255,255,.06);">
+        <div>
+          <div style="font-family:var(--font-display);font-size:.95rem;color:rgba(255,255,255,.9);">${card.card_name || 'ZenithOne Card'}</div>
+          <div style="font-size:.72rem;color:var(--slate-500);margin-top:2px;">${(card.card_type||'').toUpperCase()} · ending ${last4}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:.82rem;font-weight:600;color:rgba(255,255,255,.8);">${fmt(card.available_credit)}</div>
+          <div style="font-size:.68rem;color:var(--slate-500);">Available</div>
+        </div>
+      </div>
+
+      <!-- Action grid -->
+      <div style="padding:14px 18px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+        <div class="mc-action" onclick="mcTopUp('${card.id}',${i})" style="${!canAct ? 'opacity:.4;pointer-events:none;' : ''}">
+          <svg width="18" height="18" fill="none" stroke="var(--gold-400)" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
+          Top Up
+        </div>
+        <div class="mc-action" onclick="mcWithdraw('${card.id}',${i})" style="${!canAct ? 'opacity:.4;pointer-events:none;' : ''}">
+          <svg width="18" height="18" fill="none" stroke="#60a5fa" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7 7 7-7"/></svg>
+          Withdraw
+        </div>
+        <div class="mc-action" onclick="mcToggleFreeze('${card.id}')" style="${isBlocked ? 'opacity:.4;pointer-events:none;' : ''}">
+          <svg width="18" height="18" fill="none" stroke="${isFrozen ? '#f87171' : '#fbbf24'}" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2v20M4.93 4.93l14.14 14.14M2 12h20M4.93 19.07l14.14-14.14"/></svg>
+          ${isFrozen ? 'Unfreeze' : 'Freeze'}
+        </div>
+        <div class="mc-action" onclick="mcBlock('${card.id}')" style="${isBlocked ? 'opacity:.4;pointer-events:none;' : ''}">
+          <svg width="18" height="18" fill="none" stroke="#f87171" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+          Block
+        </div>
+        <div class="mc-action" onclick="mcReport('${card.id}')">
+          <svg width="18" height="18" fill="none" stroke="#f87171" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          Report Lost
+        </div>
+        <div class="mc-action danger" onclick="mcDisband('${card.id}')">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+          Disband
+        </div>
+      </div>
+
+      <!-- Inline amount form (top up / withdraw) -->
+      <div class="mc-amount-form" id="mc-form-${card.id}">
+        <div style="font-size:.82rem;color:rgba(255,255,255,.7);margin-bottom:10px;" id="mc-form-label-${card.id}">Amount</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input class="mc-input" type="number" min="0.01" step="0.01" placeholder="Enter amount" id="mc-amount-${card.id}" style="flex:1;" />
+          <button class="btn btn-primary btn-sm" style="padding:10px 18px;white-space:nowrap;" id="mc-form-btn-${card.id}" onclick="mcSubmitAmount('${card.id}')">Confirm</button>
+          <button class="btn btn-ghost btn-sm" style="padding:10px;" onclick="mcHideForm('${card.id}')">✕</button>
+        </div>
+        <div id="mc-form-err-${card.id}" style="display:none;font-size:.75rem;color:var(--red-400);margin-top:8px;"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── My Cards action handlers ──────────────────────────────────────────────────
+let _mcAction = {}; // card_id → current action (top_up|withdraw)
+
+function mcShowForm(cardId, action) {
+  mcHideAllForms();
+  _mcAction[cardId] = action;
+  const form = document.getElementById(`mc-form-${cardId}`);
+  const label = document.getElementById(`mc-form-label-${cardId}`);
+  label.textContent = action === 'top_up' ? 'Amount to Top Up (from checking account)' : 'Amount to Withdraw (to checking account)';
+  form.style.display = '';
+  document.getElementById(`mc-amount-${cardId}`).focus();
+}
+function mcHideForm(cardId) {
+  const form = document.getElementById(`mc-form-${cardId}`);
+  if (form) { form.style.display = 'none'; delete _mcAction[cardId]; }
+}
+function mcHideAllForms() {
+  document.querySelectorAll('.mc-amount-form').forEach(f => { f.style.display = 'none'; });
+  _mcAction = {};
+}
+
+function mcTopUp(cardId)    { mcShowForm(cardId, 'top_up'); }
+function mcWithdraw(cardId) { mcShowForm(cardId, 'withdraw'); }
+
+async function mcSubmitAmount(cardId) {
+  const action = _mcAction[cardId];
+  const amt    = parseFloat(document.getElementById(`mc-amount-${cardId}`).value);
+  const errEl  = document.getElementById(`mc-form-err-${cardId}`);
+  const btn    = document.getElementById(`mc-form-btn-${cardId}`);
+  errEl.style.display = 'none';
+  if (!action || isNaN(amt) || amt <= 0) { errEl.textContent = 'Please enter a valid amount.'; errEl.style.display = ''; return; }
+  btn.disabled = true; btn.textContent = 'Processing…';
+  try {
+    const res = await callEdgeFunction('card-operations', { action, card_id: cardId, amount: amt });
+    mcHideForm(cardId);
+    zenithToast(res.message || 'Transaction completed.', 'success', 5000);
+    await _loadMyCards(); // refresh list
+  } catch(e) {
+    let msg = 'Transaction failed.';
+    try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    errEl.textContent = msg; errEl.style.display = '';
+    btn.disabled = false; btn.textContent = 'Confirm';
+  }
+}
+
+async function mcToggleFreeze(cardId) {
+  const card   = _myCards.find(c => c.id === cardId);
+  if (!card) return;
+  const action = card.status === 'frozen' ? 'unfreeze' : 'freeze';
+  try {
+    await callEdgeFunction('card-operations', { action, card_id: cardId });
+    zenithToast(action === 'freeze' ? 'Card frozen. All transactions declined.' : 'Card unfrozen. Transactions are active.', action === 'freeze' ? 'warning' : 'success');
+    await _loadMyCards();
+  } catch(e) { zenithToast(e.message || 'Action failed.', 'error'); }
+}
+
+async function mcBlock(cardId) {
+  const ok = await zenithConfirm('Permanently block this card? You will need to contact support to reactivate it.', { title: 'Block Card', confirmLabel: 'Block Card', type: 'error' });
+  if (!ok) return;
+  try {
+    await callEdgeFunction('card-operations', { action: 'block', card_id: cardId });
+    zenithToast('Card permanently blocked. Contact support to reactivate.', 'warning', 6000);
+    await _loadMyCards();
+  } catch(e) { zenithToast(e.message || 'Action failed.', 'error'); }
+}
+
+async function mcReport(cardId) {
+  const ok = await zenithConfirm('Report this card as lost or stolen? It will be immediately cancelled and a replacement issued.', { title: 'Report Lost / Stolen', confirmLabel: 'Report Card', type: 'error' });
+  if (!ok) return;
+  try {
+    const res = await callEdgeFunction('card-operations', { action: 'report_lost', card_id: cardId });
+    zenithToast(`Card reported. Replacement ETA: ${res.replacement_eta || '2–4 business days'}.`, 'success', 6000);
+    await _loadMyCards();
+  } catch(e) { zenithToast(e.message || 'Action failed.', 'error'); }
+}
+
+async function mcDisband(cardId) {
+  const ok = await zenithConfirm('Permanently close this card? This action cannot be undone. Any remaining balance will be returned within 5–7 business days.', { title: 'Close Card', confirmLabel: 'Close Card', type: 'error' });
+  if (!ok) return;
+  try {
+    const res = await callEdgeFunction('card-operations', { action: 'close', card_id: cardId });
+    zenithToast(res.message || 'Card permanently closed.', 'warning', 6000);
+    await _loadMyCards();
+  } catch(e) { zenithToast(e.message || 'Action failed.', 'error'); }
 }
 
 // Initialize toggle states

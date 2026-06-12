@@ -78,13 +78,15 @@
 
     <div class="app-content">
 
-      <!-- CARD CATALOG (shown when no cards) -->
+      <!-- CARD CATALOG (always shown) -->
       <div id="cardCatalog" style="display:none;">
-        <div style="margin-bottom:28px;">
-          <div style="font-family:var(--font-display);font-size:1.6rem;margin-bottom:6px;">Choose Your Card</div>
-          <div style="font-size:.875rem;color:var(--slate-400);">Select a ZenithOne card that fits your lifestyle. Each card comes with exclusive benefits and rewards.</div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-bottom:24px;">
+          <div>
+            <div style="font-family:var(--font-display);font-size:1.5rem;margin-bottom:4px;">ZenithOne Card Collection</div>
+            <div style="font-size:.82rem;color:var(--slate-400);">Apply for any card below. Cards you own or have requested are highlighted.</div>
+          </div>
         </div>
-        <div id="catalogGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px;"></div>
+        <div id="catalogGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:20px;"></div>
       </div>
 
       <!-- Card Apply Modal -->
@@ -184,15 +186,70 @@
 
           <!-- Scrollable body -->
           <div class="cam-scroll">
-            <!-- Compact card strip -->
-            <div id="applyCardVisual" class="cam-card-strip">
-              <div class="cam-chip"></div>
-              <div class="cam-card-info">
-                <div style="font-size:.55rem;letter-spacing:.2em;color:rgba(201,168,76,.5);text-transform:uppercase;margin-bottom:2px;">ZENITHONE</div>
-                <div id="applyCardName" style="font-size:.92rem;font-family:var(--font-display);color:rgba(255,255,255,.9);margin-bottom:4px;"></div>
-                <div id="applyCardHolder" style="font-size:.68rem;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;"></div>
+
+            <!-- ── Ultra-premium full card visual ── -->
+            <div id="applyCardVisual" style="position:relative;border-radius:18px;overflow:hidden;aspect-ratio:1.586/1;margin-bottom:16px;transition:transform .15s ease;will-change:transform;"
+                 onmousemove="(function(el,e){var r=el.getBoundingClientRect();var x=(e.clientX-r.left)/r.width-.5;var y=(e.clientY-r.top)/r.height-.5;el.style.transform='perspective(700px) rotateY('+(x*12)+'deg) rotateX('+(-y*7)+'deg) scale(1.015)';}).call(this,this,event)"
+                 onmouseleave="this.style.transform=''">
+              <!-- Shimmer sweep -->
+              <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.09) 50%,transparent 75%);background-size:200%;animation:lux-sh 4s infinite linear;pointer-events:none;z-index:4;"></div>
+              <!-- Holographic glow -->
+              <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 25% 35%,rgba(255,255,255,.07) 0%,transparent 55%);pointer-events:none;z-index:3;"></div>
+              <!-- Decorative orb -->
+              <div style="position:absolute;top:-25%;right:-8%;width:55%;padding-bottom:55%;border-radius:50%;background:rgba(255,255,255,.035);pointer-events:none;z-index:2;"></div>
+              <!-- Inner border glow -->
+              <div style="position:absolute;inset:0;border-radius:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.4);pointer-events:none;z-index:5;"></div>
+
+              <!-- Card content -->
+              <div style="position:absolute;inset:0;padding:clamp(14px,4%,22px) clamp(16px,5%,26px);display:flex;flex-direction:column;justify-content:space-between;z-index:6;">
+                <!-- Top: logo + type badge -->
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                  <div>
+                    <div style="font-size:clamp(.45rem,.9vw,.6rem);letter-spacing:.28em;color:rgba(201,168,76,.75);text-transform:uppercase;font-weight:700;line-height:1;">ZENITHONE</div>
+                    <div style="font-size:clamp(.38rem,.75vw,.5rem);letter-spacing:.18em;color:rgba(255,255,255,.28);text-transform:uppercase;margin-top:1px;">CREDIT UNION</div>
+                  </div>
+                  <div id="applyCardTypeBadge" style="font-size:clamp(.38rem,.75vw,.52rem);letter-spacing:.15em;color:rgba(255,255,255,.38);text-transform:uppercase;text-align:right;line-height:1.6;"></div>
+                </div>
+                <!-- Middle: EMV chip + contactless -->
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:clamp(28px,6%,38px);height:clamp(20px,4.5%,28px);background:linear-gradient(135deg,#e8c96b 0%,#c4921a 50%,#9a7220 100%);border-radius:4px;flex-shrink:0;position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.35);">
+                    <div style="position:absolute;top:50%;left:0;right:0;height:40%;background:rgba(0,0,0,.12);transform:translateY(-50%);"></div>
+                    <div style="position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(0,0,0,.08);"></div>
+                  </div>
+                  <!-- Contactless symbol -->
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="opacity:.4;flex-shrink:0;"><path d="M12 1C6.48 1 2 5.48 2 11" stroke="white" stroke-width="2.5" stroke-linecap="round"/><path d="M12 5c-3.31 0-6 2.69-6 6" stroke="white" stroke-width="2.5" stroke-linecap="round"/><path d="M12 9c-1.1 0-2 .9-2 2" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="12" cy="12" r="1.5" fill="white" opacity=".5"/></svg>
+                </div>
+                <!-- Bottom: number, holder, expiry, network -->
+                <div>
+                  <div id="applyCardPreviewNumber" style="font-family:'Courier New',monospace;font-size:clamp(.75rem,2.2vw,1rem);letter-spacing:.2em;color:rgba(255,255,255,.88);margin-bottom:clamp(8px,2%,14px);text-shadow:0 1px 3px rgba(0,0,0,.4);"></div>
+                  <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+                    <div>
+                      <div style="font-size:clamp(.38rem,.7vw,.5rem);color:rgba(255,255,255,.28);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;">Card Holder</div>
+                      <div id="applyCardHolder" style="font-size:clamp(.55rem,1.2vw,.72rem);color:rgba(255,255,255,.75);letter-spacing:.1em;text-transform:uppercase;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size:clamp(.38rem,.7vw,.5rem);color:rgba(255,255,255,.28);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;">Expires</div>
+                      <div id="applyCardPreviewExpiry" style="font-size:clamp(.55rem,1.2vw,.72rem);color:rgba(255,255,255,.75);font-family:'Courier New',monospace;letter-spacing:.12em;"></div>
+                    </div>
+                    <div style="display:flex;align-items:center;">
+                      <div style="width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,.38);margin-right:-8px;"></div>
+                      <div style="width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,.65);"></div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="cam-network-rings"><span></span><span></span></div>
+            </div>
+
+            <!-- Card name + pricing row -->
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:12px;">
+              <div>
+                <div id="applyCardName" style="font-family:var(--font-display);font-size:.95rem;color:rgba(255,255,255,.9);"></div>
+                <div id="applyCardTypeLabel" style="font-size:.73rem;color:var(--slate-400);margin-top:2px;"></div>
+              </div>
+              <div style="text-align:right;flex-shrink:0;">
+                <div id="applyCardFeeMain" style="font-size:.88rem;font-weight:700;color:var(--gold-400);"></div>
+                <div id="applyCardRenewal" style="font-size:.7rem;color:rgba(255,255,255,.35);margin-top:2px;"></div>
+              </div>
             </div>
 
             <!-- Benefits grid -->
@@ -205,9 +262,102 @@
           <!-- Footer CTA -->
           <div class="cam-footer">
             <button class="btn btn-primary" id="applySubmitBtn" onclick="submitCardApplication()" style="width:100%;padding:15px;font-size:.9rem;letter-spacing:.06em;">Apply Now</button>
-            <div style="font-size:.7rem;color:var(--slate-500);text-align:center;margin-top:10px;">Subject to credit review. Confirmation email sent on submission.</div>
+            <div style="font-size:.7rem;color:var(--slate-500);text-align:center;margin-top:10px;">Subject to credit review · Confirmation email sent on submission</div>
           </div>
         </div>
+      </div>
+
+      <!-- Card Manage Modal (for owned cards) -->
+      <div id="cardManageModal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);align-items:flex-end;justify-content:center;" onclick="if(event.target===this)closeCardManage()">
+        <div class="cam-sheet" onclick="event.stopPropagation()">
+          <div class="cam-drag"></div>
+          <div class="cam-header">
+            <div>
+              <div id="manageModalTitle" style="font-family:var(--font-display);font-size:1.1rem;color:rgba(255,255,255,.95);">Manage Card</div>
+              <div id="manageModalStatus" style="font-size:.78rem;margin-top:2px;"></div>
+            </div>
+            <button class="cam-close" onclick="closeCardManage()">✕</button>
+          </div>
+          <div class="cam-scroll">
+            <!-- Premium card visual (reuses same pattern) -->
+            <div id="manageCardVisual" style="position:relative;border-radius:18px;overflow:hidden;aspect-ratio:1.586/1;margin-bottom:16px;transition:transform .15s ease;"
+                 onmousemove="(function(el,e){var r=el.getBoundingClientRect();var x=(e.clientX-r.left)/r.width-.5;var y=(e.clientY-r.top)/r.height-.5;el.style.transform='perspective(700px) rotateY('+(x*12)+'deg) rotateX('+(-y*7)+'deg) scale(1.015)';}).call(this,this,event)"
+                 onmouseleave="this.style.transform=''">
+              <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.09) 50%,transparent 75%);background-size:200%;animation:lux-sh 4s infinite linear;pointer-events:none;z-index:4;"></div>
+              <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 25% 35%,rgba(255,255,255,.07) 0%,transparent 55%);pointer-events:none;z-index:3;"></div>
+              <div style="position:absolute;inset:0;border-radius:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 -1px 0 rgba(0,0,0,.4);pointer-events:none;z-index:5;"></div>
+              <div style="position:absolute;inset:0;padding:clamp(14px,4%,22px) clamp(16px,5%,26px);display:flex;flex-direction:column;justify-content:space-between;z-index:6;">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                  <div>
+                    <div style="font-size:clamp(.45rem,.9vw,.6rem);letter-spacing:.28em;color:rgba(201,168,76,.75);text-transform:uppercase;font-weight:700;">ZENITHONE</div>
+                    <div style="font-size:clamp(.38rem,.75vw,.5rem);letter-spacing:.18em;color:rgba(255,255,255,.28);text-transform:uppercase;margin-top:1px;">CREDIT UNION</div>
+                  </div>
+                  <div id="manageCardTypeBadge" style="font-size:clamp(.38rem,.75vw,.52rem);letter-spacing:.15em;color:rgba(255,255,255,.38);text-transform:uppercase;text-align:right;line-height:1.6;"></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:clamp(28px,6%,38px);height:clamp(20px,4.5%,28px);background:linear-gradient(135deg,#e8c96b,#9a7220);border-radius:4px;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.35);"></div>
+                </div>
+                <div>
+                  <div id="manageCardNumber" style="font-family:'Courier New',monospace;font-size:clamp(.75rem,2.2vw,1rem);letter-spacing:.2em;color:rgba(255,255,255,.88);margin-bottom:clamp(8px,2%,14px);"></div>
+                  <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+                    <div>
+                      <div style="font-size:.5rem;color:rgba(255,255,255,.28);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;">Card Holder</div>
+                      <div id="manageCardHolder" style="font-size:.7rem;color:rgba(255,255,255,.75);letter-spacing:.1em;text-transform:uppercase;"></div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size:.5rem;color:rgba(255,255,255,.28);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;">Expires</div>
+                      <div id="manageCardExpiry" style="font-size:.7rem;color:rgba(255,255,255,.75);font-family:'Courier New',monospace;letter-spacing:.12em;"></div>
+                    </div>
+                    <div style="display:flex;"><div style="width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,.38);margin-right:-8px;"></div><div style="width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,.65);"></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card info row -->
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:12px;">
+              <div id="manageCardName" style="font-family:var(--font-display);font-size:.95rem;color:rgba(255,255,255,.9);"></div>
+              <div id="manageCardStatusBadge" style="font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:20px;"></div>
+            </div>
+
+            <!-- Actions grid -->
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;" id="manageActionsGrid">
+              <div class="card-action-btn" onclick="toggleCardFreeze()" style="border-radius:12px;padding:12px 8px;">
+                <div class="card-action-icon" id="freezeIcon2" style="margin:0 auto 6px;">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M4.93 4.93l14.14 14.14M2 12h20M4.93 19.07l14.14-14.14"/></svg>
+                </div>
+                <div class="card-action-label" id="freezeLabel2" style="font-size:.68rem;text-align:center;">Freeze</div>
+              </div>
+              <div class="card-action-btn" onclick="showLimitsModal()" style="border-radius:12px;padding:12px 8px;">
+                <div class="card-action-icon" style="margin:0 auto 6px;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+                <div class="card-action-label" style="font-size:.68rem;text-align:center;">Limits</div>
+              </div>
+              <div class="card-action-btn" onclick="showPinModal()" style="border-radius:12px;padding:12px 8px;">
+                <div class="card-action-icon" style="margin:0 auto 6px;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                <div class="card-action-label" style="font-size:.68rem;text-align:center;">PIN</div>
+              </div>
+              <div class="card-action-btn" onclick="reportCard()" style="border-radius:12px;padding:12px 8px;">
+                <div class="card-action-icon" style="margin:0 auto 6px;background:rgba(239,68,68,.1);color:var(--red-400);"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg></div>
+                <div class="card-action-label" style="font-size:.68rem;text-align:center;color:var(--red-400);">Report</div>
+              </div>
+            </div>
+
+            <!-- Details -->
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px 16px;" id="manageCardDetails"></div>
+          </div>
+          <div class="cam-footer">
+            <button class="btn btn-ghost" onclick="closeCardManage()" style="width:100%;padding:12px;color:var(--slate-400);">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── No-card banner (shown when user has nothing) ─── -->
+      <div id="noCardBanner" style="display:none;background:linear-gradient(135deg,rgba(201,168,76,.06),rgba(201,168,76,.02));border:1px solid rgba(201,168,76,.15);border-radius:16px;padding:24px;text-align:center;margin-bottom:28px;">
+        <div style="width:48px;height:48px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.18);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+          <svg width="22" height="22" fill="none" stroke="rgba(201,168,76,.6)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="3"/><path d="M1 10h22"/></svg>
+        </div>
+        <div style="font-family:var(--font-display);font-size:1.05rem;color:rgba(255,255,255,.8);margin-bottom:6px;">No cards owned or acquired</div>
+        <div style="font-size:.82rem;color:var(--slate-400);line-height:1.6;">Browse the ZenithOne card collection below and apply for the card that fits your lifestyle.</div>
       </div>
 
       <!-- USER HAS CARDS: existing card management -->
@@ -387,96 +537,159 @@
 <script src="js/auth.js"></script>
 <script src="js/cards.js"></script>
 <script>
-// ── Card Catalog Definition ────────────────────────────────────
+// ── Card Catalog Definition ─────────────────────────────────────────────────
+// renewalFee: 15% of annual fee for paid cards; $5 NCUA standard for free cards
 const CARD_CATALOG = [
-  { key:'virtual',       name:'Virtual Card',              type:'Debit',  network:'Visa',       fee:0,   feeLabel:'Free',         gradient:'linear-gradient(135deg,#1a3a5c 0%,#0d2840 100%)',  accent:'#60a5fa', benefits:['Instant digital card','Online & in-app payments','No physical card needed','Zero annual fee'] },
-  { key:'classic_debit', name:'Classic Debit',             type:'Debit',  network:'Visa',       fee:0,   feeLabel:'Free',         gradient:'linear-gradient(135deg,#1e293b 0%,#0f172a 100%)',  accent:'#94a3b8', benefits:['Physical debit card','ATM access worldwide','1× rewards on all purchases','Zero annual fee'] },
-  { key:'gold',          name:'ZenithOne Gold Visa®',      type:'Credit', network:'Visa',       fee:95,  feeLabel:'$95/yr',       gradient:'linear-gradient(135deg,#b8860b 0%,#6b4f06 100%)',  accent:'#fbbf24', benefits:['2× points on all purchases','Travel accident insurance','No foreign transaction fees','Concierge service'] },
-  { key:'platinum',      name:'ZenithOne Platinum Visa®',  type:'Credit', network:'Visa',       fee:195, feeLabel:'$195/yr',      gradient:'linear-gradient(135deg,#64748b 0%,#334155 100%)',  accent:'#cbd5e1', benefits:['3× points on travel & dining','$200 annual travel credit','Global lounge access','Cell phone protection'] },
-  { key:'titanium',      name:'ZenithOne Titanium Visa®',  type:'Credit', network:'Visa',       fee:295, feeLabel:'$295/yr',      gradient:'linear-gradient(135deg,#9ca3af 0%,#6b7280 100%)',  accent:'#f3f4f6', benefits:['4× points everywhere','Real metal card','$300 travel credit','Priority Pass lounge access','Dedicated advisor'] },
-  { key:'black',         name:'ZenithOne Black Visa®',     type:'Credit', network:'Visa',       fee:395, feeLabel:'$395/yr',      gradient:'linear-gradient(135deg,#111827 0%,#000000 100%)',  accent:'#c9a84c', benefits:['5× points on all spend','$500 annual credits','Global lounge access','24/7 elite concierge','No preset spending limit'] },
-  { key:'black_gold',    name:'Black Gold Elite',          type:'Credit', network:'Mastercard®',fee:595, feeLabel:'$595/yr',      gradient:'linear-gradient(135deg,#1a0a00 0%,#3d2000 60%,#c9a84c 100%)', accent:'#f59e0b', benefits:['Unlimited 5× on everything','$1,000 annual credits','Private jet partnership','Personal relationship manager','Invitation only — apply to inquire'] },
-  { key:'business',      name:'Business Platinum Visa®',   type:'Credit', network:'Visa',       fee:350, feeLabel:'$350/yr',      gradient:'linear-gradient(135deg,#1e3a5f 0%,#0a1929 100%)',  accent:'#38bdf8', benefits:['4× on business spend','Employee cards at no extra cost','$400 annual business credits','Expense management tools','Dedicated business support'] },
+  { key:'virtual',       name:'Virtual Card',              type:'Debit',  network:'Visa',        fee:0,   feeLabel:'Free',    renewalFee:5,     renewalLabel:'$5/yr NCUA renewal',      gradient:'linear-gradient(135deg,#1a3a5c 0%,#0d2840 100%)',           accent:'#60a5fa', benefits:['Instant digital issuance','Online & in-app payments','No physical card needed','Zero annual fee'] },
+  { key:'classic_debit', name:'Classic Debit',             type:'Debit',  network:'Visa',        fee:0,   feeLabel:'Free',    renewalFee:5,     renewalLabel:'$5/yr NCUA renewal',      gradient:'linear-gradient(135deg,#1e293b 0%,#0f172a 100%)',           accent:'#94a3b8', benefits:['Physical debit card','ATM access worldwide','1× rewards on all purchases','Zero annual fee'] },
+  { key:'gold',          name:'ZenithOne Gold Visa®',      type:'Credit', network:'Visa',        fee:95,  feeLabel:'$95/yr',  renewalFee:14.25, renewalLabel:'+$14.25 renewal (15%)',   gradient:'linear-gradient(135deg,#b8860b 0%,#6b4f06 100%)',           accent:'#fbbf24', benefits:['2× points on all purchases','Travel accident insurance','No foreign transaction fees','Concierge service'] },
+  { key:'platinum',      name:'ZenithOne Platinum Visa®',  type:'Credit', network:'Visa',        fee:195, feeLabel:'$195/yr', renewalFee:29.25, renewalLabel:'+$29.25 renewal (15%)',   gradient:'linear-gradient(135deg,#64748b 0%,#334155 100%)',           accent:'#cbd5e1', benefits:['3× points on travel & dining','$200 annual travel credit','Global lounge access','Cell phone protection'] },
+  { key:'titanium',      name:'ZenithOne Titanium Visa®',  type:'Credit', network:'Visa',        fee:295, feeLabel:'$295/yr', renewalFee:44.25, renewalLabel:'+$44.25 renewal (15%)',   gradient:'linear-gradient(135deg,#9ca3af 0%,#6b7280 100%)',           accent:'#f3f4f6', benefits:['4× points everywhere','Real metal card','$300 travel credit','Priority Pass lounge access','Dedicated advisor'] },
+  { key:'black',         name:'ZenithOne Black Visa®',     type:'Credit', network:'Visa',        fee:395, feeLabel:'$395/yr', renewalFee:59.25, renewalLabel:'+$59.25 renewal (15%)',   gradient:'linear-gradient(135deg,#111827 0%,#000000 100%)',           accent:'#c9a84c', benefits:['5× points on all spend','$500 annual credits','Global lounge access','24/7 elite concierge','No preset spending limit'] },
+  { key:'black_gold',    name:'Black Gold Elite',          type:'Credit', network:'Mastercard®', fee:595, feeLabel:'$595/yr', renewalFee:89.25, renewalLabel:'+$89.25 renewal (15%)',   gradient:'linear-gradient(135deg,#1a0a00 0%,#3d2000 60%,#c9a84c 100%)',accent:'#f59e0b', benefits:['Unlimited 5× on everything','$1,000 annual credits','Private jet partnership','Personal relationship manager','Invitation only'] },
+  { key:'business',      name:'Business Platinum Visa®',   type:'Credit', network:'Visa',        fee:350, feeLabel:'$350/yr', renewalFee:52.50, renewalLabel:'+$52.50 renewal (15%)',   gradient:'linear-gradient(135deg,#1e3a5f 0%,#0a1929 100%)',           accent:'#38bdf8', benefits:['4× on business spend','Employee cards included','$400 annual business credits','Expense management tools','Dedicated business support'] },
 ];
 
-let _pendingCardKey = null;
+// ── State: owned (issued) and pending requests per card type key ─────────────
+let _ownedRequests   = {}; // key → request row (status='issued')
+let _pendingRequests = {}; // key → request row (status='pending'|'approved')
+let _pendingCardKey  = null;
+let _manageCardKey   = null;
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function _previewNumber() {
+  const r = () => Math.floor(1000 + Math.random() * 9000);
+  return `${r()} •••• •••• ${r()}`;
+}
+function _previewExpiry() {
+  const d = new Date();
+  return String(d.getMonth() + 1).padStart(2,'0') + '/' + String(d.getFullYear() + 4).slice(-2);
+}
+function _openModal(id) {
+  const m = document.getElementById(id);
+  m.style.display = 'flex';
+  requestAnimationFrame(() => requestAnimationFrame(() => m.classList.add('open')));
+}
+function _closeModal(id) {
+  const m = document.getElementById(id);
+  m.classList.remove('open');
+  setTimeout(() => { m.style.display = 'none'; }, 350);
+}
+
+// ── Fetch user's card request state from Supabase ────────────────────────────
+async function fetchUserCardState() {
+  const sb = window._supabase;
+  if (!sb) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
+  const { data } = await sb.from('card_requests').select('*').order('requested_at', { ascending: false });
+  _ownedRequests = {}; _pendingRequests = {};
+  for (const r of (data || [])) {
+    if (r.status === 'issued' && !_ownedRequests[r.card_type_key])     _ownedRequests[r.card_type_key]   = r;
+    else if (['pending','approved'].includes(r.status) && !_pendingRequests[r.card_type_key]) _pendingRequests[r.card_type_key] = r;
+  }
+}
+
+// ── Build catalog grid ────────────────────────────────────────────────────────
 function buildCardCatalog() {
   document.getElementById('cardCatalog').style.display = '';
+
+  // Show no-card banner only when truly nothing exists
+  const hasAny = Object.keys(_ownedRequests).length + Object.keys(_pendingRequests).length;
+  document.getElementById('noCardBanner').style.display = hasAny ? 'none' : '';
+
   document.getElementById('catalogGrid').innerHTML = CARD_CATALOG.map(c => {
-    const chip = `<svg width="36" height="26" viewBox="0 0 36 28"><rect width="36" height="28" rx="5" fill="url(#chip_${c.key})"/><defs><linearGradient id="chip_${c.key}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8c96b"/><stop offset="100%" stop-color="#9a7220"/></linearGradient></defs><rect x="2" y="8" width="32" height="12" rx="2" fill="rgba(255,255,255,.1)"/><line x1="18" y1="8" x2="18" y2="20" stroke="rgba(255,255,255,.1)" stroke-width="1"/></svg>`;
+    const owned   = _ownedRequests[c.key];
+    const pending = _pendingRequests[c.key];
+    const chip    = `<svg width="32" height="24" viewBox="0 0 36 28"><rect width="36" height="28" rx="5" fill="url(#chip_${c.key})"/><defs><linearGradient id="chip_${c.key}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8c96b"/><stop offset="100%" stop-color="#9a7220"/></linearGradient></defs><rect x="2" y="8" width="32" height="12" rx="2" fill="rgba(255,255,255,.1)"/></svg>`;
+
+    let actionBtn, topBadge = '';
+    if (owned) {
+      topBadge = `<div style="position:absolute;top:12px;right:12px;z-index:10;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.35);border-radius:20px;padding:3px 10px;font-size:.62rem;color:#4ade80;letter-spacing:.08em;font-weight:600;">✓ OWNED</div>`;
+      actionBtn = `<button class="btn btn-sm" style="width:100%;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.25);color:#4ade80;font-size:.75rem;" onclick="openCardManage('${c.key}')">Manage Card</button>`;
+    } else if (pending) {
+      const label = pending.status === 'approved' ? 'APPROVED' : 'REQUESTED';
+      const col   = pending.status === 'approved' ? '#60a5fa' : '#fbbf24';
+      topBadge = `<div style="position:absolute;top:12px;right:12px;z-index:10;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);border-radius:20px;padding:3px 10px;font-size:.62rem;color:${col};letter-spacing:.08em;font-weight:600;">⏳ ${label}</div>`;
+      actionBtn = `<button class="btn btn-sm" style="width:100%;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);color:#fbbf24;font-size:.75rem;" onclick="openCardStatus('${c.key}')">View Request</button>`;
+    } else {
+      actionBtn = `<button class="btn btn-ghost btn-sm" style="width:100%;border-color:rgba(201,168,76,.22);color:var(--gold-400);font-size:.75rem;" onclick="openCardApply('${c.key}')">Apply for This Card</button>`;
+    }
+
+    const totalCost = c.fee === 0 ? `$${c.renewalFee}/yr` : `$${c.fee + c.renewalFee}/yr total`;
+
     return `
-    <div style="border-radius:16px;border:1px solid rgba(255,255,255,.07);overflow:hidden;transition:transform .2s,box-shadow .2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,.5)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-      <!-- 3D Card Preview -->
-      <div style="background:${c.gradient};padding:22px;position:relative;overflow:hidden;aspect-ratio:1.586/1;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;min-height:160px;"
-           onmousemove="(function(el,e){var r=el.getBoundingClientRect();var x=(e.clientX-r.left)/r.width-.5;var y=(e.clientY-r.top)/r.height-.5;el.style.transform='perspective(500px) rotateY('+x*14+'deg) rotateX('+(-y*8)+'deg)';}).call(this,this,event)"
+    <div style="border-radius:16px;border:1px solid ${owned ? 'rgba(74,222,128,.2)' : pending ? 'rgba(251,191,36,.18)' : 'rgba(255,255,255,.07)'};overflow:hidden;transition:transform .2s,box-shadow .2s;position:relative;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,.5)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+      ${topBadge}
+      <div style="background:${c.gradient};padding:20px;position:relative;overflow:hidden;aspect-ratio:1.586/1;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;"
+           onclick="${owned ? `openCardManage('${c.key}')` : pending ? `openCardStatus('${c.key}')` : `openCardApply('${c.key}')`}"
+           onmousemove="(function(el,e){var r=el.getBoundingClientRect();var x=(e.clientX-r.left)/r.width-.5;var y=(e.clientY-r.top)/r.height-.5;el.style.transform='perspective(500px) rotateY('+x*13+'deg) rotateX('+(-y*8)+'deg)';}).call(this,this,event)"
            onmouseleave="this.style.transform=''">
-        <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.06) 50%,transparent 70%);background-size:200%;animation:lux-sh 4s infinite linear;pointer-events:none;"></div>
-        <div style="position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.04);"></div>
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-          ${chip}
-          <div style="font-size:.5rem;letter-spacing:.18em;color:rgba(255,255,255,.35);text-transform:uppercase;text-align:right;line-height:1.5;">ZENITHONE<br/>${c.type.toUpperCase()}</div>
-        </div>
+        <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.07) 50%,transparent 70%);background-size:200%;animation:lux-sh 4s infinite linear;pointer-events:none;"></div>
+        <div style="position:absolute;top:-25px;right:-25px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.04);"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">${chip}<div style="font-size:.48rem;letter-spacing:.15em;color:rgba(255,255,255,.32);text-transform:uppercase;text-align:right;line-height:1.6;">ZENITHONE<br/>${c.type.toUpperCase()}</div></div>
         <div>
-          <div style="font-size:.65rem;letter-spacing:.18em;color:rgba(255,255,255,.4);font-family:'Courier New',monospace;margin-bottom:10px;">•••• •••• •••• ••••</div>
+          <div style="font-size:.62rem;letter-spacing:.18em;color:rgba(255,255,255,.38);font-family:'Courier New',monospace;margin-bottom:8px;">•••• •••• •••• ••••</div>
           <div style="display:flex;justify-content:space-between;align-items:flex-end;">
-            <div style="font-family:var(--font-display);font-size:.9rem;color:rgba(255,255,255,.8);">${c.name}</div>
-            <div style="display:flex;"><div style="width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,.4);margin-right:-7px;"></div><div style="width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,.65);"></div></div>
+            <div style="font-family:var(--font-display);font-size:.85rem;color:rgba(255,255,255,.82);">${c.name}</div>
+            <div style="display:flex;"><div style="width:20px;height:20px;border-radius:50%;background:rgba(201,168,76,.38);margin-right:-6px;"></div><div style="width:20px;height:20px;border-radius:50%;background:rgba(201,168,76,.62);"></div></div>
           </div>
         </div>
       </div>
-      <!-- Card Info -->
-      <div style="background:rgba(255,255,255,.02);padding:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-          <div style="font-size:.8rem;font-weight:500;color:var(--white);">${c.name}</div>
-          <div style="font-size:.8rem;font-weight:600;color:${c.accent};">${c.feeLabel}</div>
+      <div style="background:rgba(255,255,255,.02);padding:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+          <div style="font-size:.78rem;font-weight:500;color:var(--white);">${c.name}</div>
+          <div style="text-align:right;flex-shrink:0;margin-left:8px;">
+            <div style="font-size:.78rem;font-weight:600;color:${c.accent};">${c.feeLabel}</div>
+            <div style="font-size:.62rem;color:rgba(255,255,255,.3);margin-top:1px;">${c.renewalLabel}</div>
+          </div>
         </div>
-        <div style="font-size:.72rem;color:var(--slate-500);margin-bottom:14px;">${c.type} · ${c.network}</div>
-        <button class="btn btn-ghost btn-sm" style="width:100%;border-color:rgba(201,168,76,.25);color:var(--gold-400);font-size:.75rem;" onclick="openCardApply('${c.key}')">Apply for This Card</button>
+        <div style="font-size:.68rem;color:var(--slate-500);margin-bottom:12px;">${c.type} · ${c.network} · ${totalCost}</div>
+        ${actionBtn}
       </div>
     </div>`;
   }).join('');
 }
 
+// ── Apply modal ───────────────────────────────────────────────────────────────
 function openCardApply(key) {
   const c = CARD_CATALOG.find(x => x.key === key);
   if (!c) return;
   _pendingCardKey = key;
-  const visual = document.getElementById('applyCardVisual');
-  visual.style.background = c.gradient;
-  // Keep the shimmer overlay by re-inserting it if needed
-  document.getElementById('applyCardName').textContent    = c.name;
-  document.getElementById('applyModalTitle').textContent  = `Apply for ${c.name}`;
-  document.getElementById('applyModalFee').textContent    = c.fee === 0 ? 'No annual fee — completely free' : `${c.feeLabel} annual fee · charged upon approval`;
+
+  document.getElementById('applyCardVisual').style.background = c.gradient;
+  document.getElementById('applyCardTypeBadge').innerHTML     = `${c.type.toUpperCase()}<br/>${c.network}`;
+  document.getElementById('applyCardName').textContent        = c.name;
+  document.getElementById('applyCardTypeLabel').textContent   = `${c.type} · ${c.network}`;
+  document.getElementById('applyCardFeeMain').textContent     = c.fee === 0 ? 'Free' : c.feeLabel;
+  document.getElementById('applyCardRenewal').textContent     = c.renewalLabel;
+  document.getElementById('applyModalTitle').textContent      = `Apply for ${c.name}`;
+  document.getElementById('applyModalFee').textContent        = c.fee === 0 ? `No annual fee · ${c.renewalLabel}` : `${c.feeLabel} annual fee · ${c.renewalLabel}`;
+  document.getElementById('applyCardPreviewNumber').textContent = _previewNumber();
+  document.getElementById('applyCardPreviewExpiry').textContent = _previewExpiry();
   document.getElementById('applyModalBenefits').innerHTML = c.benefits.map(b =>
     `<div class="cam-benefit"><span class="cam-benefit-icon">✦</span>${b}</div>`
   ).join('');
   document.getElementById('applyModalError').style.display = 'none';
-  document.getElementById('applySubmitBtn').disabled = false;
-  document.getElementById('applySubmitBtn').textContent = 'Apply Now';
+  document.getElementById('applySubmitBtn').disabled       = false;
+  document.getElementById('applySubmitBtn').textContent    = 'Apply Now';
   const name = document.getElementById('sidebarName')?.textContent?.trim() || 'CARD HOLDER';
-  document.getElementById('applyCardHolder').textContent = name.toUpperCase();
-  const modal = document.getElementById('cardApplyModal');
-  modal.style.display = 'flex';
-  requestAnimationFrame(() => requestAnimationFrame(() => modal.classList.add('open')));
+  document.getElementById('applyCardHolder').textContent   = name.toUpperCase();
+  _openModal('cardApplyModal');
 }
-
-function closeCardApply() {
-  const modal = document.getElementById('cardApplyModal');
-  modal.classList.remove('open');
-  setTimeout(() => { modal.style.display = 'none'; }, 350);
-  _pendingCardKey = null;
-}
+function closeCardApply() { _closeModal('cardApplyModal'); _pendingCardKey = null; }
 
 async function submitCardApplication() {
   if (!_pendingCardKey) return;
-  const btn  = document.getElementById('applySubmitBtn');
+  const btn   = document.getElementById('applySubmitBtn');
   const errEl = document.getElementById('applyModalError');
   btn.disabled = true; btn.textContent = 'Submitting…'; errEl.style.display = 'none';
   try {
     const res = await callEdgeFunction('card-request', { card_type_key: _pendingCardKey });
+    _pendingRequests[_pendingCardKey] = { status:'pending', card_type_key: _pendingCardKey };
     closeCardApply();
-    zenithToast(`Application submitted! ${res.message} — A confirmation email is on its way.`, 'success', 6000);
+    buildCardCatalog();
+    zenithToast(`Application submitted! ${res.message} — Confirmation email is on its way.`, 'success', 6000);
   } catch(e) {
     let msg = 'Submission failed. Please try again.';
     try { const p = JSON.parse(e.message); msg = p.error || msg; } catch {}
@@ -485,69 +698,104 @@ async function submitCardApplication() {
   }
 }
 
+// ── Manage modal (owned cards) ────────────────────────────────────────────────
+function openCardManage(key) {
+  const c = CARD_CATALOG.find(x => x.key === key);
+  const r = _ownedRequests[key];
+  if (!c) return;
+  _manageCardKey = key;
+
+  document.getElementById('manageCardVisual').style.background = c.gradient;
+  document.getElementById('manageCardTypeBadge').innerHTML = `${c.type.toUpperCase()}<br/>${c.network}`;
+  document.getElementById('manageCardName').textContent    = c.name;
+  document.getElementById('manageCardNumber').textContent  = _previewNumber();
+  document.getElementById('manageCardExpiry').textContent  = _previewExpiry();
+  const name = document.getElementById('sidebarName')?.textContent?.trim() || 'CARD HOLDER';
+  document.getElementById('manageCardHolder').textContent  = name.toUpperCase();
+  document.getElementById('manageModalTitle').textContent  = c.name;
+
+  const statusBadge = document.getElementById('manageCardStatusBadge');
+  statusBadge.textContent = 'Active';
+  statusBadge.style.cssText = 'font-size:.75rem;font-weight:600;padding:4px 14px;border-radius:20px;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.25);color:#4ade80;';
+  document.getElementById('manageModalStatus').textContent = `${c.type} · ${c.network} · ${c.feeLabel}`;
+
+  const issued = r?.requested_at ? new Date(r.requested_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : '—';
+  document.getElementById('manageCardDetails').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div><div style="font-size:.65rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Annual Fee</div><div style="font-size:.82rem;color:rgba(255,255,255,.8);">${c.feeLabel}</div></div>
+      <div><div style="font-size:.65rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Renewal Charge</div><div style="font-size:.82rem;color:rgba(255,255,255,.8);">$${c.renewalFee.toFixed(2)}/yr</div></div>
+      <div><div style="font-size:.65rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Member Since</div><div style="font-size:.82rem;color:rgba(255,255,255,.8);">${issued}</div></div>
+      <div><div style="font-size:.65rem;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;">Card Network</div><div style="font-size:.82rem;color:rgba(255,255,255,.8);">${c.network}</div></div>
+    </div>`;
+  _openModal('cardManageModal');
+}
+function closeCardManage() { _closeModal('cardManageModal'); _manageCardKey = null; }
+
+// ── Request status modal (pending cards) ─────────────────────────────────────
+function openCardStatus(key) {
+  const c = CARD_CATALOG.find(x => x.key === key);
+  const r = _pendingRequests[key];
+  if (!c || !r) return;
+  const requested = r.requested_at ? new Date(r.requested_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : 'recently';
+  const statusLabel = r.status === 'approved' ? 'Approved — card being prepared' : 'Under review by ZenithOne';
+  zenithToast(`<strong>${c.name}</strong><br/>${statusLabel}<br/><span style="opacity:.6;font-size:.85em;">Requested ${requested}</span>`, 'info', 7000);
+}
+
 let isFrozen = false;
 let _currentCardId = null;
 
 async function loadCardsData() {
+  await fetchUserCardState(); // always load request state first for catalog badges
   try {
-    const result = await callEdgeFunction('card-operations', { action: 'list' });
+    const result  = await callEdgeFunction('card-operations', { action: 'list' });
     const hasCards = result && result.cards && result.cards.length > 0;
-    if (!hasCards) {
-      document.getElementById('cardManagement').style.display = 'none';
-      buildCardCatalog();
-      return;
-    }
-    document.getElementById('cardCatalog').style.display    = 'none';
+    buildCardCatalog(); // always show catalog with state-aware badges
+    if (!hasCards) { document.getElementById('cardManagement').style.display = 'none'; return; }
+
     document.getElementById('cardManagement').style.display = '';
     const card = result.cards[0];
     _currentCardId = card.id;
     isFrozen = card.status === 'frozen';
 
-    // Freeze button
-    document.getElementById('freezeLabel').textContent = isFrozen ? 'Unfreeze' : 'Freeze';
-    document.getElementById('freezeIcon').style.color      = isFrozen ? 'var(--red-400)' : 'var(--gold-400)';
-    document.getElementById('freezeIcon').style.background = isFrozen ? 'rgba(239,68,68,.12)' : 'rgba(201,168,76,.1)';
+    document.getElementById('freezeLabel').textContent      = isFrozen ? 'Unfreeze' : 'Freeze';
+    document.getElementById('freezeIcon').style.color       = isFrozen ? 'var(--red-400)' : 'var(--gold-400)';
+    document.getElementById('freezeIcon').style.background  = isFrozen ? 'rgba(239,68,68,.12)' : 'rgba(201,168,76,.1)';
 
-    // Card visual
     const last4 = card.card_number_last_four || '••••';
     document.getElementById('cardVisualNumber').textContent = `•••• •••• •••• ${last4}`;
     document.getElementById('cardInfoNumber').textContent   = `•••• •••• •••• ${last4}`;
 
-    // Expiry
     if (card.expiry_month && card.expiry_year) {
-      const exp = String(card.expiry_month).padStart(2,'0') + '/' + String(card.expiry_year).slice(-2);
-      document.getElementById('cardInfoExpiry').textContent = exp;
+      document.getElementById('cardInfoExpiry').textContent =
+        String(card.expiry_month).padStart(2,'0') + '/' + String(card.expiry_year).slice(-2);
     }
 
-    // Status badge
     const statusEl = document.getElementById('cardInfoStatus');
-    statusEl.textContent = (card.status || 'active').charAt(0).toUpperCase() + card.status.slice(1);
+    statusEl.textContent = (card.status || 'active').charAt(0).toUpperCase() + (card.status || 'active').slice(1);
     statusEl.className = 'badge ' + (card.status === 'active' ? 'badge-green' : 'badge-neutral');
 
-    // Credit / utilization
-    const limit     = card.credit_limit     || 0;
-    const available = card.available_credit || 0;
-    const used      = limit - available;
-    const utilPct   = limit > 0 ? Math.round((used / limit) * 100) : 0;
-    const fmt = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
+    const limit = card.credit_limit || 0, available = card.available_credit || 0;
+    const used  = limit - available, utilPct = limit > 0 ? Math.round((used / limit) * 100) : 0;
+    const fmt   = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
     if (limit > 0) {
-      document.getElementById('cardCreditLimit').textContent    = fmt(limit);
-      document.getElementById('cardAvailableCredit').textContent= fmt(available);
-      document.getElementById('cardUtilizationText').textContent= `${fmt(used)} used of ${fmt(limit)}`;
-      document.getElementById('cardUtilizationPct').textContent = utilPct + '%';
-      document.getElementById('cardUtilizationBar').style.width = utilPct + '%';
+      document.getElementById('cardCreditLimit').textContent     = fmt(limit);
+      document.getElementById('cardAvailableCredit').textContent = fmt(available);
+      document.getElementById('cardUtilizationText').textContent = `${fmt(used)} used of ${fmt(limit)}`;
+      document.getElementById('cardUtilizationPct').textContent  = utilPct + '%';
+      document.getElementById('cardUtilizationBar').style.width  = utilPct + '%';
       document.getElementById('cardUtilizationBar').style.background = utilPct < 30 ? 'var(--green-400)' : utilPct < 70 ? 'var(--gold-400)' : 'var(--red-400)';
     }
-
-    // Rewards
     const pts = card.rewards_points || 0;
     document.getElementById('cardRewardPoints').textContent = pts.toLocaleString() + ' pts';
-
-    // Payment due
     if (card.payment_due_date) {
-      document.getElementById('cardInfoDue').textContent = new Date(card.payment_due_date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+      document.getElementById('cardInfoDue').textContent =
+        new Date(card.payment_due_date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
     }
-  } catch(e) { console.warn('Failed to load card data:', e); }
+  } catch(e) {
+    buildCardCatalog();
+    document.getElementById('cardManagement').style.display = 'none';
+    console.warn('card-operations:', e.message);
+  }
 }
 
 document.addEventListener('supabaseReady', loadCardsData, { once: true });

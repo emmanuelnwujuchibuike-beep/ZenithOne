@@ -43,16 +43,20 @@ Deno.serve(async (req: Request): Promise<Response> => {
       if (acc.account_type === 'money_market') mmBalance       += acc.balance || 0;
     }
 
-    // Credit cards
+    // Cards (all active)
     const { data: cards } = await supabase
       .from('cards')
-      .select('available_credit, card_type, rewards_points')
+      .select('available_credit, card_type, card_tier, card_number_last_four, rewards_points, expiry_month, expiry_year, cardholder_name')
       .eq('user_id', userId)
-      .eq('status', 'active')
-      .eq('card_type', 'credit');
+      .neq('status', 'cancelled')
+      .neq('status', 'stolen')
+      .order('created_at')
+      .limit(1);
 
-    const creditAvailable = (cards || []).reduce((s, c) => s + (c.available_credit || 0), 0);
-    const rewardPoints    = (cards || []).reduce((s, c) => s + (c.rewards_points   || 0), 0);
+    const allCards = cards || [];
+    const creditAvailable = allCards.reduce((s: number, c: { card_type: string; available_credit?: number }) => c.card_type === 'credit' ? s + (c.available_credit || 0) : s, 0);
+    const rewardPoints    = allCards.reduce((s: number, c: { rewards_points?: number }) => s + (c.rewards_points || 0), 0);
+    const primaryCard     = allCards[0] || null;
 
     // Investment portfolio total
     const { data: investments } = await supabase
@@ -79,6 +83,15 @@ Deno.serve(async (req: Request): Promise<Response> => {
       reward_points:        rewardPoints,
       unread_notifications: unreadNotifications || 0,
       account_count:        (accounts || []).length,
+      has_card:             allCards.length > 0,
+      primary_card:         primaryCard ? {
+        last_four:      (primaryCard as { card_number_last_four?: string }).card_number_last_four || '••••',
+        tier:           (primaryCard as { card_tier?: string }).card_tier || 'standard',
+        card_type:      (primaryCard as { card_type?: string }).card_type || 'debit',
+        expiry_month:   (primaryCard as { expiry_month?: number }).expiry_month,
+        expiry_year:    (primaryCard as { expiry_year?: number }).expiry_year,
+        cardholder_name:(primaryCard as { cardholder_name?: string }).cardholder_name || '',
+      } : null,
       last_updated:         new Date().toISOString(),
     });
 

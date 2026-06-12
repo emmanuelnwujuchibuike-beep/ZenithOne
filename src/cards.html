@@ -77,6 +77,41 @@
     </header>
 
     <div class="app-content">
+
+      <!-- CARD CATALOG (shown when no cards) -->
+      <div id="cardCatalog" style="display:none;">
+        <div style="margin-bottom:28px;">
+          <div style="font-family:var(--font-display);font-size:1.6rem;margin-bottom:6px;">Choose Your Card</div>
+          <div style="font-size:.875rem;color:var(--slate-400);">Select a ZenithOne card that fits your lifestyle. Each card comes with exclusive benefits and rewards.</div>
+        </div>
+        <div id="catalogGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px;"></div>
+      </div>
+
+      <!-- Card Apply Modal -->
+      <div id="cardApplyModal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);align-items:center;justify-content:center;" onclick="if(event.target===this)closeCardApply()">
+        <div style="background:linear-gradient(160deg,#0a1525,#0d1e35);border:1px solid rgba(201,168,76,.25);border-radius:20px;padding:36px;width:440px;max-width:94vw;position:relative;" onclick="event.stopPropagation()">
+          <button onclick="closeCardApply()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;">✕</button>
+          <div id="applyCardVisual" style="margin-bottom:24px;border-radius:16px;padding:24px;border:1px solid rgba(201,168,76,.2);position:relative;overflow:hidden;">
+            <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.05) 50%,transparent 70%);background-size:200%;animation:lux-sh 4s infinite linear;"></div>
+            <div style="font-size:.6rem;letter-spacing:.2em;color:rgba(201,168,76,.5);text-transform:uppercase;margin-bottom:3px;">ZENITHONE</div>
+            <div id="applyCardName" style="font-size:1.1rem;font-family:var(--font-display);margin-bottom:16px;color:rgba(255,255,255,.9);"></div>
+            <div style="width:38px;height:28px;background:linear-gradient(135deg,#e8c96b,#9a7220);border-radius:4px;margin-bottom:14px;"></div>
+            <div style="font-size:.8rem;letter-spacing:.2em;color:rgba(255,255,255,.4);font-family:'Courier New',monospace;margin-bottom:12px;">•••• •••• •••• ••••</div>
+            <div id="applyCardHolder" style="font-size:.7rem;color:rgba(255,255,255,.5);letter-spacing:.1em;text-transform:uppercase;"></div>
+          </div>
+          <div style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:6px;" id="applyModalTitle">Apply for Card</div>
+          <div style="font-size:.82rem;color:var(--slate-400);margin-bottom:20px;" id="applyModalFee"></div>
+          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px 18px;margin-bottom:20px;">
+            <div id="applyModalBenefits" style="font-size:.82rem;color:var(--slate-300);line-height:1.8;"></div>
+          </div>
+          <div id="applyModalError" style="display:none;color:var(--red-400);font-size:.82rem;margin-bottom:12px;"></div>
+          <button class="btn btn-primary w-full" id="applySubmitBtn" onclick="submitCardApplication()" style="width:100%;padding:14px;">Apply Now</button>
+          <div style="font-size:.72rem;color:var(--slate-500);text-align:center;margin-top:12px;">Application is subject to credit review. You'll receive a confirmation email.</div>
+        </div>
+      </div>
+
+      <!-- USER HAS CARDS: existing card management -->
+      <div id="cardManagement" style="display:none;">
       <div style="display:grid;grid-template-columns:320px 1fr;gap:28px;align-items:start;">
 
         <!-- Card Visual + Selector -->
@@ -241,8 +276,10 @@
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </div><!-- /grid -->
+      </div><!-- /cardManagement -->
+
+    </div><!-- /app-content -->
   </main>
 </div>
 
@@ -250,13 +287,111 @@
 <script src="js/auth.js"></script>
 <script src="js/cards.js"></script>
 <script>
+// ── Card Catalog Definition ────────────────────────────────────
+const CARD_CATALOG = [
+  { key:'virtual',       name:'Virtual Card',              type:'Debit',  network:'Visa',       fee:0,   feeLabel:'Free',         gradient:'linear-gradient(135deg,#1a3a5c 0%,#0d2840 100%)',  accent:'#60a5fa', benefits:['Instant digital card','Online & in-app payments','No physical card needed','Zero annual fee'] },
+  { key:'classic_debit', name:'Classic Debit',             type:'Debit',  network:'Visa',       fee:0,   feeLabel:'Free',         gradient:'linear-gradient(135deg,#1e293b 0%,#0f172a 100%)',  accent:'#94a3b8', benefits:['Physical debit card','ATM access worldwide','1× rewards on all purchases','Zero annual fee'] },
+  { key:'gold',          name:'ZenithOne Gold Visa®',      type:'Credit', network:'Visa',       fee:95,  feeLabel:'$95/yr',       gradient:'linear-gradient(135deg,#b8860b 0%,#6b4f06 100%)',  accent:'#fbbf24', benefits:['2× points on all purchases','Travel accident insurance','No foreign transaction fees','Concierge service'] },
+  { key:'platinum',      name:'ZenithOne Platinum Visa®',  type:'Credit', network:'Visa',       fee:195, feeLabel:'$195/yr',      gradient:'linear-gradient(135deg,#64748b 0%,#334155 100%)',  accent:'#cbd5e1', benefits:['3× points on travel & dining','$200 annual travel credit','Global lounge access','Cell phone protection'] },
+  { key:'titanium',      name:'ZenithOne Titanium Visa®',  type:'Credit', network:'Visa',       fee:295, feeLabel:'$295/yr',      gradient:'linear-gradient(135deg,#9ca3af 0%,#6b7280 100%)',  accent:'#f3f4f6', benefits:['4× points everywhere','Real metal card','$300 travel credit','Priority Pass lounge access','Dedicated advisor'] },
+  { key:'black',         name:'ZenithOne Black Visa®',     type:'Credit', network:'Visa',       fee:395, feeLabel:'$395/yr',      gradient:'linear-gradient(135deg,#111827 0%,#000000 100%)',  accent:'#c9a84c', benefits:['5× points on all spend','$500 annual credits','Global lounge access','24/7 elite concierge','No preset spending limit'] },
+  { key:'black_gold',    name:'Black Gold Elite',          type:'Credit', network:'Mastercard®',fee:595, feeLabel:'$595/yr',      gradient:'linear-gradient(135deg,#1a0a00 0%,#3d2000 60%,#c9a84c 100%)', accent:'#f59e0b', benefits:['Unlimited 5× on everything','$1,000 annual credits','Private jet partnership','Personal relationship manager','Invitation only — apply to inquire'] },
+  { key:'business',      name:'Business Platinum Visa®',   type:'Credit', network:'Visa',       fee:350, feeLabel:'$350/yr',      gradient:'linear-gradient(135deg,#1e3a5f 0%,#0a1929 100%)',  accent:'#38bdf8', benefits:['4× on business spend','Employee cards at no extra cost','$400 annual business credits','Expense management tools','Dedicated business support'] },
+];
+
+let _pendingCardKey = null;
+
+function buildCardCatalog() {
+  document.getElementById('cardCatalog').style.display = '';
+  document.getElementById('catalogGrid').innerHTML = CARD_CATALOG.map(c => {
+    const chip = `<svg width="36" height="26" viewBox="0 0 36 28"><rect width="36" height="28" rx="5" fill="url(#chip_${c.key})"/><defs><linearGradient id="chip_${c.key}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8c96b"/><stop offset="100%" stop-color="#9a7220"/></linearGradient></defs><rect x="2" y="8" width="32" height="12" rx="2" fill="rgba(255,255,255,.1)"/><line x1="18" y1="8" x2="18" y2="20" stroke="rgba(255,255,255,.1)" stroke-width="1"/></svg>`;
+    return `
+    <div style="border-radius:16px;border:1px solid rgba(255,255,255,.07);overflow:hidden;transition:transform .2s,box-shadow .2s;" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 20px 40px rgba(0,0,0,.5)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
+      <!-- 3D Card Preview -->
+      <div style="background:${c.gradient};padding:22px;position:relative;overflow:hidden;aspect-ratio:1.586/1;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;min-height:160px;"
+           onmousemove="(function(el,e){var r=el.getBoundingClientRect();var x=(e.clientX-r.left)/r.width-.5;var y=(e.clientY-r.top)/r.height-.5;el.style.transform='perspective(500px) rotateY('+x*14+'deg) rotateX('+(-y*8)+'deg)';}).call(this,this,event)"
+           onmouseleave="this.style.transform=''">
+        <div style="position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.06) 50%,transparent 70%);background-size:200%;animation:lux-sh 4s infinite linear;pointer-events:none;"></div>
+        <div style="position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.04);"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          ${chip}
+          <div style="font-size:.5rem;letter-spacing:.18em;color:rgba(255,255,255,.35);text-transform:uppercase;text-align:right;line-height:1.5;">ZENITHONE<br/>${c.type.toUpperCase()}</div>
+        </div>
+        <div>
+          <div style="font-size:.65rem;letter-spacing:.18em;color:rgba(255,255,255,.4);font-family:'Courier New',monospace;margin-bottom:10px;">•••• •••• •••• ••••</div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+            <div style="font-family:var(--font-display);font-size:.9rem;color:rgba(255,255,255,.8);">${c.name}</div>
+            <div style="display:flex;"><div style="width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,.4);margin-right:-7px;"></div><div style="width:22px;height:22px;border-radius:50%;background:rgba(201,168,76,.65);"></div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Card Info -->
+      <div style="background:rgba(255,255,255,.02);padding:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="font-size:.8rem;font-weight:500;color:var(--white);">${c.name}</div>
+          <div style="font-size:.8rem;font-weight:600;color:${c.accent};">${c.feeLabel}</div>
+        </div>
+        <div style="font-size:.72rem;color:var(--slate-500);margin-bottom:14px;">${c.type} · ${c.network}</div>
+        <button class="btn btn-ghost btn-sm" style="width:100%;border-color:rgba(201,168,76,.25);color:var(--gold-400);font-size:.75rem;" onclick="openCardApply('${c.key}')">Apply for This Card</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openCardApply(key) {
+  const c = CARD_CATALOG.find(x => x.key === key);
+  if (!c) return;
+  _pendingCardKey = key;
+  document.getElementById('applyCardVisual').style.background = c.gradient;
+  document.getElementById('applyCardName').textContent   = c.name;
+  document.getElementById('applyModalTitle').textContent  = `Apply for ${c.name}`;
+  document.getElementById('applyModalFee').textContent   = c.fee === 0 ? 'No annual fee — completely free.' : `Annual fee: ${c.feeLabel}. Charged upon approval.`;
+  document.getElementById('applyModalBenefits').innerHTML = c.benefits.map(b => `<div style="display:flex;align-items:center;gap:8px;padding:3px 0;"><span style="color:var(--gold-400);flex-shrink:0;">✦</span> ${b}</div>`).join('');
+  document.getElementById('applyModalError').style.display = 'none';
+  document.getElementById('applySubmitBtn').disabled = false;
+  document.getElementById('applySubmitBtn').textContent = 'Apply Now';
+  // Set cardholder name from sidebar
+  const name = document.getElementById('sidebarName')?.textContent || 'CARD HOLDER';
+  document.getElementById('applyCardHolder').textContent = name.toUpperCase();
+  document.getElementById('cardApplyModal').style.display = 'flex';
+}
+
+function closeCardApply() {
+  document.getElementById('cardApplyModal').style.display = 'none';
+  _pendingCardKey = null;
+}
+
+async function submitCardApplication() {
+  if (!_pendingCardKey) return;
+  const btn  = document.getElementById('applySubmitBtn');
+  const errEl = document.getElementById('applyModalError');
+  btn.disabled = true; btn.textContent = 'Submitting…'; errEl.style.display = 'none';
+  try {
+    const res = await callEdgeFunction('card-request', { card_type_key: _pendingCardKey });
+    closeCardApply();
+    alert(`✅ Application submitted!\n\n${res.message}\n\nYou'll receive a confirmation email shortly.`);
+  } catch(e) {
+    let msg = 'Submission failed. Please try again.';
+    try { const p = JSON.parse(e.message); msg = p.error || msg; } catch {}
+    errEl.textContent = msg; errEl.style.display = '';
+    btn.disabled = false; btn.textContent = 'Apply Now';
+  }
+}
+
 let isFrozen = false;
 let _currentCardId = null;
 
 async function loadCardsData() {
   try {
     const result = await callEdgeFunction('card-operations', { action: 'list' });
-    if (!result || !result.cards || result.cards.length === 0) return;
+    const hasCards = result && result.cards && result.cards.length > 0;
+    if (!hasCards) {
+      document.getElementById('cardManagement').style.display = 'none';
+      buildCardCatalog();
+      return;
+    }
+    document.getElementById('cardCatalog').style.display    = 'none';
+    document.getElementById('cardManagement').style.display = '';
     const card = result.cards[0];
     _currentCardId = card.id;
     isFrozen = card.status === 'frozen';
@@ -308,7 +443,7 @@ async function loadCardsData() {
   } catch(e) { console.warn('Failed to load card data:', e); }
 }
 
-window.addEventListener('load', loadCardsData);
+document.addEventListener('supabaseReady', loadCardsData, { once: true });
 
 async function toggleCardFreeze() {
   if (!_currentCardId) {

@@ -287,23 +287,49 @@
           </div>
         </div>
 
-        <!-- Market Snapshot + Card -->
+        <!-- Card + Market Snapshot -->
         <div style="display:flex;flex-direction:column;gap:20px;">
-          <!-- Bank Card -->
-          <div class="bank-card-visual black" style="padding:22px;">
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;">
-              <svg width="32" height="24" viewBox="0 0 36 28"><rect width="36" height="28" rx="4" fill="url(#chip2)"/><defs><linearGradient id="chip2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8c96b"/><stop offset="100%" stop-color="#c9a84c"/></linearGradient></defs><rect x="2" y="8" width="32" height="12" rx="1" fill="rgba(255,255,255,.15)"/></svg>
-              <span style="font-family:var(--font-display);font-size:.85rem;color:rgba(255,255,255,.4);">ZENITHONE BLACK</span>
+
+          <!-- ULTRA-PREMIUM CARD or Request CTA -->
+          <style>
+            #dashLuxCard { transform-style:preserve-3d; transition:transform .12s ease-out; }
+            .lux-shimmer { position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.07) 50%,transparent 70%);background-size:200% 100%;animation:lux-sh 4s infinite linear;pointer-events:none;border-radius:20px; }
+            @keyframes lux-sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+            .lux-holo { position:absolute;top:14px;right:18px;width:30px;height:22px;border-radius:4px;background:linear-gradient(135deg,rgba(201,168,76,.7),rgba(120,200,255,.5),rgba(201,168,76,.7));animation:lux-h 3s infinite alternate; }
+            @keyframes lux-h { 0%{filter:hue-rotate(0deg) brightness(1)} 100%{filter:hue-rotate(50deg) brightness(1.4)} }
+          </style>
+
+          <!-- No-card CTA -->
+          <div id="dashNoCard" style="border-radius:18px;background:linear-gradient(135deg,rgba(201,168,76,.05),rgba(36,71,110,.08));border:1px solid rgba(201,168,76,.15);padding:26px 20px;text-align:center;cursor:pointer;" onclick="window.location.href='cards.html'">
+            <div style="width:48px;height:48px;border-radius:12px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+              <svg width="20" height="20" fill="none" stroke="#c9a84c" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
             </div>
-            <div style="font-size:.9rem;letter-spacing:.18em;color:rgba(255,255,255,.7);margin-bottom:16px;font-family:'Courier New',monospace;" id="dashCardNumber">•••• •••• •••• ••••</div>
-            <div style="display:flex;justify-content:space-between;align-items:flex-end;">
-              <div>
-                <div style="font-size:.65rem;color:rgba(255,255,255,.4);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Cardholder</div>
-                <div style="font-size:.8rem;color:rgba(255,255,255,.7);letter-spacing:.06em;text-transform:uppercase;" id="cardholderName">A. REYNOLDS</div>
+            <div style="font-family:var(--font-display);font-size:.95rem;margin-bottom:6px;">No Card Yet</div>
+            <div style="font-size:.75rem;color:var(--slate-400);line-height:1.5;margin-bottom:14px;">Apply for a premium ZenithOne card — Virtual, Gold, Titanium, Black &amp; more.</div>
+            <div style="display:inline-block;background:linear-gradient(135deg,#c9a84c,#b8960a);color:#040d18;font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:7px 18px;border-radius:99px;text-transform:uppercase;">Request a Card →</div>
+          </div>
+
+          <!-- Ultra-luxury card (hidden until card loads) -->
+          <div id="dashLuxCard" style="display:none;position:relative;border-radius:20px;overflow:hidden;cursor:pointer;" onclick="window.location.href='cards.html'"
+               onmousemove="(function(e){var r=this.getBoundingClientRect();var x=(e.clientX-r.left)/r.width-.5;var y=(e.clientY-r.top)/r.height-.5;this.style.transform='perspective(600px) rotateY('+x*16+'deg) rotateX('+(-y*10)+'deg) scale(1.02)';}).call(this,event)"
+               onmouseleave="this.style.transform='perspective(600px) rotateY(0) rotateX(0) scale(1)'">
+            <div style="background:linear-gradient(135deg,#050c18 0%,#0d1a2e 40%,#111f35 70%,#0a1526 100%);padding:24px 22px 20px;border:1px solid rgba(201,168,76,.35);border-radius:20px;box-shadow:0 24px 64px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.04) inset,0 1px 0 rgba(201,168,76,.25) inset;">
+              <div class="lux-shimmer"></div>
+              <div class="lux-holo"></div>
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
+                <svg width="36" height="26" viewBox="0 0 36 28"><rect width="36" height="28" rx="5" fill="url(#chip_d)"/><defs><linearGradient id="chip_d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8c96b"/><stop offset="100%" stop-color="#9a7220"/></linearGradient></defs><rect x="2" y="8" width="32" height="12" rx="2" fill="rgba(255,255,255,.1)"/><line x1="18" y1="8" x2="18" y2="20" stroke="rgba(255,255,255,.1)" stroke-width="1"/></svg>
+                <div id="dashCardTierLabel" style="font-size:.55rem;letter-spacing:.22em;color:rgba(201,168,76,.55);text-transform:uppercase;text-align:right;line-height:1.5;">ZENITHONE<br/>CREDIT UNION</div>
               </div>
-              <div class="card-network">
-                <div class="card-network-circle"></div>
-                <div class="card-network-circle"></div>
+              <div id="dashCardNumber" style="font-size:.85rem;letter-spacing:.22em;color:rgba(255,255,255,.55);margin-bottom:16px;font-family:'Courier New',monospace;text-shadow:0 1px 3px rgba(0,0,0,.6);">•••• •••• •••• ••••</div>
+              <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+                <div>
+                  <div style="font-size:.55rem;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px;">Cardholder</div>
+                  <div id="cardholderName" style="font-size:.75rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;font-weight:500;">CARD HOLDER</div>
+                </div>
+                <div style="display:flex;">
+                  <div style="width:26px;height:26px;border-radius:50%;background:rgba(201,168,76,.4);margin-right:-9px;box-shadow:0 0 10px rgba(201,168,76,.25);"></div>
+                  <div style="width:26px;height:26px;border-radius:50%;background:rgba(201,168,76,.65);box-shadow:0 0 14px rgba(201,168,76,.35);"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -780,6 +806,17 @@ async function loadDashboardData() {
       document.getElementById('rewardPoints').textContent    = (summary.reward_points || 0).toLocaleString();
       document.getElementById('checkingBal').textContent     = fmt(summary.checking_balance);
       document.getElementById('savingsBal').textContent      = fmt(summary.savings_balance);
+
+      // Card section
+      const hasCard = summary.has_card;
+      document.getElementById('dashNoCard').style.display  = hasCard ? 'none' : '';
+      document.getElementById('dashLuxCard').style.display = hasCard ? '' : 'none';
+      if (hasCard && summary.primary_card) {
+        const pc = summary.primary_card;
+        document.getElementById('dashCardNumber').textContent  = `•••• •••• •••• ${pc.last_four}`;
+        const tierLabel = (pc.tier || 'standard').toUpperCase().replace('_',' ');
+        document.getElementById('dashCardTierLabel').innerHTML = `ZENITHONE<br/>${tierLabel}`;
+      }
 
       const bal = summary.total_balance || 0;
       const series = Array.from({ length: 12 }, (_, i) =>

@@ -278,6 +278,10 @@
 <script src="js/auth.js"></script>
 <script src="js/accounts.js"></script>
 <script>
+// Wipe hardcoded demo balances immediately — real data loaded below
+document.getElementById('accountsContainer').innerHTML =
+  '<div style="padding:48px;text-align:center;color:var(--slate-500);">Loading your accounts…</div>';
+
 function openNewAccountModal() { document.getElementById('newAccountModal').classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 function showAccountDetails(type) { alert('Full account details — contact ZenithOne Private Banking at 1-888-763-9000.'); }

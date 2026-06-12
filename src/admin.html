@@ -134,10 +134,96 @@
   </main>
 </div>
 
+<!-- Add Funds Modal -->
+<div id="addFundsModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);align-items:center;justify-content:center;" class="modal-backdrop" onclick="if(event.target===this)closeAddFunds()">
+  <div class="card card-elevated" style="width:420px;max-width:94vw;padding:32px;position:relative;" onclick="event.stopPropagation()">
+    <button onclick="closeAddFunds()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;line-height:1;">✕</button>
+    <div style="font-family:var(--font-display);font-size:1.35rem;margin-bottom:4px;">Add Funds</div>
+    <div style="font-size:.8rem;color:var(--slate-500);margin-bottom:24px;">Credit a member's account directly.</div>
+    <div id="addFundsRecipient" style="font-size:.875rem;font-weight:500;color:var(--gold-400);margin-bottom:20px;"></div>
+    <div class="form-group" style="margin-bottom:16px;">
+      <label class="form-label">Account Type</label>
+      <select id="addFundsAccountType" class="form-input form-select">
+        <option value="checking">Checking</option>
+        <option value="savings">Savings</option>
+        <option value="money_market">Money Market</option>
+      </select>
+    </div>
+    <div class="form-group" style="margin-bottom:16px;">
+      <label class="form-label">Amount (USD)</label>
+      <input type="number" id="addFundsAmount" class="form-input" placeholder="0.00" min="0.01" step="0.01" />
+    </div>
+    <div class="form-group" style="margin-bottom:24px;">
+      <label class="form-label">Note (optional)</label>
+      <input type="text" id="addFundsNote" class="form-input" placeholder="e.g. Welcome bonus" maxlength="120" />
+    </div>
+    <div id="addFundsError" style="display:none;color:var(--red-400);font-size:.82rem;margin-bottom:12px;"></div>
+    <div style="display:flex;gap:12px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeAddFunds()">Cancel</button>
+      <button class="btn btn-primary" id="addFundsSubmitBtn" onclick="submitAddFunds()">Add Funds</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
 <script>
 let _allUsers = [];
+let _addFundsUserId = null;
+
+function openAddFunds(userId, userName, accTypes) {
+  _addFundsUserId = userId;
+  document.getElementById('addFundsRecipient').textContent = 'Member: ' + userName;
+  document.getElementById('addFundsAmount').value = '';
+  document.getElementById('addFundsNote').value   = '';
+  document.getElementById('addFundsError').style.display = 'none';
+  // Pre-populate account type options based on user's actual accounts
+  const sel = document.getElementById('addFundsAccountType');
+  const types = accTypes ? accTypes.split(',').filter(Boolean) : [];
+  sel.innerHTML = types.length
+    ? types.map(t => `<option value="${t}">${t.charAt(0).toUpperCase()+t.slice(1).replace('_',' ')}</option>`).join('')
+    : '<option value="checking">Checking</option><option value="savings">Savings</option><option value="money_market">Money Market</option>';
+  document.getElementById('addFundsModal').style.display = 'flex';
+}
+
+function closeAddFunds() {
+  document.getElementById('addFundsModal').style.display = 'none';
+  _addFundsUserId = null;
+}
+
+async function submitAddFunds() {
+  const btn    = document.getElementById('addFundsSubmitBtn');
+  const errEl  = document.getElementById('addFundsError');
+  const amount = parseFloat(document.getElementById('addFundsAmount').value);
+  const accType = document.getElementById('addFundsAccountType').value;
+  const note   = document.getElementById('addFundsNote').value.trim();
+  errEl.style.display = 'none';
+
+  if (!_addFundsUserId || !accType || isNaN(amount) || amount <= 0) {
+    errEl.textContent = 'Please enter a valid amount.';
+    errEl.style.display = '';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Processing…';
+  try {
+    const res = await callEdgeFunction('admin-data', {
+      action: 'add_funds', user_id: _addFundsUserId, account_type: accType, amount, note,
+    });
+    closeAddFunds();
+    await refreshAll();
+    alert(res.message || 'Funds added successfully.');
+  } catch(e) {
+    let msg = 'Failed to add funds.';
+    try { const p = JSON.parse(e.message); msg = p.error || msg; } catch {}
+    errEl.textContent = msg;
+    errEl.style.display = '';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Add Funds';
+  }
+}
 
 async function loadStats() {
   try {
@@ -217,6 +303,7 @@ function renderUsers(list) {
             <th style="text-align:right;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Accounts</th>
             <th style="text-align:left;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Joined</th>
             <th style="text-align:center;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Role</th>
+            <th style="text-align:center;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -224,6 +311,7 @@ function renderUsers(list) {
             const joined   = new Date(u.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
             const initials = (u.full_name||u.email||'U').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
             const accCount = (u.accounts||[]).length;
+            const accTypes = (u.accounts||[]).map(a=>a.type).join(',');
             return `<tr style="border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;" onmouseover="this.style.background='rgba(255,255,255,.03)'" onmouseout="this.style.background=''">
               <td style="padding:12px;">
                 <div style="display:flex;align-items:center;gap:10px;">
@@ -236,6 +324,7 @@ function renderUsers(list) {
               <td style="padding:12px;text-align:right;color:var(--slate-400);">${accCount}</td>
               <td style="padding:12px;color:var(--slate-500);font-size:.8rem;">${joined}</td>
               <td style="padding:12px;text-align:center;">${u.is_admin ? '<span class="badge badge-gold">Admin</span>' : '<span class="badge badge-neutral">Member</span>'}</td>
+              <td style="padding:12px;text-align:center;"><button class="btn btn-ghost btn-sm" style="font-size:.75rem;padding:5px 10px;color:var(--gold-400);border-color:rgba(201,168,76,.3);" onclick="openAddFunds('${u.id}','${(u.full_name||u.email||'User').replace(/'/g,"\\'")}','${accTypes}')">+ Add Funds</button></td>
             </tr>`;
           }).join('')}
         </tbody>

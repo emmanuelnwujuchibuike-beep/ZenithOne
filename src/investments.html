@@ -213,48 +213,7 @@ async function loadInvestmentsData() {
 }
 window.addEventListener('load', loadInvestmentsData);
 
-// Demo holdings shown until real data loads
-const holdings = [
-  { sym:'AAPL', name:'Apple Inc.',           type:'stock', price:212.40, chg:+1.24, shares:240,  cost:142.80, alloc:18.2 },
-  { sym:'MSFT', name:'Microsoft Corp.',      type:'stock', price:438.90, chg:+0.82, shares:88,   cost:312.40, alloc:16.3 },
-  { sym:'VTI',  name:'Vanguard Total Market',type:'etf',   price:262.18, chg:+0.48, shares:400,  cost:198.40, alloc:14.0 },
-  { sym:'BRK.B',name:'Berkshire Hathaway',   type:'stock', price:420.60, chg:-0.15, shares:60,   cost:280.20, alloc:10.8 },
-  { sym:'NVDA', name:'NVIDIA Corp.',         type:'stock', price:1220.50, chg:+3.40,shares:18,  cost:488.20, alloc:9.4  },
-  { sym:'BND',  name:'Vanguard Bond Market', type:'etf',   price:72.40,  chg:-0.08, shares:1400, cost:76.20,  alloc:8.6  },
-  { sym:'GOOGL',name:'Alphabet Inc.',        type:'stock', price:178.42, chg:+0.62, shares:120,  cost:128.40, alloc:7.8  },
-  { sym:'QQQ',  name:'Invesco QQQ Trust',    type:'etf',   price:455.80, chg:+0.96, shares:40,   cost:320.10, alloc:7.5  },
-  { sym:'REZ',  name:'iShares Resi. RE ETF', type:'etf',   price:88.20,  chg:-0.22, shares:240,  cost:74.40,  alloc:4.4  },
-];
-
-document.getElementById('holdingsTable').innerHTML = holdings.map(h => {
-  const value = h.price * h.shares;
-  const costBasis = h.cost * h.shares;
-  const gainLoss = value - costBasis;
-  const glPct = ((gainLoss / costBasis) * 100).toFixed(2);
-  const isUp = h.chg >= 0;
-  const isGain = gainLoss >= 0;
-  return `
-    <div class="holding-row">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div class="symbol-badge">${h.sym.slice(0,4)}</div>
-        <div>
-          <div style="font-size:.875rem;font-weight:500;color:var(--white);">${h.sym}</div>
-          <div style="font-size:.75rem;color:var(--slate-500);">${h.name}</div>
-        </div>
-      </div>
-      <div style="text-align:right;">
-        <div style="font-size:.875rem;color:var(--white);">$${h.price.toLocaleString('en-US',{minimumFractionDigits:2})}</div>
-        <div style="font-size:.72rem;color:var(--slate-500);">${h.shares} shares</div>
-      </div>
-      <div style="text-align:right;font-size:.875rem;font-weight:500;color:${isUp?'var(--green-400)':'var(--red-400)'};">${isUp?'+':''}${h.chg}%</div>
-      <div style="text-align:right;font-family:var(--font-display);font-size:.95rem;">$${value.toLocaleString('en-US',{minimumFractionDigits:2})}</div>
-      <div style="text-align:right;font-size:.875rem;color:${isGain?'var(--green-400)':'var(--red-400)'};">${isGain?'+':''}$${Math.abs(gainLoss).toLocaleString('en-US',{minimumFractionDigits:0})}<div style="font-size:.7rem;">(${isGain?'+':''}${glPct}%)</div></div>
-      <div style="text-align:right;">
-        <div style="font-size:.8rem;margin-bottom:4px;">${h.alloc}%</div>
-        <div class="allocation-bar" style="background:rgba(255,255,255,.06);"><div style="height:6px;border-radius:6px;width:${h.alloc*3}%;background:var(--gold-500);opacity:.7;"></div></div>
-      </div>
-    </div>`;
-}).join('');
+// holdingsTable is populated entirely by loadInvestmentsData() above
 
 // Portfolio chart
 (function() {

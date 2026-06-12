@@ -84,6 +84,39 @@ Deno.serve(async (req: Request): Promise<Response> => {
       });
     }
 
+    if (action === 'add_funds') {
+      const { user_id, account_type, amount, note } = body as {
+        action: string; user_id: string; account_type: string; amount: number; note?: string;
+      };
+      if (!user_id || !account_type || !amount || amount <= 0) {
+        throw new Error('Missing or invalid: user_id, account_type, amount');
+      }
+
+      const { data: account, error: accErr } = await supabase
+        .from('accounts')
+        .select('id')
+        .eq('user_id', user_id)
+        .eq('account_type', account_type)
+        .eq('status', 'active')
+        .single();
+      if (accErr || !account) throw new Error(`No active ${account_type} account found for this user`);
+
+      const { error: txnErr } = await supabase
+        .from('transactions')
+        .insert({
+          user_id,
+          account_id:       account.id,
+          transaction_type: 'deposit',
+          amount,
+          description:      note?.trim() || 'Admin credit',
+          category:         'other',
+          status:           'completed',
+        });
+      if (txnErr) throw txnErr;
+
+      return json({ success: true, message: `$${amount.toFixed(2)} added to ${account_type}` });
+    }
+
     throw new Error(`Unknown action: ${action}`);
 
   } catch (err) {

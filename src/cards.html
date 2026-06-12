@@ -99,9 +99,9 @@
                     </div>
                   </div>
                   <div style="margin-top:56px;">
-                    <div class="card-number">•••• •••• •••• 7842</div>
+                    <div class="card-number" id="cardVisualNumber">•••• •••• •••• ••••</div>
                     <div style="display:flex;justify-content:space-between;align-items:flex-end;">
-                      <div><div style="font-size:.6rem;color:rgba(255,255,255,.35);text-transform:uppercase;">A. REYNOLDS</div></div>
+                      <div><div style="font-size:.6rem;color:rgba(255,255,255,.35);text-transform:uppercase;" id="cardholderName">CARD HOLDER</div></div>
                       <div class="card-network"><div class="card-network-circle"></div><div class="card-network-circle"></div></div>
                     </div>
                   </div>
@@ -150,12 +150,12 @@
           <div class="grid-2" style="gap:16px;">
             <div class="stat-card">
               <div class="stat-icon gold"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div>
-              <div class="stat-value">$42,500</div>
+              <div class="stat-value" id="cardCreditLimit">—</div>
               <div class="stat-label">Credit Limit</div>
             </div>
             <div class="stat-card">
               <div class="stat-icon green"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div>
-              <div class="stat-value">$38,720</div>
+              <div class="stat-value" id="cardAvailableCredit">—</div>
               <div class="stat-label">Available Credit</div>
             </div>
           </div>
@@ -167,10 +167,10 @@
               <div class="badge badge-green">Excellent</div>
             </div>
             <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:8px;">
-              <span style="color:var(--slate-400);">$3,780 used of $42,500</span>
-              <span style="color:var(--white);font-weight:500;">8.9%</span>
+              <span style="color:var(--slate-400);" id="cardUtilizationText">No card data</span>
+              <span style="color:var(--white);font-weight:500;" id="cardUtilizationPct">—</span>
             </div>
-            <div class="progress-bar" style="height:10px;"><div class="progress-fill" style="width:8.9%;background:var(--green-400);"></div></div>
+            <div class="progress-bar" style="height:10px;"><div class="progress-fill" id="cardUtilizationBar" style="width:0%;background:var(--green-400);"></div></div>
             <div style="font-size:.75rem;color:var(--slate-500);margin-top:10px;">Keeping utilization below 30% improves your credit score.</div>
           </div>
 
@@ -179,11 +179,11 @@
             <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:16px;">Card Information</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
               <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Card Type</div><div style="font-size:.9rem;">ZenithOne Black Visa®</div></div>
-              <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Card Number</div><div style="font-size:.9rem;font-family:monospace;">•••• •••• •••• 7842</div></div>
-              <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Expiry</div><div style="font-size:.9rem;">09/29</div></div>
-              <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Status</div><div class="badge badge-green" style="display:inline-flex;">Active</div></div>
+              <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Card Number</div><div style="font-size:.9rem;font-family:monospace;" id="cardInfoNumber">—</div></div>
+              <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Expiry</div><div style="font-size:.9rem;" id="cardInfoExpiry">—</div></div>
+              <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Status</div><div id="cardInfoStatus" style="font-size:.9rem;color:var(--slate-400);">—</div></div>
               <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Billing Cycle</div><div style="font-size:.9rem;">Closes 28th monthly</div></div>
-              <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Payment Due</div><div style="font-size:.9rem;color:var(--gold-400);">July 15, 2024</div></div>
+              <div><div style="font-size:.7rem;color:var(--slate-500);text-transform:uppercase;margin-bottom:4px;">Payment Due</div><div style="font-size:.9rem;color:var(--gold-400);" id="cardInfoDue">—</div></div>
             </div>
           </div>
 
@@ -191,7 +191,7 @@
           <div class="card card-elevated">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
               <div style="font-family:var(--font-display);font-size:1.1rem;">ZenithOne Rewards</div>
-              <div style="font-family:var(--font-display);font-size:1.5rem;color:var(--gold-400);">124,840 pts</div>
+              <div style="font-family:var(--font-display);font-size:1.5rem;color:var(--gold-400);" id="cardRewardPoints">0 pts</div>
             </div>
             <div style="display:flex;flex-direction:column;gap:0;">
               <div class="reward-tier-item">
@@ -260,9 +260,51 @@ async function loadCardsData() {
     const card = result.cards[0];
     _currentCardId = card.id;
     isFrozen = card.status === 'frozen';
+
+    // Freeze button
     document.getElementById('freezeLabel').textContent = isFrozen ? 'Unfreeze' : 'Freeze';
-    document.getElementById('freezeIcon').style.color = isFrozen ? 'var(--red-400)' : 'var(--gold-400)';
+    document.getElementById('freezeIcon').style.color      = isFrozen ? 'var(--red-400)' : 'var(--gold-400)';
     document.getElementById('freezeIcon').style.background = isFrozen ? 'rgba(239,68,68,.12)' : 'rgba(201,168,76,.1)';
+
+    // Card visual
+    const last4 = card.card_number_last_four || '••••';
+    document.getElementById('cardVisualNumber').textContent = `•••• •••• •••• ${last4}`;
+    document.getElementById('cardInfoNumber').textContent   = `•••• •••• •••• ${last4}`;
+
+    // Expiry
+    if (card.expiry_month && card.expiry_year) {
+      const exp = String(card.expiry_month).padStart(2,'0') + '/' + String(card.expiry_year).slice(-2);
+      document.getElementById('cardInfoExpiry').textContent = exp;
+    }
+
+    // Status badge
+    const statusEl = document.getElementById('cardInfoStatus');
+    statusEl.textContent = (card.status || 'active').charAt(0).toUpperCase() + card.status.slice(1);
+    statusEl.className = 'badge ' + (card.status === 'active' ? 'badge-green' : 'badge-neutral');
+
+    // Credit / utilization
+    const limit     = card.credit_limit     || 0;
+    const available = card.available_credit || 0;
+    const used      = limit - available;
+    const utilPct   = limit > 0 ? Math.round((used / limit) * 100) : 0;
+    const fmt = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
+    if (limit > 0) {
+      document.getElementById('cardCreditLimit').textContent    = fmt(limit);
+      document.getElementById('cardAvailableCredit').textContent= fmt(available);
+      document.getElementById('cardUtilizationText').textContent= `${fmt(used)} used of ${fmt(limit)}`;
+      document.getElementById('cardUtilizationPct').textContent = utilPct + '%';
+      document.getElementById('cardUtilizationBar').style.width = utilPct + '%';
+      document.getElementById('cardUtilizationBar').style.background = utilPct < 30 ? 'var(--green-400)' : utilPct < 70 ? 'var(--gold-400)' : 'var(--red-400)';
+    }
+
+    // Rewards
+    const pts = card.rewards_points || 0;
+    document.getElementById('cardRewardPoints').textContent = pts.toLocaleString() + ' pts';
+
+    // Payment due
+    if (card.payment_due_date) {
+      document.getElementById('cardInfoDue').textContent = new Date(card.payment_due_date).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+    }
   } catch(e) { console.warn('Failed to load card data:', e); }
 }
 
@@ -301,7 +343,13 @@ function showLimitsModal() { alert('Set daily/transaction spending limits — co
 function showPinModal()   { alert('PIN management — connect to Supabase Edge Function: card-operations'); }
 function reportCard()     { if(confirm('Report this card as lost or stolen?')) alert('Card reported. A replacement will arrive in 2–4 business days.'); }
 function requestNewCard() { alert('Card request submitted. Processing takes 5–7 business days.'); }
-function redeemRewards()  { alert('124,840 points = $1,248.40 in cash back or $1,560 in travel value.'); }
+function redeemRewards()  {
+  const pts = parseInt((document.getElementById('cardRewardPoints').textContent||'0').replace(/\D/g,''))||0;
+  if (pts === 0) { alert('You have no reward points to redeem yet.'); return; }
+  const cash = (pts * 0.01).toFixed(2);
+  const travel = (pts * 0.0125).toFixed(2);
+  alert(`${pts.toLocaleString()} points = $${cash} in cash back or $${travel} in travel value.`);
+}
 
 function toggleSetting(type, val) {
   const trackId = type === 'international' ? 'intlTrack' : type === 'online' ? 'onlineTrack' : 'atmTrack';

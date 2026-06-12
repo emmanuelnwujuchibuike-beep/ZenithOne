@@ -143,10 +143,7 @@
           </div>
           <div class="stat-value" id="totalBalance">$0.00</div>
           <div class="stat-label">Total Balance</div>
-          <div class="stat-change up" id="balanceChange">
-            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-            +2.4% this month
-          </div>
+          <div class="stat-change" id="balanceChange" style="color:var(--slate-500);">—</div>
         </div>
         <div class="stat-card">
           <div class="stat-icon green">
@@ -154,10 +151,7 @@
           </div>
           <div class="stat-value" id="portfolioValue">$0.00</div>
           <div class="stat-label">Portfolio Value</div>
-          <div class="stat-change up" id="portfolioChange">
-            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-            +3.2% this month
-          </div>
+          <div class="stat-change" id="portfolioChange" style="color:var(--slate-500);">—</div>
         </div>
         <div class="stat-card">
           <div class="stat-icon blue">
@@ -165,7 +159,7 @@
           </div>
           <div class="stat-value" id="creditAvailable">$0.00</div>
           <div class="stat-label">Available Credit</div>
-          <div class="stat-change" style="color:var(--slate-500);">Cards ending in •7842</div>
+          <div class="stat-change" id="creditCardHint" style="color:var(--slate-500);">—</div>
         </div>
         <div class="stat-card">
           <div class="stat-icon gold">
@@ -173,10 +167,7 @@
           </div>
           <div class="stat-value" id="rewardPoints">0</div>
           <div class="stat-label">Reward Points</div>
-          <div class="stat-change up">
-            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-            +840 this month
-          </div>
+          <div class="stat-change" id="rewardChange" style="color:var(--slate-500);">—</div>
         </div>
       </div>
 
@@ -238,7 +229,7 @@
                     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
                   </div>
                   <div>
-                    <div style="font-size:.85rem;font-weight:500;">Checking ••••4821</div>
+                    <div style="font-size:.85rem;font-weight:500;" id="dashCheckingLabel">Checking</div>
                     <div style="font-size:.72rem;color:var(--slate-500);">ZenithOne Private</div>
                   </div>
                 </div>
@@ -253,7 +244,7 @@
                     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                   </div>
                   <div>
-                    <div style="font-size:.85rem;font-weight:500;">High-Yield Savings ••••9103</div>
+                    <div style="font-size:.85rem;font-weight:500;" id="dashSavingsLabel">High-Yield Savings</div>
                     <div style="font-size:.72rem;color:var(--slate-500);">4.85% APY</div>
                   </div>
                 </div>
@@ -304,7 +295,7 @@
               <svg width="32" height="24" viewBox="0 0 36 28"><rect width="36" height="28" rx="4" fill="url(#chip2)"/><defs><linearGradient id="chip2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8c96b"/><stop offset="100%" stop-color="#c9a84c"/></linearGradient></defs><rect x="2" y="8" width="32" height="12" rx="1" fill="rgba(255,255,255,.15)"/></svg>
               <span style="font-family:var(--font-display);font-size:.85rem;color:rgba(255,255,255,.4);">ZENITHONE BLACK</span>
             </div>
-            <div style="font-size:.9rem;letter-spacing:.18em;color:rgba(255,255,255,.7);margin-bottom:16px;font-family:'Courier New',monospace;">•••• •••• •••• 7842</div>
+            <div style="font-size:.9rem;letter-spacing:.18em;color:rgba(255,255,255,.7);margin-bottom:16px;font-family:'Courier New',monospace;" id="dashCardNumber">•••• •••• •••• ••••</div>
             <div style="display:flex;justify-content:space-between;align-items:flex-end;">
               <div>
                 <div style="font-size:.65rem;color:rgba(255,255,255,.4);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Cardholder</div>

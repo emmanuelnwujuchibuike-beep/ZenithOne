@@ -86,27 +86,27 @@
       <div class="grid-4" style="gap:20px;margin-bottom:28px;">
         <div class="stat-card">
           <div class="stat-icon gold"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-          <div class="stat-value">$1,842,694</div>
+          <div class="stat-value" id="invTotalValue">$0.00</div>
           <div class="stat-label">Total Portfolio Value</div>
-          <div class="stat-change up"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>+$57,420 (3.22%) MTD</div>
+          <div class="stat-change" id="invDailyChange" style="color:var(--slate-500);">—</div>
         </div>
         <div class="stat-card">
           <div class="stat-icon green"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-          <div class="stat-value" style="color:var(--green-400);">+$284,192</div>
+          <div class="stat-value" id="invGainLoss" style="color:var(--slate-400);">$0.00</div>
           <div class="stat-label">Total Gain/Loss</div>
-          <div class="stat-change up">+18.24% all-time return</div>
+          <div class="stat-change" id="invGainLossPct" style="color:var(--slate-500);">—</div>
         </div>
         <div class="stat-card">
           <div class="stat-icon blue"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
-          <div class="stat-value">$4,820</div>
+          <div class="stat-value" id="invDividends">$0.00</div>
           <div class="stat-label">Dividends (YTD)</div>
-          <div class="stat-change up">Next dividend: Jul 15</div>
+          <div class="stat-change" style="color:var(--slate-500);">—</div>
         </div>
         <div class="stat-card">
           <div class="stat-icon gold"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
-          <div class="stat-value">7.4%</div>
-          <div class="stat-label">Beta (Portfolio)</div>
-          <div class="stat-change" style="color:var(--slate-500);">Moderately aggressive</div>
+          <div class="stat-value" id="invHoldings">0</div>
+          <div class="stat-label">Holdings</div>
+          <div class="stat-change" style="color:var(--slate-500);">—</div>
         </div>
       </div>
 
@@ -130,12 +130,8 @@
         <div class="card card-elevated">
           <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:20px;">Asset Allocation</div>
           <canvas id="allocationChart" width="200" height="200" style="display:block;margin:0 auto 20px;"></canvas>
-          <div>
-            <div class="pie-slice"><div class="pie-dot" style="background:#c9a84c;"></div><span style="flex:1;color:var(--slate-300);">Equities</span><span style="font-weight:500;">52%</span></div>
-            <div class="pie-slice"><div class="pie-dot" style="background:#60a5fa;"></div><span style="flex:1;color:var(--slate-300);">Fixed Income</span><span style="font-weight:500;">24%</span></div>
-            <div class="pie-slice"><div class="pie-dot" style="background:#a78bfa;"></div><span style="flex:1;color:var(--slate-300);">Alternatives</span><span style="font-weight:500;">14%</span></div>
-            <div class="pie-slice"><div class="pie-dot" style="background:#4ade80;"></div><span style="flex:1;color:var(--slate-300);">Real Estate</span><span style="font-weight:500;">7%</span></div>
-            <div class="pie-slice"><div class="pie-dot" style="background:#f87171;"></div><span style="flex:1;color:var(--slate-300);">Cash</span><span style="font-weight:500;">3%</span></div>
+          <div id="allocationList">
+            <div style="color:var(--slate-500);font-size:.85rem;text-align:center;padding:8px 0;">No holdings yet.</div>
           </div>
         </div>
       </div>
@@ -182,6 +178,17 @@ async function loadInvestmentsData() {
   try {
     const result = await callEdgeFunction('investment-data', {});
     if (!result) return;
+
+    const fmt = n => '$' + (n || 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
+    const gl  = result.total_gain_loss || 0;
+    const glPct = result.gain_loss_pct || 0;
+    document.getElementById('invTotalValue').textContent  = fmt(result.total_value);
+    document.getElementById('invGainLoss').textContent    = (gl >= 0 ? '+' : '') + fmt(Math.abs(gl));
+    document.getElementById('invGainLoss').style.color    = gl >= 0 ? 'var(--green-400)' : 'var(--red-400)';
+    document.getElementById('invGainLossPct').textContent = (glPct >= 0 ? '+' : '') + glPct.toFixed(2) + '% all-time';
+    document.getElementById('invDividends').textContent   = fmt(result.dividends_ytd);
+    document.getElementById('invHoldings').textContent    = (result.holding_count || 0).toString();
+
     const holdings = result.holdings || [];
     if (holdings.length === 0) {
       document.getElementById('holdingsTable').innerHTML =
@@ -224,8 +231,8 @@ window.addEventListener('load', loadInvestmentsData);
   const W = canvas.width, H = canvas.height;
   const pad = { top:16, right:16, bottom:30, left:50 };
 
-  const portfolioData = [1620,1645,1688,1702,1698,1712,1740,1756,1744,1762,1790,1842];
-  const sp500Data     = [1600,1618,1640,1655,1648,1660,1675,1688,1680,1695,1710,1725];
+  const portfolioData = Array(12).fill(0);
+  const sp500Data     = Array(12).fill(0);
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
   function drawLine(data, color, dashed=false) {
@@ -273,8 +280,8 @@ window.addEventListener('load', loadInvestmentsData);
     angle+=sweep;
   });
   ctx.beginPath(); ctx.arc(cx,cy,inner,0,Math.PI*2); ctx.fillStyle='#0d1e35'; ctx.fill();
-  ctx.fillStyle='#fff'; ctx.font='bold 18px Cormorant Garamond'; ctx.textAlign='center'; ctx.fillText('$1.84M',cx,cy-4);
-  ctx.fillStyle='#94a3b8'; ctx.font='10px Inter'; ctx.fillText('Portfolio',cx,cy+12);
+  ctx.fillStyle='#94a3b8'; ctx.font='bold 14px Inter'; ctx.textAlign='center'; ctx.fillText('No data',cx,cy-2);
+  ctx.fillStyle='#475569'; ctx.font='10px Inter'; ctx.fillText('yet',cx,cy+12);
 })();
 
 function openTradeModal() { alert('Trading — connect to your Supabase investment edge function to enable live trading.'); }

@@ -67,6 +67,20 @@ ul, ol { list-style: none; }
 button { cursor: pointer; font-family: inherit; border: none; background: none; }
 input, textarea, select { font-family: inherit; }
 
+/* ── Global select option theming (Chrome/Firefox/Edge — prevents white dropdown) ── */
+select option,
+select optgroup {
+  background-color: #07111e;
+  color: #cbd5e1;
+}
+select option:checked {
+  background-color: #142035;
+  color: #c9a84c;
+}
+select option:disabled {
+  color: rgba(148,163,184,.4);
+}
+
 /* ── Typography ── */
 .display-xl { font-family: var(--font-display); font-size: clamp(3rem, 7vw, 6rem); font-weight: 400; line-height: 1.08; letter-spacing: -.02em; }
 .display-lg { font-family: var(--font-display); font-size: clamp(2.2rem, 5vw, 4.2rem); font-weight: 400; line-height: 1.1; letter-spacing: -.02em; }
@@ -286,10 +300,21 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); font-weight: 400; lin
 .form-input.error { border-color: var(--red-400); }
 .form-select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  -webkit-appearance: none;
+  cursor: pointer;
+  /* Gold chevron arrow */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c9a84c' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
+  background-size: 12px 8px;
   padding-right: 40px;
+}
+.form-select:hover:not(:disabled) {
+  border-color: rgba(201,168,76,.35);
+  background-color: rgba(201,168,76,.04);
+}
+.form-select:focus {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 7l5-5 5 5' stroke='%23c9a84c' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 .form-error { font-size: .8rem; color: var(--red-400); margin-top: 4px; }
 .form-hint  { font-size: .8rem; color: var(--slate-500); margin-top: 4px; }

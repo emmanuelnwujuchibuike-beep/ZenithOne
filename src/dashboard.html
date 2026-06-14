@@ -122,8 +122,10 @@
     .zsheet-sub { font-size:.8rem; color:var(--slate-400); margin-top:4px; }
     .zsheet-body { padding:20px 26px 26px; }
     .zfield-label { font-size:.72rem; letter-spacing:.04em; color:var(--slate-400); margin:14px 0 7px; text-transform:uppercase; }
-    .zinput { width:100%; padding:12px 14px; border-radius:11px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:#fff; font-size:.95rem; outline:none; transition:border-color .15s; }
-    .zinput:focus { border-color:rgba(201,168,76,.5); }
+    .zinput { width:100%; padding:12px 14px; border-radius:11px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:#fff; font-size:.95rem; outline:none; transition:border-color .15s,background .15s; }
+    .zinput:focus { border-color:rgba(201,168,76,.5); background:rgba(201,168,76,.04); }
+    select.zinput { appearance:none; -webkit-appearance:none; cursor:pointer; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c9a84c' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; background-size:12px 8px; padding-right:40px; }
+    select.zinput:hover:not(:disabled) { border-color:rgba(201,168,76,.35); background-color:rgba(201,168,76,.04); }
     .zinput.mono { font-family:'Courier New',monospace; letter-spacing:.14em; }
     .zbtn-primary { width:100%; padding:14px; border-radius:12px; border:none; cursor:pointer; font-size:.9rem; font-weight:700; letter-spacing:.03em; background:linear-gradient(135deg,#c9a84c,#b8960a); color:#06101f; transition:all .18s; margin-top:20px; }
     .zbtn-primary:hover:not(:disabled) { filter:brightness(1.08); }
@@ -686,7 +688,7 @@
         </div>
         <div>
           <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Score Provider</div>
-          <select id="aCreditProvider" style="width:100%;background:rgba(20,30,50,.9);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;">
+          <select id="aCreditProvider" class="form-input form-select" style="font-size:.85rem;padding:9px 12px;">
             <option value="FICO">FICO</option>
             <option value="VantageScore">VantageScore</option>
             <option value="Equifax">Equifax</option>
@@ -761,7 +763,7 @@
         <div class="admin-two-col" style="gap:10px;margin-bottom:8px;">
           <div>
             <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Loan Type</div>
-            <select id="aLoanType" style="width:100%;background:rgba(20,30,50,.9);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;">
+            <select id="aLoanType" class="form-input form-select" style="font-size:.85rem;padding:9px 12px;">
               <option value="personal">Personal</option>
               <option value="auto">Auto</option>
               <option value="mortgage">Mortgage</option>
@@ -833,7 +835,7 @@
           </div>
           <div>
             <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Status</div>
-            <select id="aLoanStatus" style="width:100%;background:rgba(20,30,50,.9);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;">
+            <select id="aLoanStatus" class="form-input form-select" style="font-size:.85rem;padding:9px 12px;">
               <option value="active">Active</option>
               <option value="paid_off">Paid Off</option>
               <option value="delinquent">Delinquent</option>
@@ -1076,7 +1078,7 @@
         <input id="aInvName"    placeholder="Name (optional)" maxlength="60" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;box-sizing:border-box;" />
       </div>
       <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
-        <select id="aInvType" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 10px;color:#fff;font-size:.82rem;outline:none;box-sizing:border-box;">
+        <select id="aInvType" class="form-input form-select" style="font-size:.82rem;padding:9px 10px;box-sizing:border-box;">
           <option value="stock">Stock</option><option value="etf">ETF</option><option value="bond">Bond</option>
           <option value="mutual_fund">Mutual Fund</option><option value="crypto">Crypto</option><option value="reit">REIT</option>
           <option value="cash">Cash</option><option value="other">Other</option>

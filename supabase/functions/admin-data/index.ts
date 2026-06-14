@@ -296,6 +296,390 @@ Deno.serve(async (req: Request): Promise<Response> => {
       return json({ applications: data ?? [] });
     }
 
+    // ── USER ACTION: close (delete) an account ──────────────────────────────────
+    if (action === 'delete_account') {
+      const { account_id } = body as { action: string; account_id: string };
+      if (!account_id) throw new Error('account_id is required.');
+
+      // Fetch account (must belong to caller)
+      const { data: acct, error: acctErr } = await supabase
+        .from('accounts').select('*').eq('id', account_id).eq('user_id', user.id).single();
+      if (acctErr || !acct) throw new Error('Account not found.');
+
+      // Block savings accounts
+      if (acct.account_type === 'savings')
+        throw new Error('Savings accounts cannot be closed. Please contact support if you need assistance.');
+
+      // Block if balance > $0.01
+      if ((acct.balance ?? 0) > 0.01)
+        throw new Error(`Please transfer your remaining balance of $${Number(acct.balance).toFixed(2)} before closing this account.`);
+
+      // Rate limit: 1 closure per 30 days
+      const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+      const { data: recent } = await supabase
+        .from('accounts').select('closed_at').eq('user_id', user.id)
+        .eq('status', 'closed').gte('closed_at', cutoff).limit(1);
+      if (recent?.length) {
+        const next = new Date(new Date(recent[0].closed_at).getTime() + 30 * 24 * 60 * 60 * 1000);
+        const fmt  = next.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        throw new Error(`You may only close one account every 30 days. Your next closure window opens on ${fmt}.`);
+      }
+
+      // Soft-close
+      const closedAt = new Date().toISOString();
+      const { error: closeErr } = await supabase
+        .from('accounts').update({ status: 'closed', closed_at: closedAt }).eq('id', account_id);
+      if (closeErr) throw closeErr;
+
+      // Fetch caller profile + email for emails
+      const { data: profile } = await supabase
+        .from('profiles').select('full_name').eq('id', user.id).single();
+      const { data: authData } = await supabase.auth.admin.getUserById(user.id);
+      const userEmail  = authData?.user?.email ?? '';
+      const userName   = (profile?.full_name as string) || userEmail.split('@')[0] || 'Member';
+      const typeLabel  = { checking:'Checking', money_market:'Money Market', investment:'Investment',
+                           cd:'Certificate of Deposit', business:'Business', savings:'Savings' }[acct.account_type as string] ?? acct.account_type;
+      const last4      = String(acct.account_number ?? '').slice(-4);
+      const closedFmt  = new Date(closedAt).toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+      const closedTime = new Date(closedAt).toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', timeZoneName:'short' });
+      const yr         = new Date().getFullYear();
+      const first      = userName.split(' ')[0];
+
+      // ── USER EMAIL — ultra-premium dark luxury ────────────────────────────────
+      const userHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="color-scheme" content="dark"/>
+<title>Account Closed — ZenithOne</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap');
+@keyframes shimmerSweep{0%{background-position:-600px 0}100%{background-position:600px 0}}
+</style>
+</head>
+<body style="margin:0;padding:0;background:#030b16;font-family:'Inter','Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(180deg,#030b16 0%,#05101f 50%,#030b16 100%);min-height:100vh;padding:48px 16px;">
+<tr><td align="center">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+  <!-- Gold accent top bar -->
+  <tr><td style="padding-bottom:0;">
+    <div style="height:2px;background:linear-gradient(90deg,transparent 0%,#7b5c0a 5%,#c9a84c 35%,#e8d07a 50%,#c9a84c 65%,#7b5c0a 95%,transparent 100%);border-radius:2px;margin-bottom:0;"></div>
+  </td></tr>
+
+  <!-- Header card -->
+  <tr><td>
+    <div style="background:linear-gradient(145deg,#0d1828 0%,#071020 100%);border:1px solid rgba(201,168,76,.18);border-top:none;border-radius:0 0 0 0;padding:36px 40px 28px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>
+            <div style="font-size:9px;letter-spacing:5px;color:rgba(201,168,76,.55);text-transform:uppercase;margin-bottom:8px;font-family:'Inter',Arial,sans-serif;">ZenithOne Credit Union</div>
+            <div style="width:40px;height:1px;background:linear-gradient(90deg,#c9a84c,transparent);margin-bottom:20px;"></div>
+            <div style="font-family:'Cormorant Garamond','Georgia',serif;font-size:36px;font-weight:300;color:#ffffff;line-height:1.1;letter-spacing:-.01em;margin-bottom:6px;">Account<br/><em style="font-style:italic;color:rgba(255,255,255,.65);">Closed</em></div>
+          </td>
+          <td style="text-align:right;vertical-align:top;padding-top:4px;">
+            <div style="display:inline-block;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:8px;padding:8px 14px;">
+              <div style="font-size:9px;letter-spacing:3px;color:rgba(248,113,113,.7);text-transform:uppercase;margin-bottom:2px;">Status</div>
+              <div style="font-size:13px;font-weight:600;color:#fca5a5;letter-spacing:.04em;">CLOSED</div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </td></tr>
+
+  <!-- Divider -->
+  <tr><td style="padding:0;">
+    <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.2),transparent);"></div>
+  </td></tr>
+
+  <!-- Body -->
+  <tr><td>
+    <div style="background:linear-gradient(180deg,#07111e 0%,#060e1a 100%);border:1px solid rgba(255,255,255,.06);border-top:none;border-bottom:none;padding:32px 40px;">
+
+      <p style="font-size:15px;color:rgba(255,255,255,.7);line-height:1.75;margin:0 0 28px;font-weight:300;">
+        Dear ${first},<br/><br/>
+        We're writing to confirm that your ZenithOne account has been <strong style="color:rgba(255,255,255,.9);font-weight:500;">successfully closed</strong> as requested. All associated services have been deactivated effective immediately.
+      </p>
+
+      <!-- Account detail card -->
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px 28px;margin-bottom:28px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.25),transparent);"></div>
+        <div style="font-size:9px;letter-spacing:4px;color:rgba(201,168,76,.5);text-transform:uppercase;margin-bottom:16px;">Account Summary</div>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="padding-bottom:14px;">
+              <div style="font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Account Type</div>
+              <div style="font-size:15px;color:rgba(255,255,255,.88);font-weight:400;">${typeLabel} Account</div>
+            </td>
+            <td style="padding-bottom:14px;text-align:right;">
+              <div style="font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Account Number</div>
+              <div style="font-size:15px;color:rgba(255,255,255,.88);font-family:'Courier New',monospace;letter-spacing:.1em;">•••• •••• ${last4}</div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="border-top:1px solid rgba(255,255,255,.06);padding-top:14px;">
+              <div style="font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Closure Date &amp; Time</div>
+              <div style="font-size:14px;color:rgba(255,255,255,.75);">${closedFmt} &nbsp;·&nbsp; ${closedTime}</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- What's next -->
+      <div style="margin-bottom:28px;">
+        <div style="font-size:9px;letter-spacing:4px;color:rgba(201,168,76,.5);text-transform:uppercase;margin-bottom:14px;">What Happens Next</div>
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+          <tr>
+            <td style="vertical-align:top;padding-right:14px;padding-bottom:12px;width:28px;">
+              <div style="width:24px;height:24px;border-radius:7px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;text-align:center;line-height:24px;font-size:11px;color:#c9a84c;font-weight:600;">1</div>
+            </td>
+            <td style="vertical-align:top;padding-bottom:12px;">
+              <div style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.6;">All pending transactions will be processed within <strong style="color:rgba(255,255,255,.88);">3–5 business days</strong>.</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align:top;padding-right:14px;padding-bottom:12px;width:28px;">
+              <div style="width:24px;height:24px;border-radius:7px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;text-align:center;line-height:24px;font-size:11px;color:#c9a84c;font-weight:600;">2</div>
+            </td>
+            <td style="vertical-align:top;padding-bottom:12px;">
+              <div style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.6;">Your account statements remain accessible through the <strong style="color:rgba(255,255,255,.88);">ZenithOne portal</strong> for 7 years.</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align:top;padding-right:14px;width:28px;">
+              <div style="width:24px;height:24px;border-radius:7px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;text-align:center;line-height:24px;font-size:11px;color:#c9a84c;font-weight:600;">3</div>
+            </td>
+            <td style="vertical-align:top;">
+              <div style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.6;">You may open a new account at any time. We'd be honoured to continue serving you.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- CTA -->
+      <div style="text-align:center;margin-bottom:8px;">
+        <a href="https://zenithonecreditunion.com" style="display:inline-block;background:linear-gradient(135deg,#b8860b,#c9a84c,#e8c96a);color:#050d0a;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:14px 32px;border-radius:10px;text-decoration:none;">Visit Member Portal</a>
+      </div>
+
+    </div>
+  </td></tr>
+
+  <!-- Footer -->
+  <tr><td>
+    <div style="background:#020810;border:1px solid rgba(255,255,255,.05);border-top:none;border-radius:0 0 14px 14px;padding:24px 40px;text-align:center;">
+      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);margin-bottom:20px;"></div>
+      <div style="font-size:10px;letter-spacing:3px;color:rgba(201,168,76,.3);text-transform:uppercase;margin-bottom:10px;">ZenithOne Credit Union</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.2);line-height:1.8;">388 Madison Avenue · New York, NY 10017<br/>Member NCUA · FDIC Insured up to $250,000</div>
+      <div style="font-size:10px;color:rgba(255,255,255,.15);margin-top:12px;line-height:1.7;">© ${yr} ZenithOne Credit Union. All rights reserved.<br/>This is an automated notification. Please do not reply to this email.</div>
+    </div>
+  </td></tr>
+
+  <!-- Bottom gold line -->
+  <tr><td style="padding-top:0;">
+    <div style="height:1px;background:linear-gradient(90deg,transparent 0%,#7b5c0a 5%,#c9a84c 35%,#7b5c0a 95%,transparent 100%);margin-top:0;"></div>
+  </td></tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+
+      // ── ADMIN EMAIL — auto light / dark mode ──────────────────────────────────
+      const adminHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="color-scheme" content="light dark"/>
+<meta name="supported-color-schemes" content="light dark"/>
+<title>Account Closure Alert — ZenithOne Admin</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Inter:wght@300;400;500;600&display=swap');
+
+/* ── Light mode (default) ── */
+:root { color-scheme: light dark; }
+body { background:#f4f0eb; margin:0; padding:0; font-family:'Inter','Helvetica Neue',Arial,sans-serif; }
+.em-shell   { background:#f4f0eb; }
+.em-card    { background:#ffffff; border:1px solid rgba(0,0,0,.09); }
+.em-accent  { background:linear-gradient(135deg,#f8f4ee,#ede8e1); border:1px solid rgba(180,145,60,.25); }
+.em-title   { color:#0a1628; }
+.em-label   { color:#64748b; }
+.em-value   { color:#0a1628; }
+.em-body    { color:#334155; }
+.em-footer  { background:#ede8e1; border:1px solid rgba(0,0,0,.07); }
+.em-foot-t  { color:#94a3b8; }
+.em-divider { background:rgba(0,0,0,.07); }
+.em-chip    { background:rgba(239,68,68,.09); border:1px solid rgba(239,68,68,.25); color:#dc2626; }
+.em-num     { color:#475569; }
+
+/* ── Dark mode ── */
+@media (prefers-color-scheme: dark) {
+  body        { background:#030b16 !important; }
+  .em-shell   { background:#030b16 !important; }
+  .em-card    { background:#07111e !important; border-color:rgba(255,255,255,.08) !important; }
+  .em-accent  { background:linear-gradient(135deg,#0d1828,#071020) !important; border-color:rgba(201,168,76,.2) !important; }
+  .em-title   { color:#f1f5f9 !important; }
+  .em-label   { color:rgba(255,255,255,.35) !important; }
+  .em-value   { color:rgba(255,255,255,.88) !important; }
+  .em-body    { color:rgba(255,255,255,.6) !important; }
+  .em-footer  { background:#020810 !important; border-color:rgba(255,255,255,.05) !important; }
+  .em-foot-t  { color:rgba(255,255,255,.2) !important; }
+  .em-divider { background:rgba(255,255,255,.07) !important; }
+  .em-chip    { background:rgba(248,113,113,.1) !important; border-color:rgba(248,113,113,.3) !important; color:#fca5a5 !important; }
+  .em-num     { color:rgba(255,255,255,.75) !important; font-family:'Courier New',monospace !important; }
+}
+</style>
+</head>
+<body>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" class="em-shell" style="padding:48px 16px;">
+<tr><td align="center">
+<table role="presentation" width="620" cellpadding="0" cellspacing="0" style="max-width:620px;width:100%;">
+
+  <!-- Top gold bar -->
+  <tr><td>
+    <div style="height:3px;background:linear-gradient(90deg,transparent 0%,#7b5c0a 5%,#c9a84c 40%,#e8d07a 55%,#c9a84c 70%,#7b5c0a 95%,transparent 100%);border-radius:3px 3px 0 0;"></div>
+  </td></tr>
+
+  <!-- Header -->
+  <tr><td>
+    <div class="em-card" style="padding:32px 40px 24px;border-top:none;border-radius:0;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td>
+            <div style="font-size:9px;letter-spacing:5px;color:rgba(201,168,76,.65);text-transform:uppercase;margin-bottom:6px;font-family:'Inter',Arial,sans-serif;">ZenithOne Credit Union · Admin Alert</div>
+            <div class="em-title" style="font-family:'Cormorant Garamond','Georgia',serif;font-size:32px;font-weight:300;line-height:1.1;letter-spacing:-.01em;">Member Account<br/><em style="font-style:italic;">Closure Notification</em></div>
+          </td>
+          <td style="text-align:right;vertical-align:top;padding-top:4px;">
+            <div class="em-chip" style="display:inline-block;border-radius:8px;padding:8px 14px;">
+              <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;margin-bottom:3px;opacity:.75;">Action Required</div>
+              <div style="font-size:13px;font-weight:700;letter-spacing:.05em;">REVIEW</div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </td></tr>
+
+  <!-- Divider -->
+  <tr><td><div class="em-divider" style="height:1px;"></div></td></tr>
+
+  <!-- Member details -->
+  <tr><td>
+    <div class="em-card" style="padding:28px 40px;border-top:none;border-bottom:none;border-radius:0;">
+      <div style="font-size:9px;letter-spacing:4px;color:rgba(201,168,76,.6);text-transform:uppercase;margin-bottom:18px;">Member Information</div>
+
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding-bottom:16px;width:50%;">
+            <div class="em-label" style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Full Name</div>
+            <div class="em-value" style="font-size:15px;font-weight:500;">${userName}</div>
+          </td>
+          <td style="padding-bottom:16px;">
+            <div class="em-label" style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Email Address</div>
+            <div class="em-value" style="font-size:15px;">${userEmail}</div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2"><div class="em-divider" style="height:1px;margin-bottom:16px;"></div></td>
+        </tr>
+        <tr>
+          <td style="padding-bottom:16px;width:50%;">
+            <div class="em-label" style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Account Type</div>
+            <div class="em-value" style="font-size:15px;font-weight:500;">${typeLabel}</div>
+          </td>
+          <td style="padding-bottom:16px;">
+            <div class="em-label" style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Account Number</div>
+            <div class="em-num" style="font-size:15px;font-family:'Courier New',monospace;letter-spacing:.1em;">•••• •••• ${last4}</div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div class="em-label" style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">Closure Timestamp</div>
+            <div class="em-value" style="font-size:14px;">${closedFmt} &nbsp;·&nbsp; ${closedTime}</div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </td></tr>
+
+  <!-- Info accent box -->
+  <tr><td style="padding:0 0 0 0;">
+    <div class="em-card em-accent" style="margin:0;border-radius:0;padding:20px 40px;border-left:none;border-right:none;">
+      <div class="em-body" style="font-size:13px;line-height:1.7;">
+        <strong style="color:#c9a84c;">Note:</strong> This closure was initiated by the member through the ZenithOne self-service portal. No further action is required unless you wish to follow up with this member. All account data is retained per regulatory requirements.
+      </div>
+    </div>
+  </td></tr>
+
+  <!-- Footer -->
+  <tr><td>
+    <div class="em-footer" style="border-radius:0 0 14px 14px;padding:22px 40px;text-align:center;border-top:none;">
+      <div class="em-foot-t" style="font-size:10px;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;">ZenithOne Credit Union — Administrative System</div>
+      <div class="em-foot-t" style="font-size:11px;line-height:1.7;">388 Madison Avenue · New York, NY 10017<br/>© ${yr} ZenithOne Credit Union. Confidential.</div>
+    </div>
+  </td></tr>
+
+  <!-- Bottom gold bar -->
+  <tr><td>
+    <div style="height:2px;background:linear-gradient(90deg,transparent 0%,#7b5c0a 5%,#c9a84c 40%,#7b5c0a 95%,transparent 100%);border-radius:0 0 3px 3px;"></div>
+  </td></tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+
+      // ── Send emails ──────────────────────────────────────────────────────────
+      const resendKey = Deno.env.get('RESEND_API_KEY');
+      const fromAddr  = 'ZenithOne Credit Union <noreply@zenithonecreditunion.com>';
+      if (resendKey) {
+        const sends: Promise<unknown>[] = [];
+
+        // User email
+        if (userEmail) {
+          sends.push(fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ from: fromAddr, to: [userEmail], subject: `Account Closed — ZenithOne Credit Union`, html: userHtml }),
+          }));
+        }
+
+        // Admin emails
+        const { data: adminProfs } = await supabase.from('profiles').select('id').eq('is_admin', true);
+        if (adminProfs?.length) {
+          const adminIds = new Set(adminProfs.map((p: { id: string }) => p.id));
+          const { data: { users: authAdmins } } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+          const adminEmails = (authAdmins ?? []).filter(u => adminIds.has(u.id)).map(u => u.email).filter(Boolean);
+          if (adminEmails.length) {
+            sends.push(fetch('https://api.resend.com/emails', {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ from: fromAddr, to: adminEmails, subject: `[ZenithOne Admin] Account Closure — ${userName} · ${typeLabel} ••${last4}`, html: adminHtml }),
+            }));
+          }
+        }
+
+        await Promise.allSettled(sends);
+      }
+
+      // Notification in-app
+      try {
+        await supabase.from('notifications').insert({
+          user_id: user.id,
+          title:   'Account Closed',
+          message: `Your ${typeLabel} account ending ${last4} has been successfully closed.`,
+          type:    'warning',
+          read:    false,
+        });
+      } catch { /* non-blocking */ }
+
+      return json({ success: true, message: `Your ${typeLabel} account has been closed.` });
+    }
+
     // ── Admin gate ─────────────────────────────────────────────────────────────
     const { data: callerProfile } = await supabase
       .from('profiles')

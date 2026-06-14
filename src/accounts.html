@@ -193,7 +193,136 @@
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+      align-items: center;
     }
+    /* Close Account button — subtle destructive */
+    .btn-close-acct {
+      margin-left: auto;
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 13px; border-radius: 9px; font-size: .73rem;
+      font-weight: 500; letter-spacing: .04em; text-transform: uppercase;
+      border: 1px solid rgba(248,113,113,.22);
+      background: rgba(248,113,113,.06); color: rgba(248,113,113,.6);
+      cursor: pointer; transition: all .18s;
+    }
+    .btn-close-acct:hover {
+      border-color: rgba(248,113,113,.5);
+      background: rgba(248,113,113,.12); color: #f87171;
+      box-shadow: 0 0 0 1px rgba(248,113,113,.12);
+    }
+
+    /* ── Close Account — 2-step modal ── */
+    .za-overlay {
+      position: fixed; inset: 0; z-index: 1300;
+      background: rgba(2,5,14,.75); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px; opacity: 0; pointer-events: none;
+      transition: opacity .25s ease;
+    }
+    .za-overlay.open { opacity: 1; pointer-events: auto; }
+    .za-modal {
+      width: 500px; max-width: 100%;
+      background: linear-gradient(160deg,#0a1628 0%,#070f1d 100%);
+      border: 1px solid rgba(255,255,255,.1); border-radius: 22px;
+      position: relative; overflow: hidden;
+      transform: scale(.95) translateY(12px);
+      transition: transform .28s cubic-bezier(.34,1.2,.64,1);
+      box-shadow: 0 40px 120px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.04) inset;
+    }
+    .za-overlay.open .za-modal { transform: scale(1) translateY(0); }
+    /* Top shimmer line */
+    .za-modal::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:1px; z-index:1;
+      background: linear-gradient(90deg, transparent, rgba(248,113,113,.6) 40%, rgba(201,168,76,.3) 100%);
+    }
+    .za-head { padding: 28px 32px 20px; }
+    .za-steps {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 20px;
+    }
+    .za-step {
+      width: 28px; height: 4px; border-radius: 2px;
+      background: rgba(255,255,255,.1); transition: background .25s;
+    }
+    .za-step.done { background: rgba(248,113,113,.6); }
+    .za-step.active { background: #f87171; box-shadow: 0 0 8px rgba(248,113,113,.5); }
+    .za-eyebrow {
+      font-size: .6rem; letter-spacing: .25em; text-transform: uppercase;
+      color: rgba(248,113,113,.55); margin-bottom: 8px;
+    }
+    .za-title {
+      font-family: 'Cormorant Garamond','Georgia',serif;
+      font-size: 1.65rem; font-weight: 300; color: #fff; line-height: 1.1; margin-bottom: 4px;
+    }
+    .za-sub { font-size: .8rem; color: rgba(255,255,255,.35); line-height: 1.5; }
+    .za-body { padding: 0 32px 28px; }
+    .za-acct-pill {
+      display: flex; align-items: center; gap: 14px; padding: 16px 18px;
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px; margin-bottom: 20px;
+    }
+    .za-acct-icon {
+      width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .za-warn-list {
+      display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px;
+    }
+    .za-warn-item {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 12px 14px; border-radius: 11px;
+      border: 1px solid rgba(248,113,113,.15); background: rgba(248,113,113,.05);
+      font-size: .8rem; color: rgba(255,255,255,.6); line-height: 1.5;
+    }
+    .za-warn-icon { flex-shrink: 0; color: #f87171; margin-top: 1px; }
+    .za-confirm-label {
+      font-size: .72rem; letter-spacing: .08em; text-transform: uppercase;
+      color: rgba(255,255,255,.4); margin-bottom: 8px;
+    }
+    .za-confirm-input {
+      width: 100%; padding: 13px 16px; border-radius: 12px; box-sizing: border-box;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(248,113,113,.2);
+      color: #fff; font-size: 1rem; font-family: 'Courier New',monospace;
+      letter-spacing: .15em; outline: none; transition: border-color .18s, box-shadow .18s;
+    }
+    .za-confirm-input:focus {
+      border-color: rgba(248,113,113,.5);
+      box-shadow: 0 0 0 3px rgba(248,113,113,.12);
+    }
+    .za-confirm-input.valid {
+      border-color: rgba(74,222,128,.45);
+      box-shadow: 0 0 0 3px rgba(74,222,128,.1);
+    }
+    .za-foot {
+      padding: 16px 32px 24px;
+      display: flex; align-items: center; gap: 10px;
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .za-btn-cancel {
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09);
+      color: rgba(255,255,255,.5); padding: 11px 20px; border-radius: 11px;
+      font-size: .82rem; cursor: pointer; transition: all .16s;
+    }
+    .za-btn-cancel:hover { background: rgba(255,255,255,.09); color: rgba(255,255,255,.8); }
+    .za-btn-next {
+      flex: 1; padding: 13px 20px; border-radius: 11px; border: none;
+      background: rgba(248,113,113,.18); border: 1px solid rgba(248,113,113,.35);
+      color: #fca5a5; font-size: .85rem; font-weight: 600; letter-spacing: .04em;
+      cursor: pointer; transition: all .18s; display: flex; align-items: center;
+      justify-content: center; gap: 8px;
+    }
+    .za-btn-next:hover:not(:disabled) {
+      background: rgba(248,113,113,.28); box-shadow: 0 0 20px rgba(248,113,113,.2);
+    }
+    .za-btn-next:disabled { opacity: .38; cursor: not-allowed; }
+    .za-btn-final {
+      flex: 1; padding: 13px 20px; border-radius: 11px; border: none;
+      background: linear-gradient(135deg,#991b1b,#dc2626); color: #fff;
+      font-size: .85rem; font-weight: 700; letter-spacing: .04em;
+      cursor: pointer; transition: all .18s; display: flex; align-items: center;
+      justify-content: center; gap: 8px;
+    }
+    .za-btn-final:hover:not(:disabled) { filter: brightness(1.1); box-shadow: 0 6px 20px rgba(220,38,38,.35); }
+    .za-btn-final:disabled { opacity: .35; cursor: not-allowed; }
 
     /* ── Pending requests section ── */
     .pending-section {
@@ -348,7 +477,11 @@
     @media (max-width: 640px) {
       .modal-overlay.open { align-items: flex-end !important; padding: 0 !important; }
       .modal-overlay.open .modal { border-radius: 24px 24px 0 0 !important; max-height: 92dvh !important; width: 100% !important; max-width: 100vw !important; }
+      .za-overlay { align-items: flex-end; }
+      .za-modal { border-radius: 22px 22px 0 0; max-height: 93dvh; overflow-y: auto; }
+      .za-head, .za-body, .za-foot { padding-left: 22px; padding-right: 22px; }
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -593,6 +726,74 @@
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     Close Account — 2-Step Confirmation Modal
+═══════════════════════════════════════════════════════════════════════════ -->
+<div class="za-overlay" id="zaOverlay">
+  <div class="za-modal">
+    <div class="za-head">
+      <div class="za-steps">
+        <div class="za-step active" id="zaS1"></div>
+        <div class="za-step" id="zaS2"></div>
+      </div>
+      <div class="za-eyebrow" id="zaEyebrow">Step 1 of 2 — Review</div>
+      <div class="za-title" id="zaTitle">Close Account?</div>
+      <div class="za-sub" id="zaSub">Please review the information below before proceeding.</div>
+    </div>
+
+    <!-- Step 1 body -->
+    <div class="za-body" id="zaBody1">
+      <div class="za-acct-pill">
+        <div class="za-acct-icon" id="zaAcctIcon">🏦</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:#fff;margin-bottom:2px;" id="zaAcctName">Account</div>
+          <div style="font-size:.77rem;color:rgba(255,255,255,.38);letter-spacing:.04em;" id="zaAcctMeta">•••• 0000</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:.62rem;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;">Balance</div>
+          <div style="font-size:1.05rem;color:#fff;font-weight:500;" id="zaBalance">$0.00</div>
+        </div>
+      </div>
+      <div id="zaBalWarn" style="display:none;padding:11px 14px;border-radius:11px;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.25);font-size:.8rem;color:rgba(251,146,60,.9);margin-bottom:14px;line-height:1.5;"></div>
+      <div class="za-warn-list">
+        <div class="za-warn-item">
+          <span class="za-warn-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+          <span>This action is <strong style="color:rgba(255,255,255,.8);">permanent and cannot be undone.</strong> Once closed, this account number is retired.</span>
+        </div>
+        <div class="za-warn-item">
+          <span class="za-warn-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
+          <span>You may only close <strong style="color:rgba(255,255,255,.8);">one account every 30 days.</strong> Savings accounts cannot be closed.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2 body -->
+    <div class="za-body" id="zaBody2" style="display:none;">
+      <div style="padding:16px 18px;border-radius:14px;background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.2);margin-bottom:20px;text-align:center;">
+        <div style="font-size:2rem;margin-bottom:6px;">⚠️</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:#fca5a5;margin-bottom:4px;">Final Warning</div>
+        <div style="font-size:.78rem;color:rgba(255,255,255,.45);line-height:1.6;">This will permanently close your account. All associated data will be retained for 7 years per regulatory requirements.</div>
+      </div>
+      <div class="za-confirm-label">Type the last 4 digits of your account number to confirm</div>
+      <input class="za-confirm-input" id="zaConfirmInput" type="text" maxlength="4" inputmode="numeric" autocomplete="off"
+        placeholder="0000" oninput="zaCheckConfirm()" />
+      <div id="zaConfirmHint" style="font-size:.72rem;color:rgba(248,113,113,.6);margin-top:6px;min-height:18px;"></div>
+    </div>
+
+    <div class="za-foot">
+      <button class="za-btn-cancel" id="zaBtnCancel" onclick="zaCancel()">Cancel</button>
+      <button class="za-btn-next" id="zaBtnNext" onclick="zaNext()">
+        I Understand — Continue
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+      <button class="za-btn-final" id="zaBtnFinal" style="display:none;" onclick="zaConfirmDelete()" disabled>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        Permanently Close Account
+      </button>
+    </div>
+  </div>
+</div>
+
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
 <script>
@@ -800,6 +1001,11 @@ function renderAccounts(accounts) {
           <a href="transactions.html?account=${acc.account_type}" class="btn btn-ghost btn-sm">View Transactions</a>
           <a href="transfer.html" class="btn btn-ghost btn-sm">Transfer Funds</a>
           <button class="btn btn-ghost btn-sm" onclick="showAccountDetails('${acc.id}')">Account Details</button>
+          ${acc.status === 'active' && acc.account_type !== 'savings' ? `
+          <button class="btn-close-acct" onclick="openCloseAccountStep1('${acc.id}','${acc.account_type}','${acc.account_name || m.label}','${last4}',${acc.balance||0})">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            Close Account
+          </button>` : ''}
         </div>
       </div>`;
   }).join('');
@@ -1027,6 +1233,124 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window._supabase) loadAccountsPage();
   else document.addEventListener('supabaseReady', loadAccountsPage, { once: true });
 });
+
+// ── Close Account — 2-Step Flow ───────────────────────────────────────────────
+let _zaId = null, _zaLast4 = null, _zaStep = 1, _zaBalance = 0;
+
+const ACCT_ICONS = {
+  checking:'🏦', savings:'💎', money_market:'📈',
+  investment:'📊', cd:'🔒', business:'🏢',
+};
+
+function openCloseAccountStep1(id, type, name, last4, balance) {
+  _zaId = id; _zaLast4 = last4; _zaStep = 1; _zaBalance = parseFloat(balance) || 0;
+
+  // Populate step 1
+  document.getElementById('zaAcctIcon').textContent = ACCT_ICONS[type] || '🏦';
+  document.getElementById('zaAcctName').textContent = name;
+  document.getElementById('zaAcctMeta').textContent = `${(type||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())} · •••• ${last4}`;
+  document.getElementById('zaBalance').textContent = '$' + _zaBalance.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+  // Balance warning
+  const bWarn = document.getElementById('zaBalWarn');
+  if (_zaBalance > 0.01) {
+    bWarn.style.display = 'block';
+    bWarn.textContent = `⚠ Your account has a balance of $${_zaBalance.toFixed(2)}. Please transfer all funds to another account before closing. You cannot close an account with a positive balance.`;
+    document.getElementById('zaBtnNext').disabled = true;
+    document.getElementById('zaBtnNext').style.opacity = '.38';
+  } else {
+    bWarn.style.display = 'none';
+    document.getElementById('zaBtnNext').disabled = false;
+    document.getElementById('zaBtnNext').style.opacity = '';
+  }
+
+  zaShowStep(1);
+  document.getElementById('zaOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function zaShowStep(n) {
+  _zaStep = n;
+  document.getElementById('zaBody1').style.display = n === 1 ? 'block' : 'none';
+  document.getElementById('zaBody2').style.display = n === 2 ? 'block' : 'none';
+  document.getElementById('zaBtnNext').style.display  = n === 1 ? 'flex' : 'none';
+  document.getElementById('zaBtnFinal').style.display = n === 2 ? 'flex' : 'none';
+
+  document.getElementById('zaS1').className = 'za-step ' + (n >= 1 ? (n > 1 ? 'done' : 'active') : '');
+  document.getElementById('zaS2').className = 'za-step ' + (n >= 2 ? 'active' : '');
+
+  if (n === 1) {
+    document.getElementById('zaEyebrow').textContent = 'Step 1 of 2 — Review';
+    document.getElementById('zaTitle').textContent   = 'Close Account?';
+    document.getElementById('zaSub').textContent     = 'Please review the information below before proceeding.';
+    document.getElementById('zaBtnCancel').textContent = 'Cancel';
+  } else {
+    document.getElementById('zaEyebrow').textContent = 'Step 2 of 2 — Confirm';
+    document.getElementById('zaTitle').textContent   = 'Final Confirmation';
+    document.getElementById('zaSub').textContent     = 'This cannot be reversed. Type your account digits to confirm.';
+    document.getElementById('zaBtnCancel').textContent = '← Go Back';
+    document.getElementById('zaConfirmInput').value = '';
+    document.getElementById('zaConfirmHint').textContent = '';
+    document.getElementById('zaBtnFinal').disabled = true;
+    setTimeout(() => document.getElementById('zaConfirmInput').focus(), 80);
+  }
+}
+
+function zaNext() {
+  if (_zaStep === 1) zaShowStep(2);
+}
+
+function zaCancel() {
+  if (_zaStep === 2) { zaShowStep(1); return; }
+  zaClose();
+}
+
+function zaClose() {
+  document.getElementById('zaOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  _zaId = null; _zaLast4 = null; _zaStep = 1;
+}
+
+function zaCheckConfirm() {
+  const val  = document.getElementById('zaConfirmInput').value.trim();
+  const hint = document.getElementById('zaConfirmHint');
+  const btn  = document.getElementById('zaBtnFinal');
+  const input = document.getElementById('zaConfirmInput');
+  if (val === _zaLast4) {
+    input.classList.add('valid');
+    hint.textContent = '✓ Account digits confirmed';
+    hint.style.color = 'rgba(74,222,128,.7)';
+    btn.disabled = false;
+  } else {
+    input.classList.remove('valid');
+    hint.textContent = val.length === 4 ? `✗ Incorrect. Expected the last 4 digits of your account.` : '';
+    hint.style.color = 'rgba(248,113,113,.6)';
+    btn.disabled = true;
+  }
+}
+
+async function zaConfirmDelete() {
+  const btn = document.getElementById('zaBtnFinal');
+  if (btn.disabled) return;
+  btn.disabled = true;
+  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="animation:spin 1s linear infinite"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg> Closing…`;
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'delete_account', account_id: _zaId });
+    if (!res.success) throw new Error(res.error || 'Failed');
+    zaClose();
+    zenithToast(res.message || 'Account closed.', 'success');
+    await loadAccountsPage();
+  } catch(e) {
+    let msg = 'Could not close account.';
+    try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    zenithToast(msg, 'error');
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg> Permanently Close Account`;
+  }
+}
+
+// Close on overlay click
+document.getElementById('zaOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) zaCancel(); });
 </script>
 <script src="js/notifications.js"></script>
 </body>

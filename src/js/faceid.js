@@ -333,6 +333,10 @@
       if (error || !data?.session) throw new Error('Your secure session expired. Please sign in with your password once.');
 
       localStorage.setItem(LS_TOKEN, data.session.refresh_token); // keep fresh (rotation)
+      // Face ID is device-bound — treat as remember-me for 30 days
+      localStorage.setItem('zo_remember', '1');
+      localStorage.setItem('zo_remember_until', String(Date.now() + 30 * 24 * 60 * 60 * 1000));
+      sessionStorage.removeItem('zo_session_only');
       showResult(true, 'Welcome Back', 'Signing you in…');
       setTimeout(() => { window.location.href = 'dashboard.html'; }, 900);
       return true;

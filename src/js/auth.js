@@ -26,6 +26,18 @@ async function checkAuthGuard() {
   }
 
   if (session) {
+    // Enforce session persistence policy: require active remember-me OR same-tab session flag.
+    // Without one of these, the browser was closed without "Remember me" → force re-login.
+    if (isPrivate) {
+      const rememberUntil = parseInt(localStorage.getItem('zo_remember_until') || '0');
+      const hasRemember   = localStorage.getItem('zo_remember') === '1' && Date.now() < rememberUntil;
+      const hasTabSession = sessionStorage.getItem('zo_session_only') === '1';
+      if (!hasRemember && !hasTabSession) {
+        await sb.auth.signOut({ scope: 'local' });
+        window.location.href = 'login.html';
+        return;
+      }
+    }
     populateUserUI(session.user);
     subscribeToRealtimeUpdates(session.user.id);
     _updatePublicNav(true);
@@ -119,22 +131,10 @@ if (loginForm) {
       return;
     }
 
-    // Set remember-me flag BEFORE signIn so the custom storage routes correctly
     const rememberMe = document.getElementById('rememberMe')?.checked;
-    if (rememberMe) {
-      localStorage.setItem('zo_remember', '1');
-      localStorage.setItem('zo_remember_until', String(Date.now() + 30 * 24 * 60 * 60 * 1000));
-    } else {
-      localStorage.removeItem('zo_remember');
-      localStorage.removeItem('zo_remember_until');
-    }
-
     const { error } = await window._supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      // Clear remember flag if login failed — don't persist a flag with no session
-      localStorage.removeItem('zo_remember');
-      localStorage.removeItem('zo_remember_until');
       const friendly = error.message.toLowerCase().includes('invalid')
         ? 'Incorrect email or password. Please try again.'
         : error.message;
@@ -143,6 +143,16 @@ if (loginForm) {
       spinner.classList.add('hidden');
       btn.disabled = false;
     } else {
+      // Set persistence flags after successful login
+      localStorage.removeItem('zo_remember');
+      localStorage.removeItem('zo_remember_until');
+      sessionStorage.removeItem('zo_session_only');
+      if (rememberMe) {
+        localStorage.setItem('zo_remember', '1');
+        localStorage.setItem('zo_remember_until', String(Date.now() + 30 * 24 * 60 * 60 * 1000));
+      } else {
+        sessionStorage.setItem('zo_session_only', '1');
+      }
       window.location.href = 'dashboard.html';
     }
   });
@@ -237,9 +247,9 @@ async function updatePassword(newPassword) {
 
 // ── Logout ────────────────────────────────────────────────────
 async function logout() {
-  // Clear the remember-me flag so a fresh login chooses its own persistence
   localStorage.removeItem('zo_remember');
   localStorage.removeItem('zo_remember_until');
+  sessionStorage.removeItem('zo_session_only');
   if (window._supabase) {
     // If Face ID is enrolled on this device, sign out locally so the refresh
     // token stays valid for biometric re-entry. Otherwise revoke globally.

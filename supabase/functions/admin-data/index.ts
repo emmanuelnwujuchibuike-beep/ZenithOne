@@ -286,6 +286,15 @@ Deno.serve(async (req: Request): Promise<Response> => {
       return json({ success: true, application: app });
     }
 
+    // ── USER ACTION: fetch own credit profile + loans ─────────────────────────
+    if (action === 'get_my_credit') {
+      const [{ data: cp }, { data: loans }] = await Promise.all([
+        supabase.from('credit_profiles').select('*').eq('user_id', user.id).maybeSingle(),
+        supabase.from('loans').select('*').eq('user_id', user.id).order('created_at', { ascending: false }),
+      ]);
+      return json({ credit_profile: cp ?? null, loans: loans ?? [] });
+    }
+
     // ── USER ACTION: fetch own loan applications ───────────────────────────────
     if (action === 'get_my_loan_applications') {
       const { data, error: selErr } = await supabase

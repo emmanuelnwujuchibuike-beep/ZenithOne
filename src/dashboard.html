@@ -634,8 +634,129 @@
         </div>
       </div>
 
+      <!-- Credit Score & Loans -->
+      <div class="card card-elevated" id="creditLoansSection" style="margin-top:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px;">
+          <div>
+            <div style="font-family:var(--font-display);font-size:1.2rem;">Credit Score &amp; Loans</div>
+            <div style="font-size:.75rem;color:var(--slate-400);margin-top:3px;">FICO® Score · US Standard</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openLoanModal()" id="applyLoanBtn" style="display:none;">Apply for a Loan</button>
+        </div>
+
+        <!-- FICO gauge -->
+        <div id="creditScoreDisplay" style="display:none;">
+          <div style="display:flex;align-items:flex-end;gap:18px;margin-bottom:22px;flex-wrap:wrap;">
+            <div>
+              <div id="ficoScoreNum" style="font-family:var(--font-display);font-size:3.2rem;line-height:1;color:#fff;letter-spacing:-.02em;">—</div>
+              <div id="ficoScoreLabel" style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin-top:6px;font-weight:600;">Loading…</div>
+            </div>
+            <div style="flex:1;min-width:220px;">
+              <div style="display:flex;justify-content:space-between;font-size:.62rem;color:var(--slate-500);margin-bottom:6px;letter-spacing:.04em;">
+                <span>300</span><span>580</span><span>670</span><span>740</span><span>800</span><span>850</span>
+              </div>
+              <!-- Segmented bar -->
+              <div style="display:flex;gap:2px;height:10px;border-radius:6px;overflow:hidden;">
+                <div style="flex:280;background:#ef4444;border-radius:6px 0 0 6px;"></div>
+                <div style="flex:90;background:#f97316;"></div>
+                <div style="flex:70;background:#eab308;"></div>
+                <div style="flex:60;background:#22c55e;"></div>
+                <div style="flex:50;background:#15803d;border-radius:0 6px 6px 0;"></div>
+              </div>
+              <!-- Marker -->
+              <div style="position:relative;height:18px;margin-top:2px;">
+                <div id="ficoMarker" style="position:absolute;transform:translateX(-50%);transition:left .5s cubic-bezier(.34,1.2,.64,1);">
+                  <div style="width:2px;height:14px;background:#fff;margin:0 auto;border-radius:1px;box-shadow:0 0 8px rgba(255,255,255,.6);"></div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;font-size:.6rem;color:rgba(255,255,255,.3);margin-top:2px;">
+                <span>Poor</span><span>Fair</span><span>Good</span><span>Very Good</span><span>Exceptional</span>
+              </div>
+            </div>
+          </div>
+          <!-- Credit meta row -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px;">
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px 14px;">
+              <div style="font-size:.65rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;">Credit Limit</div>
+              <div style="font-family:var(--font-display);font-size:1rem;" id="ficoCreditLimit">—</div>
+            </div>
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px 14px;">
+              <div style="font-size:.65rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;">Utilization</div>
+              <div style="font-family:var(--font-display);font-size:1rem;" id="ficoCreditUtil">—</div>
+            </div>
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px 14px;">
+              <div style="font-size:.65rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;">Payment History</div>
+              <div style="font-family:var(--font-display);font-size:1rem;" id="ficoCreditPay">—</div>
+            </div>
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:12px 14px;">
+              <div style="font-size:.65rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;">Score Provider</div>
+              <div style="font-family:var(--font-display);font-size:1rem;" id="ficoCreditProvider">—</div>
+            </div>
+          </div>
+        </div>
+        <div id="creditScoreNone" style="font-size:.85rem;color:var(--slate-400);padding:8px 0 18px;">No credit profile on file. Contact your branch officer to establish credit.</div>
+
+        <!-- My Loan Applications -->
+        <div id="myLoansSection" style="border-top:1px solid rgba(255,255,255,.06);padding-top:18px;margin-top:4px;">
+          <div style="font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;">My Loan Applications</div>
+          <div id="myLoansList" style="font-size:.84rem;color:var(--slate-400);">Loading…</div>
+        </div>
+      </div>
+
     </div><!-- /app-content -->
   </main>
+</div>
+
+<!-- Loan Application Modal -->
+<div id="loanModal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px;">
+  <div style="width:480px;max-width:100%;max-height:90vh;overflow-y:auto;background:linear-gradient(150deg,#0a1525,#0d1e35);border:1px solid rgba(201,168,76,.2);border-radius:20px;padding:32px 28px;box-shadow:0 40px 100px rgba(0,0,0,.7);position:relative;">
+    <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.6) 50%,transparent);border-radius:20px 20px 0 0;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+      <div>
+        <div style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:4px;">Apply for a Loan</div>
+        <div style="font-size:.72rem;color:var(--slate-400);">All fields are reviewed by a loan officer within 2-3 business days.</div>
+      </div>
+      <button onclick="closeLoanModal()" style="background:none;border:none;color:rgba(255,255,255,.35);font-size:1.3rem;cursor:pointer;padding:4px;line-height:1;">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div>
+        <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:5px;">Loan Type</div>
+        <select id="loanTypeSelect" class="form-input form-select" style="font-size:.85rem;padding:9px 12px;width:100%;" onchange="onLoanTypeChange()">
+          <option value="personal">Personal Loan</option>
+          <option value="auto">Auto Loan</option>
+          <option value="mortgage">Mortgage</option>
+          <option value="student">Student Loan</option>
+          <option value="business">Business Loan</option>
+          <option value="heloc">HELOC</option>
+          <option value="credit_line">Line of Credit</option>
+        </select>
+      </div>
+      <div>
+        <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:5px;">Loan Name</div>
+        <input type="text" id="loanNameInput" placeholder="e.g. Home Renovation" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div>
+        <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:5px;">Amount Requested ($)</div>
+        <input type="number" id="loanAmountInput" min="500" step="100" placeholder="5000" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+      </div>
+      <div>
+        <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:5px;">Term (months)</div>
+        <input type="number" id="loanTermInput" min="6" max="360" step="6" placeholder="60" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:5px;">Purpose (optional)</div>
+      <textarea id="loanPurposeInput" placeholder="Brief description of what the loan is for…" rows="3" style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;resize:vertical;font-family:inherit;"></textarea>
+    </div>
+    <div id="loanMinScoreNote" style="font-size:.75rem;color:var(--slate-400);background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:8px;padding:10px 14px;margin-bottom:16px;"></div>
+    <div id="loanModalError" style="display:none;font-size:.8rem;color:#f87171;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:8px;padding:10px 14px;margin-bottom:14px;"></div>
+    <div style="display:flex;gap:10px;">
+      <button id="submitLoanBtn" class="btn btn-primary" style="flex:1;" onclick="submitLoanApplication()">Submit Application</button>
+      <button class="btn btn-ghost" onclick="closeLoanModal()">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <!-- ═══════ ADMIN OVERLAY (hidden, gesture-revealed) ═══════ -->
@@ -933,6 +1054,32 @@
   </div>
   <div id="aCreditPanel" style="display:none;">
     <div style="border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;margin-bottom:16px;">
+      <!-- FICO Score Preview -->
+      <div id="aFicoPreview" style="display:none;margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.06);">
+        <div style="display:flex;align-items:flex-end;gap:16px;">
+          <div>
+            <div id="aFicoNum" style="font-family:var(--font-display);font-size:2.4rem;line-height:1;color:#fff;letter-spacing:-.02em;">—</div>
+            <div id="aFicoLabel" style="font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;margin-top:5px;font-weight:600;">—</div>
+          </div>
+          <div style="flex:1;min-width:160px;padding-bottom:4px;">
+            <div style="display:flex;gap:2px;height:8px;border-radius:5px;overflow:hidden;margin-bottom:4px;">
+              <div style="flex:280;background:#ef4444;border-radius:5px 0 0 5px;"></div>
+              <div style="flex:90;background:#f97316;"></div>
+              <div style="flex:70;background:#eab308;"></div>
+              <div style="flex:60;background:#22c55e;"></div>
+              <div style="flex:50;background:#15803d;border-radius:0 5px 5px 0;"></div>
+            </div>
+            <div style="position:relative;height:14px;">
+              <div id="aFicoMarker" style="position:absolute;transform:translateX(-50%);transition:left .5s cubic-bezier(.34,1.2,.64,1);">
+                <div style="width:2px;height:11px;background:#fff;margin:0 auto;border-radius:1px;box-shadow:0 0 6px rgba(255,255,255,.6);"></div>
+              </div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:.55rem;color:rgba(255,255,255,.3);letter-spacing:.02em;">
+              <span>300</span><span>580</span><span>670</span><span>740</span><span>800</span><span>850</span>
+            </div>
+          </div>
+        </div>
+      </div>
       <div style="font-size:.82rem;font-weight:600;color:rgba(255,255,255,.8);margin-bottom:14px;letter-spacing:.04em;">Credit Profile</div>
       <div class="admin-two-col" style="gap:10px;margin-bottom:10px;">
         <div>
@@ -1581,6 +1728,9 @@ window.addEventListener('load', () => {
   drawBalanceChart(currentChartData);
   window.addEventListener('resize', () => drawBalanceChart(currentChartData));
   loadDashboardData();
+  // Load credit score in background — doesn't block main dashboard
+  if (window._supabase) loadMyCreditData();
+  else document.addEventListener('supabaseReady', () => loadMyCreditData(), { once: true });
 });
 
 function openPayBillModal() { zenithToast('Bill Pay is coming soon. Contact ZenithOne Private Banking to arrange a payment.', 'info'); }
@@ -1919,7 +2069,24 @@ async function aLoadCreditData() {
 
 function aPopulateCreditForm(cp) {
   const v = (id, val) => { const el = document.getElementById(id); if (el) el.value = val ?? ''; };
-  v('aCreditScore',      cp?.credit_score ?? '');
+  // Admin FICO gauge
+  const score = cp?.credit_score;
+  const preview = document.getElementById('aFicoPreview');
+  if (preview) {
+    if (score) {
+      const cat = (typeof ficoCategory === 'function') ? ficoCategory(score) : { label:'—', color:'#fff' };
+      preview.style.display = '';
+      const numEl = document.getElementById('aFicoNum');
+      const lblEl = document.getElementById('aFicoLabel');
+      const mkrEl = document.getElementById('aFicoMarker');
+      if (numEl) { numEl.textContent = score; numEl.style.color = cat.color; }
+      if (lblEl) { lblEl.textContent = cat.label; lblEl.style.color = cat.color; }
+      if (mkrEl) { mkrEl.style.left = (((score - 300) / 550) * 100) + '%'; }
+    } else {
+      preview.style.display = 'none';
+    }
+  }
+  v('aCreditScore',      score ?? '');
   v('aCreditProvider',   cp?.score_provider ?? 'FICO');
   v('aCreditPayHist',    cp?.payment_history_pct ?? '');
   v('aCreditUtil',       cp?.credit_utilization ?? '');
@@ -2074,7 +2241,10 @@ async function aLoadLoanApplications() {
               <span style="padding:2px 8px;border-radius:8px;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:${sc.b};border:1px solid ${sc.bd};color:${sc.c};">${sc.label}</span>
             </div>
             <div style="font-size:.72rem;color:var(--slate-400);">${name} · ${type} · Applied ${date}</div>
-            <div style="font-size:.7rem;color:var(--slate-500);margin-top:2px;">Score: ${score ?? '—'} · Credit limit: ${limit != null ? fmtLoan(limit) : '—'}${app.admin_note ? ' · Note: "'+app.admin_note+'"' : ''}</div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:3px;flex-wrap:wrap;">
+              ${score ? (() => { const c = (typeof ficoCategory==='function'?ficoCategory(score):{color:'#94a3b8',label:'—'}); return `<span style="font-size:.7rem;font-weight:700;color:${c.color};background:rgba(0,0,0,.2);border:1px solid ${c.color}40;border-radius:6px;padding:1px 7px;">FICO ${score} · ${c.label}</span>`; })() : '<span style="font-size:.7rem;color:var(--slate-500);">Score: —</span>'}
+              <span style="font-size:.7rem;color:var(--slate-500);">Limit: ${limit != null ? fmtLoan(limit) : '—'}${app.admin_note ? ' · "'+app.admin_note+'"' : ''}</span>
+            </div>
           </div>
           <div style="text-align:right;flex-shrink:0;">
             <div style="font-family:var(--font-display);font-size:1.15rem;color:#fff;">${fmtLoan(app.requested_amount)}</div>
@@ -3109,6 +3279,176 @@ async function loadDashboardData() {
     }
   } catch(e) {
     console.warn('Dashboard data load failed:', e);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CREDIT SCORE & LOANS
+// ═══════════════════════════════════════════════════════════════
+const FICO_RANGES = [
+  { min:300, max:579, label:'Poor',       color:'#ef4444' },
+  { min:580, max:669, label:'Fair',       color:'#f97316' },
+  { min:670, max:739, label:'Good',       color:'#eab308' },
+  { min:740, max:799, label:'Very Good',  color:'#22c55e' },
+  { min:800, max:850, label:'Exceptional',color:'#15803d' },
+];
+
+function ficoCategory(score) {
+  return FICO_RANGES.find(r => score >= r.min && score <= r.max) || FICO_RANGES[0];
+}
+
+function renderFicoGauge(score) {
+  const cat = ficoCategory(score);
+  document.getElementById('ficoScoreNum').textContent = score;
+  document.getElementById('ficoScoreNum').style.color = cat.color;
+  const labelEl = document.getElementById('ficoScoreLabel');
+  labelEl.textContent = cat.label;
+  labelEl.style.color = cat.color;
+  // Position marker: score 300=0%, 850=100%
+  const pct = ((score - 300) / 550) * 100;
+  const marker = document.getElementById('ficoMarker');
+  if (marker) marker.style.left = pct + '%';
+}
+
+let _myCreditProfile = null;
+
+async function loadMyCreditData() {
+  try {
+    const { credit_profile: cp, loans } = await callEdgeFunction('admin-data', { action: 'get_my_credit' });
+    _myCreditProfile = cp;
+
+    const noneEl  = document.getElementById('creditScoreNone');
+    const dispEl  = document.getElementById('creditScoreDisplay');
+    const applyBtn = document.getElementById('applyLoanBtn');
+
+    if (!cp || !cp.credit_score) {
+      if (noneEl) noneEl.style.display = '';
+      if (dispEl) dispEl.style.display = 'none';
+      if (applyBtn) applyBtn.style.display = 'none';
+    } else {
+      if (noneEl) noneEl.style.display = 'none';
+      if (dispEl) dispEl.style.display = '';
+
+      renderFicoGauge(cp.credit_score);
+
+      const limit = Number(cp.total_credit_limit || 0);
+      const used  = Number(cp.total_credit_used  || 0);
+      const util  = limit > 0 ? ((used / limit) * 100).toFixed(1) : null;
+
+      document.getElementById('ficoCreditLimit').textContent    = limit > 0 ? '$' + limit.toLocaleString('en-US') : '—';
+      document.getElementById('ficoCreditUtil').textContent     = util ? util + '%' : '—';
+      document.getElementById('ficoCreditPay').textContent      = cp.payment_history_pct != null ? cp.payment_history_pct + '%' : '—';
+      document.getElementById('ficoCreditProvider').textContent = cp.score_provider || 'FICO';
+
+      // Show "Apply" button only if score meets minimum for personal loan (580)
+      if (applyBtn) applyBtn.style.display = cp.credit_score >= 580 ? '' : 'none';
+    }
+
+    // Render loan applications
+    renderMyLoans(loans || []);
+  } catch (e) {
+    document.getElementById('creditScoreNone').textContent = 'Credit data unavailable.';
+    document.getElementById('myLoansList').textContent = 'Unable to load loan applications.';
+  }
+}
+
+const LOAN_MIN_SCORES = { personal:580, auto:600, mortgage:620, student:560, business:640, heloc:640, credit_line:600 };
+
+function renderMyLoans(apps) {
+  const el = document.getElementById('myLoansList');
+  if (!el) return;
+  if (!apps.length) {
+    el.innerHTML = '<div style="color:var(--slate-500);padding:4px 0;">No loan applications yet.</div>';
+    return;
+  }
+  const STATUS_COLORS = { pending:'#fbbf24', approved:'#4ade80', declined:'#f87171' };
+  el.innerHTML = apps.map(a => {
+    const color  = STATUS_COLORS[a.status] || '#94a3b8';
+    const date   = new Date(a.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    const amount = '$' + Number(a.requested_amount).toLocaleString('en-US', { minimumFractionDigits:2 });
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+      <div>
+        <div style="font-size:.86rem;color:rgba(255,255,255,.85);font-weight:500;">${a.loan_name || a.loan_type}</div>
+        <div style="font-size:.72rem;color:var(--slate-500);margin-top:3px;">${date} · ${(a.loan_type||'').replace('_',' ')}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;margin-left:16px;">
+        <div style="font-family:var(--font-display);font-size:.92rem;">${amount}</div>
+        <div style="font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:${color};margin-top:3px;">${a.status}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openLoanModal() {
+  const modal = document.getElementById('loanModal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  document.getElementById('loanModalError').style.display = 'none';
+  document.getElementById('loanAmountInput').value = '';
+  document.getElementById('loanTermInput').value = '';
+  document.getElementById('loanPurposeInput').value = '';
+  document.getElementById('loanNameInput').value = '';
+  onLoanTypeChange();
+}
+
+function closeLoanModal() {
+  const modal = document.getElementById('loanModal');
+  if (modal) modal.style.display = 'none';
+}
+
+function onLoanTypeChange() {
+  const type     = document.getElementById('loanTypeSelect')?.value || 'personal';
+  const minScore = LOAN_MIN_SCORES[type] || 580;
+  const score    = _myCreditProfile?.credit_score || 0;
+  const cat      = ficoCategory(minScore);
+  const noteEl   = document.getElementById('loanMinScoreNote');
+  if (!noteEl) return;
+  if (score < minScore) {
+    noteEl.style.color = '#f87171';
+    noteEl.innerHTML = `<strong>Score required:</strong> ${minScore} (${ficoCategory(minScore).label}). Your score: ${score}. You do not currently qualify for this loan type.`;
+  } else {
+    noteEl.style.color = 'var(--slate-400)';
+    noteEl.innerHTML = `<strong>Minimum score:</strong> ${minScore} (${ficoCategory(minScore).label}). You qualify for this loan type.`;
+  }
+}
+
+async function submitLoanApplication() {
+  const btn       = document.getElementById('submitLoanBtn');
+  const errEl     = document.getElementById('loanModalError');
+  const loan_type = document.getElementById('loanTypeSelect').value;
+  const loan_name = document.getElementById('loanNameInput').value.trim();
+  const amount    = parseFloat(document.getElementById('loanAmountInput').value);
+  const term      = parseInt(document.getElementById('loanTermInput').value) || null;
+  const purpose   = document.getElementById('loanPurposeInput').value.trim();
+
+  errEl.style.display = 'none';
+
+  if (!loan_name) { errEl.textContent = 'Please enter a loan name.'; errEl.style.display = ''; return; }
+  if (!amount || amount <= 0) { errEl.textContent = 'Please enter a valid amount.'; errEl.style.display = ''; return; }
+
+  const score    = _myCreditProfile?.credit_score || 0;
+  const minScore = LOAN_MIN_SCORES[loan_type] || 580;
+  if (score < minScore) {
+    errEl.textContent = `Your credit score (${score}) does not meet the minimum of ${minScore} for this loan type.`;
+    errEl.style.display = '';
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Submitting…';
+  try {
+    await callEdgeFunction('admin-data', {
+      action: 'apply_loan', loan_type, loan_name,
+      requested_amount: amount,
+      term_months: term,
+      purpose: purpose || undefined,
+    });
+    closeLoanModal();
+    zenithToast('Loan application submitted! A loan officer will review it within 2-3 business days.', 'success', 7000);
+    await loadMyCreditData();
+  } catch (e) {
+    errEl.textContent = e.message || 'Submission failed. Please try again.';
+    errEl.style.display = '';
+    btn.disabled = false; btn.textContent = 'Submit Application';
   }
 }
 

@@ -36,22 +36,55 @@
       background-size:300% 100%; animation:acctSheen 7s infinite linear; }
     @keyframes acctSheen { 0%{background-position:200% 0} 100%{background-position:-100% 0} }
     .acct-hero-inner { position:relative; z-index:3; padding:26px 30px; display:flex; flex-direction:column; gap:22px; }
-    .acct-hero-top { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+    .acct-hero-top { display:flex; align-items:flex-start; flex-direction:column; gap:4px; }
     .acct-hero-eyebrow { font-size:.62rem; letter-spacing:.28em; text-transform:uppercase; color:rgba(201,168,76,.7); margin-bottom:6px; }
     .acct-hero-type { font-family:var(--font-display); font-size:1.45rem; color:#fff; letter-spacing:.01em; }
     .acct-hero-status { display:inline-flex; align-items:center; gap:6px; font-size:.62rem; letter-spacing:.12em; text-transform:uppercase; color:#4ade80; margin-top:6px; }
     .acct-hero-status::before { content:''; width:6px; height:6px; border-radius:50%; background:#4ade80; box-shadow:0 0 8px #4ade80; }
-    /* Account switcher chips */
-    .acct-switcher { display:flex; gap:8px; flex-wrap:wrap; }
-    .acct-chip { display:flex; flex-direction:column; gap:2px; padding:8px 14px; border-radius:12px; cursor:pointer;
-      border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.035); transition:all .18s; min-width:96px; }
-    .acct-chip:hover { border-color:rgba(201,168,76,.4); background:rgba(201,168,76,.06); }
-    .acct-chip.sel { border-color:rgba(201,168,76,.6); background:rgba(201,168,76,.12); box-shadow:0 0 0 1px rgba(201,168,76,.25) inset; }
-    .acct-chip-type { font-size:.72rem; font-weight:600; color:rgba(255,255,255,.82); text-transform:capitalize; }
-    .acct-chip.sel .acct-chip-type { color:var(--gold-400); }
-    .acct-chip-num { font-size:.64rem; color:rgba(255,255,255,.4); font-family:'Courier New',monospace; letter-spacing:.05em; }
-    .acct-chip-bal { font-size:.72rem; color:rgba(255,255,255,.55); margin-top:1px; }
-    .acct-chip.sel .acct-chip-bal { color:rgba(201,168,76,.8); }
+    /* ── Account switcher ── */
+    .acct-switcher-wrap { padding-top:20px; border-top:1px solid rgba(255,255,255,.07); }
+    .acct-switcher-label { font-size:.58rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.25); margin-bottom:10px; }
+    .acct-switcher {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+      gap:10px;
+    }
+    .acct-chip {
+      position:relative; overflow:hidden;
+      display:flex; flex-direction:column; gap:3px;
+      padding:14px 16px;
+      border-radius:14px; cursor:pointer;
+      border:1px solid rgba(255,255,255,.09);
+      background:rgba(255,255,255,.04);
+      backdrop-filter:blur(12px);
+      transition:border-color .2s, background .2s, box-shadow .2s;
+    }
+    .acct-chip::after {
+      content:''; position:absolute; bottom:0; left:14px; right:14px;
+      height:2px; border-radius:2px;
+      background:linear-gradient(90deg,var(--gold-500),var(--gold-300));
+      opacity:0; transition:opacity .2s;
+    }
+    .acct-chip:hover { border-color:rgba(201,168,76,.3); background:rgba(201,168,76,.06); }
+    .acct-chip.sel { border-color:rgba(201,168,76,.45); background:rgba(201,168,76,.1); box-shadow:0 6px 24px -10px rgba(201,168,76,.45); }
+    .acct-chip.sel::after { opacity:1; }
+    .acct-chip-type { font-size:.58rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.38); font-weight:500; }
+    .acct-chip.sel .acct-chip-type { color:rgba(201,168,76,.75); }
+    .acct-chip-bal { font-family:var(--font-display); font-size:1.08rem; color:rgba(255,255,255,.88); line-height:1.1; margin:3px 0 2px; }
+    .acct-chip.sel .acct-chip-bal { color:#fff; }
+    .acct-chip-num { font-size:.6rem; color:rgba(255,255,255,.28); font-family:'Courier New',monospace; letter-spacing:.07em; }
+    .acct-chip.sel .acct-chip-num { color:rgba(201,168,76,.45); }
+    /* Mobile: horizontal scroll strip */
+    @media(max-width:600px){
+      .acct-switcher {
+        display:flex; gap:10px;
+        overflow-x:auto; scroll-snap-type:x mandatory;
+        -webkit-overflow-scrolling:touch;
+        scrollbar-width:none; padding-bottom:4px;
+      }
+      .acct-switcher::-webkit-scrollbar { display:none; }
+      .acct-chip { flex-shrink:0; min-width:148px; scroll-snap-align:start; }
+    }
     /* Number row */
     .acct-hero-numrow { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; }
     .acct-hero-number { font-family:'Courier New',monospace; font-size:1.85rem; letter-spacing:.18em; color:#f4ead0;
@@ -220,16 +253,17 @@
         <div class="acct-hero-shimmer"></div>
         <div class="acct-hero-inner">
 
-          <!-- Top: account name + status · switcher -->
+          <!-- Top: account name + status -->
           <div class="acct-hero-top">
-            <div>
-              <div class="acct-hero-eyebrow">ZenithOne Credit Union · Account</div>
-              <div class="acct-hero-type" id="heroType">Checking Account</div>
-              <div class="acct-hero-status" id="heroStatus">Active</div>
-            </div>
-            <div class="acct-switcher" id="heroSwitcher">
-              <!-- account chips populated by JS -->
-            </div>
+            <div class="acct-hero-eyebrow">ZenithOne Credit Union · Account</div>
+            <div class="acct-hero-type" id="heroType">Checking Account</div>
+            <div class="acct-hero-status" id="heroStatus">Active</div>
+          </div>
+
+          <!-- Account switcher — full-width, own row -->
+          <div class="acct-switcher-wrap" id="heroSwitcherWrap" style="display:none;">
+            <div class="acct-switcher-label">Select Account</div>
+            <div class="acct-switcher" id="heroSwitcher"></div>
           </div>
 
           <!-- Account number -->
@@ -1956,12 +1990,16 @@ function renderHero() {
   const st = document.getElementById('heroStatus');
   st.textContent = (a.status || 'active').replace(/\b\w/g, c => c.toUpperCase());
 
+  // Switcher: only show wrapper when there are accounts
+  const switcherWrap = document.getElementById('heroSwitcherWrap');
+  if (switcherWrap) switcherWrap.style.display = _accounts.length ? '' : 'none';
+
   document.getElementById('heroSwitcher').innerHTML = _accounts.map((acc, i) => {
-    const t = (acc.account_type || 'account').replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
-    return `<div class="acct-chip ${i === _selAcct ? 'sel' : ''}" onclick="selectAcct(${i})">
+    const t = (acc.account_type || 'account').replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+    return `<div class="acct-chip ${i === _selAcct ? 'sel' : ''}" onclick="selectAcct(${i})" role="button" aria-label="${t} ••${(acc.account_number||'').slice(-4)}">
       <div class="acct-chip-type">${t}</div>
-      <div class="acct-chip-num">••${(acc.account_number || '').slice(-4)}</div>
       <div class="acct-chip-bal">${fmtUSD(acc.balance)}</div>
+      <div class="acct-chip-num">Account ••${(acc.account_number || '????').slice(-4)}</div>
     </div>`;
   }).join('');
 }

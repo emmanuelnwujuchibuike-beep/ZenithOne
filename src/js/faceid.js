@@ -18,7 +18,8 @@
 
   const LS_CRED  = 'zo_faceid_cred';   // { id, email, userId }
   const LS_TOKEN = 'zo_faceid_rt';     // Supabase refresh token (biometric-gated)
-  const LS_TX    = 'zo_faceid_tx';     // '1' when Face ID is required for transactions
+  const LS_LOGIN = 'zo_faceid_login';  // '0' to disable Face ID sign-in (default on once enrolled)
+  const LS_TX    = 'zo_faceid_tx';     // '0' to disable Face ID for transactions (default on once enrolled)
 
   // ─── base64url <-> ArrayBuffer ──────────────────────────────────────────────
   function bufToB64u(buf) {
@@ -40,8 +41,11 @@
   // ─── State helpers ──────────────────────────────────────────────────────────
   function getCred() { try { return JSON.parse(localStorage.getItem(LS_CRED) || 'null'); } catch { return null; } }
   function isEnrolled() { return !!getCred(); }
-  function txEnabled() { return localStorage.getItem(LS_TX) === '1'; }
-  function setTxEnabled(v) { v ? localStorage.setItem(LS_TX, '1') : localStorage.removeItem(LS_TX); }
+  // Both features default ON once a credential is enrolled (only '0' disables them).
+  function loginEnabled() { return isEnrolled() && localStorage.getItem(LS_LOGIN) !== '0'; }
+  function setLoginEnabled(v) { localStorage.setItem(LS_LOGIN, v ? '1' : '0'); }
+  function txEnabled() { return isEnrolled() && localStorage.getItem(LS_TX) !== '0'; }
+  function setTxEnabled(v) { localStorage.setItem(LS_TX, v ? '1' : '0'); }
 
   async function isAvailable() {
     if (!global.PublicKeyCredential || !global.isSecureContext) return false;
@@ -352,6 +356,7 @@
   function disable() {
     localStorage.removeItem(LS_CRED);
     localStorage.removeItem(LS_TOKEN);
+    localStorage.removeItem(LS_LOGIN);
     localStorage.removeItem(LS_TX);
   }
 
@@ -365,6 +370,7 @@
 
   global.ZenithFaceID = {
     isAvailable, isEnrolled, enroll, verify, loginWithFaceId,
-    syncToken, disable, txEnabled, setTxEnabled,
+    syncToken, disable,
+    loginEnabled, setLoginEnabled, txEnabled, setTxEnabled,
   };
 })(window);

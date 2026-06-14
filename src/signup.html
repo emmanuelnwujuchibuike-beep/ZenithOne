@@ -335,8 +335,20 @@
         <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
       </div>
       <h2 style="font-family:var(--font-display);font-size:2rem;margin-bottom:12px;">Account Created!</h2>
-      <p style="color:var(--slate-400);max-width:400px;margin:0 auto 32px;line-height:1.7;">Welcome to ZenithOne Credit Union. Your account is ready. A relationship advisor will be in touch within 24 hours.</p>
-      <a href="dashboard.html" class="btn btn-primary btn-lg">Go to Dashboard →</a>
+      <p style="color:var(--slate-400);max-width:400px;margin:0 auto 28px;line-height:1.7;">Welcome to ZenithOne Credit Union. Your account is ready. A relationship advisor will be in touch within 24 hours.</p>
+
+      <!-- Face ID setup (shown only on supported devices) -->
+      <div id="faceidSetupCard" style="display:none;max-width:420px;margin:0 auto 28px;background:linear-gradient(160deg,rgba(201,168,76,.07),rgba(255,255,255,.02));border:1px solid rgba(201,168,76,.22);border-radius:18px;padding:26px 24px;">
+        <div style="width:54px;height:54px;margin:0 auto 14px;border-radius:15px;background:rgba(201,168,76,.12);display:flex;align-items:center;justify-content:center;color:var(--gold-400);">
+          <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10h.01M15 10h.01"/><path d="M9.5 15a3.5 3.5 0 0 0 5 0"/></svg>
+        </div>
+        <div style="font-family:var(--font-display);font-size:1.35rem;color:#fff;margin-bottom:6px;">Secure with Face ID</div>
+        <div style="font-size:.85rem;color:var(--slate-400);line-height:1.6;margin-bottom:20px;">Face ID is recommended and turned on for sign-in and transactions. Set it up now for instant, secure access.</div>
+        <button class="btn btn-primary w-full" id="faceidSetupBtn" style="padding:13px;margin-bottom:10px;">Enable Face ID</button>
+        <button class="btn btn-ghost w-full" id="faceidSkipBtn" style="padding:11px;font-size:.85rem;">Skip for now</button>
+      </div>
+
+      <a href="dashboard.html" class="btn btn-primary btn-lg" id="successDashBtn">Go to Dashboard →</a>
     </div>
 
   </div>
@@ -344,6 +356,7 @@
 
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/faceid.js"></script>
 <script>
 let currentStep = 1;
 let resendInterval;
@@ -427,6 +440,49 @@ function showSuccess() {
   document.getElementById('stepsBar').style.display = 'none';
   document.getElementById(`panel${currentStep}`).classList.remove('active');
   document.getElementById('successScreen').style.display = 'block';
+  setupFaceIdOnSignup();
+}
+
+// New accounts get Face ID turned on by default (user can skip). Requires an
+// active session — present when email confirmation is not required.
+async function setupFaceIdOnSignup() {
+  const FID  = window.ZenithFaceID;
+  const card = document.getElementById('faceidSetupCard');
+  const dash = document.getElementById('successDashBtn');
+  if (!FID || !card) return;
+
+  try {
+    if (!(await FID.isAvailable()) || FID.isEnrolled()) return;
+    const sb = window._supabase;
+    if (!sb) return;
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return; // email confirmation pending — user can enable later in Settings
+  } catch { return; }
+
+  // Reveal the Face ID setup card, de-emphasise the dashboard link
+  card.style.display = 'block';
+  dash.classList.remove('btn-primary'); dash.classList.add('btn-ghost');
+
+  const enroll = async () => {
+    try {
+      const ok = await FID.enroll(); // both sign-in + transactions default on
+      if (ok) {
+        card.style.display = 'none';
+        dash.classList.remove('btn-ghost'); dash.classList.add('btn-primary');
+        if (window.zenithToast) zenithToast('Face ID enabled for sign-in and transactions.', 'success');
+      }
+    } catch (e) {
+      if (window.zenithToast) zenithToast(e.message || 'Could not enable Face ID. You can set it up later in Settings.', 'error');
+    }
+  };
+
+  document.getElementById('faceidSetupBtn').addEventListener('click', enroll);
+  document.getElementById('faceidSkipBtn').addEventListener('click', () => {
+    card.style.display = 'none';
+    dash.classList.remove('btn-ghost'); dash.classList.add('btn-primary');
+  });
+  // Note: the OS biometric prompt requires a direct tap (a platform security rule),
+  // so enrolment completes when the user taps the pre-selected "Enable Face ID".
 }
 
 function showError(msg) {

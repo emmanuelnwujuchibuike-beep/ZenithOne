@@ -188,7 +188,7 @@ document.getElementById('togglePwd').addEventListener('click', function() {
   if (!btn) return;
 
   const available = await window.ZenithFaceID.isAvailable();
-  if (!available || !window.ZenithFaceID.isEnrolled()) return;
+  if (!available || !window.ZenithFaceID.loginEnabled()) return;
 
   btn.style.display = 'flex';
   div.style.display = 'flex';

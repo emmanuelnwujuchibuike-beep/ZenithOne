@@ -664,7 +664,7 @@
 </div>
 
 <!-- ── Admin: Credit & Loans ────────────────────────────────────────── -->
-<div class="card card-elevated" style="margin-top:24px;">
+<div class="card card-elevated" id="aCreditLoansPanel" style="margin-top:24px;display:none;">
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
     <div>
       <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:3px;">Credit &amp; Loans</div>
@@ -854,7 +854,7 @@
 </div>
 
 <!-- ── Admin: Loan Applications ─────────────────────────────────────── -->
-<div class="card card-elevated" style="margin-top:24px;">
+<div class="card card-elevated" id="aLoanAppsPanel" style="margin-top:24px;display:none;">
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
     <div>
       <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:3px;">Loan Applications</div>
@@ -874,7 +874,7 @@
 </div>
 
 <!-- ── Admin: Broadcast Announcement ────────────────────────────────── -->
-<div class="card card-elevated" style="margin-top:24px;background:linear-gradient(145deg,rgba(167,139,250,.05) 0%,rgba(8,14,28,.0) 100%);border-color:rgba(167,139,250,.18);">
+<div class="card card-elevated" id="aBroadcastPanel" style="margin-top:24px;display:none;background:linear-gradient(145deg,rgba(167,139,250,.05) 0%,rgba(8,14,28,.0) 100%);border-color:rgba(167,139,250,.18);">
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
     <div style="width:40px;height:40px;border-radius:11px;background:rgba(167,139,250,.12);display:flex;align-items:center;justify-content:center;color:#a78bfa;flex-shrink:0;">
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M22 4S15 8 8 8H4a2 2 0 0 0 0 4h.5l1 8h3l1-4c1 .07 2 .2 3 .4"/><path d="M22 4c0 4-2 7-3 8"/></svg>
@@ -1366,6 +1366,13 @@ function openPayBillModal() { zenithToast('Bill Pay is coming soon. Contact Zeni
 
 async function openAdminPanel() {
   const overlay = document.getElementById('adminOverlay');
+  // Relocate any admin panels that were authored outside the scroll container
+  // so they render inside the admin panel (and never leak onto the user dashboard).
+  const apc = document.getElementById('adminPanelContent');
+  ['aRewardsSection','aPinSection','aCreditLoansPanel','aLoanAppsPanel','aBroadcastPanel'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.parentElement !== apc) apc.appendChild(el);
+  });
   overlay.style.display = '';
   overlay.scrollTop = 0;
   document.getElementById('adminAccessDenied').style.display  = 'none';
@@ -1375,6 +1382,9 @@ async function openAdminPanel() {
     document.getElementById('adminPanelContent').style.display = '';
     document.getElementById('aRewardsSection').style.display   = '';
     document.getElementById('aPinSection').style.display       = '';
+    document.getElementById('aCreditLoansPanel').style.display = '';
+    document.getElementById('aLoanAppsPanel').style.display    = '';
+    document.getElementById('aBroadcastPanel').style.display   = '';
   } catch(e) {
     let msg = e.message || '';
     try { msg = JSON.parse(e.message).error || msg; } catch {}
@@ -1388,6 +1398,9 @@ function closeAdminPanel() {
   document.getElementById('adminOverlay').style.display  = 'none';
   document.getElementById('aRewardsSection').style.display = 'none';
   document.getElementById('aPinSection').style.display     = 'none';
+  document.getElementById('aCreditLoansPanel').style.display = 'none';
+  document.getElementById('aLoanAppsPanel').style.display    = 'none';
+  document.getElementById('aBroadcastPanel').style.display   = 'none';
 }
 
 let _aAllUsers = [];

@@ -174,15 +174,15 @@
               </div>
               <div class="settings-row" id="faceidLoginRow">
                 <div>
-                  <div style="font-weight:500;margin-bottom:2px;">Face ID Sign-In</div>
+                  <div style="font-weight:500;margin-bottom:2px;">Face ID for Sign-In</div>
                   <div style="font-size:.8rem;color:var(--slate-400);" id="faceidLoginDesc">Face ID · Touch ID · Windows Hello on this device</div>
                 </div>
                 <label class="toggle-switch"><input type="checkbox" id="faceidLoginToggle" /><div class="toggle-track"></div></label>
               </div>
-              <div class="settings-row" id="faceidTxRow" style="display:none;">
+              <div class="settings-row" id="faceidTxRow">
                 <div>
                   <div style="font-weight:500;margin-bottom:2px;">Face ID for Transactions</div>
-                  <div style="font-size:.8rem;color:var(--slate-400);">Require Face ID to confirm transfers &amp; payments</div>
+                  <div style="font-size:.8rem;color:var(--slate-400);" id="faceidTxDesc">Require Face ID to confirm transfers &amp; payments</div>
                 </div>
                 <label class="toggle-switch"><input type="checkbox" id="faceidTxToggle" /><div class="toggle-track"></div></label>
               </div>
@@ -439,57 +439,75 @@ document.addEventListener('DOMContentLoaded', () => {
   initFaceIdSettings();
 });
 
-// ── Face ID settings ──────────────────────────────────────────────────────────
+// ── Face ID settings — independent Sign-In & Transaction toggles ───────────────
 async function initFaceIdSettings() {
-  const FID      = window.ZenithFaceID;
-  const row      = document.getElementById('faceidLoginRow');
-  const loginTgl = document.getElementById('faceidLoginToggle');
-  const txRow    = document.getElementById('faceidTxRow');
-  const txTgl    = document.getElementById('faceidTxToggle');
-  const desc     = document.getElementById('faceidLoginDesc');
+  const FID       = window.ZenithFaceID;
+  const loginRow  = document.getElementById('faceidLoginRow');
+  const txRow     = document.getElementById('faceidTxRow');
+  const loginTgl  = document.getElementById('faceidLoginToggle');
+  const txTgl     = document.getElementById('faceidTxToggle');
+  const loginDesc = document.getElementById('faceidLoginDesc');
+  const txDesc    = document.getElementById('faceidTxDesc');
   if (!FID || !loginTgl) return;
 
   const available = await FID.isAvailable();
   if (!available) {
-    desc.textContent = 'Not supported on this device or browser';
-    loginTgl.disabled = true;
-    row.style.opacity = '.55';
+    loginDesc.textContent = 'Not supported on this device or browser';
+    loginTgl.disabled = txTgl.disabled = true;
+    loginRow.style.opacity = txRow.style.opacity = '.55';
     return;
   }
 
   function refresh() {
-    const on = FID.isEnrolled();
-    loginTgl.checked = on;
-    txRow.style.display = on ? 'flex' : 'none';
-    txTgl.checked = FID.txEnabled();
-    desc.textContent = on
-      ? 'Enabled on this device — sign in instantly'
-      : 'Face ID · Touch ID · Windows Hello on this device';
+    loginTgl.checked = FID.loginEnabled();
+    txTgl.checked    = FID.txEnabled();
+    loginDesc.textContent = FID.loginEnabled()
+      ? 'Enabled — sign in instantly with Face ID'
+      : 'Use Face ID · Touch ID · Windows Hello to sign in';
+    txDesc.textContent = FID.txEnabled()
+      ? 'Enabled — Face ID required to confirm transfers'
+      : 'Require Face ID to confirm transfers & payments';
   }
   refresh();
+
+  // Make sure a biometric credential exists; enrol on demand (shows OS prompt).
+  async function ensureEnrolled() {
+    if (FID.isEnrolled()) return true;
+    return await FID.enroll();
+  }
+  // Drop the credential entirely once both features are turned off.
+  function cleanupIfUnused() {
+    if (!FID.loginEnabled() && !FID.txEnabled()) FID.disable();
+  }
 
   loginTgl.addEventListener('change', async () => {
     if (loginTgl.checked) {
       try {
-        const ok = await FID.enroll();
-        if (!ok) { loginTgl.checked = false; return; }
+        if (!(await ensureEnrolled())) { loginTgl.checked = false; return; }
+        FID.setLoginEnabled(true);
         zenithToast('Face ID sign-in enabled on this device.', 'success');
-      } catch (e) {
-        loginTgl.checked = false;
-        zenithToast(e.message || 'Could not enable Face ID.', 'error');
-      }
+      } catch (e) { loginTgl.checked = false; zenithToast(e.message || 'Could not enable Face ID.', 'error'); }
     } else {
-      const ok = await zenithConfirm('Remove Face ID sign-in from this device? You can re-enable it anytime.', { title: 'Disable Face ID', confirmLabel: 'Disable', type: 'warning' });
-      if (!ok) { loginTgl.checked = true; return; }
-      FID.disable();
-      zenithToast('Face ID has been removed from this device.', 'success');
+      FID.setLoginEnabled(false);
+      cleanupIfUnused();
+      zenithToast('Face ID sign-in disabled.', 'success');
     }
     refresh();
   });
 
-  txTgl.addEventListener('change', () => {
-    FID.setTxEnabled(txTgl.checked);
-    zenithToast(txTgl.checked ? 'Face ID will be required for transactions.' : 'Face ID for transactions disabled.', 'success');
+  txTgl.addEventListener('change', async () => {
+    if (txTgl.checked) {
+      try {
+        if (!(await ensureEnrolled())) { txTgl.checked = false; return; }
+        FID.setTxEnabled(true);
+        zenithToast('Face ID will be required for transactions.', 'success');
+      } catch (e) { txTgl.checked = false; zenithToast(e.message || 'Could not enable Face ID.', 'error'); }
+    } else {
+      FID.setTxEnabled(false);
+      cleanupIfUnused();
+      zenithToast('Face ID for transactions disabled.', 'success');
+    }
+    refresh();
   });
 }
 // Mobile sidebar

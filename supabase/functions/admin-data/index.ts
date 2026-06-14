@@ -1391,6 +1391,44 @@ Deno.serve(async (req: Request): Promise<Response> => {
       return json({ success: true, message: 'Loan application declined.' });
     }
 
+    // ── Send announcement to all users or a specific user (admin) ─────────────
+    if (action === 'admin_send_announcement') {
+      const { target, target_user_id, title, message, type: noteType } =
+        body as { action: string; target: 'all' | 'user'; target_user_id?: string; title: string; message: string; type?: string };
+
+      if (!title?.trim()) throw new Error('Announcement title is required.');
+      if (!message?.trim()) throw new Error('Announcement message is required.');
+
+      let userIds: string[] = [];
+
+      if (target === 'all') {
+        const { data: { users }, error: listErr } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+        if (listErr) throw listErr;
+        userIds = (users || []).map(u => u.id);
+      } else {
+        if (!target_user_id) throw new Error('target_user_id is required when target is "user".');
+        userIds = [target_user_id];
+      }
+
+      if (!userIds.length) return json({ success: true, sent_to: 0 });
+
+      const rows = userIds.map(uid => ({
+        user_id: uid,
+        title:   title.trim(),
+        message: message.trim(),
+        type:    noteType || 'announcement',
+        read:    false,
+      }));
+
+      // Insert in batches of 500 to avoid Supabase payload limits
+      for (let i = 0; i < rows.length; i += 500) {
+        const { error: insErr } = await supabase.from('notifications').insert(rows.slice(i, i + 500));
+        if (insErr) throw insErr;
+      }
+
+      return json({ success: true, sent_to: userIds.length });
+    }
+
     throw new Error(`Unknown action: ${action}`);
 
   } catch (err) {

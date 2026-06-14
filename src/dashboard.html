@@ -871,6 +871,63 @@
   <div id="aLoanAppList" style="font-size:.85rem;color:var(--slate-400);">Loading…</div>
 </div>
 
+<!-- ── Admin: Broadcast Announcement ────────────────────────────────── -->
+<div class="card card-elevated" style="margin-top:24px;background:linear-gradient(145deg,rgba(167,139,250,.05) 0%,rgba(8,14,28,.0) 100%);border-color:rgba(167,139,250,.18);">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+    <div style="width:40px;height:40px;border-radius:11px;background:rgba(167,139,250,.12);display:flex;align-items:center;justify-content:center;color:#a78bfa;flex-shrink:0;">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M22 4S15 8 8 8H4a2 2 0 0 0 0 4h.5l1 8h3l1-4c1 .07 2 .2 3 .4"/><path d="M22 4c0 4-2 7-3 8"/></svg>
+    </div>
+    <div>
+      <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:2px;">Broadcast Announcement</div>
+      <div style="font-size:.78rem;color:var(--slate-400);">Send a notification to all members or a specific member</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+    <div>
+      <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Target</div>
+      <select id="aAnnTarget" class="form-input form-select" style="font-size:.85rem;" onchange="document.getElementById('aAnnUserRow').style.display=this.value==='user'?'block':'none'">
+        <option value="all">All Members</option>
+        <option value="user">Specific Member</option>
+      </select>
+    </div>
+    <div>
+      <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Type</div>
+      <select id="aAnnType" class="form-input form-select" style="font-size:.85rem;">
+        <option value="announcement">Announcement</option>
+        <option value="info">Info</option>
+        <option value="warning">Warning</option>
+        <option value="success">Success</option>
+        <option value="security">Security Alert</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="aAnnUserRow" style="display:none;margin-bottom:14px;">
+    <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Member</div>
+    <select id="aAnnUserSelect" class="form-input form-select" style="font-size:.85rem;">
+      <option value="">— Choose a member —</option>
+    </select>
+  </div>
+
+  <div style="margin-bottom:12px;">
+    <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Title</div>
+    <input type="text" id="aAnnTitle" class="form-input" placeholder="e.g. Scheduled Maintenance Notice" style="font-size:.87rem;" />
+  </div>
+  <div style="margin-bottom:18px;">
+    <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Message</div>
+    <textarea id="aAnnMessage" class="form-input" rows="4" placeholder="Write your announcement here…" style="font-size:.85rem;resize:vertical;line-height:1.6;"></textarea>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <button class="btn btn-primary" onclick="aSendAnnouncement()" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);border:none;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="margin-right:6px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      Send Announcement
+    </button>
+    <span id="aAnnStatus" style="font-size:.8rem;color:var(--slate-400);"></span>
+  </div>
+</div>
+
 <!-- Admin: Approve Loan Modal -->
 <div id="aApproveLoanModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)aCloseApproveModal()">
   <div class="card card-elevated" style="width:460px;max-width:96vw;padding:28px;position:relative;" onclick="event.stopPropagation()">
@@ -1515,18 +1572,51 @@ async function refreshAdminAll() {
   aPopulateCreditMemberSelect();
 }
 
+async function aSendAnnouncement() {
+  const target  = document.getElementById('aAnnTarget').value;
+  const type    = document.getElementById('aAnnType').value;
+  const title   = document.getElementById('aAnnTitle').value.trim();
+  const message = document.getElementById('aAnnMessage').value.trim();
+  const status  = document.getElementById('aAnnStatus');
+  const uid     = document.getElementById('aAnnUserSelect')?.value;
+
+  if (!title)   { zenithToast('Please enter an announcement title.', 'warning'); return; }
+  if (!message) { zenithToast('Please enter an announcement message.', 'warning'); return; }
+  if (target === 'user' && !uid) { zenithToast('Please select a member.', 'warning'); return; }
+
+  status.textContent = 'Sending…';
+  try {
+    const body = { action: 'admin_send_announcement', target, title, message, type };
+    if (target === 'user') body.target_user_id = uid;
+    const res = await callEdgeFunction('admin-data', body);
+    if (!res.success) throw new Error(res.error || 'Failed');
+    const who = target === 'all' ? `${res.sent_to} members` : 'selected member';
+    zenithToast(`Announcement sent to ${who}.`, 'success');
+    status.textContent = `Sent to ${res.sent_to} member${res.sent_to !== 1 ? 's' : ''} ✓`;
+    document.getElementById('aAnnTitle').value = '';
+    document.getElementById('aAnnMessage').value = '';
+    setTimeout(() => { status.textContent = ''; }, 6000);
+  } catch(e) {
+    let msg = 'Send failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    zenithToast(msg, 'error');
+    status.textContent = '';
+  }
+}
+
 // ── Credit & Loans (Admin) ────────────────────────────────────────────────────
 let _aCreditLoansData = { credit_profile: null, loans: [] };
 
 function aPopulateCreditMemberSelect() {
-  const sel = document.getElementById('aCreditMemberSelect');
-  if (!sel) return;
-  const prev = sel.value;
   const opts = (_aAllUsers||[]).map(u =>
     `<option value="${u.id}">${u.full_name || u.email || u.id}</option>`
   ).join('');
-  sel.innerHTML = '<option value="">— Choose a member —</option>' + opts;
-  if (prev) sel.value = prev;
+  const blank = '<option value="">— Choose a member —</option>';
+
+  const credit = document.getElementById('aCreditMemberSelect');
+  if (credit) { const p = credit.value; credit.innerHTML = blank + opts; if (p) credit.value = p; }
+
+  const ann = document.getElementById('aAnnUserSelect');
+  if (ann) { const p = ann.value; ann.innerHTML = blank + opts; if (p) ann.value = p; }
 }
 
 async function aLoadCreditData() {
@@ -2871,5 +2961,6 @@ function copyText(text, btn) {
   else fallbackCopy(text, done);
 }
 </script>
+<script src="js/notifications.js"></script>
 </body>
 </html>

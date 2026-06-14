@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Credit &amp; Loans — ZenithOne Credit Union</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <style>
+    /* ═══════════════════════════════════════════════════════
+       CREDIT & LOANS — ULTRA PREMIUM STYLES
+    ═══════════════════════════════════════════════════════ */
+
+    /* ── Score hero ── */
+    .credit-hero {
+      background: linear-gradient(145deg, #07101f 0%, #0c1a32 45%, #111e3a 100%);
+      border: 1px solid rgba(201,168,76,.22);
+      border-radius: 24px;
+      padding: 48px 52px;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 56px;
+    }
+    .credit-hero::before {
+      content: '';
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 55% 60% at 5% 15%, rgba(201,168,76,.14) 0%, transparent 58%),
+        radial-gradient(ellipse 45% 55% at 92% 85%, rgba(56,120,200,.16) 0%, transparent 60%);
+    }
+    .credit-hero::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,.5), transparent);
+    }
+
+    /* Gauge */
+    .gauge-wrap {
+      position: relative; flex-shrink: 0;
+      width: 220px; height: 220px;
+    }
+    .gauge-svg { width: 220px; height: 220px; }
+    .gauge-center {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding-bottom: 16px;
+    }
+    .gauge-score {
+      font-family: var(--font-display);
+      font-size: 3.6rem; font-weight: 300;
+      line-height: 1; color: #fff;
+      letter-spacing: -.01em;
+    }
+    .gauge-max  { font-size: .78rem; color: rgba(255,255,255,.35); margin-top: 2px; letter-spacing: .06em; }
+    .gauge-tier {
+      margin-top: 10px;
+      padding: 4px 14px; border-radius: 100px;
+      font-size: .68rem; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+    }
+
+    /* Hero right panel */
+    .credit-hero-info { flex: 1; min-width: 0; position: relative; z-index: 1; }
+    .credit-hero-eyebrow {
+      font-size: .62rem; letter-spacing: .28em; text-transform: uppercase;
+      color: rgba(201,168,76,.7); margin-bottom: 10px;
+    }
+    .credit-hero-heading {
+      font-family: var(--font-display); font-size: 2.2rem; font-weight: 300;
+      color: #fff; line-height: 1.1; margin-bottom: 6px;
+    }
+    .credit-hero-sub { font-size: .83rem; color: var(--slate-400); margin-bottom: 28px; }
+    .credit-provider-row {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px;
+    }
+    .credit-provider-badge {
+      padding: 5px 14px; border-radius: 8px; font-size: .7rem; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase;
+      border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.6);
+    }
+    .credit-updated { font-size: .74rem; color: var(--slate-500); }
+
+    /* ── Stats row ── */
+    .credit-stats {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 14px; margin-bottom: 28px;
+    }
+    .credit-stat {
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 14px; padding: 20px 20px;
+    }
+    .credit-stat-label {
+      font-size: .62rem; letter-spacing: .14em; text-transform: uppercase;
+      color: var(--slate-500); margin-bottom: 10px;
+    }
+    .credit-stat-value {
+      font-family: var(--font-display); font-size: 1.55rem; font-weight: 300;
+      color: var(--white); line-height: 1;
+    }
+    .credit-stat-sub { font-size: .72rem; color: var(--slate-500); margin-top: 5px; }
+
+    /* ── Factors grid ── */
+    .factors-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 14px; margin-bottom: 28px;
+    }
+    .factor-card {
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 16px; padding: 22px 24px;
+    }
+    .factor-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .factor-name { font-size: .82rem; color: rgba(255,255,255,.8); font-weight: 500; }
+    .factor-weight { font-size: .68rem; color: var(--slate-500); letter-spacing: .06em; }
+    .factor-bar-track {
+      height: 6px; border-radius: 4px;
+      background: rgba(255,255,255,.08); overflow: hidden; margin-bottom: 10px;
+    }
+    .factor-bar-fill {
+      height: 100%; border-radius: 4px;
+      transition: width 1.2s cubic-bezier(.4,0,.2,1);
+    }
+    .factor-value-row {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .factor-value { font-family: var(--font-display); font-size: 1.1rem; color: #fff; }
+    .factor-impact { font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; }
+
+    /* ── Section header ── */
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px; padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .section-title { font-family: var(--font-display); font-size: 1.3rem; color: #fff; }
+    .section-sub   { font-size: .78rem; color: var(--slate-400); margin-top: 3px; }
+
+    /* ── Loan cards ── */
+    .loan-card {
+      background: linear-gradient(135deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,.02) 100%);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px; padding: 28px 30px;
+      margin-bottom: 16px; transition: border-color .2s, box-shadow .2s;
+    }
+    .loan-card:hover { border-color: rgba(201,168,76,.2); box-shadow: 0 8px 32px rgba(0,0,0,.2); }
+    .loan-card:last-child { margin-bottom: 0; }
+    .loan-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 16px; flex-wrap: wrap; margin-bottom: 22px;
+    }
+    .loan-icon {
+      width: 50px; height: 50px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .loan-name { font-family: var(--font-display); font-size: 1.25rem; color: #fff; margin-bottom: 3px; }
+    .loan-meta { font-size: .75rem; color: var(--slate-400); }
+    .loan-amount-col { text-align: right; flex-shrink: 0; }
+    .loan-balance { font-family: var(--font-display); font-size: 1.8rem; font-weight: 300; color: #fff; }
+    .loan-original { font-size: .75rem; color: var(--slate-400); margin-top: 3px; }
+
+    .loan-progress-row { margin-bottom: 18px; }
+    .loan-progress-labels {
+      display: flex; justify-content: space-between;
+      font-size: .68rem; color: var(--slate-500); margin-bottom: 6px;
+    }
+    .loan-progress-track {
+      height: 6px; border-radius: 4px; background: rgba(255,255,255,.08); overflow: hidden;
+    }
+    .loan-progress-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+
+    .loan-detail-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+      padding-top: 18px; border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .loan-detail-label { font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-500); margin-bottom: 5px; }
+    .loan-detail-value { font-size: .9rem; color: rgba(255,255,255,.85); }
+
+    /* ── No data state ── */
+    .credit-empty {
+      text-align: center; padding: 56px 24px;
+      background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.06);
+      border-radius: 18px;
+    }
+    .credit-empty-icon { opacity: .25; margin-bottom: 16px; }
+    .credit-empty-title { font-family: var(--font-display); font-size: 1.2rem; color: var(--slate-300); margin-bottom: 8px; }
+    .credit-empty-sub   { font-size: .83rem; color: var(--slate-500); line-height: 1.65; }
+
+    /* ── Loading skeleton ── */
+    .skel {
+      background: linear-gradient(90deg, rgba(255,255,255,.05) 25%, rgba(255,255,255,.09) 50%, rgba(255,255,255,.05) 75%);
+      background-size: 400% 100%;
+      animation: skel-shine 1.6s infinite;
+      border-radius: 8px;
+    }
+    @keyframes skel-shine { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .credit-hero { flex-direction: column; align-items: center; text-align: center; padding: 36px 28px; gap: 32px; }
+      .credit-provider-row { justify-content: center; }
+      .credit-stats { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 600px) {
+      .credit-hero { padding: 28px 20px; gap: 24px; }
+      .gauge-wrap  { width: 180px; height: 180px; }
+      .gauge-svg   { width: 180px; height: 180px; }
+      .gauge-score { font-size: 2.8rem; }
+      .credit-stats  { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .factors-grid  { grid-template-columns: 1fr; }
+      .loan-detail-grid { grid-template-columns: 1fr 1fr; }
+      .credit-hero-heading { font-size: 1.7rem; }
+    }
+    @media (max-width: 420px) {
+      .credit-stats { grid-template-columns: 1fr; }
+      .loan-header  { flex-direction: column; }
+      .loan-amount-col { text-align: left; }
+    }
+    @media (max-width: 640px) {
+      .modal-overlay.open { align-items: flex-end !important; padding: 0 !important; }
+      .modal-overlay.open .modal { border-radius: 24px 24px 0 0 !important; max-height: 92dvh !important; width: 100% !important; max-width: 100vw !important; }
+    }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <a href="index.html" class="sidebar-logo-mark">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </a>
+      <div>
+        <div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div>
+        <div style="font-size:.55rem;letter-spacing:.18em;color:var(--gold-500);text-transform:uppercase;">Credit Union</div>
+      </div>
+      <button class="sidebar-close-btn" id="sidebarClose" aria-label="Close"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Main</div>
+        <a href="dashboard.html"    class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+        <a href="accounts.html"     class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Accounts</a>
+        <a href="transactions.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Transactions</a>
+        <a href="transfer.html"     class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>Transfer</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Finance</div>
+        <a href="cards.html"        class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>Cards</a>
+        <a href="investments.html"  class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Investments</a>
+        <a href="credit.html"       class="sidebar-item active"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Credit &amp; Loans</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Account</div>
+        <a href="settings.html"     class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
+        <button class="sidebar-item" id="logoutBtn" style="width:100%;text-align:left;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebarAvatar">—</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarName">Loading…</div>
+          <div class="sidebar-user-tier" id="sidebarTier">ZenithOne Member</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <main class="app-main">
+    <header class="app-topbar">
+      <div class="app-topbar-left">
+        <button class="btn btn-icon btn-ghost" id="sidebarToggle"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <div class="app-topbar-title">Credit &amp; Loans</div>
+      </div>
+      <div class="app-topbar-right">
+        <div class="sidebar-avatar" id="topbarAvatar" style="cursor:pointer;" onclick="location.href='settings.html'">—</div>
+      </div>
+    </header>
+
+    <div class="app-content" id="pageContent">
+      <!-- Populated by JS -->
+      <div style="padding:80px 24px;text-align:center;color:var(--slate-500);">
+        <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24" style="opacity:.3;margin-bottom:14px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <div style="font-size:.9rem;">Loading credit report…</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/supabase-config.js"></script>
+<script src="js/auth.js"></script>
+<script>
+// ── Constants ─────────────────────────────────────────────────────────────────
+const SCORE_TIERS = [
+  { min:800, max:850, label:'Exceptional', color:'#c9a84c', bg:'rgba(201,168,76,.15)', border:'rgba(201,168,76,.4)' },
+  { min:740, max:799, label:'Very Good',   color:'#60a5fa', bg:'rgba(96,165,250,.12)', border:'rgba(96,165,250,.35)' },
+  { min:670, max:739, label:'Good',        color:'#4ade80', bg:'rgba(74,222,128,.12)', border:'rgba(74,222,128,.35)' },
+  { min:580, max:669, label:'Fair',        color:'#f97316', bg:'rgba(249,115,22,.12)', border:'rgba(249,115,22,.35)' },
+  { min:300, max:579, label:'Poor',        color:'#f87171', bg:'rgba(248,113,113,.12)','border':'rgba(248,113,113,.35)' },
+];
+const LOAN_CFG = {
+  mortgage:    { label:'Mortgage',          color:'#60a5fa', bg:'rgba(96,165,250,.12)',  icon:'<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>' },
+  auto:        { label:'Auto Loan',         color:'#a78bfa', bg:'rgba(167,139,250,.12)', icon:'<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>' },
+  personal:    { label:'Personal Loan',     color:'#c9a84c', bg:'rgba(201,168,76,.12)',  icon:'<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' },
+  student:     { label:'Student Loan',      color:'#34d399', bg:'rgba(52,211,153,.12)',  icon:'<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>' },
+  business:    { label:'Business Loan',     color:'#f97316', bg:'rgba(249,115,22,.12)',  icon:'<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>' },
+  heloc:       { label:'HELOC',             color:'#818cf8', bg:'rgba(129,140,248,.12)', icon:'<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 22V12"/></svg>' },
+  credit_line: { label:'Line of Credit',    color:'#2dd4bf', bg:'rgba(45,212,191,.12)',  icon:'<svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>' },
+};
+const LOAN_STATUS_CFG = {
+  active:     { label:'Active',      c:'#4ade80', b:'rgba(74,222,128,.1)',   bd:'rgba(74,222,128,.3)' },
+  paid_off:   { label:'Paid Off',    c:'#c9a84c', b:'rgba(201,168,76,.1)',   bd:'rgba(201,168,76,.3)' },
+  delinquent: { label:'Delinquent',  c:'#f97316', b:'rgba(249,115,22,.1)',   bd:'rgba(249,115,22,.3)' },
+  deferred:   { label:'Deferred',    c:'#60a5fa', b:'rgba(96,165,250,.1)',   bd:'rgba(96,165,250,.3)' },
+  in_default: { label:'In Default',  c:'#f87171', b:'rgba(248,113,113,.1)', bd:'rgba(248,113,113,.3)' },
+};
+
+const fmt     = n => '$' + (n||0).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
+const fmtPct  = n => (n||0).toFixed(1) + '%';
+const fmtDate = d => d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+
+// ── Gauge SVG builder ─────────────────────────────────────────────────────────
+// 270° arc gauge. r=90, cx=cy=110. Full circle circumference = 2π×90 ≈ 565.49.
+// 270° arc length = 565.49 × 0.75 = 424.12. Rotated 135° to start bottom-left.
+const C = 2 * Math.PI * 90;        // 565.49
+const ARC = C * 0.75;               // 424.12
+
+function scoreTier(score) {
+  return SCORE_TIERS.find(t => score >= t.min && score <= t.max) || SCORE_TIERS[4];
+}
+
+function buildGauge(score, animate) {
+  const tier   = scoreTier(score);
+  const pct    = Math.max(0, Math.min(1, (score - 300) / 550));
+  const filled = pct * ARC;
+  const gap    = C - filled;
+  const bgGap  = C - ARC;
+
+  return `
+  <svg class="gauge-svg" viewBox="0 0 220 220" fill="none" aria-label="Credit score gauge">
+    <!-- Decorative outer ring -->
+    <circle cx="110" cy="110" r="104" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+    <!-- Gray track (270°) -->
+    <circle cx="110" cy="110" r="90"
+      stroke="rgba(255,255,255,.09)" stroke-width="13" stroke-linecap="round"
+      stroke-dasharray="${ARC.toFixed(2)} ${bgGap.toFixed(2)}"
+      transform="rotate(135 110 110)"/>
+    <!-- Score fill -->
+    <circle cx="110" cy="110" r="90"
+      stroke="${tier.color}" stroke-width="13" stroke-linecap="round"
+      stroke-dasharray="${animate ? '0' : filled.toFixed(2)} ${C.toFixed(2)}"
+      transform="rotate(135 110 110)"
+      style="filter:drop-shadow(0 0 8px ${tier.color}66);transition:stroke-dasharray 1.4s cubic-bezier(.4,0,.2,1);"
+      id="gaugeFill"/>
+    <!-- Glow dot at current position -->
+    <circle cx="110" cy="110" r="90"
+      stroke="${tier.color}" stroke-width="2" stroke-linecap="round"
+      stroke-dasharray="1 ${C.toFixed(2)}"
+      stroke-dashoffset="${-(filled - 0.5).toFixed(2)}"
+      transform="rotate(135 110 110)"
+      style="filter:drop-shadow(0 0 4px ${tier.color});opacity:.7;"/>
+  </svg>`;
+}
+
+// ── Render helpers ────────────────────────────────────────────────────────────
+function factorImpact(val, type) {
+  if (type === 'utilization' || type === 'inquiries' || type === 'derogatory') {
+    // Lower is better
+    if (val <= 10)  return { label:'Excellent', color:'#4ade80' };
+    if (val <= 25)  return { label:'Good',      color:'#c9a84c' };
+    if (val <= 50)  return { label:'Fair',      color:'#f97316' };
+    return                  { label:'Poor',     color:'#f87171' };
+  }
+  // Higher is better (payment history, credit mix)
+  if (val >= 98) return { label:'Excellent', color:'#4ade80' };
+  if (val >= 90) return { label:'Good',      color:'#c9a84c' };
+  if (val >= 75) return { label:'Fair',      color:'#f97316' };
+  return                { label:'Poor',     color:'#f87171' };
+}
+
+function renderCreditPage(cp, loans) {
+  const score = cp?.credit_score ?? null;
+  const tier  = score ? scoreTier(score) : null;
+  const totalDebt     = (loans||[]).filter(l=>l.status==='active').reduce((s,l)=>s+(l.current_balance||0),0);
+  const monthlyDue    = (loans||[]).filter(l=>l.status==='active').reduce((s,l)=>s+(l.monthly_payment||0),0);
+  const utilization   = cp?.credit_utilization ?? null;
+
+  document.getElementById('pageContent').innerHTML = `
+    ${!cp ? renderNoCredit() : renderHero(cp, score, tier)}
+    ${renderStats(cp, totalDebt, monthlyDue, utilization)}
+    ${cp ? renderFactors(cp) : ''}
+    ${renderLoans(loans||[])}
+  `;
+
+  // Animate gauge fill after DOM renders
+  if (cp && score) {
+    setTimeout(() => {
+      const fill = document.getElementById('gaugeFill');
+      if (fill) {
+        const pct  = Math.max(0, Math.min(1,(score-300)/550));
+        const dash = (pct * ARC).toFixed(2);
+        fill.setAttribute('stroke-dasharray', `${dash} ${C.toFixed(2)}`);
+      }
+    }, 80);
+  }
+}
+
+function renderNoCredit() {
+  return `
+  <div class="credit-empty" style="margin-bottom:28px;">
+    <div class="credit-empty-icon">
+      <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    </div>
+    <div class="credit-empty-title">No Credit Report Available</div>
+    <div class="credit-empty-sub">Your credit profile will appear here once a ZenithOne credit officer has reviewed your account.<br/>Credit reports are typically available within 24–48 hours of account opening.</div>
+  </div>`;
+}
+
+function renderHero(cp, score, tier) {
+  const updatedStr = cp.score_updated_at
+    ? `Last updated ${fmtDate(cp.score_updated_at)}`
+    : 'Not yet updated';
+  return `
+  <div class="credit-hero">
+    <div class="gauge-wrap">
+      ${buildGauge(score, true)}
+      <div class="gauge-center">
+        <div class="gauge-score" style="color:${tier.color};">${score}</div>
+        <div class="gauge-max">out of 850</div>
+        <div class="gauge-tier" style="color:${tier.color};background:${tier.bg};border:1px solid ${tier.border};">${tier.label}</div>
+      </div>
+    </div>
+    <div class="credit-hero-info">
+      <div class="credit-hero-eyebrow">ZenithOne Credit Union · Credit Report</div>
+      <div class="credit-hero-heading">Your Credit<br/>Score</div>
+      <div class="credit-hero-sub">Based on your full credit profile. Scores range from 300 (Poor) to 850 (Exceptional).</div>
+      <div class="credit-provider-row">
+        <div class="credit-provider-badge">${cp.score_provider || 'FICO'} Score</div>
+        <div class="credit-provider-badge">Equifax</div>
+        <div class="credit-provider-badge">Experian</div>
+        <div class="credit-provider-badge">TransUnion</div>
+      </div>
+      <div class="credit-updated">${updatedStr}</div>
+    </div>
+  </div>`;
+}
+
+function renderStats(cp, totalDebt, monthlyDue, utilization) {
+  const util = utilization != null ? utilization : (cp?.credit_utilization ?? null);
+  const utilColor = util == null ? '#fff' : util <= 10 ? '#4ade80' : util <= 30 ? '#c9a84c' : '#f87171';
+  const ageYrs = cp ? Math.floor((cp.credit_age_months||0)/12) : null;
+  const ageMos = cp ? (cp.credit_age_months||0) % 12 : null;
+  const ageStr = cp ? (ageYrs > 0 ? `${ageYrs}y ${ageMos}m` : `${ageMos}m`) : '—';
+  return `
+  <div class="credit-stats">
+    <div class="credit-stat">
+      <div class="credit-stat-label">Total Outstanding Debt</div>
+      <div class="credit-stat-value">${fmt(totalDebt)}</div>
+      <div class="credit-stat-sub">Active loans only</div>
+    </div>
+    <div class="credit-stat">
+      <div class="credit-stat-label">Monthly Payments Due</div>
+      <div class="credit-stat-value">${fmt(monthlyDue)}</div>
+      <div class="credit-stat-sub">Combined across all loans</div>
+    </div>
+    <div class="credit-stat">
+      <div class="credit-stat-label">Credit Utilization</div>
+      <div class="credit-stat-value" style="color:${utilColor};">${util != null ? fmtPct(util) : '—'}</div>
+      <div class="credit-stat-sub">${util != null ? (util <= 30 ? 'Healthy range (≤30%)' : 'Above recommended 30%') : 'No data'}</div>
+    </div>
+    <div class="credit-stat">
+      <div class="credit-stat-label">Credit History Age</div>
+      <div class="credit-stat-value">${ageStr}</div>
+      <div class="credit-stat-sub">${cp ? 'Average account age' : 'No data'}</div>
+    </div>
+  </div>`;
+}
+
+function renderFactors(cp) {
+  const factors = [
+    {
+      name: 'Payment History', weight: '35% of score', type: 'payment',
+      value: cp.payment_history_pct ?? 100, display: fmtPct(cp.payment_history_pct ?? 100),
+      bar: cp.payment_history_pct ?? 100,
+      desc: `${(cp.payment_history_pct??100).toFixed(0)}% on-time payments`,
+    },
+    {
+      name: 'Credit Utilization', weight: '30% of score', type: 'utilization',
+      value: cp.credit_utilization ?? 0, display: fmtPct(cp.credit_utilization ?? 0),
+      bar: Math.max(0, 100 - (cp.credit_utilization ?? 0)),
+      desc: `${fmt(cp.total_credit_used||0)} of ${fmt(cp.total_credit_limit||0)} used`,
+    },
+    {
+      name: 'Credit History Length', weight: '15% of score', type: 'age',
+      value: Math.min(100, ((cp.credit_age_months||0) / 240) * 100),
+      display: (() => { const y=Math.floor((cp.credit_age_months||0)/12),m=(cp.credit_age_months||0)%12; return y>0?`${y}yr ${m}mo`:`${m}mo`; })(),
+      bar: Math.min(100, ((cp.credit_age_months||0) / 240) * 100),
+      desc: 'Average age of all accounts',
+    },
+    {
+      name: 'New Inquiries', weight: '10% of score', type: 'inquiries',
+      value: cp.hard_inquiries ?? 0, display: `${cp.hard_inquiries ?? 0}`,
+      bar: Math.max(0, 100 - ((cp.hard_inquiries||0) * 15)),
+      desc: `${cp.hard_inquiries??0} hard inquir${cp.hard_inquiries===1?'y':'ies'} in 24 months`,
+    },
+    {
+      name: 'Derogatory Marks', weight: '—', type: 'derogatory',
+      value: cp.derogatory_marks ?? 0, display: `${cp.derogatory_marks ?? 0}`,
+      bar: cp.derogatory_marks > 0 ? 10 : 100,
+      desc: `${cp.derogatory_marks??0} mark${cp.derogatory_marks===1?'':'s'} on record`,
+    },
+    {
+      name: 'Credit Mix', weight: '10% of score', type: 'mix',
+      value: cp.credit_mix_score ?? 100, display: fmtPct(cp.credit_mix_score ?? 100),
+      bar: cp.credit_mix_score ?? 100,
+      desc: 'Variety of account types',
+    },
+  ];
+
+  const cards = factors.map(f => {
+    const imp    = factorImpact(f.type === 'utilization' || f.type === 'inquiries' || f.type === 'derogatory' ? f.value : f.bar, f.type);
+    const barColor = imp.color;
+    return `
+    <div class="factor-card">
+      <div class="factor-header">
+        <div>
+          <div class="factor-name">${f.name}</div>
+          <div style="font-size:.7rem;color:var(--slate-500);margin-top:2px;">${f.desc}</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="factor-weight" style="color:var(--slate-500);">${f.weight}</div>
+        </div>
+      </div>
+      <div class="factor-bar-track">
+        <div class="factor-bar-fill" style="width:${f.bar.toFixed(1)}%;background:${barColor};"></div>
+      </div>
+      <div class="factor-value-row">
+        <div class="factor-value">${f.display}</div>
+        <div class="factor-impact" style="color:${imp.color};">${imp.label}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `
+  <div style="margin-bottom:28px;">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Credit Factors</div>
+        <div class="section-sub">What's influencing your score</div>
+      </div>
+    </div>
+    <div class="factors-grid">${cards}</div>
+  </div>`;
+}
+
+function renderLoans(loans) {
+  const hasLoans = loans.length > 0;
+  return `
+  <div>
+    <div class="section-header">
+      <div>
+        <div class="section-title">Loans &amp; Lines of Credit</div>
+        <div class="section-sub">${hasLoans ? `${loans.length} account${loans.length!==1?'s':''} on file` : 'No loan accounts'}</div>
+      </div>
+    </div>
+    ${hasLoans ? loans.map(renderLoanCard).join('') : `
+      <div class="credit-empty" style="padding:40px 24px;">
+        <div class="credit-empty-title" style="font-size:1rem;">No Loan Records</div>
+        <div class="credit-empty-sub">You have no active loans or lines of credit on file with ZenithOne.</div>
+      </div>`}
+  </div>`;
+}
+
+function renderLoanCard(loan) {
+  const cfg    = LOAN_CFG[loan.loan_type] || LOAN_CFG.personal;
+  const sc     = LOAN_STATUS_CFG[loan.status] || LOAN_STATUS_CFG.active;
+  const orig   = Number(loan.original_amount) || 1;
+  const bal    = Number(loan.current_balance) || 0;
+  const paid   = Math.max(0, Math.min(100, ((orig - bal) / orig) * 100));
+  const paidMos  = loan.paid_months || 0;
+  const termMos  = loan.term_months;
+  const remainMos = termMos ? Math.max(0, termMos - paidMos) : null;
+  const remainStr = remainMos != null ? (remainMos > 12 ? `${Math.ceil(remainMos/12)}yr remaining` : `${remainMos}mo remaining`) : '';
+  const openedStr = loan.opened_date ? fmtDate(loan.opened_date) : '—';
+  return `
+  <div class="loan-card">
+    <div class="loan-header">
+      <div style="display:flex;align-items:center;gap:14px;min-width:0;">
+        <div class="loan-icon" style="background:${cfg.bg};color:${cfg.color};">${cfg.icon}</div>
+        <div style="min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px;">
+            <div class="loan-name">${loan.loan_name}</div>
+            <span style="padding:2px 10px;border-radius:20px;font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:${sc.b};border:1px solid ${sc.bd};color:${sc.c};">${sc.label}</span>
+          </div>
+          <div class="loan-meta">${loan.lender || cfg.label} · Opened ${openedStr}${loan.account_number ? ' · ••'+loan.account_number.slice(-4) : ''}</div>
+        </div>
+      </div>
+      <div class="loan-amount-col">
+        <div class="loan-balance">${fmt(bal)}</div>
+        <div class="loan-original">of ${fmt(orig)} original</div>
+      </div>
+    </div>
+    <div class="loan-progress-row">
+      <div class="loan-progress-labels">
+        <span>${paid.toFixed(1)}% paid off${remainStr ? ' · ' + remainStr : ''}</span>
+        <span>${fmt(orig - bal)} paid</span>
+      </div>
+      <div class="loan-progress-track">
+        <div class="loan-progress-fill" style="width:${paid.toFixed(1)}%;background:linear-gradient(90deg,${cfg.color}99,${cfg.color});"></div>
+      </div>
+    </div>
+    <div class="loan-detail-grid">
+      <div>
+        <div class="loan-detail-label">Interest Rate</div>
+        <div class="loan-detail-value" style="color:${cfg.color};">${((loan.interest_rate||0)*100).toFixed(2)}% APR</div>
+      </div>
+      <div>
+        <div class="loan-detail-label">Monthly Payment</div>
+        <div class="loan-detail-value">${fmt(loan.monthly_payment)}</div>
+      </div>
+      <div>
+        <div class="loan-detail-label">Next Payment</div>
+        <div class="loan-detail-value">${fmtDate(loan.next_payment_date)}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Data loading ──────────────────────────────────────────────────────────────
+async function loadCreditPage() {
+  try {
+    const summaryRes = await callEdgeFunction('account-summary', {});
+    const sb  = window._supabase;
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { location.href = 'index.html'; return; }
+
+    const uid = session.user.id;
+
+    // Hydrate sidebar
+    const initials = (summaryRes.full_name||'').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase()||'?';
+    document.getElementById('sidebarAvatar').textContent = initials;
+    document.getElementById('topbarAvatar').textContent  = initials;
+    document.getElementById('sidebarName').textContent   = summaryRes.full_name || 'Member';
+    sb.from('profiles').select('full_name,banking_tier').eq('id',uid).single().then(({data}) => {
+      if (data) {
+        const tierLabel = {standard:'Standard Member',premium:'Premium Member',private:'Private Banking Client',black:'Black Card Member'}[data.banking_tier]||'ZenithOne Member';
+        document.getElementById('sidebarTier').textContent = tierLabel;
+      }
+    });
+
+    // Fetch credit data
+    const [{ data: cp }, { data: loans }] = await Promise.all([
+      sb.from('credit_profiles').select('*').eq('user_id', uid).maybeSingle(),
+      sb.from('loans').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
+    ]);
+
+    renderCreditPage(cp, loans || []);
+  } catch(e) {
+    console.error('loadCreditPage:', e);
+    document.getElementById('pageContent').innerHTML = `
+      <div class="credit-empty">
+        <div class="credit-empty-title">Unable to Load Credit Report</div>
+        <div class="credit-empty-sub">${e.message || 'An error occurred. Please try again.'}</div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:20px;" onclick="loadCreditPage()">Retry</button>
+      </div>`;
+  }
+}
+
+// ── Mobile sidebar ────────────────────────────────────────────────────────────
+(function(){
+  const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
+  const t=document.getElementById('sidebarToggle'),c=document.getElementById('sidebarClose');
+  function openNav(){s.classList.add('open');o.classList.add('open');t.classList.add('is-open');document.body.style.overflow='hidden';}
+  function closeNav(){s.classList.remove('open');o.classList.remove('open');t.classList.remove('is-open');document.body.style.overflow='';}
+  t.addEventListener('click',()=>s.classList.contains('open')?closeNav():openNav());
+  c.addEventListener('click',closeNav);o.addEventListener('click',closeNav);
+  s.querySelectorAll('.sidebar-item').forEach(a=>a.addEventListener('click',()=>{if(window.innerWidth<1025)closeNav();}));
+  let _tx=0;
+  s.addEventListener('touchstart',e=>{_tx=e.touches[0].clientX;},{passive:true});
+  s.addEventListener('touchend',e=>{if(_tx-e.changedTouches[0].clientX>60)closeNav();},{passive:true});
+})();
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  if (window._supabase) loadCreditPage();
+  else document.addEventListener('supabaseReady', loadCreditPage, { once: true });
+});
+</script>
+</body>
+</html>

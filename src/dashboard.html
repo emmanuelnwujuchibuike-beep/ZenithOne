@@ -185,6 +185,7 @@
           Investments
           <span class="sidebar-badge">+3.2%</span>
         </a>
+        <a href="credit.html"        class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Credit &amp; Loans</a>
       </div>
 
       <div class="sidebar-section">
@@ -657,6 +658,196 @@
       <button class="btn btn-ghost btn-sm" onclick="aLoadPins()" style="font-size:.75rem;">↻ Refresh</button>
     </div>
     <div id="aPinList" style="font-size:.85rem;color:var(--slate-400);">Loading…</div>
+  </div>
+</div>
+
+<!-- ── Admin: Credit & Loans ────────────────────────────────────────── -->
+<div class="card card-elevated" style="margin-top:24px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+    <div>
+      <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:3px;">Credit &amp; Loans</div>
+      <div style="font-size:.78rem;color:var(--slate-400);">Set member credit scores and manage loan accounts</div>
+    </div>
+  </div>
+  <div style="margin-bottom:16px;">
+    <div style="font-size:.73rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-400);margin-bottom:6px;">Select Member</div>
+    <select id="aCreditMemberSelect" class="form-input form-select" style="font-size:.85rem;padding:8px 12px;" onchange="aLoadCreditData()">
+      <option value="">— Choose a member —</option>
+    </select>
+  </div>
+  <div id="aCreditPanel" style="display:none;">
+    <div style="border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;margin-bottom:16px;">
+      <div style="font-size:.82rem;font-weight:600;color:rgba(255,255,255,.8);margin-bottom:14px;letter-spacing:.04em;">Credit Profile</div>
+      <div class="admin-two-col" style="gap:10px;margin-bottom:10px;">
+        <div>
+          <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Credit Score (300–850)</div>
+          <input type="number" id="aCreditScore" min="300" max="850" step="1" placeholder="e.g. 720"
+            style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.9rem;outline:none;" />
+        </div>
+        <div>
+          <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Score Provider</div>
+          <select id="aCreditProvider" style="width:100%;background:rgba(20,30,50,.9);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;">
+            <option value="FICO">FICO</option>
+            <option value="VantageScore">VantageScore</option>
+            <option value="Equifax">Equifax</option>
+            <option value="Experian">Experian</option>
+            <option value="TransUnion">TransUnion</option>
+          </select>
+        </div>
+      </div>
+      <div class="admin-two-col" style="gap:10px;margin-bottom:10px;">
+        <div>
+          <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Payment History %</div>
+          <input type="number" id="aCreditPayHist" min="0" max="100" step="0.1" placeholder="100"
+            style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.9rem;outline:none;" />
+        </div>
+        <div>
+          <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Credit Utilization %</div>
+          <input type="number" id="aCreditUtil" min="0" max="100" step="0.1" placeholder="0"
+            style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.9rem;outline:none;" />
+        </div>
+      </div>
+      <div class="admin-two-col" style="gap:10px;margin-bottom:10px;">
+        <div>
+          <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Credit Age (months)</div>
+          <input type="number" id="aCreditAgeMonths" min="0" step="1" placeholder="0"
+            style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.9rem;outline:none;" />
+        </div>
+        <div>
+          <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Hard Inquiries</div>
+          <input type="number" id="aCreditInquiries" min="0" step="1" placeholder="0"
+            style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.9rem;outline:none;" />
+        </div>
+      </div>
+      <div class="admin-two-col" style="gap:10px;margin-bottom:10px;">
+        <div>
+          <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Derogatory Marks</div>
+          <input type="number" id="aCreditDerog" min="0" step="1" placeholder="0"
+            style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.9rem;outline:none;" />
+        </div>
+        <div>
+          <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Credit Mix Score %</div>
+          <input type="number" id="aCreditMix" min="0" max="100" step="0.1" placeholder="100"
+            style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.9rem;outline:none;" />
+        </div>
+      </div>
+      <div class="admin-two-col" style="gap:10px;margin-bottom:12px;">
+        <div>
+          <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Total Credit Limit ($)</div>
+          <input type="number" id="aCreditLimit" min="0" step="1" placeholder="0"
+            style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.9rem;outline:none;" />
+        </div>
+        <div>
+          <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Total Credit Used ($)</div>
+          <input type="number" id="aCreditUsed" min="0" step="1" placeholder="0"
+            style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.9rem;outline:none;" />
+        </div>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Admin Note (optional)</div>
+        <input type="text" id="aCreditNote" placeholder="Internal note…"
+          style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+      </div>
+      <button class="btn btn-primary btn-sm" id="aCreditSaveBtn" onclick="aSaveCreditProfile()">Save Credit Profile</button>
+    </div>
+    <div style="border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+        <div style="font-size:.82rem;font-weight:600;color:rgba(255,255,255,.8);letter-spacing:.04em;">Loans</div>
+        <button class="btn btn-ghost btn-sm" onclick="aShowAddLoanForm()">+ Add Loan</button>
+      </div>
+      <div id="aLoansList" style="font-size:.83rem;color:var(--slate-400);">No loans.</div>
+      <div id="aAddLoanForm" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.07);">
+        <div style="font-size:.78rem;font-weight:600;color:var(--gold-400);margin-bottom:12px;letter-spacing:.08em;text-transform:uppercase;">New Loan</div>
+        <div class="admin-two-col" style="gap:10px;margin-bottom:8px;">
+          <div>
+            <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Loan Type</div>
+            <select id="aLoanType" style="width:100%;background:rgba(20,30,50,.9);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;">
+              <option value="personal">Personal</option>
+              <option value="auto">Auto</option>
+              <option value="mortgage">Mortgage</option>
+              <option value="student">Student</option>
+              <option value="business">Business</option>
+              <option value="heloc">HELOC</option>
+              <option value="credit_line">Line of Credit</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Loan Name</div>
+            <input type="text" id="aLoanName" placeholder="e.g. Home Mortgage"
+              style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+          </div>
+        </div>
+        <div class="admin-two-col" style="gap:10px;margin-bottom:8px;">
+          <div>
+            <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Lender</div>
+            <input type="text" id="aLoanLender" placeholder="e.g. ZenithOne CU"
+              style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+          </div>
+          <div>
+            <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Account # (last 4 shown)</div>
+            <input type="text" id="aLoanAcctNum" placeholder="e.g. 8847"
+              style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+          </div>
+        </div>
+        <div class="admin-two-col" style="gap:10px;margin-bottom:8px;">
+          <div>
+            <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Original Amount ($)</div>
+            <input type="number" id="aLoanOrigAmount" min="0" step="0.01" placeholder="0.00"
+              style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+          </div>
+          <div>
+            <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Current Balance ($)</div>
+            <input type="number" id="aLoanBalance" min="0" step="0.01" placeholder="0.00"
+              style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+          </div>
+        </div>
+        <div class="admin-two-col" style="gap:10px;margin-bottom:8px;">
+          <div>
+            <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Interest Rate (decimal, e.g. 0.065)</div>
+            <input type="number" id="aLoanRate" min="0" max="1" step="0.0001" placeholder="0.065"
+              style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+          </div>
+          <div>
+            <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Monthly Payment ($)</div>
+            <input type="number" id="aLoanPayment" min="0" step="0.01" placeholder="0.00"
+              style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+          </div>
+        </div>
+        <div class="admin-two-col" style="gap:10px;margin-bottom:8px;">
+          <div>
+            <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Next Payment Date</div>
+            <input type="date" id="aLoanNextDate"
+              style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+          </div>
+          <div>
+            <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Opened Date</div>
+            <input type="date" id="aLoanOpenedDate"
+              style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+          </div>
+        </div>
+        <div class="admin-two-col" style="gap:10px;margin-bottom:12px;">
+          <div>
+            <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Term (months)</div>
+            <input type="number" id="aLoanTerm" min="0" step="1" placeholder="360"
+              style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+          </div>
+          <div>
+            <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:4px;">Status</div>
+            <select id="aLoanStatus" style="width:100%;background:rgba(20,30,50,.9);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;">
+              <option value="active">Active</option>
+              <option value="paid_off">Paid Off</option>
+              <option value="delinquent">Delinquent</option>
+              <option value="deferred">Deferred</option>
+              <option value="in_default">In Default</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary btn-sm" id="aAddLoanBtn" onclick="aSubmitAddLoan()">Add Loan</button>
+          <button class="btn btn-ghost btn-sm" onclick="aHideAddLoanForm()">Cancel</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1253,6 +1444,151 @@ async function aRejectAcctRequest(requestId, memberName) {
 
 async function refreshAdminAll() {
   await Promise.all([aLoadStats(), aLoadUsers(), aLoadCardRequests(), aLoadCardPricing(), aLoadRewards(), aLoadPins(), aLoadAccountRequests()]);
+  // Populate credit member selector with latest user list
+  aPopulateCreditMemberSelect();
+}
+
+// ── Credit & Loans (Admin) ────────────────────────────────────────────────────
+let _aCreditLoansData = { credit_profile: null, loans: [] };
+
+function aPopulateCreditMemberSelect() {
+  const sel = document.getElementById('aCreditMemberSelect');
+  if (!sel) return;
+  const prev = sel.value;
+  const opts = (_aAllUsers||[]).map(u =>
+    `<option value="${u.id}">${u.full_name || u.email || u.id}</option>`
+  ).join('');
+  sel.innerHTML = '<option value="">— Choose a member —</option>' + opts;
+  if (prev) sel.value = prev;
+}
+
+async function aLoadCreditData() {
+  const uid = document.getElementById('aCreditMemberSelect').value;
+  const panel = document.getElementById('aCreditPanel');
+  if (!uid) { panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+  document.getElementById('aLoansList').innerHTML = '<span style="color:var(--slate-500);">Loading…</span>';
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_get_credit_loans', target_user_id: uid });
+    _aCreditLoansData = res;
+    aPopulateCreditForm(res.credit_profile);
+    aRenderAdminLoans(res.loans || []);
+  } catch(e) {
+    zenithToast('Failed to load credit data: ' + (e.message || e), 'error');
+  }
+}
+
+function aPopulateCreditForm(cp) {
+  const v = (id, val) => { const el = document.getElementById(id); if (el) el.value = val ?? ''; };
+  v('aCreditScore',      cp?.credit_score ?? '');
+  v('aCreditProvider',   cp?.score_provider ?? 'FICO');
+  v('aCreditPayHist',    cp?.payment_history_pct ?? '');
+  v('aCreditUtil',       cp?.credit_utilization ?? '');
+  v('aCreditAgeMonths',  cp?.credit_age_months ?? '');
+  v('aCreditInquiries',  cp?.hard_inquiries ?? '');
+  v('aCreditDerog',      cp?.derogatory_marks ?? '');
+  v('aCreditMix',        cp?.credit_mix_score ?? '');
+  v('aCreditLimit',      cp?.total_credit_limit ?? '');
+  v('aCreditUsed',       cp?.total_credit_used ?? '');
+  v('aCreditNote',       cp?.admin_note ?? '');
+}
+
+function aRenderAdminLoans(loans) {
+  const el = document.getElementById('aLoansList');
+  if (!loans.length) { el.innerHTML = '<div style="color:var(--slate-500);font-size:.83rem;">No loans on record.</div>'; return; }
+  const fmtL = n => '$' + (n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  el.innerHTML = loans.map(l => {
+    const typeLabel = {personal:'Personal',auto:'Auto',mortgage:'Mortgage',student:'Student',business:'Business',heloc:'HELOC',credit_line:'Line of Credit'}[l.loan_type]||l.loan_type;
+    const scL = {active:'#4ade80',paid_off:'#c9a84c',delinquent:'#f97316',deferred:'#60a5fa',in_default:'#f87171'}[l.status]||'#fff';
+    return `<div style="padding:12px 14px;border:1px solid rgba(255,255,255,.07);border-radius:10px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <div style="min-width:0;">
+        <div style="font-size:.83rem;color:#fff;margin-bottom:2px;">${l.loan_name} <span style="font-size:.68rem;color:${scL};padding:2px 8px;border-radius:8px;background:rgba(255,255,255,.06);margin-left:4px;">${l.status}</span></div>
+        <div style="font-size:.72rem;color:var(--slate-400);">${typeLabel} · ${fmtL(l.current_balance)} remaining</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" style="font-size:.7rem;color:#f87171;border-color:rgba(248,113,113,.3);" onclick="aDeleteLoan('${l.id}','${l.loan_name.replace(/'/g,"\\'")}')">Delete</button>
+    </div>`;
+  }).join('');
+}
+
+async function aSaveCreditProfile() {
+  const uid = document.getElementById('aCreditMemberSelect').value;
+  if (!uid) return zenithToast('Select a member first', 'error');
+  const btn = document.getElementById('aCreditSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  const g = id => { const v = document.getElementById(id)?.value; return v === '' ? null : Number(v); };
+  const gs = id => document.getElementById(id)?.value || null;
+  try {
+    await callEdgeFunction('admin-data', {
+      action: 'admin_upsert_credit',
+      target_user_id: uid,
+      credit_score:        g('aCreditScore'),
+      score_provider:      gs('aCreditProvider'),
+      payment_history_pct: g('aCreditPayHist'),
+      credit_utilization:  g('aCreditUtil'),
+      credit_age_months:   g('aCreditAgeMonths'),
+      hard_inquiries:      g('aCreditInquiries'),
+      derogatory_marks:    g('aCreditDerog'),
+      credit_mix_score:    g('aCreditMix'),
+      total_credit_limit:  g('aCreditLimit'),
+      total_credit_used:   g('aCreditUsed'),
+      admin_note:          gs('aCreditNote'),
+    });
+    zenithToast('Credit profile saved', 'success');
+  } catch(e) {
+    zenithToast('Error: ' + (e.message || e), 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save Credit Profile';
+  }
+}
+
+function aShowAddLoanForm()  { document.getElementById('aAddLoanForm').style.display = 'block'; }
+function aHideAddLoanForm()  { document.getElementById('aAddLoanForm').style.display = 'none'; }
+
+async function aSubmitAddLoan() {
+  const uid = document.getElementById('aCreditMemberSelect').value;
+  if (!uid) return zenithToast('Select a member first', 'error');
+  const loanName = document.getElementById('aLoanName').value.trim();
+  if (!loanName) return zenithToast('Loan name is required', 'error');
+  const btn = document.getElementById('aAddLoanBtn');
+  btn.disabled = true; btn.textContent = 'Adding…';
+  const g = id => { const v = document.getElementById(id)?.value; return v === '' ? null : v; };
+  try {
+    await callEdgeFunction('admin-data', {
+      action: 'admin_add_loan',
+      target_user_id: uid,
+      loan_type:        g('aLoanType'),
+      loan_name:        loanName,
+      lender:           g('aLoanLender'),
+      account_number:   g('aLoanAcctNum'),
+      original_amount:  g('aLoanOrigAmount') != null ? Number(g('aLoanOrigAmount')) : null,
+      current_balance:  g('aLoanBalance')    != null ? Number(g('aLoanBalance'))    : null,
+      interest_rate:    g('aLoanRate')       != null ? Number(g('aLoanRate'))       : null,
+      monthly_payment:  g('aLoanPayment')    != null ? Number(g('aLoanPayment'))    : null,
+      next_payment_date:g('aLoanNextDate'),
+      opened_date:      g('aLoanOpenedDate'),
+      term_months:      g('aLoanTerm')       != null ? Number(g('aLoanTerm'))       : null,
+      status:           g('aLoanStatus'),
+    });
+    zenithToast('Loan added', 'success');
+    aHideAddLoanForm();
+    await aLoadCreditData();
+  } catch(e) {
+    zenithToast('Error: ' + (e.message || e), 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Add Loan';
+  }
+}
+
+async function aDeleteLoan(loanId, loanName) {
+  const ok = await zenithConfirm(`Delete loan "${loanName}"? This cannot be undone.`, { confirmLabel: 'Delete', destructive: true });
+  if (!ok) return;
+  try {
+    await callEdgeFunction('admin-data', { action: 'admin_delete_loan', loan_id: loanId });
+    zenithToast('Loan deleted', 'success');
+    await aLoadCreditData();
+  } catch(e) {
+    zenithToast('Error: ' + (e.message || e), 'error');
+  }
 }
 
 // ── Reward Points ─────────────────────────────────────────────────────────────

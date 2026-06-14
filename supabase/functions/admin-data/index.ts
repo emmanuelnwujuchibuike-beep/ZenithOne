@@ -1105,6 +1105,101 @@ Deno.serve(async (req: Request): Promise<Response> => {
       return json({ success: true, message: 'Account request rejected.' });
     }
 
+    // ── Get a member's credit profile + loans (admin) ────────────────────────
+    if (action === 'admin_get_credit_loans') {
+      const { target_user_id } = body as { action: string; target_user_id: string };
+      if (!target_user_id) throw new Error('target_user_id required');
+      const [{ data: cp }, { data: loans }] = await Promise.all([
+        supabase.from('credit_profiles').select('*').eq('user_id', target_user_id).maybeSingle(),
+        supabase.from('loans').select('*').eq('user_id', target_user_id).order('created_at', { ascending: false }),
+      ]);
+      return json({ credit_profile: cp || null, loans: loans || [] });
+    }
+
+    // ── Create / update a member's credit profile (admin) ─────────────────────
+    if (action === 'admin_upsert_credit') {
+      const { target_user_id, credit_score, score_provider, payment_history_pct,
+              credit_utilization, credit_age_months, hard_inquiries, derogatory_marks,
+              total_credit_limit, total_credit_used, credit_mix_score, admin_note } =
+        body as { action: string; target_user_id: string; credit_score: number;
+                  score_provider?: string; payment_history_pct?: number;
+                  credit_utilization?: number; credit_age_months?: number;
+                  hard_inquiries?: number; derogatory_marks?: number;
+                  total_credit_limit?: number; total_credit_used?: number;
+                  credit_mix_score?: number; admin_note?: string; };
+      if (!target_user_id) throw new Error('target_user_id required');
+      if (!credit_score || credit_score < 300 || credit_score > 850) throw new Error('credit_score must be 300–850');
+
+      const payload = {
+        user_id:             target_user_id,
+        credit_score,
+        score_provider:      score_provider      ?? 'FICO',
+        score_updated_at:    new Date().toISOString(),
+        payment_history_pct: payment_history_pct ?? 100,
+        credit_utilization:  credit_utilization  ?? 0,
+        credit_age_months:   credit_age_months   ?? 0,
+        hard_inquiries:      hard_inquiries       ?? 0,
+        derogatory_marks:    derogatory_marks     ?? 0,
+        total_credit_limit:  total_credit_limit   ?? 0,
+        total_credit_used:   total_credit_used    ?? 0,
+        credit_mix_score:    credit_mix_score     ?? 100,
+        admin_note:          admin_note           ?? null,
+      };
+      const { error } = await supabase.from('credit_profiles')
+        .upsert(payload, { onConflict: 'user_id' });
+      if (error) throw error;
+      return json({ success: true, message: 'Credit profile saved.' });
+    }
+
+    // ── Add a loan for a member (admin) ───────────────────────────────────────
+    if (action === 'admin_add_loan') {
+      const { target_user_id, loan_type, loan_name, lender, account_number,
+              original_amount, current_balance, interest_rate, monthly_payment,
+              next_payment_date, term_months, paid_months, opened_date, status } =
+        body as { action: string; target_user_id: string; loan_type: string;
+                  loan_name: string; lender?: string; account_number?: string;
+                  original_amount: number; current_balance: number;
+                  interest_rate: number; monthly_payment: number;
+                  next_payment_date?: string; term_months?: number;
+                  paid_months?: number; opened_date?: string; status?: string; };
+      if (!target_user_id) throw new Error('target_user_id required');
+      if (!loan_type)      throw new Error('loan_type required');
+      if (!loan_name)      throw new Error('loan_name required');
+      const { error } = await supabase.from('loans').insert({
+        user_id: target_user_id, loan_type, loan_name,
+        lender: lender || null, account_number: account_number || null,
+        original_amount: original_amount || 0, current_balance: current_balance || 0,
+        interest_rate: interest_rate || 0, monthly_payment: monthly_payment || 0,
+        next_payment_date: next_payment_date || null,
+        term_months: term_months || null, paid_months: paid_months || 0,
+        opened_date: opened_date || null, status: status || 'active',
+      });
+      if (error) throw error;
+      return json({ success: true, message: 'Loan added.' });
+    }
+
+    // ── Update a loan record (admin) ──────────────────────────────────────────
+    if (action === 'admin_update_loan') {
+      const { loan_id, ...updates } = body as { action: string; loan_id: string; [k: string]: unknown };
+      if (!loan_id) throw new Error('loan_id required');
+      const allowed = ['loan_name','lender','current_balance','interest_rate','monthly_payment',
+                       'next_payment_date','paid_months','status','account_number'];
+      const patch: Record<string, unknown> = {};
+      for (const k of allowed) if (k in updates) patch[k] = updates[k];
+      const { error } = await supabase.from('loans').update(patch).eq('id', loan_id);
+      if (error) throw error;
+      return json({ success: true, message: 'Loan updated.' });
+    }
+
+    // ── Delete a loan record (admin) ──────────────────────────────────────────
+    if (action === 'admin_delete_loan') {
+      const { loan_id } = body as { action: string; loan_id: string };
+      if (!loan_id) throw new Error('loan_id required');
+      const { error } = await supabase.from('loans').delete().eq('id', loan_id);
+      if (error) throw error;
+      return json({ success: true, message: 'Loan removed.' });
+    }
+
     throw new Error(`Unknown action: ${action}`);
 
   } catch (err) {

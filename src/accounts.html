@@ -815,37 +815,32 @@ async function submitNewAccount() {
 
 // ── Main load ─────────────────────────────────────────────────────────────────
 async function loadAccountsPage() {
-  const sb = window._supabase;
-  if (!sb) return;
-
   try {
+    // callEdgeFunction awaits Supabase bootstrap internally — safe to call immediately
+    const summaryRes = await callEdgeFunction('account-summary', {});
+
+    // _supabase is guaranteed ready after callEdgeFunction resolves
+    const sb = window._supabase;
     const { data: { session } } = await sb.auth.getSession();
     if (!session) { location.href = 'index.html'; return; }
 
     const uid = session.user.id;
 
-    // Parallel fetch: account-summary (accounts + profile) + pending requests
-    const [summaryRes, { data: pendingReqs }] = await Promise.all([
-      callEdgeFunction('account-summary', {}),
-      sb.from('account_requests')
-        .select('id, account_type, account_name, initial_deposit, status, created_at')
-        .eq('user_id', uid)
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false }),
-    ]);
+    // Fetch pending requests now that sb is ready
+    const { data: pendingReqs } = await sb
+      .from('account_requests')
+      .select('id, account_type, account_name, initial_deposit, status, created_at')
+      .eq('user_id', uid)
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
 
-    // Hydrate sidebar with real user data
-    if (summaryRes.full_name) {
-      hydrateSidebar(summaryRes.full_name, _profile.banking_tier);
-    }
+    // Hydrate sidebar (initial pass with name from summary)
+    hydrateSidebar(summaryRes.full_name, null);
 
-    // Also fetch profile tier separately (not in account-summary)
+    // Fetch profile tier and re-hydrate
     sb.from('profiles').select('full_name, banking_tier').eq('id', uid).single()
       .then(({ data }) => {
-        if (data) {
-          _profile = data;
-          hydrateSidebar(data.full_name, data.banking_tier);
-        }
+        if (data) { _profile = data; hydrateSidebar(data.full_name, data.banking_tier); }
       });
 
     _accts = summaryRes.accounts || [];
@@ -880,8 +875,10 @@ async function loadAccountsPage() {
 })();
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
+// supabase-config.js bootstrap is async; _supabase won't be set at DOMContentLoaded.
+// We always listen for supabaseReady and also call directly if already set.
 document.addEventListener('DOMContentLoaded', () => {
-  if (window.callEdgeFunction) loadAccountsPage();
+  if (window._supabase) loadAccountsPage();
   else document.addEventListener('supabaseReady', loadAccountsPage, { once: true });
 });
 </script>

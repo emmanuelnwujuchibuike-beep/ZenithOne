@@ -23,6 +23,83 @@
     .spending-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
     .market-ticker { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.04); }
     .welcome-banner { background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(36,71,110,.2)); border:1px solid rgba(201,168,76,.2); border-radius:16px; padding:24px 28px; margin-bottom:28px; display:flex; align-items:center; justify-content:space-between; }
+
+    /* ═══════ PREMIUM ACCOUNT HERO ═══════ */
+    .acct-hero { position:relative; border-radius:22px; overflow:hidden; margin-bottom:28px;
+      background:linear-gradient(135deg,#06101f 0%,#0b1a30 38%,#102640 62%,#0a1526 100%);
+      border:1px solid rgba(201,168,76,.34);
+      box-shadow:0 30px 70px -24px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.03) inset,0 1px 0 rgba(201,168,76,.25) inset; }
+    .acct-hero-mesh { position:absolute; inset:0; pointer-events:none; z-index:1;
+      background:radial-gradient(ellipse 60% 55% at 12% 14%,rgba(201,168,76,.18) 0%,transparent 58%),radial-gradient(ellipse 55% 50% at 90% 88%,rgba(56,120,200,.2) 0%,transparent 60%); }
+    .acct-hero-shimmer { position:absolute; inset:0; pointer-events:none; z-index:2; border-radius:22px;
+      background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.05) 50%,transparent 62%);
+      background-size:300% 100%; animation:acctSheen 7s infinite linear; }
+    @keyframes acctSheen { 0%{background-position:200% 0} 100%{background-position:-100% 0} }
+    .acct-hero-inner { position:relative; z-index:3; padding:26px 30px; display:flex; flex-direction:column; gap:22px; }
+    .acct-hero-top { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+    .acct-hero-eyebrow { font-size:.62rem; letter-spacing:.28em; text-transform:uppercase; color:rgba(201,168,76,.7); margin-bottom:6px; }
+    .acct-hero-type { font-family:var(--font-display); font-size:1.45rem; color:#fff; letter-spacing:.01em; }
+    .acct-hero-status { display:inline-flex; align-items:center; gap:6px; font-size:.62rem; letter-spacing:.12em; text-transform:uppercase; color:#4ade80; margin-top:6px; }
+    .acct-hero-status::before { content:''; width:6px; height:6px; border-radius:50%; background:#4ade80; box-shadow:0 0 8px #4ade80; }
+    /* Account switcher chips */
+    .acct-switcher { display:flex; gap:8px; flex-wrap:wrap; }
+    .acct-chip { display:flex; flex-direction:column; gap:2px; padding:8px 14px; border-radius:12px; cursor:pointer;
+      border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.035); transition:all .18s; min-width:96px; }
+    .acct-chip:hover { border-color:rgba(201,168,76,.4); background:rgba(201,168,76,.06); }
+    .acct-chip.sel { border-color:rgba(201,168,76,.6); background:rgba(201,168,76,.12); box-shadow:0 0 0 1px rgba(201,168,76,.25) inset; }
+    .acct-chip-type { font-size:.72rem; font-weight:600; color:rgba(255,255,255,.82); text-transform:capitalize; }
+    .acct-chip.sel .acct-chip-type { color:var(--gold-400); }
+    .acct-chip-num { font-size:.64rem; color:rgba(255,255,255,.4); font-family:'Courier New',monospace; letter-spacing:.05em; }
+    /* Number row */
+    .acct-hero-numrow { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+    .acct-hero-number { font-family:'Courier New',monospace; font-size:1.85rem; letter-spacing:.18em; color:#f4ead0;
+      text-shadow:0 2px 12px rgba(0,0,0,.5); line-height:1; }
+    .acct-copy-btn { display:inline-flex; align-items:center; gap:7px; padding:9px 16px; border-radius:10px; cursor:pointer;
+      border:1px solid rgba(201,168,76,.4); background:rgba(201,168,76,.1); color:var(--gold-400); font-size:.74rem; font-weight:600;
+      letter-spacing:.04em; transition:all .18s; }
+    .acct-copy-btn:hover { background:rgba(201,168,76,.18); border-color:rgba(201,168,76,.65); }
+    /* Bottom row */
+    .acct-hero-bottom { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap;
+      padding-top:18px; border-top:1px solid rgba(255,255,255,.08); }
+    .acct-hero-metric-label { font-size:.6rem; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.34); margin-bottom:5px; }
+    .acct-hero-balance { font-family:var(--font-display); font-size:1.7rem; color:#fff; }
+    .acct-hero-meta { font-size:.85rem; color:rgba(255,255,255,.66); font-family:'Courier New',monospace; letter-spacing:.06em; }
+    .acct-hero-actions { display:flex; gap:10px; }
+    .acct-act-btn { display:inline-flex; align-items:center; gap:8px; padding:11px 20px; border-radius:12px; cursor:pointer; border:none;
+      font-size:.82rem; font-weight:600; letter-spacing:.02em; transition:all .18s; }
+    .acct-act-send { background:linear-gradient(135deg,#c9a84c,#b8960a); color:#06101f; box-shadow:0 8px 22px -8px rgba(201,168,76,.7); }
+    .acct-act-send:hover { filter:brightness(1.08); transform:translateY(-1px); }
+    .acct-act-receive { background:rgba(255,255,255,.06); color:#fff; border:1px solid rgba(255,255,255,.14); }
+    .acct-act-receive:hover { background:rgba(255,255,255,.1); border-color:rgba(201,168,76,.35); }
+    @media(max-width:640px){
+      .acct-hero-number { font-size:1.4rem; }
+      .acct-hero-inner { padding:20px; }
+      .acct-hero-actions { width:100%; }
+      .acct-act-btn { flex:1; justify-content:center; }
+    }
+
+    /* ═══════ SEND / RECEIVE MODALS ═══════ */
+    .zmodal { display:none; position:fixed; inset:0; z-index:650; background:rgba(0,0,0,.72); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:16px; }
+    .zmodal.open { display:flex; }
+    .zsheet { background:linear-gradient(160deg,#0b1628,#0e2040); border:1px solid rgba(201,168,76,.2); border-radius:20px; width:100%; max-width:440px; max-height:92dvh; overflow-y:auto; }
+    .zsheet-head { padding:24px 26px 0; }
+    .zsheet-title { font-family:var(--font-display); font-size:1.35rem; color:#fff; }
+    .zsheet-sub { font-size:.8rem; color:var(--slate-400); margin-top:4px; }
+    .zsheet-body { padding:20px 26px 26px; }
+    .zfield-label { font-size:.72rem; letter-spacing:.04em; color:var(--slate-400); margin:14px 0 7px; text-transform:uppercase; }
+    .zinput { width:100%; padding:12px 14px; border-radius:11px; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:#fff; font-size:.95rem; outline:none; transition:border-color .15s; }
+    .zinput:focus { border-color:rgba(201,168,76,.5); }
+    .zinput.mono { font-family:'Courier New',monospace; letter-spacing:.14em; }
+    .zbtn-primary { width:100%; padding:14px; border-radius:12px; border:none; cursor:pointer; font-size:.9rem; font-weight:700; letter-spacing:.03em; background:linear-gradient(135deg,#c9a84c,#b8960a); color:#06101f; transition:all .18s; margin-top:20px; }
+    .zbtn-primary:hover:not(:disabled) { filter:brightness(1.08); }
+    .zbtn-primary:disabled { opacity:.5; cursor:not-allowed; }
+    .zbtn-ghost { width:100%; padding:12px; border-radius:12px; cursor:pointer; font-size:.82rem; background:transparent; border:1px solid rgba(255,255,255,.1); color:var(--slate-300); margin-top:10px; }
+    .zrecip-chip { display:flex; align-items:center; gap:10px; padding:12px 14px; border-radius:12px; background:rgba(74,222,128,.08); border:1px solid rgba(74,222,128,.3); margin-top:10px; }
+    .zerr { font-size:.78rem; color:var(--red-400); margin-top:12px; min-height:18px; }
+    .zpin-row { display:flex; gap:10px; justify-content:center; margin-top:8px; }
+    .zpin-box { width:52px; height:58px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:#fff; font-size:1.5rem; text-align:center; outline:none; }
+    .zpin-box:focus { border-color:rgba(201,168,76,.6); }
+    .zacct-receive-card { border-radius:14px; padding:18px 20px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); margin-bottom:10px; }
   </style>
 </head>
 <body>
@@ -135,6 +212,61 @@
         </div>
       </div>
 
+      <!-- ═══ PREMIUM ACCOUNT HERO ═══ -->
+      <div class="acct-hero" id="acctHero">
+        <div class="acct-hero-mesh"></div>
+        <div class="acct-hero-shimmer"></div>
+        <div class="acct-hero-inner">
+
+          <!-- Top: account name + status · switcher -->
+          <div class="acct-hero-top">
+            <div>
+              <div class="acct-hero-eyebrow">ZenithOne Credit Union · Account</div>
+              <div class="acct-hero-type" id="heroType">Checking Account</div>
+              <div class="acct-hero-status" id="heroStatus">Active</div>
+            </div>
+            <div class="acct-switcher" id="heroSwitcher">
+              <!-- account chips populated by JS -->
+            </div>
+          </div>
+
+          <!-- Account number -->
+          <div class="acct-hero-numrow">
+            <div>
+              <div class="acct-hero-metric-label">Account Number</div>
+              <div class="acct-hero-number" id="heroNumber">•••• •••• ••</div>
+            </div>
+            <button class="acct-copy-btn" id="heroCopyBtn" onclick="copyAcctNumber()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy
+            </button>
+          </div>
+
+          <!-- Bottom: balance · routing · actions -->
+          <div class="acct-hero-bottom">
+            <div>
+              <div class="acct-hero-metric-label">Available Balance</div>
+              <div class="acct-hero-balance" id="heroBalance">$0.00</div>
+            </div>
+            <div>
+              <div class="acct-hero-metric-label">Routing Number</div>
+              <div class="acct-hero-meta" id="heroRouting">021000021</div>
+            </div>
+            <div class="acct-hero-actions">
+              <button class="acct-act-btn acct-act-send" onclick="openSendModal()">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Send Money
+              </button>
+              <button class="acct-act-btn acct-act-receive" onclick="openReceiveModal()">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
+                Receive
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
       <!-- Stat Cards -->
       <div class="grid-4" style="gap:20px;margin-bottom:28px;">
         <div class="stat-card">
@@ -172,14 +304,14 @@
       </div>
 
       <!-- Middle row -->
-      <div style="display:grid;grid-template-columns:1fr 380px;gap:24px;margin-bottom:24px;">
+      <div class="dash-middle-row" style="display:grid;grid-template-columns:1fr 380px;gap:24px;margin-bottom:24px;">
 
         <!-- Account Balance Chart -->
         <div class="card card-elevated">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
             <div>
               <div style="font-family:var(--font-display);font-size:1.25rem;">Balance History</div>
-              <div style="font-size:.8rem;color:var(--slate-400);margin-top:2px;">Last 12 months</div>
+              <div style="font-size:.8rem;color:var(--slate-400);margin-top:2px;">Reconstructed from your transactions</div>
             </div>
             <div class="tabs" style="width:auto;flex:none;">
               <div class="tab-item active" onclick="switchChart('1M',this)">1M</div>
@@ -191,19 +323,19 @@
         </div>
 
         <!-- Quick Actions + My Accounts -->
-        <div style="display:flex;flex-direction:column;gap:20px;">
+        <div class="dash-right-panel" style="display:flex;flex-direction:column;gap:20px;">
           <!-- Quick Actions -->
           <div class="card card-elevated">
             <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:18px;">Quick Actions</div>
-            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
-              <a href="transfer.html" class="quick-action">
+            <div class="quick-actions-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+              <button class="quick-action" onclick="openSendModal()">
                 <div class="quick-action-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg></div>
                 <div class="quick-action-label">Send</div>
-              </a>
-              <a href="transfer.html?type=receive" class="quick-action">
+              </button>
+              <button class="quick-action" onclick="openReceiveModal()">
                 <div class="quick-action-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M8 18l4 4 4-4M8 6l4-4 4 4"/></svg></div>
                 <div class="quick-action-label">Receive</div>
-              </a>
+              </button>
               <a href="cards.html" class="quick-action">
                 <div class="quick-action-icon"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div>
                 <div class="quick-action-label">Cards</div>
@@ -222,44 +354,14 @@
               <a href="accounts.html" style="font-size:.75rem;color:var(--gold-500);">View all</a>
             </div>
             <div id="accountsList">
-              <!-- Populated by JS -->
-              <div class="account-card-mini">
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(201,168,76,.12);display:flex;align-items:center;justify-content:center;color:var(--gold-400);">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-                  </div>
-                  <div>
-                    <div style="font-size:.85rem;font-weight:500;" id="dashCheckingLabel">Checking</div>
-                    <div style="font-size:.72rem;color:var(--slate-500);">ZenithOne Private</div>
-                  </div>
-                </div>
-                <div style="text-align:right;">
-                  <div style="font-family:var(--font-display);font-size:1rem;" id="checkingBal">$0.00</div>
-                  <div class="badge badge-green" style="font-size:.6rem;padding:2px 6px;">Active</div>
-                </div>
-              </div>
-              <div class="account-card-mini">
-                <div style="display:flex;align-items:center;gap:12px;">
-                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(96,165,250,.1);display:flex;align-items:center;justify-content:center;color:var(--blue-400);">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                  </div>
-                  <div>
-                    <div style="font-size:.85rem;font-weight:500;" id="dashSavingsLabel">High-Yield Savings</div>
-                    <div style="font-size:.72rem;color:var(--slate-500);">4.85% APY</div>
-                  </div>
-                </div>
-                <div style="text-align:right;">
-                  <div style="font-family:var(--font-display);font-size:1rem;" id="savingsBal">$0.00</div>
-                  <div class="badge badge-green" style="font-size:.6rem;padding:2px 6px;">Active</div>
-                </div>
-              </div>
+              <div style="color:var(--slate-500);font-size:.85rem;padding:8px 0;">Loading accounts…</div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Bottom row -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 320px;gap:24px;">
+      <div class="dash-bottom-row" style="display:grid;grid-template-columns:1fr 1fr 320px;gap:24px;">
 
         <!-- Recent Transactions -->
         <div class="card card-elevated">
@@ -334,14 +436,34 @@
             </div>
           </div>
 
-          <!-- Market Snapshot -->
+          <!-- Wealth Snapshot -->
           <div class="card card-elevated" style="flex:1;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-              <div style="font-family:var(--font-display);font-size:1.1rem;">Markets</div>
-              <div style="font-size:.65rem;color:var(--slate-500);letter-spacing:.05em;">LIVE</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+              <div style="font-family:var(--font-display);font-size:1.1rem;">Wealth Snapshot</div>
+              <a href="investments.html" style="font-size:.72rem;color:var(--gold-500);">Portfolio</a>
             </div>
-            <div id="marketTickers">
-              <!-- populated by JS -->
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.05);">
+                <div style="display:flex;align-items:center;gap:11px;">
+                  <div style="width:34px;height:34px;border-radius:10px;background:rgba(74,222,128,.1);display:flex;align-items:center;justify-content:center;color:#4ade80;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div>
+                  <div style="font-size:.82rem;color:var(--slate-300);">Portfolio Value</div>
+                </div>
+                <div style="font-family:var(--font-display);font-size:1rem;color:#fff;" id="snapPortfolio">$0.00</div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.05);">
+                <div style="display:flex;align-items:center;gap:11px;">
+                  <div style="width:34px;height:34px;border-radius:10px;background:rgba(96,165,250,.1);display:flex;align-items:center;justify-content:center;color:#60a5fa;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div>
+                  <div style="font-size:.82rem;color:var(--slate-300);">Available Credit</div>
+                </div>
+                <div style="font-family:var(--font-display);font-size:1rem;color:#fff;" id="snapCredit">$0.00</div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:11px;">
+                  <div style="width:34px;height:34px;border-radius:10px;background:rgba(201,168,76,.1);display:flex;align-items:center;justify-content:center;color:var(--gold-400);"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+                  <div style="font-size:.82rem;color:var(--slate-300);">Reward Points</div>
+                </div>
+                <div style="font-family:var(--font-display);font-size:1rem;color:var(--gold-400);" id="snapPoints">0</div>
+              </div>
             </div>
           </div>
         </div>
@@ -386,7 +508,7 @@
     </div>
 
     <!-- Two column -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
+    <div class="admin-two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
       <div class="card card-elevated">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><div style="font-family:var(--font-display);font-size:1.25rem;">Recent Activity</div><div style="font-size:.75rem;color:var(--slate-500);">All users</div></div>
         <div id="aRecentTxns"><div style="color:var(--slate-500);font-size:.85rem;">Loading…</div></div>
@@ -405,19 +527,237 @@
       </div>
       <div id="aUsersTable"><div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading members…</div></div>
     </div>
+
+    <!-- Card Requests -->
+    <div class="card card-elevated" style="margin-top:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="font-family:var(--font-display);font-size:1.25rem;">Card Requests</div>
+          <div id="aCardReqBadge" style="display:none;font-size:.7rem;letter-spacing:.08em;color:#f59e0b;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);padding:3px 10px;border-radius:99px;"></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <select id="aCardReqFilter" class="form-input form-select" style="width:160px;padding:7px 12px;font-size:.82rem;" onchange="aRenderCardRequests()">
+            <option value="pending">Pending</option>
+            <option value="all">All Requests</option>
+            <option value="issued">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" onclick="aLoadCardRequests()">Refresh</button>
+        </div>
+      </div>
+      <div id="aCardRequestsList"><div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading requests…</div></div>
+    </div>
+
+    <!-- Account Requests -->
+    <div class="card card-elevated" style="margin-top:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+        <div>
+          <div style="font-family:var(--font-display);font-size:1.25rem;">Account Requests</div>
+          <div style="font-size:.78rem;color:var(--slate-400);margin-top:2px;">Review and approve member account opening requests</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <select class="form-input form-select" id="aAcctReqFilter" onchange="aLoadAccountRequests()" style="font-size:.8rem;padding:6px 10px;width:auto;">
+            <option value="pending">Pending</option>
+            <option value="all">All Requests</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <button class="btn btn-ghost btn-sm" onclick="aLoadAccountRequests()">Refresh</button>
+        </div>
+      </div>
+      <div id="aAcctRequestsList"><div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading requests…</div></div>
+    </div>
+
+    <!-- Card Pricing -->
+    <div class="card card-elevated" style="margin-top:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
+        <div style="font-family:var(--font-display);font-size:1.25rem;">Card Pricing</div>
+        <div style="font-size:.75rem;color:var(--slate-500);">Base annual fee (Visa). Network surcharges added on top.</div>
+      </div>
+      <div style="font-size:.8rem;color:var(--slate-400);margin-bottom:16px;">Surcharges: <span style="color:var(--slate-300);">Visa +$0 · Discover +$30 · Mastercard +$60 · Amex +$120</span></div>
+      <div id="aCardPricingList"><div style="color:var(--slate-500);font-size:.85rem;">Loading prices…</div></div>
+    </div>
+
+    <!-- Card Number Backfill -->
+    <div class="card card-elevated" style="margin-top:24px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+        <div>
+          <div style="font-family:var(--font-display);font-size:1.25rem;margin-bottom:4px;">Card Number Backfill</div>
+          <div style="font-size:.82rem;color:var(--slate-400);max-width:520px;line-height:1.55;">Assigns realistic, network-matched card numbers (Visa / Mastercard / Amex / Discover) to any issued cards that don't have one yet. Safe to run repeatedly.</div>
+          <div id="aBackfillResult" style="font-size:.8rem;color:#4ade80;margin-top:10px;display:none;"></div>
+        </div>
+        <button class="btn btn-primary" id="aBackfillBtn" onclick="aRunBackfill()" style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+          Backfill Card Numbers
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Admin: Reward Points Management -->
+<div id="aRewardsSection" style="display:none;max-width:1400px;margin:24px auto 0;">
+  <div class="card card-elevated" style="padding:24px 28px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:3px;">Reward Points</div>
+        <div style="font-size:.78rem;color:var(--slate-400);">Give points to members · 20 pts auto-earned per transaction</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="aLoadRewards()" style="font-size:.75rem;">↻ Refresh</button>
+    </div>
+    <div id="aRewardsList" style="font-size:.85rem;color:var(--slate-400);">Loading…</div>
+  </div>
+</div>
+
+<!-- Admin: PIN Management -->
+<div id="aPinSection" style="display:none;max-width:1400px;margin:24px auto 0;">
+  <div class="card card-elevated" style="padding:24px 28px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
+      <div>
+        <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:3px;">Transaction PIN Management</div>
+        <div style="font-size:.78rem;color:var(--slate-400);">View PIN status per member · Reset if forgotten</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="aLoadPins()" style="font-size:.75rem;">↻ Refresh</button>
+    </div>
+    <div id="aPinList" style="font-size:.85rem;color:var(--slate-400);">Loading…</div>
+  </div>
+</div>
+
+<!-- Admin: Give Points Modal -->
+<div id="aGivePointsModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)aCloseGivePoints()">
+  <div class="card card-elevated" style="width:420px;max-width:96vw;padding:28px;position:relative;" onclick="event.stopPropagation()">
+    <button onclick="aCloseGivePoints()" style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;">✕</button>
+    <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:4px;">Give Reward Points</div>
+    <div style="font-size:.8rem;color:var(--slate-400);margin-bottom:20px;" id="aGivePtsName">Member</div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.75rem;color:var(--slate-400);margin-bottom:6px;">Points to Give</div>
+      <input type="number" min="1" step="1" id="aGivePtsInput" placeholder="e.g. 500"
+        style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;color:#fff;font-size:.9rem;outline:none;" />
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:.75rem;color:var(--slate-400);margin-bottom:6px;">Reason (optional)</div>
+      <input type="text" id="aGivePtsReason" placeholder="e.g. Welcome bonus"
+        style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;color:#fff;font-size:.9rem;outline:none;" />
+    </div>
+    <div id="aGivePtsErr" style="display:none;font-size:.76rem;color:var(--red-400);margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-primary" style="flex:1;" id="aGivePtsBtn" onclick="aSubmitGivePoints()">Give Points</button>
+      <button class="btn btn-ghost" onclick="aCloseGivePoints()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Card Management Modal -->
+<div id="aCardsModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)aCloseAdminCards()">
+  <div class="card card-elevated" style="width:540px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column;position:relative;overflow:hidden;" onclick="event.stopPropagation()">
+    <button onclick="aCloseAdminCards()" style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;z-index:2;">✕</button>
+    <div style="padding:24px 28px 16px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;">
+      <div style="font-family:var(--font-display);font-size:1.25rem;margin-bottom:3px;">Manage Member Cards</div>
+      <div id="aCardsModalMember" style="font-size:.8rem;color:var(--gold-400);"></div>
+    </div>
+    <div id="aCardsModalList" style="overflow-y:auto;flex:1;padding:16px 28px 20px;">
+      <div style="color:var(--slate-500);font-size:.85rem;">Loading…</div>
+    </div>
+    <div id="aCardsModalForm" style="display:none;padding:0 28px 20px;flex-shrink:0;border-top:1px solid rgba(255,255,255,.07);">
+      <div style="font-size:.8rem;color:rgba(255,255,255,.6);margin:16px 0 8px;" id="aCardsFormLabel">Amount</div>
+      <input type="number" min="0" step="0.01" placeholder="Enter amount" id="aCardsAmountInput"
+        style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;color:#fff;font-size:.9rem;outline:none;box-sizing:border-box;" />
+      <div style="display:none;font-size:.8rem;color:rgba(255,255,255,.6);margin:10px 0 8px;" id="aCardsFormLabel2">Available credit</div>
+      <input type="number" min="0" step="0.01" placeholder="Available credit" id="aCardsAmountInput2"
+        style="display:none;width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;color:#fff;font-size:.9rem;outline:none;box-sizing:border-box;" />
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button class="btn btn-primary btn-sm" style="flex:1;padding:10px 20px;white-space:nowrap;" id="aCardsFormBtn" onclick="aSubmitCardAmount()">Confirm</button>
+        <button class="btn btn-ghost btn-sm" style="padding:10px 16px;" onclick="aHideCardForm()">Cancel</button>
+      </div>
+      <div id="aCardsFormErr" style="display:none;color:var(--red-400);font-size:.76rem;margin-top:6px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ ADMIN PORTFOLIO MODAL ═══════ -->
+<div id="aPortfolioModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)aClosePortfolio()">
+  <div class="card card-elevated" style="width:600px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;position:relative;overflow:hidden;" onclick="event.stopPropagation()">
+    <button onclick="aClosePortfolio()" style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;z-index:2;">✕</button>
+    <div style="padding:24px 28px 16px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;">
+      <div style="font-family:var(--font-display);font-size:1.25rem;margin-bottom:3px;">Member Financials</div>
+      <div id="aPortMember" style="font-size:.8rem;color:#4ade80;"></div>
+    </div>
+
+    <div id="aPortModalBody" style="overflow-y:auto;flex:1;padding:18px 28px 22px;">
+
+      <!-- Account balances -->
+      <div style="font-size:.85rem;color:#fff;font-weight:600;margin-bottom:4px;">Account Balances</div>
+      <div style="font-size:.74rem;color:var(--slate-400);margin-bottom:12px;line-height:1.5;">Set any account's balance to an exact amount. This updates the member's dashboard instantly.</div>
+      <div id="aFinAccounts" style="margin-bottom:20px;"><div style="color:var(--slate-500);font-size:.85rem;">Loading…</div></div>
+
+      <!-- Available credit -->
+      <div style="background:rgba(96,165,250,.05);border:1px solid rgba(96,165,250,.18);border-radius:12px;padding:16px;margin-bottom:18px;">
+        <div style="font-size:.85rem;color:#fff;font-weight:600;margin-bottom:4px;">Available Credit</div>
+        <div style="font-size:.74rem;color:var(--slate-400);margin-bottom:12px;line-height:1.5;">When set, this overrides the member's card-based available credit on the dashboard. Leave empty and Save to clear.</div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="number" min="0" step="0.01" placeholder="e.g. 25000.00" id="aFinCreditInput"
+            style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;color:#fff;font-size:.9rem;outline:none;box-sizing:border-box;" />
+          <button class="btn btn-primary btn-sm" style="padding:10px 18px;white-space:nowrap;" onclick="aSaveCredit()">Save</button>
+        </div>
+        <div id="aFinCreditHint" style="font-size:.74rem;color:var(--slate-500);margin-top:10px;">Card credit available: —</div>
+      </div>
+
+      <!-- Portfolio value + P&L -->
+      <div style="background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.18);border-radius:12px;padding:16px;margin-bottom:18px;">
+        <div style="font-size:.85rem;color:#fff;font-weight:600;margin-bottom:4px;">Portfolio Value &amp; Profit / Loss</div>
+        <div style="font-size:.74rem;color:var(--slate-400);margin-bottom:12px;line-height:1.5;">When set, these override the dashboard's Portfolio Value and its gain/loss. Leave empty and Save to use the member's holdings instead. P&amp;L may be negative.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+          <input type="number" min="0" step="0.01" placeholder="Value (e.g. 125000)" id="aPortOverrideInput"
+            style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;color:#fff;font-size:.9rem;outline:none;box-sizing:border-box;" />
+          <input type="number" step="0.01" placeholder="P&L (e.g. 8400 or -2100)" id="aPortGainInput"
+            style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;color:#fff;font-size:.9rem;outline:none;box-sizing:border-box;" />
+        </div>
+        <button class="btn btn-primary btn-sm" style="width:100%;padding:10px;" onclick="aSaveOverride()">Save Portfolio</button>
+        <div id="aPortHoldingsTotal" style="font-size:.74rem;color:var(--slate-500);margin-top:10px;">Holdings total: —</div>
+      </div>
+
+      <!-- Add holding -->
+      <div style="font-size:.85rem;color:#fff;font-weight:600;margin-bottom:10px;">Add Holding</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <input id="aInvSymbol"  placeholder="Symbol (e.g. AAPL)" maxlength="12" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;box-sizing:border-box;text-transform:uppercase;" />
+        <input id="aInvName"    placeholder="Name (optional)" maxlength="60" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;box-sizing:border-box;" />
+      </div>
+      <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px;">
+        <select id="aInvType" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 10px;color:#fff;font-size:.82rem;outline:none;box-sizing:border-box;">
+          <option value="stock">Stock</option><option value="etf">ETF</option><option value="bond">Bond</option>
+          <option value="mutual_fund">Mutual Fund</option><option value="crypto">Crypto</option><option value="reit">REIT</option>
+          <option value="cash">Cash</option><option value="other">Other</option>
+        </select>
+        <input id="aInvQty"   type="number" min="0" step="any" placeholder="Shares" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;box-sizing:border-box;" />
+        <input id="aInvCost"  type="number" min="0" step="any" placeholder="Buy $" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;box-sizing:border-box;" />
+        <input id="aInvPrice" type="number" min="0" step="any" placeholder="Now $" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;box-sizing:border-box;" />
+      </div>
+      <button class="btn btn-primary btn-sm" style="width:100%;padding:10px;margin-bottom:18px;" onclick="aAddInvestment()">+ Add Holding</button>
+      <div id="aPortErr" style="display:none;color:var(--red-400);font-size:.76rem;margin-bottom:12px;"></div>
+
+      <!-- Holdings list -->
+      <div style="font-size:.85rem;color:#fff;font-weight:600;margin-bottom:10px;">Current Holdings</div>
+      <div id="aPortHoldings"><div style="color:var(--slate-500);font-size:.85rem;">Loading…</div></div>
+    </div>
   </div>
 </div>
 
 <!-- Add Funds Modal -->
 <div id="addFundsModal" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)closeAddFunds()">
-  <div class="card card-elevated" style="width:420px;max-width:94vw;padding:32px;position:relative;" onclick="event.stopPropagation()">
-    <button onclick="closeAddFunds()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;">✕</button>
+  <div class="card card-elevated" style="width:480px;max-width:96vw;padding:32px;position:relative;max-height:92vh;overflow-y:auto;" onclick="event.stopPropagation()">
+    <button onclick="closeAddFunds()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;line-height:1;">✕</button>
     <div style="font-family:var(--font-display);font-size:1.35rem;margin-bottom:4px;">Add Funds</div>
-    <div style="font-size:.8rem;color:var(--slate-500);margin-bottom:24px;">Credit a member's account directly.</div>
-    <div id="addFundsRecipient" style="font-size:.875rem;font-weight:500;color:var(--gold-400);margin-bottom:20px;"></div>
-    <div class="form-group" style="margin-bottom:16px;">
-      <label class="form-label">Account Type</label>
-      <select id="addFundsAccountType" class="form-input form-select"><option value="checking">Checking</option><option value="savings">Savings</option><option value="money_market">Money Market</option></select>
+    <div style="font-size:.8rem;color:var(--slate-500);margin-bottom:20px;">Credit a member's account directly.</div>
+    <div id="addFundsRecipient" style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:rgba(201,168,76,.07);border:1px solid rgba(201,168,76,.2);border-radius:10px;margin-bottom:20px;">
+      <div style="width:36px;height:36px;border-radius:50%;background:rgba(201,168,76,.15);display:flex;align-items:center;justify-content:center;color:var(--gold-400);font-family:var(--font-display);font-size:.85rem;flex-shrink:0;" id="addFundsInitials">?</div>
+      <div><div style="font-size:.88rem;font-weight:600;color:var(--white);" id="addFundsName">—</div><div style="font-size:.75rem;color:var(--slate-500);">Credit Union Member</div></div>
+    </div>
+    <div style="margin-bottom:18px;">
+      <label class="form-label" style="margin-bottom:10px;display:block;">Select Account to Credit</label>
+      <div id="addFundsAccounts" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="color:var(--slate-500);font-size:.82rem;padding:12px 0;">Loading accounts…</div>
+      </div>
     </div>
     <div class="form-group" style="margin-bottom:16px;">
       <label class="form-label">Amount (USD)</label>
@@ -427,10 +767,57 @@
       <label class="form-label">Note (optional)</label>
       <input type="text" id="addFundsNote" class="form-input" placeholder="e.g. Welcome bonus" maxlength="120" />
     </div>
-    <div id="addFundsError" style="display:none;color:var(--red-400);font-size:.82rem;margin-bottom:12px;"></div>
+    <div id="addFundsError" style="display:none;color:var(--red-400);font-size:.82rem;margin-bottom:12px;background:rgba(239,68,68,.08);padding:10px 12px;border-radius:8px;border:1px solid rgba(239,68,68,.2);"></div>
     <div style="display:flex;gap:12px;justify-content:flex-end;">
       <button class="btn btn-ghost" onclick="closeAddFunds()">Cancel</button>
       <button class="btn btn-primary" id="addFundsSubmitBtn" onclick="submitAddFunds()">Add Funds</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ SEND MONEY MODAL ═══════ -->
+<div id="sendModal" class="zmodal" onclick="if(event.target===this)closeSendModal()">
+  <div class="zsheet">
+    <div class="zsheet-head">
+      <div class="zsheet-title">Send Money</div>
+      <div class="zsheet-sub">Transfer to any ZenithOne account by number</div>
+    </div>
+    <div class="zsheet-body">
+      <div class="zfield-label">From Account</div>
+      <select id="sendFromAccount" class="zinput"></select>
+
+      <div class="zfield-label">Recipient Account Number</div>
+      <div style="display:flex;gap:8px;">
+        <input id="sendToNumber" class="zinput mono" maxlength="10" inputmode="numeric" autocomplete="off" placeholder="10-digit number" oninput="onSendNumberInput()">
+        <button class="acct-copy-btn" id="sendVerifyBtn" onclick="verifyRecipient()" style="white-space:nowrap;">Verify</button>
+      </div>
+      <div id="sendRecipBox"></div>
+
+      <div class="zfield-label">Amount (USD)</div>
+      <input id="sendAmount" class="zinput" type="number" min="0" step="0.01" placeholder="0.00">
+
+      <div class="zfield-label">Memo (optional)</div>
+      <input id="sendMemo" class="zinput" maxlength="80" placeholder="What's it for?">
+
+      <div class="zfield-label">Transaction PIN</div>
+      <input id="sendPin" class="zinput mono" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="••••" style="text-align:center;letter-spacing:.5em;font-size:1.3rem;">
+
+      <div class="zerr" id="sendErr"></div>
+      <button class="zbtn-primary" id="sendSubmitBtn" onclick="submitSend()" disabled>Verify recipient to continue</button>
+      <button class="zbtn-ghost" onclick="closeSendModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ RECEIVE MONEY MODAL ═══════ -->
+<div id="receiveModal" class="zmodal" onclick="if(event.target===this)closeReceiveModal()">
+  <div class="zsheet">
+    <div class="zsheet-head">
+      <div class="zsheet-title">Receive Money</div>
+      <div class="zsheet-sub">Share your account number to get paid instantly</div>
+    </div>
+    <div class="zsheet-body" id="receiveBody">
+      <!-- account cards populated by JS -->
     </div>
   </div>
 </div>
@@ -474,9 +861,11 @@ function drawBalanceChart(data) {
   const pad = { top:20, right:20, bottom:36, left:60 };
   const cW = W - pad.left - pad.right;
   const cH = H - pad.top - pad.bottom;
-  const min = Math.min(...data) * .98;
-  const max = Math.max(...data) * 1.02;
-  const range = max - min;
+  const rawMin = Math.min(...data), rawMax = Math.max(...data);
+  const min = rawMin * .98;
+  const max = rawMax * 1.02;
+  const range = (max - min) || 1;   // guard: flat/zero series → avoid divide-by-zero (NaN)
+  const denom = Math.max(1, data.length - 1);
 
   ctx.clearRect(0,0,W,H);
 
@@ -501,7 +890,7 @@ function drawBalanceChart(data) {
 
   // Points
   const pts = data.map((v,i) => ({
-    x: pad.left + (cW/(data.length-1))*i,
+    x: pad.left + (cW/denom)*i,
     y: pad.top + cH * (1-(v-min)/range)
   }));
 
@@ -563,23 +952,6 @@ function switchChart(range, el) {
   currentChartData = chartData[range];
   drawBalanceChart(currentChartData);
 }
-
-// Market tickers (static snapshot)
-const tickers = [
-  { sym:'S&P 500', val:'5,242.68', chg:'+0.48%', up:true },
-  { sym:'DOW',     val:'39,118.86', chg:'+0.31%', up:true },
-  { sym:'NASDAQ',  val:'16,428.82', chg:'+0.74%', up:true },
-  { sym:'GLD',     val:'$2,341.20', chg:'-0.12%', up:false },
-];
-document.getElementById('marketTickers').innerHTML = tickers.map(t => `
-  <div class="market-ticker">
-    <div style="flex:1;">
-      <div style="font-size:.85rem;font-weight:500;">${t.sym}</div>
-      <div style="font-size:.75rem;color:var(--slate-400);">${t.val}</div>
-    </div>
-    <div style="font-size:.8rem;font-weight:600;color:${t.up ? 'var(--green-400)':'var(--red-400)'};">${t.chg}</div>
-  </div>
-`).join('');
 
 // Initialize chart after layout, then load real data
 window.addEventListener('load', () => {
@@ -647,6 +1019,8 @@ async function openAdminPanel() {
   try {
     await refreshAdminAll();
     document.getElementById('adminPanelContent').style.display = '';
+    document.getElementById('aRewardsSection').style.display   = '';
+    document.getElementById('aPinSection').style.display       = '';
   } catch(e) {
     let msg = e.message || '';
     try { msg = JSON.parse(e.message).error || msg; } catch {}
@@ -657,7 +1031,9 @@ async function openAdminPanel() {
 }
 
 function closeAdminPanel() {
-  document.getElementById('adminOverlay').style.display = 'none';
+  document.getElementById('adminOverlay').style.display  = 'none';
+  document.getElementById('aRewardsSection').style.display = 'none';
+  document.getElementById('aPinSection').style.display     = 'none';
 }
 
 let _aAllUsers = [];
@@ -722,7 +1098,6 @@ function aRenderUsers(list) {
         <tbody>${list.map(u => {
           const joined   = new Date(u.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
           const initials = (u.full_name || u.email || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-          const accTypes = (u.accounts || []).map(a => a.type).join(',');
           return `<tr style="border-bottom:1px solid rgba(255,255,255,.04);" onmouseover="this.style.background='rgba(255,255,255,.03)'" onmouseout="this.style.background=''">
             <td style="padding:12px;"><div style="display:flex;align-items:center;gap:10px;"><div style="width:32px;height:32px;border-radius:50%;background:rgba(201,168,76,.1);display:flex;align-items:center;justify-content:center;color:var(--gold-400);font-family:var(--font-display);font-size:.8rem;flex-shrink:0;">${initials}</div><span style="color:var(--white);">${u.full_name || '—'}</span></div></td>
             <td style="padding:12px;color:var(--slate-400);">${u.email || '—'}</td>
@@ -730,7 +1105,7 @@ function aRenderUsers(list) {
             <td style="padding:12px;text-align:right;color:var(--slate-400);">${(u.accounts || []).length}</td>
             <td style="padding:12px;color:var(--slate-500);font-size:.8rem;">${joined}</td>
             <td style="padding:12px;text-align:center;">${u.is_admin ? '<span class="badge badge-gold">Admin</span>' : '<span class="badge badge-neutral">Member</span>'}</td>
-            <td style="padding:12px;text-align:center;"><button class="btn btn-ghost btn-sm" style="font-size:.75rem;padding:5px 10px;color:var(--gold-400);border-color:rgba(201,168,76,.3);" onclick="openAddFunds('${u.id}','${(u.full_name||u.email||'User').replace(/'/g,"\\'")}','${accTypes}')">+ Add Funds</button></td>
+            <td style="padding:12px;text-align:center;"><div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;"><button class="btn btn-ghost btn-sm" style="font-size:.75rem;padding:5px 10px;color:var(--gold-400);border-color:rgba(201,168,76,.3);" onclick="openAddFunds('${u.id}','${(u.full_name||u.email||'User').replace(/'/g,"\\'")}')">+ Funds</button><button class="btn btn-ghost btn-sm" style="font-size:.75rem;padding:5px 10px;color:#60a5fa;border-color:rgba(96,165,250,.3);" onclick="aOpenAdminCards('${u.id}','${(u.full_name||u.email||'User').replace(/'/g,"\\'")}')">Cards</button><button class="btn btn-ghost btn-sm" style="font-size:.75rem;padding:5px 10px;color:#4ade80;border-color:rgba(74,222,128,.3);" onclick="aOpenPortfolio('${u.id}','${(u.full_name||u.email||'User').replace(/'/g,"\\'")}')">Financials</button></div></td>
           </tr>`;
         }).join('')}</tbody>
       </table>
@@ -742,42 +1117,812 @@ function aFilterUsers() {
   aRenderUsers(q ? _aAllUsers.filter(u => (u.full_name||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q)) : _aAllUsers);
 }
 
-async function refreshAdminAll() {
-  await Promise.all([aLoadStats(), aLoadUsers()]);
+// ── Account Requests ──────────────────────────────────────────────────────────
+let _aAcctRequests = [];
+
+async function aLoadAccountRequests() {
+  document.getElementById('aAcctRequestsList').innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading…</div>';
+  try {
+    const filter = document.getElementById('aAcctReqFilter')?.value || 'pending';
+    const res = await callEdgeFunction('admin-data', { action: 'admin_list_account_requests', status_filter: filter });
+    _aAcctRequests = res.requests || [];
+    aRenderAccountRequests();
+  } catch(e) {
+    document.getElementById('aAcctRequestsList').innerHTML = '<div style="color:var(--red-400);font-size:.85rem;">Failed to load.</div>';
+  }
 }
 
-function openAddFunds(userId, userName, accTypes) {
+function aRenderAccountRequests() {
+  const el = document.getElementById('aAcctRequestsList');
+  if (!_aAcctRequests.length) {
+    el.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">No account requests found.</div>';
+    return;
+  }
+  const typeLabel = { checking:'Checking', savings:'High-Yield Savings', money_market:'Money Market', cd:'CD' };
+  const fmt = n => '$' + (n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  el.innerHTML = `
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
+        <thead><tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+          <th style="text-align:left;padding:8px 12px;color:var(--slate-400);font-weight:500;">Member</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--slate-400);font-weight:500;">Account Type</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--slate-400);font-weight:500;">Initial Deposit</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--slate-400);font-weight:500;">Submitted</th>
+          <th style="text-align:center;padding:8px 12px;color:var(--slate-400);font-weight:500;">Status</th>
+          <th style="text-align:right;padding:8px 12px;"></th>
+        </tr></thead>
+        <tbody>${_aAcctRequests.map(r => {
+          const sc = r.status === 'approved'
+            ? { c:'#4ade80', b:'rgba(74,222,128,.1)',  bd:'rgba(74,222,128,.25)',  label:'Approved' }
+            : r.status === 'rejected'
+            ? { c:'#f87171', b:'rgba(239,68,68,.08)',  bd:'rgba(239,68,68,.2)',    label:'Rejected' }
+            : { c:'#eab308', b:'rgba(234,179,8,.1)',   bd:'rgba(234,179,8,.25)',   label:'Pending' };
+          const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+          const actions = r.status === 'pending'
+            ? `<button class="btn btn-ghost btn-sm" style="font-size:.72rem;color:#4ade80;border-color:rgba(74,222,128,.25);" onclick="aApproveAcctRequest('${r.id}')">Approve</button>
+               <button class="btn btn-ghost btn-sm" style="font-size:.72rem;color:#f87171;border-color:rgba(239,68,68,.25);margin-left:6px;" onclick="aRejectAcctRequest('${r.id}','${(r.user_name||'').replace(/'/g,"\\'")}')">Reject</button>`
+            : `<span style="font-size:.72rem;color:var(--slate-500);">${r.admin_note ? r.admin_note.slice(0,40) : '—'}</span>`;
+          return `
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04);">
+            <td style="padding:10px 12px;">
+              <div style="color:#fff;font-weight:500;">${r.user_name||'—'}</div>
+              <div style="color:var(--slate-500);font-size:.72rem;">${r.user_email||''}</div>
+            </td>
+            <td style="padding:10px 12px;color:var(--slate-300);">
+              <div>${typeLabel[r.account_type]||r.account_type}</div>
+              ${r.account_name ? `<div style="color:var(--slate-500);font-size:.72rem;">${r.account_name}</div>` : ''}
+            </td>
+            <td style="padding:10px 12px;color:var(--slate-300);">${fmt(r.initial_deposit)}</td>
+            <td style="padding:10px 12px;color:var(--slate-400);">${date}</td>
+            <td style="padding:10px 12px;text-align:center;">
+              <span style="display:inline-block;padding:3px 12px;border-radius:20px;font-size:.7rem;font-weight:600;background:${sc.b};border:1px solid ${sc.bd};color:${sc.c};">${sc.label}</span>
+            </td>
+            <td style="padding:10px 12px;text-align:right;white-space:nowrap;">${actions}</td>
+          </tr>`;
+        }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+async function aApproveAcctRequest(requestId) {
+  const req = _aAcctRequests.find(r => r.id === requestId);
+  if (!req) return;
+  const typeLabel = { checking:'Checking', savings:'High-Yield Savings', money_market:'Money Market', cd:'CD' };
+  const ok = await zenithConfirm(`Approve ${typeLabel[req.account_type]||req.account_type} account for ${req.user_name}?\n\nInitial deposit: $${(req.initial_deposit||0).toFixed(2)}`, { title: 'Approve Account', confirmLabel: 'Approve', type: 'success' });
+  if (!ok) return;
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_approve_account_request', request_id: requestId });
+    zenithToast(res.message || 'Account approved.', 'success');
+    await aLoadAccountRequests();
+  } catch(e) {
+    let msg = 'Failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    zenithToast(msg, 'error');
+  }
+}
+
+async function aRejectAcctRequest(requestId, memberName) {
+  const ok = await zenithConfirm(`Reject account request for ${memberName||'this member'}? They will be notified.`, { title: 'Reject Account Request', confirmLabel: 'Reject', type: 'error' });
+  if (!ok) return;
+  const reason = window.prompt('Reason for rejection (optional, sent to member):') || '';
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_reject_account_request', request_id: requestId, admin_note: reason });
+    zenithToast(res.message || 'Request rejected.', 'success');
+    await aLoadAccountRequests();
+  } catch(e) {
+    let msg = 'Failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    zenithToast(msg, 'error');
+  }
+}
+
+async function refreshAdminAll() {
+  await Promise.all([aLoadStats(), aLoadUsers(), aLoadCardRequests(), aLoadCardPricing(), aLoadRewards(), aLoadPins(), aLoadAccountRequests()]);
+}
+
+// ── Reward Points ─────────────────────────────────────────────────────────────
+let _aRewardsData = [];
+let _aGivePointsUserId = null;
+
+async function aLoadRewards() {
+  document.getElementById('aRewardsList').innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;">Loading…</div>';
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_list_members_pins' });
+    _aRewardsData = res.members || [];
+    aRenderRewards();
+  } catch(e) {
+    document.getElementById('aRewardsList').innerHTML = '<div style="color:var(--red-400);font-size:.85rem;">Failed to load.</div>';
+  }
+}
+
+function aRenderRewards() {
+  const el = document.getElementById('aRewardsList');
+  if (!_aRewardsData.length) { el.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;">No members found.</div>'; return; }
+  el.innerHTML = `
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
+        <thead><tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+          <th style="text-align:left;padding:8px 12px;color:var(--slate-400);font-weight:500;">Member</th>
+          <th style="text-align:right;padding:8px 12px;color:var(--slate-400);font-weight:500;">Points</th>
+          <th style="text-align:right;padding:8px 12px;color:var(--slate-400);font-weight:500;">Cash Value</th>
+          <th style="text-align:right;padding:8px 12px;"></th>
+        </tr></thead>
+        <tbody>${_aRewardsData.map(m=>`
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04);">
+            <td style="padding:10px 12px;">
+              <div style="color:#fff;font-weight:500;">${m.full_name||'—'}</div>
+              <div style="color:var(--slate-500);font-size:.72rem;">${m.email||''}</div>
+            </td>
+            <td style="padding:10px 12px;text-align:right;color:var(--gold-400);font-weight:600;">${(m.total_reward_points||0).toLocaleString()}</td>
+            <td style="padding:10px 12px;text-align:right;color:var(--slate-300);">$${((m.total_reward_points||0)*0.01).toFixed(2)}</td>
+            <td style="padding:10px 12px;text-align:right;">
+              <button class="btn btn-ghost btn-sm" style="font-size:.72rem;" onclick="aOpenGivePoints('${m.id}','${(m.full_name||'').replace(/'/g,"\\'")}',${m.total_reward_points||0})">+ Give Points</button>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function aOpenGivePoints(userId, name, currentPts) {
+  _aGivePointsUserId = userId;
+  document.getElementById('aGivePtsName').textContent = `${name} · Current: ${currentPts.toLocaleString()} pts`;
+  document.getElementById('aGivePtsInput').value = '';
+  document.getElementById('aGivePtsReason').value = '';
+  document.getElementById('aGivePtsErr').style.display = 'none';
+  document.getElementById('aGivePtsBtn').disabled = false;
+  document.getElementById('aGivePtsBtn').textContent = 'Give Points';
+  document.getElementById('aGivePointsModal').style.display = 'flex';
+}
+function aCloseGivePoints() { document.getElementById('aGivePointsModal').style.display = 'none'; _aGivePointsUserId = null; }
+
+async function aSubmitGivePoints() {
+  const pts = parseInt(document.getElementById('aGivePtsInput').value);
+  const reason = document.getElementById('aGivePtsReason').value.trim();
+  const errEl = document.getElementById('aGivePtsErr');
+  const btn = document.getElementById('aGivePtsBtn');
+  errEl.style.display = 'none';
+  if (!_aGivePointsUserId || isNaN(pts) || pts < 1) { errEl.textContent = 'Enter a valid point amount (≥ 1).'; errEl.style.display = ''; return; }
+  const orig = btn.textContent; btn.disabled = true; btn.textContent = 'Giving…';
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_give_points', target_user_id: _aGivePointsUserId, points: pts, reason });
+    aCloseGivePoints();
+    zenithToast(res.message || `${pts} points given.`, 'success');
+    await aLoadRewards();
+  } catch(e) {
+    let msg = 'Failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    errEl.textContent = msg; errEl.style.display = '';
+    btn.disabled = false; btn.textContent = orig;
+  }
+}
+
+// ── PIN Management ────────────────────────────────────────────────────────────
+let _aPinData = [];
+
+async function aLoadPins() {
+  document.getElementById('aPinList').innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;">Loading…</div>';
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_list_members_pins' });
+    _aPinData = res.members || [];
+    aRenderPins();
+  } catch(e) {
+    document.getElementById('aPinList').innerHTML = '<div style="color:var(--red-400);font-size:.85rem;">Failed to load.</div>';
+  }
+}
+
+function aRenderPins() {
+  const el = document.getElementById('aPinList');
+  if (!_aPinData.length) { el.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;">No members.</div>'; return; }
+  el.innerHTML = `
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:.82rem;">
+        <thead><tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+          <th style="text-align:left;padding:8px 12px;color:var(--slate-400);font-weight:500;">Member</th>
+          <th style="text-align:center;padding:8px 12px;color:var(--slate-400);font-weight:500;">PIN Status</th>
+          <th style="text-align:left;padding:8px 12px;color:var(--slate-400);font-weight:500;">PIN Set On</th>
+          <th style="text-align:right;padding:8px 12px;"></th>
+        </tr></thead>
+        <tbody>${_aPinData.map(m=>{
+          const pinSet = !!m.pin_set;
+          const sc = pinSet ? { c:'#4ade80', b:'rgba(74,222,128,.1)', bd:'rgba(74,222,128,.25)' } : { c:'#f87171', b:'rgba(239,68,68,.08)', bd:'rgba(239,68,68,.2)' };
+          const pinDate = m.pin_created_at ? new Date(m.pin_created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+          return `
+          <tr style="border-bottom:1px solid rgba(255,255,255,.04);">
+            <td style="padding:10px 12px;">
+              <div style="color:#fff;font-weight:500;">${m.full_name||'—'}</div>
+              <div style="color:var(--slate-500);font-size:.72rem;">${m.email||''}</div>
+            </td>
+            <td style="padding:10px 12px;text-align:center;">
+              <span style="display:inline-block;padding:3px 12px;border-radius:20px;font-size:.7rem;font-weight:600;background:${sc.b};border:1px solid ${sc.bd};color:${sc.c};">${pinSet?'PIN SET':'NO PIN'}</span>
+            </td>
+            <td style="padding:10px 12px;color:var(--slate-400);">${pinDate}</td>
+            <td style="padding:10px 12px;text-align:right;">
+              ${pinSet?`<button class="btn btn-ghost btn-sm" style="font-size:.72rem;color:#f87171;border-color:rgba(239,68,68,.25);" onclick="aResetPin('${m.id}','${(m.full_name||'').replace(/'/g,"\\'")}')" >Reset PIN</button>`:'<span style="font-size:.72rem;color:var(--slate-500);">—</span>'}
+            </td>
+          </tr>`;
+        }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+async function aResetPin(userId, name) {
+  const ok = await zenithConfirm(`Reset ${name}'s transaction PIN? They will need to create a new PIN on next use.`, { title: 'Reset PIN', confirmLabel: 'Reset PIN', type: 'error' });
+  if (!ok) return;
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_reset_pin', target_user_id: userId });
+    zenithToast(res.message || 'PIN reset.', 'success');
+    await aLoadPins();
+  } catch(e) {
+    let msg = 'Failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    zenithToast(msg, 'error');
+  }
+}
+
+// ── Card Pricing ──────────────────────────────────────────────────────────────
+let _aPricing = [];
+
+async function aLoadCardPricing() {
+  try {
+    const data = await callEdgeFunction('admin-data', { action: 'card_pricing' });
+    _aPricing = data.pricing || [];
+    aRenderCardPricing();
+  } catch(e) {
+    document.getElementById('aCardPricingList').innerHTML =
+      '<div style="color:var(--red-400);font-size:.85rem;">Failed to load pricing.</div>';
+  }
+}
+
+function aRenderCardPricing() {
+  const el = document.getElementById('aCardPricingList');
+  if (!_aPricing.length) { el.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;">No card types.</div>'; return; }
+  el.innerHTML = _aPricing.map(p => `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);flex-wrap:wrap;">
+      <div style="min-width:160px;">
+        <div style="font-size:.9rem;color:var(--white);">${p.name}</div>
+        <div style="font-size:.7rem;color:var(--slate-500);text-transform:capitalize;">${p.category} · base fee</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="color:var(--slate-400);font-size:.9rem;">$</span>
+        <input type="number" min="1" step="1" value="${p.base_fee}" id="aprice-${p.card_type_key}"
+          style="width:110px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 12px;color:#fff;font-size:.9rem;outline:none;" />
+        <button class="btn btn-primary btn-sm" id="asave-${p.card_type_key}" onclick="aSaveCardPrice('${p.card_type_key}')" style="padding:8px 16px;">Save</button>
+      </div>
+    </div>`).join('');
+}
+
+async function aSaveCardPrice(key) {
+  const input = document.getElementById(`aprice-${key}`);
+  const btn   = document.getElementById(`asave-${key}`);
+  const base_fee = parseFloat(input.value);
+  if (!isFinite(base_fee) || base_fee < 1) { zenithToast('Enter a valid price ($1 or more).', 'error'); return; }
+  const orig = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'update_card_price', card_type_key: key, base_fee });
+    const row = _aPricing.find(p => p.card_type_key === key);
+    if (row) row.base_fee = res.base_fee;
+    zenithToast(res.message || 'Price updated.', 'success');
+  } catch(e) {
+    let msg = 'Failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    zenithToast(msg, 'error');
+  } finally { btn.disabled = false; btn.textContent = orig; }
+}
+
+// ── Card Number Backfill ──────────────────────────────────────────────────────
+async function aRunBackfill() {
+  const btn    = document.getElementById('aBackfillBtn');
+  const result = document.getElementById('aBackfillResult');
+  const orig   = btn.innerHTML;
+  btn.disabled = true; btn.textContent = 'Backfilling…';
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'backfill_card_numbers' });
+    result.style.display = ''; result.style.color = '#4ade80';
+    result.textContent = `✓ ${res.message} (scanned ${res.scanned}, updated ${res.updated}${res.failed ? ', failed ' + res.failed : ''})`;
+    zenithToast(res.message || 'Backfill complete.', 'success');
+  } catch(e) {
+    let msg = 'Backfill failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    result.style.display = ''; result.style.color = 'var(--red-400)'; result.textContent = '✕ ' + msg;
+    zenithToast(msg, 'error');
+  } finally { btn.disabled = false; btn.innerHTML = orig; }
+}
+
+// ── Admin Card Management (per user) ─────────────────────────────────────────
+let _aCardsUserId = null;
+let _aCardsCardId = null;
+let _aCardsAction = null;
+let _aCardsData   = [];
+
+async function aOpenAdminCards(userId, userName) {
+  _aCardsUserId = userId; _aCardsCardId = null; _aCardsAction = null;
+  document.getElementById('aCardsModalMember').textContent = userName;
+  document.getElementById('aCardsModalList').innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;">Loading…</div>';
+  document.getElementById('aCardsModalForm').style.display = 'none';
+  document.getElementById('aCardsModal').style.display = 'flex';
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_list_user_cards', user_id: userId });
+    _aCardsData = res.cards || [];
+    aRenderAdminCards();
+  } catch(e) {
+    let msg = 'Failed to load cards.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    document.getElementById('aCardsModalList').innerHTML = `<div style="color:var(--red-400);font-size:.85rem;">${msg}</div>`;
+  }
+}
+
+function aCloseAdminCards() { document.getElementById('aCardsModal').style.display = 'none'; _aCardsUserId = null; }
+
+function aRenderAdminCards() {
+  const el = document.getElementById('aCardsModalList');
+  if (!_aCardsData.length) {
+    el.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">No active cards for this member.</div>';
+    return;
+  }
+  const fmt = n => '$' + (n||0).toLocaleString('en-US', { minimumFractionDigits: 2 });
+  const SC = {
+    active:  { c:'#4ade80', b:'rgba(74,222,128,.12)',  bd:'rgba(74,222,128,.3)'  },
+    frozen:  { c:'#60a5fa', b:'rgba(96,165,250,.12)',  bd:'rgba(96,165,250,.3)'  },
+    blocked: { c:'#f87171', b:'rgba(239,68,68,.1)',    bd:'rgba(239,68,68,.25)'  },
+    default: { c:'#94a3b8', b:'rgba(148,163,184,.08)', bd:'rgba(148,163,184,.2)' },
+  };
+  el.innerHTML = _aCardsData.map(card => {
+    const sc  = SC[card.status] || SC.default;
+    const exp = card.expiry_month && card.expiry_year
+      ? String(card.expiry_month).padStart(2,'0') + '/' + String(card.expiry_year).slice(-2) : '—';
+    const isActive  = card.status === 'active';
+    const isFrozen  = card.status === 'frozen';
+    const isBlocked = card.status === 'blocked';
+    return `
+      <div style="border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px 16px;margin-bottom:10px;background:rgba(255,255,255,.02);">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:.9rem;color:#fff;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${card.card_name || 'Card'}</div>
+            <div style="font-size:.72rem;color:var(--slate-500);margin-top:2px;">${(card.card_type||'').toUpperCase()} · ending ${card.card_number_last_four||'••••'} · exp ${exp}</div>
+            <div style="font-size:.75rem;margin-top:5px;">
+              <span style="color:var(--gold-400);">Available: ${fmt(card.available_credit)}</span>
+              ${card.credit_limit ? `<span style="color:var(--slate-500);margin-left:10px;">Limit: ${fmt(card.credit_limit)}</span>` : ''}
+            </div>
+          </div>
+          <div style="background:${sc.b};border:1px solid ${sc.bd};border-radius:20px;padding:3px 11px;font-size:.68rem;color:${sc.c};font-weight:600;flex-shrink:0;text-transform:capitalize;">${card.status}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button style="background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.25);color:#4ade80;border-radius:7px;padding:5px 13px;cursor:pointer;font-size:.73rem;" onclick="aShowCardForm('${card.id}','fund')">+ Fund</button>
+          <button style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);color:#f59e0b;border-radius:7px;padding:5px 13px;cursor:pointer;font-size:.73rem;" onclick="aShowCardForm('${card.id}','deduct')">− Deduct</button>
+          ${card.card_type === 'credit' ? `<button style="background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);color:var(--gold-400);border-radius:7px;padding:5px 13px;cursor:pointer;font-size:.73rem;" onclick="aShowCardForm('${card.id}','credit')">$ Credit Line</button>` : ''}
+          ${isActive  ? `<button style="background:rgba(96,165,250,.08);border:1px solid rgba(96,165,250,.25);color:#60a5fa;border-radius:7px;padding:5px 13px;cursor:pointer;font-size:.73rem;" onclick="aDoCardAction('${card.id}','freeze')">❄ Freeze</button>` : ''}
+          ${isFrozen  ? `<button style="background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.25);color:#4ade80;border-radius:7px;padding:5px 13px;cursor:pointer;font-size:.73rem;" onclick="aDoCardAction('${card.id}','unfreeze')">✓ Unfreeze</button>` : ''}
+          ${!isBlocked ? `<button style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.25);color:#f87171;border-radius:7px;padding:5px 13px;cursor:pointer;font-size:.73rem;" onclick="aDoCardAction('${card.id}','block')">⊘ Block</button>` : ''}
+          ${isBlocked  ? `<button style="background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.25);color:#4ade80;border-radius:7px;padding:5px 13px;cursor:pointer;font-size:.73rem;" onclick="aDoCardAction('${card.id}','unblock')">✓ Unblock</button>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function aShowCardForm(cardId, mode) {
+  _aCardsCardId = cardId; _aCardsAction = mode;
+  const i1 = document.getElementById('aCardsAmountInput');
+  const i2 = document.getElementById('aCardsAmountInput2');
+  const l2 = document.getElementById('aCardsFormLabel2');
+  const btn = document.getElementById('aCardsFormBtn');
+  document.getElementById('aCardsFormErr').style.display = 'none';
+  i1.value = ''; i2.value = '';
+  if (mode === 'credit') {
+    const card = _aCardsData.find(c => c.id === cardId) || {};
+    document.getElementById('aCardsFormLabel').textContent = 'Credit limit ($)';
+    i1.value = (card.credit_limit != null) ? card.credit_limit : '';
+    l2.style.display = ''; i2.style.display = '';
+    i2.value = (card.available_credit != null) ? card.available_credit : '';
+    btn.textContent = 'Save Credit Line';
+  } else {
+    document.getElementById('aCardsFormLabel').textContent = mode === 'fund' ? 'Amount to add to card' : 'Amount to deduct from card';
+    l2.style.display = 'none'; i2.style.display = 'none';
+    btn.textContent = mode === 'fund' ? 'Add Funds' : 'Deduct';
+  }
+  document.getElementById('aCardsModalForm').style.display = '';
+  i1.focus();
+}
+
+function aHideCardForm() {
+  document.getElementById('aCardsModalForm').style.display = 'none';
+  _aCardsCardId = null; _aCardsAction = null;
+}
+
+async function aSubmitCardAmount() {
+  const errEl = document.getElementById('aCardsFormErr');
+  const btn   = document.getElementById('aCardsFormBtn');
+  errEl.style.display = 'none';
+  const orig = btn.textContent;
+
+  let payload;
+  if (_aCardsAction === 'credit') {
+    const limit = parseFloat(document.getElementById('aCardsAmountInput').value);
+    const avail = parseFloat(document.getElementById('aCardsAmountInput2').value);
+    if (isNaN(limit) || limit < 0) { errEl.textContent = 'Enter a valid credit limit.'; errEl.style.display = ''; return; }
+    if (isNaN(avail) || avail < 0) { errEl.textContent = 'Enter a valid available credit.'; errEl.style.display = ''; return; }
+    if (avail > limit)             { errEl.textContent = 'Available credit cannot exceed the credit limit.'; errEl.style.display = ''; return; }
+    payload = { action: 'admin_set_card_credit', card_id: _aCardsCardId, credit_limit: limit, available_credit: avail };
+  } else {
+    const amt = parseFloat(document.getElementById('aCardsAmountInput').value);
+    if (isNaN(amt) || amt <= 0) { errEl.textContent = 'Enter a valid amount.'; errEl.style.display = ''; return; }
+    payload = { action: _aCardsAction === 'fund' ? 'admin_fund_card' : 'admin_deduct_card', card_id: _aCardsCardId, amount: amt };
+  }
+
+  btn.disabled = true; btn.textContent = 'Processing…';
+  try {
+    const res = await callEdgeFunction('admin-data', payload);
+    aHideCardForm();
+    zenithToast(res.message || 'Done.', 'success');
+    const res2 = await callEdgeFunction('admin-data', { action: 'admin_list_user_cards', user_id: _aCardsUserId });
+    _aCardsData = res2.cards || []; aRenderAdminCards();
+  } catch(e) {
+    let msg = 'Action failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    errEl.textContent = msg; errEl.style.display = '';
+    btn.disabled = false; btn.textContent = orig;
+  }
+}
+
+async function aDoCardAction(cardId, cardAction) {
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_card_action', card_id: cardId, card_action: cardAction });
+    zenithToast(res.message || `Card ${cardAction}d.`, cardAction === 'block' ? 'warning' : 'success');
+    const res2 = await callEdgeFunction('admin-data', { action: 'admin_list_user_cards', user_id: _aCardsUserId });
+    _aCardsData = res2.cards || []; aRenderAdminCards(); aHideCardForm();
+  } catch(e) {
+    let msg = 'Action failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    zenithToast(msg, 'error');
+  }
+}
+
+// ── Admin Portfolio / Investments ─────────────────────────────────────────────
+let _aPortUserId = null;
+
+async function aOpenPortfolio(userId, userName) {
+  _aPortUserId = userId;
+  document.getElementById('aPortMember').textContent = userName;
+  ['aPortOverrideInput','aPortGainInput','aFinCreditInput','aInvSymbol','aInvName','aInvQty','aInvCost','aInvPrice']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('aInvType').value = 'stock';
+  document.getElementById('aPortErr').style.display = 'none';
+  document.getElementById('aFinAccounts').innerHTML  = '<div style="color:var(--slate-500);font-size:.85rem;">Loading…</div>';
+  document.getElementById('aPortHoldings').innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;">Loading…</div>';
+  document.getElementById('aPortfolioModal').style.display = 'flex';
+  await aLoadPortfolio();
+}
+function aClosePortfolio() { document.getElementById('aPortfolioModal').style.display = 'none'; _aPortUserId = null; }
+
+async function aLoadPortfolio() {
+  const fmt = n => '$' + (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_list_investments', target_user_id: _aPortUserId });
+    const holdings = res.holdings || [];
+
+    // Account balances
+    const accts = res.accounts || [];
+    document.getElementById('aFinAccounts').innerHTML = accts.length === 0
+      ? '<div style="color:var(--slate-500);font-size:.85rem;padding:6px 0;">No active accounts.</div>'
+      : accts.map(a => {
+          const t = (a.account_type || 'account').replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+          return `<div style="display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:rgba(255,255,255,.02);">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:.84rem;color:#fff;font-weight:600;">${t} <span style="color:var(--slate-500);font-weight:400;font-size:.72rem;font-family:'Courier New',monospace;">••${(a.account_number||'').slice(-4)}</span></div>
+              <div style="font-size:.72rem;color:var(--slate-500);">Current: ${fmt(a.balance)}</div>
+            </div>
+            <input type="number" min="0" step="0.01" id="aFinBal_${a.id}" value="${Number(a.balance)||0}"
+              style="width:120px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:8px 10px;color:#fff;font-size:.85rem;outline:none;box-sizing:border-box;" />
+            <button class="btn btn-primary btn-sm" style="padding:8px 14px;white-space:nowrap;" onclick="aSetBalance('${a.id}')">Set</button>
+          </div>`;
+        }).join('');
+
+    // Available credit
+    document.getElementById('aFinCreditHint').textContent = `Card credit available: ${fmt(res.cards_credit_available)}`;
+    if (res.available_credit_override != null) document.getElementById('aFinCreditInput').value = res.available_credit_override;
+
+    // Portfolio value + P&L
+    document.getElementById('aPortHoldingsTotal').textContent = `Holdings total: ${fmt(res.holdings_total)} · P&L ${fmt(res.holdings_gain)}`;
+    if (res.portfolio_value_override != null) document.getElementById('aPortOverrideInput').value = res.portfolio_value_override;
+    if (res.portfolio_gain_override  != null) document.getElementById('aPortGainInput').value     = res.portfolio_gain_override;
+
+    document.getElementById('aPortHoldings').innerHTML = holdings.length === 0
+      ? '<div style="color:var(--slate-500);font-size:.85rem;padding:8px 0;">No holdings yet.</div>'
+      : holdings.map(h => {
+          const gl = Number(h.gain_loss) || 0;
+          const glc = gl >= 0 ? '#4ade80' : '#f87171';
+          return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:11px 13px;margin-bottom:8px;background:rgba(255,255,255,.02);">
+            <div style="min-width:0;flex:1;">
+              <div style="font-size:.86rem;color:#fff;font-weight:600;">${h.symbol} <span style="color:var(--slate-500);font-weight:400;font-size:.74rem;">${h.name || ''}</span></div>
+              <div style="font-size:.72rem;color:var(--slate-500);margin-top:2px;">${Number(h.quantity)} @ ${fmt(h.current_price)} · ${(h.asset_type || '').replace('_', ' ')}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;">
+              <div style="font-size:.86rem;color:#fff;">${fmt(h.total_value)}</div>
+              <div style="font-size:.72rem;color:${glc};">${gl >= 0 ? '+' : ''}${fmt(gl)}</div>
+            </div>
+            <button onclick="aDeleteInvestment('${h.id}')" style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#f87171;border-radius:7px;padding:6px 10px;cursor:pointer;font-size:.72rem;flex-shrink:0;">Remove</button>
+          </div>`;
+        }).join('');
+  } catch(e) {
+    let msg = 'Failed to load holdings.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    document.getElementById('aPortHoldings').innerHTML = `<div style="color:var(--red-400);font-size:.85rem;">${msg}</div>`;
+  }
+}
+
+async function aAddInvestment() {
+  const errEl = document.getElementById('aPortErr'); errEl.style.display = 'none';
+  const symbol = document.getElementById('aInvSymbol').value.trim();
+  const name   = document.getElementById('aInvName').value.trim();
+  const asset_type = document.getElementById('aInvType').value;
+  const quantity = parseFloat(document.getElementById('aInvQty').value);
+  const purchase_price = parseFloat(document.getElementById('aInvCost').value);
+  const priceRaw = document.getElementById('aInvPrice').value;
+  const current_price = priceRaw === '' ? undefined : parseFloat(priceRaw);
+  if (!symbol)                                  { errEl.textContent = 'Enter a symbol.'; errEl.style.display = ''; return; }
+  if (isNaN(quantity) || quantity <= 0)         { errEl.textContent = 'Enter a valid quantity.'; errEl.style.display = ''; return; }
+  if (isNaN(purchase_price) || purchase_price < 0) { errEl.textContent = 'Enter a valid purchase price.'; errEl.style.display = ''; return; }
+  try {
+    await callEdgeFunction('admin-data', { action: 'admin_add_investment', target_user_id: _aPortUserId, symbol, name, asset_type, quantity, purchase_price, current_price });
+    zenithToast('Holding added.', 'success');
+    ['aInvSymbol','aInvName','aInvQty','aInvCost','aInvPrice'].forEach(id => document.getElementById(id).value = '');
+    await aLoadPortfolio();
+  } catch(e) {
+    let msg = 'Failed to add holding.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    errEl.textContent = msg; errEl.style.display = '';
+  }
+}
+
+async function aDeleteInvestment(id) {
+  try {
+    await callEdgeFunction('admin-data', { action: 'admin_delete_investment', investment_id: id });
+    zenithToast('Holding removed.', 'success');
+    await aLoadPortfolio();
+  } catch(e) {
+    let msg = 'Failed to remove holding.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    zenithToast(msg, 'error');
+  }
+}
+
+async function aSaveOverride() {
+  const errEl = document.getElementById('aPortErr'); errEl.style.display = 'none';
+  const vRaw = document.getElementById('aPortOverrideInput').value.trim();
+  const gRaw = document.getElementById('aPortGainInput').value.trim();
+  const portfolio_value = vRaw === '' ? null : parseFloat(vRaw);
+  const portfolio_gain  = gRaw === '' ? null : parseFloat(gRaw);
+  if (portfolio_value !== null && (isNaN(portfolio_value) || portfolio_value < 0)) {
+    errEl.textContent = 'Enter a valid portfolio value, or leave empty to clear.'; errEl.style.display = ''; return;
+  }
+  if (portfolio_gain !== null && isNaN(portfolio_gain)) {
+    errEl.textContent = 'Enter a valid P&L number (may be negative), or leave empty to clear.'; errEl.style.display = ''; return;
+  }
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_set_portfolio', target_user_id: _aPortUserId, portfolio_value, portfolio_gain });
+    zenithToast(res.message || 'Portfolio saved.', 'success');
+  } catch(e) {
+    let msg = 'Failed to save portfolio.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    errEl.textContent = msg; errEl.style.display = '';
+  }
+}
+
+async function aSetBalance(accountId) {
+  const errEl = document.getElementById('aPortErr'); errEl.style.display = 'none';
+  const raw = document.getElementById('aFinBal_' + accountId).value.trim();
+  const balance = parseFloat(raw);
+  if (isNaN(balance) || balance < 0) { errEl.textContent = 'Enter a valid balance amount.'; errEl.style.display = ''; return; }
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_set_balance', account_id: accountId, balance });
+    zenithToast(res.message || 'Balance updated.', 'success');
+    await aLoadPortfolio();
+  } catch(e) {
+    let msg = 'Failed to set balance.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    errEl.textContent = msg; errEl.style.display = '';
+  }
+}
+
+async function aSaveCredit() {
+  const errEl = document.getElementById('aPortErr'); errEl.style.display = 'none';
+  const raw = document.getElementById('aFinCreditInput').value.trim();
+  const available_credit = raw === '' ? null : parseFloat(raw);
+  if (available_credit !== null && (isNaN(available_credit) || available_credit < 0)) {
+    errEl.textContent = 'Enter a valid available credit, or leave empty to clear.'; errEl.style.display = ''; return;
+  }
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_set_available_credit', target_user_id: _aPortUserId, available_credit });
+    zenithToast(res.message || 'Available credit saved.', 'success');
+  } catch(e) {
+    let msg = 'Failed to save available credit.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    errEl.textContent = msg; errEl.style.display = '';
+  }
+}
+
+// ── Card Requests ─────────────────────────────────────────────────────────────
+let _aCardRequests = [];
+
+async function aLoadCardRequests() {
+  try {
+    const data = await callEdgeFunction('admin-data', { action: 'card_requests' });
+    _aCardRequests = data.requests || [];
+    aRenderCardRequests();
+    const pending = _aCardRequests.filter(r => r.status === 'pending').length;
+    const badge = document.getElementById('aCardReqBadge');
+    if (pending > 0) {
+      badge.textContent = pending + ' pending';
+      badge.style.display = '';
+    } else {
+      badge.style.display = 'none';
+    }
+  } catch(e) {
+    document.getElementById('aCardRequestsList').innerHTML =
+      '<div style="color:var(--red-400);font-size:.85rem;padding:12px 0;">Failed to load card requests.</div>';
+  }
+}
+
+function aRenderCardRequests() {
+  const filter = document.getElementById('aCardReqFilter').value;
+  const list   = filter === 'all' ? _aCardRequests : _aCardRequests.filter(r => r.status === filter);
+  const el     = document.getElementById('aCardRequestsList');
+
+  if (list.length === 0) {
+    el.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">No ' + (filter === 'all' ? '' : filter + ' ') + 'card requests.</div>';
+    return;
+  }
+
+  const STATUS_COLORS = { pending:'#f59e0b', issued:'#4ade80', rejected:'#f87171', approved:'#4ade80' };
+  const STATUS_LABELS = { pending:'Pending', issued:'Approved', rejected:'Rejected', approved:'Approved' };
+
+  el.innerHTML = `<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:.84rem;">
+    <thead><tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+      <th style="text-align:left;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Member</th>
+      <th style="text-align:left;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Card</th>
+      <th style="text-align:right;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Fee</th>
+      <th style="text-align:left;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Date</th>
+      <th style="text-align:center;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Status</th>
+      <th style="text-align:center;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Actions</th>
+    </tr></thead>
+    <tbody>${list.map(r => {
+      const date    = new Date(r.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+      const fee     = r.annual_fee === 0 ? 'Free' : '$' + r.annual_fee + '/yr';
+      const col     = STATUS_COLORS[r.status] || '#64748b';
+      const lbl     = STATUS_LABELS[r.status] || r.status;
+      const initials = (r.user_name || r.user_email || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+      const isPending = r.status === 'pending';
+      return `<tr style="border-bottom:1px solid rgba(255,255,255,.04);" onmouseover="this.style.background='rgba(255,255,255,.025)'" onmouseout="this.style.background=''">
+        <td style="padding:12px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:30px;height:30px;border-radius:50%;background:rgba(201,168,76,.1);display:flex;align-items:center;justify-content:center;color:var(--gold-400);font-family:var(--font-display);font-size:.75rem;flex-shrink:0;">${initials}</div>
+            <div style="min-width:0;">
+              <div style="color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;">${r.user_name || '—'}</div>
+              <div style="font-size:.75rem;color:var(--slate-500);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;">${r.user_email || ''}</div>
+            </div>
+          </div>
+        </td>
+        <td style="padding:12px;color:var(--slate-300);">${r.card_name}</td>
+        <td style="padding:12px;text-align:right;color:var(--slate-400);">${fee}</td>
+        <td style="padding:12px;color:var(--slate-500);font-size:.8rem;">${date}</td>
+        <td style="padding:12px;text-align:center;"><span style="font-size:.72rem;letter-spacing:.05em;color:${col};background:${col}18;border:1px solid ${col}30;padding:3px 10px;border-radius:99px;">${lbl}</span></td>
+        <td style="padding:12px;text-align:center;">
+          ${isPending ? `
+            <div style="display:flex;justify-content:center;gap:8px;">
+              <button onclick="aApproveCard('${r.id}','${(r.card_name||'').replace(/'/g,"\\'")}','${(r.user_name||'').replace(/'/g,"\\'")}',this)" style="background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:#4ade80;border-radius:7px;padding:5px 14px;cursor:pointer;font-size:.76rem;letter-spacing:.04em;transition:all .2s;" onmouseover="this.style.background='rgba(74,222,128,.18)'" onmouseout="this.style.background='rgba(74,222,128,.1)'">Approve</button>
+              <button onclick="aRejectCard('${r.id}','${(r.card_name||'').replace(/'/g,"\\'")}',this)" style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);color:#f87171;border-radius:7px;padding:5px 14px;cursor:pointer;font-size:.76rem;letter-spacing:.04em;transition:all .2s;" onmouseover="this.style.background='rgba(248,113,113,.16)'" onmouseout="this.style.background='rgba(248,113,113,.08)'">Reject</button>
+            </div>` : `<span style="font-size:.75rem;color:var(--slate-600);">—</span>`}
+        </td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+}
+
+async function aApproveCard(requestId, cardName, memberName, btn) {
+  const confirmed = await zenithConfirm(
+    `Approve the ${cardName} for ${memberName || 'this member'}?`,
+    { title: 'Approve Card Request', confirmLabel: 'Approve & Issue', type: 'success' }
+  );
+  if (!confirmed) return;
+  const row = btn.closest('tr');
+  btn.disabled = true; btn.textContent = 'Processing…';
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'approve_card', request_id: requestId });
+    zenithToast(res.message || 'Card approved and issued.', 'success', 5000);
+    await aLoadCardRequests();
+  } catch(e) {
+    let msg = 'Approval failed.';
+    try { const p = JSON.parse(e.message); msg = p.error || msg; } catch {}
+    zenithToast(msg, 'error');
+    btn.disabled = false; btn.textContent = 'Approve';
+  }
+}
+
+async function aRejectCard(requestId, cardName, btn) {
+  const confirmed = await zenithConfirm(
+    `Reject the application for ${cardName}?`,
+    { title: 'Reject Card Request', confirmLabel: 'Reject', type: 'error' }
+  );
+  if (!confirmed) return;
+  btn.disabled = true; btn.textContent = 'Processing…';
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'reject_card', request_id: requestId });
+    zenithToast(res.message || 'Request rejected.', 'info', 4000);
+    await aLoadCardRequests();
+  } catch(e) {
+    let msg = 'Rejection failed.';
+    try { const p = JSON.parse(e.message); msg = p.error || msg; } catch {}
+    zenithToast(msg, 'error');
+    btn.disabled = false; btn.textContent = 'Reject';
+  }
+}
+
+let _addFundsAccountId = null;
+
+function openAddFunds(userId, userName) {
   _addFundsUserId = userId;
-  document.getElementById('addFundsRecipient').textContent = 'Member: ' + userName;
+  _addFundsAccountId = null;
   document.getElementById('addFundsAmount').value = '';
   document.getElementById('addFundsNote').value   = '';
   document.getElementById('addFundsError').style.display = 'none';
-  const sel   = document.getElementById('addFundsAccountType');
-  const types = accTypes ? accTypes.split(',').filter(Boolean) : [];
-  sel.innerHTML = types.length
-    ? types.map(t => `<option value="${t}">${t.charAt(0).toUpperCase()+t.slice(1).replace('_',' ')}</option>`).join('')
-    : '<option value="checking">Checking</option><option value="savings">Savings</option><option value="money_market">Money Market</option>';
+
+  // Header
+  const initials = (userName || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  document.getElementById('addFundsInitials').textContent = initials;
+  document.getElementById('addFundsName').textContent = userName || 'Member';
+
+  // Render accounts
+  const user = (_aAllUsers || []).find(u => u.id === userId);
+  const accounts = (user?.accounts || []);
+  const container = document.getElementById('addFundsAccounts');
+  if (!accounts.length) {
+    container.innerHTML = '<div style="color:var(--slate-500);font-size:.82rem;padding:8px 0;">No active accounts found for this member.</div>';
+  } else {
+    const fmt = n => '$' + (n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const typeLabel = t => ({ checking:'Checking', savings:'Savings', money_market:'Money Market' })[t] || t;
+    const typeIcon  = t => ({ checking:'🏦', savings:'💰', money_market:'📈' })[t] || '💳';
+    container.innerHTML = accounts.map((a, i) => `
+      <div id="afAccCard_${a.id}" onclick="selectAddFundsAccount('${a.id}')" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;border:2px solid ${i===0?'rgba(201,168,76,.5)':'rgba(255,255,255,.07)'};background:${i===0?'rgba(201,168,76,.06)':'rgba(255,255,255,.02)'};cursor:pointer;transition:all .2s;">
+        <div style="font-size:1.4rem;line-height:1;">${typeIcon(a.type)}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:.88rem;font-weight:600;color:var(--white);">${typeLabel(a.type)}</div>
+          <div style="font-size:.75rem;color:var(--slate-500);font-family:monospace;">••••${(a.number||'').slice(-4)||'????'}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-family:var(--font-display);font-size:.92rem;color:var(--gold-300);">${fmt(a.balance)}</div>
+          <div style="font-size:.7rem;color:var(--slate-500);">Current balance</div>
+        </div>
+        <div id="afAccCheck_${a.id}" style="width:18px;height:18px;border-radius:50%;border:2px solid ${i===0?'var(--gold-400)':'rgba(255,255,255,.2)'};background:${i===0?'var(--gold-400)':'transparent'};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;color:#000;">${i===0?'✓':''}</div>
+      </div>`).join('');
+    // Auto-select first
+    if (accounts[0]) _addFundsAccountId = accounts[0].id;
+  }
+
   document.getElementById('addFundsModal').style.display = 'flex';
+}
+
+function selectAddFundsAccount(accountId) {
+  const user = (_aAllUsers || []).find(u => u.id === _addFundsUserId);
+  (user?.accounts || []).forEach(a => {
+    const card  = document.getElementById('afAccCard_' + a.id);
+    const check = document.getElementById('afAccCheck_' + a.id);
+    if (!card || !check) return;
+    const sel = a.id === accountId;
+    card.style.borderColor  = sel ? 'rgba(201,168,76,.5)' : 'rgba(255,255,255,.07)';
+    card.style.background   = sel ? 'rgba(201,168,76,.06)' : 'rgba(255,255,255,.02)';
+    check.style.borderColor = sel ? 'var(--gold-400)' : 'rgba(255,255,255,.2)';
+    check.style.background  = sel ? 'var(--gold-400)' : 'transparent';
+    check.textContent       = sel ? '✓' : '';
+  });
+  _addFundsAccountId = accountId;
 }
 
 function closeAddFunds() {
   document.getElementById('addFundsModal').style.display = 'none';
-  _addFundsUserId = null;
+  _addFundsUserId    = null;
+  _addFundsAccountId = null;
 }
 
 async function submitAddFunds() {
   const btn    = document.getElementById('addFundsSubmitBtn');
   const errEl  = document.getElementById('addFundsError');
   const amount = parseFloat(document.getElementById('addFundsAmount').value);
-  const accType = document.getElementById('addFundsAccountType').value;
   const note   = document.getElementById('addFundsNote').value.trim();
   errEl.style.display = 'none';
-  if (!_addFundsUserId || !accType || isNaN(amount) || amount <= 0) {
-    errEl.textContent = 'Please enter a valid amount.'; errEl.style.display = ''; return;
-  }
+  if (!_addFundsUserId) { errEl.textContent = 'No member selected.'; errEl.style.display = ''; return; }
+  if (!_addFundsAccountId) { errEl.textContent = 'Please select an account to credit.'; errEl.style.display = ''; return; }
+  if (isNaN(amount) || amount <= 0) { errEl.textContent = 'Please enter a valid amount greater than $0.'; errEl.style.display = ''; return; }
   btn.disabled = true; btn.textContent = 'Processing…';
   try {
-    const res = await callEdgeFunction('admin-data', { action: 'add_funds', user_id: _addFundsUserId, account_type: accType, amount, note });
+    const res = await callEdgeFunction('admin-data', { action: 'add_funds', user_id: _addFundsUserId, account_id: _addFundsAccountId, amount, note });
     closeAddFunds();
     await refreshAdminAll();
     zenithToast(res.message || 'Funds added successfully.', 'success');
@@ -790,6 +1935,106 @@ async function submitAddFunds() {
   }
 }
 
+// ═══ ACCOUNT STATE (premium hero + switcher + send/receive) ═══
+let _summary  = null;
+let _accounts = [];
+let _selAcct  = 0;
+const fmtUSD = n => '$' + (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
+const fmtAcctNo = s => (s || '').replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+
+function renderHero() {
+  if (!_accounts.length) return;
+  if (_selAcct >= _accounts.length) _selAcct = 0;
+  const a = _accounts[_selAcct];
+  const typeName = (a.account_type || 'account').replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+  document.getElementById('heroType').textContent     = a.account_name || (typeName + ' Account');
+  document.getElementById('heroNumber').textContent   = fmtAcctNo(a.account_number);
+  document.getElementById('heroBalance').textContent  = fmtUSD(a.balance);
+  document.getElementById('heroRouting').textContent  = a.routing_number || '021000021';
+  const st = document.getElementById('heroStatus');
+  st.textContent = (a.status || 'active').replace(/\b\w/g, c => c.toUpperCase());
+
+  document.getElementById('heroSwitcher').innerHTML = _accounts.map((acc, i) => {
+    const t = (acc.account_type || 'account').replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+    return `<div class="acct-chip ${i === _selAcct ? 'sel' : ''}" onclick="selectAcct(${i})">
+      <div class="acct-chip-type">${t}</div>
+      <div class="acct-chip-num">••${(acc.account_number || '').slice(-4)}</div>
+    </div>`;
+  }).join('');
+}
+function selectAcct(i) { _selAcct = i; renderHero(); }
+
+function renderAccountsList() {
+  const el = document.getElementById('accountsList');
+  if (!el) return;
+  if (!_accounts.length) { el.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;padding:8px 0;">No accounts yet.</div>'; return; }
+  const ICON = {
+    checking:     '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
+    savings:      '<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+    money_market: '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>',
+    business:     '<path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>',
+  };
+  el.innerHTML = _accounts.map((a, i) => {
+    const type  = (a.account_type || 'account').replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const icon  = ICON[a.account_type] || ICON.checking;
+    const sub   = a.interest_rate ? (a.interest_rate * 100).toFixed(2) + '% APY' : 'ZenithOne Credit Union';
+    const tint  = a.account_type === 'savings' ? '96,165,250' : a.account_type === 'money_market' ? '74,222,128' : '201,168,76';
+    const stroke= a.account_type === 'savings' ? '#60a5fa' : a.account_type === 'money_market' ? '#4ade80' : 'var(--gold-400)';
+    const selRing = i === _selAcct ? 'box-shadow:0 0 0 1px rgba(201,168,76,.35) inset;' : '';
+    return `<div class="account-card-mini" onclick="selectAcct(${i})" style="${selRing}" title="Show on account header">
+      <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(${tint},.12);display:flex;align-items:center;justify-content:center;color:${stroke};flex-shrink:0;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">${icon}</svg>
+        </div>
+        <div style="min-width:0;">
+          <div style="font-size:.85rem;font-weight:500;">${type}</div>
+          <div style="font-size:.72rem;color:var(--slate-500);font-family:'Courier New',monospace;">••${(a.account_number || '').slice(-4)} · ${sub}</div>
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-family:var(--font-display);font-size:1rem;">${fmtUSD(a.balance)}</div>
+        <div class="badge badge-green" style="font-size:.6rem;padding:2px 6px;">${(a.status || 'active').replace(/\b\w/g, c => c.toUpperCase())}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function copyAcctNumber() {
+  const a = _accounts[_selAcct]; if (!a) return;
+  const num = a.account_number || '';
+  const done = () => zenithToast('Account number copied to clipboard.', 'success', 2500);
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(num).then(done).catch(() => fallbackCopy(num, done));
+  } else { fallbackCopy(num, done); }
+}
+function fallbackCopy(text, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); cb && cb(); } catch {}
+  document.body.removeChild(ta);
+}
+
+// ── Real balance-history series from transactions ───────────────────
+function buildBalanceSeries(txns, currentBalance) {
+  const cur = Number(currentBalance) || 0;
+  if (!txns || txns.length === 0) return [cur, cur];
+  const asc = [...txns].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+  const delta = t => (['credit', 'transfer_in', 'interest', 'refund'].includes(t.transaction_type) ? t.amount : -t.amount);
+  const after = new Array(asc.length);
+  after[asc.length - 1] = cur;
+  for (let i = asc.length - 1; i > 0; i--) after[i - 1] = after[i] - delta(asc[i]);
+  const startBal = after[0] - delta(asc[0]);
+  const series = [startBal, ...after].map(v => Math.max(0, v));
+  return sampleSeries(series, 12);
+}
+function sampleSeries(arr, n) {
+  if (arr.length <= n) return arr.map(v => Math.round(v));
+  const out = [];
+  for (let i = 0; i < n; i++) { const idx = Math.round(i * (arr.length - 1) / (n - 1)); out.push(Math.round(arr[idx])); }
+  return out;
+}
+
 async function loadDashboardData() {
   try {
     const [summary, txnResult] = await Promise.all([
@@ -797,15 +2042,51 @@ async function loadDashboardData() {
       callEdgeFunction('transaction-history', { limit: 30 }),
     ]);
     if (!summary && !txnResult) return;
+    const allTxns = (txnResult && txnResult.transactions) ? txnResult.transactions : [];
 
     if (summary) {
-      const fmt = n => '$' + (n || 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
-      document.getElementById('totalBalance').textContent    = fmt(summary.total_balance);
-      document.getElementById('portfolioValue').textContent  = fmt(summary.portfolio_value);
-      document.getElementById('creditAvailable').textContent = fmt(summary.credit_available);
+      _summary  = summary;
+      _accounts = summary.accounts || [];
+
+      document.getElementById('totalBalance').textContent    = fmtUSD(summary.total_balance);
+      document.getElementById('portfolioValue').textContent  = fmtUSD(summary.portfolio_value);
+      document.getElementById('creditAvailable').textContent = fmtUSD(summary.credit_available);
       document.getElementById('rewardPoints').textContent    = (summary.reward_points || 0).toLocaleString();
-      document.getElementById('checkingBal').textContent     = fmt(summary.checking_balance);
-      document.getElementById('savingsBal').textContent      = fmt(summary.savings_balance);
+
+      // Portfolio profit / loss (admin-controlled or computed from holdings)
+      const gain = Number(summary.portfolio_gain) || 0;
+      const gEl = document.getElementById('portfolioChange');
+      if (gEl) {
+        if (summary.portfolio_value > 0 || gain !== 0) {
+          gEl.textContent = (gain >= 0 ? '+' : '−') + fmtUSD(Math.abs(gain)).slice(1) + ' total';
+          gEl.style.color = gain >= 0 ? 'var(--green-400)' : 'var(--red-400)';
+        } else { gEl.textContent = '—'; gEl.style.color = 'var(--slate-500)'; }
+      }
+
+      // Wealth snapshot
+      document.getElementById('snapPortfolio').textContent = fmtUSD(summary.portfolio_value);
+      document.getElementById('snapCredit').textContent    = fmtUSD(summary.credit_available);
+      document.getElementById('snapPoints').textContent    = (summary.reward_points || 0).toLocaleString();
+
+      // Premium account hero + My Accounts list
+      renderHero();
+      renderAccountsList();
+
+      // Greeting name
+      if (summary.full_name) {
+        const wn = document.getElementById('welcomeName');
+        if (wn) wn.textContent = summary.full_name.split(' ')[0];
+      }
+
+      // Real last sign-in
+      if (summary.last_sign_in_at) {
+        const dt = new Date(summary.last_sign_in_at), now = new Date();
+        const time = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+        const label = dt.toDateString() === now.toDateString()
+          ? `Today, ${time}`
+          : `${dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, ${time}`;
+        const el = document.getElementById('lastLogin'); if (el) el.textContent = label;
+      }
 
       // Card section
       const hasCard = summary.has_card;
@@ -814,33 +2095,29 @@ async function loadDashboardData() {
       if (hasCard && summary.primary_card) {
         const pc = summary.primary_card;
         document.getElementById('dashCardNumber').textContent  = `•••• •••• •••• ${pc.last_four}`;
-        const tierLabel = (pc.tier || 'standard').toUpperCase().replace('_',' ');
+        const tierLabel = (pc.tier || 'standard').toUpperCase().replace('_', ' ');
         document.getElementById('dashCardTierLabel').innerHTML = `ZENITHONE<br/>${tierLabel}`;
       }
-
-      const bal = summary.total_balance || 0;
-      const series = Array.from({ length: 12 }, (_, i) =>
-        bal === 0 ? 0 : Math.round(bal * (0.75 + 0.25 * (i / 11)))
-      );
-      chartData['1M'] = series;
-      chartData['3M'] = series;
-      chartData['1Y'] = series;
-      currentChartData = chartData['1Y'];
-      drawBalanceChart(currentChartData);
     }
 
-    if (txnResult && txnResult.transactions) {
-      const txns = txnResult.transactions;
-      const ICONS = { Shopping:'🛍️', Income:'💵', Dining:'🍽️', Travel:'✈️', Interest:'💰', Groceries:'🛒', Transfer:'↙️', Investment:'📈', Utilities:'⚡', Entertainment:'🎬', Health:'🏋️' };
+    // Real balance history
+    const series = buildBalanceSeries(allTxns, (summary && summary.total_balance) || 0);
+    chartData['1M'] = series; chartData['3M'] = series; chartData['1Y'] = series;
+    currentChartData = chartData['1Y'];
+    drawBalanceChart(currentChartData);
+
+    // Recent transactions + spending
+    {
+      const txns = allTxns;
+      const ICONS = { Shopping:'🛍️', Income:'💵', Dining:'🍽️', Travel:'✈️', Interest:'💰', Groceries:'🛒', Transfer:'↔️', Investment:'📈', Utilities:'⚡', Entertainment:'🎬', Health:'🏋️' };
 
       document.getElementById('recentTransactions').innerHTML = txns.length === 0
         ? '<div style="padding:24px;text-align:center;color:var(--slate-500);">No transactions yet.</div>'
         : txns.slice(0, 5).map(t => {
-            const isCredit = ['credit','transfer_in','interest'].includes(t.transaction_type);
+            const isCredit = ['credit','transfer_in','interest','refund'].includes(t.transaction_type);
             const amt = (isCredit ? '+' : '-') + '$' + Math.abs(t.amount).toLocaleString('en-US', { minimumFractionDigits: 2 });
             const icon = ICONS[t.category] || '💳';
-            const d = new Date(t.created_at);
-            const now = new Date();
+            const d = new Date(t.created_at), now = new Date();
             const dateStr = d.toDateString() === now.toDateString() ? 'Today'
               : d.toDateString() === new Date(now - 864e5).toDateString() ? 'Yesterday'
               : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -885,6 +2162,137 @@ async function loadDashboardData() {
   } catch(e) {
     console.warn('Dashboard data load failed:', e);
   }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SEND MONEY  (lookup → name confirm → PIN)
+// ═══════════════════════════════════════════════════════════════
+let _sendVerified = false;
+
+function openSendModal() {
+  if (!_accounts.length) { zenithToast('No active account found.', 'error'); return; }
+  // Populate "from" account select
+  const sel = document.getElementById('sendFromAccount');
+  sel.innerHTML = _accounts.map((a, i) => {
+    const t = (a.account_type || 'account').replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+    return `<option value="${a.id}" ${i === _selAcct ? 'selected' : ''}>${t} ••${(a.account_number||'').slice(-4)} — ${fmtUSD(a.balance)}</option>`;
+  }).join('');
+  // Reset fields
+  document.getElementById('sendToNumber').value = '';
+  document.getElementById('sendAmount').value   = '';
+  document.getElementById('sendMemo').value     = '';
+  document.getElementById('sendPin').value      = '';
+  document.getElementById('sendRecipBox').innerHTML = '';
+  document.getElementById('sendErr').textContent = '';
+  _sendVerified = false;
+  updateSendBtn();
+  document.getElementById('sendModal').classList.add('open');
+}
+function closeSendModal() { document.getElementById('sendModal').classList.remove('open'); }
+
+function onSendNumberInput() {
+  const el = document.getElementById('sendToNumber');
+  el.value = el.value.replace(/\D/g, '').slice(0, 10);
+  // Any change invalidates a prior verification
+  _sendVerified = false;
+  document.getElementById('sendRecipBox').innerHTML = '';
+  updateSendBtn();
+}
+
+function updateSendBtn() {
+  const btn = document.getElementById('sendSubmitBtn');
+  if (_sendVerified) { btn.disabled = false; btn.textContent = 'Send Money'; }
+  else { btn.disabled = true; btn.textContent = 'Verify recipient to continue'; }
+}
+
+async function verifyRecipient() {
+  const num = document.getElementById('sendToNumber').value.trim();
+  const errEl = document.getElementById('sendErr');
+  errEl.textContent = '';
+  if (!/^\d{10}$/.test(num)) { errEl.textContent = 'Enter a valid 10-digit account number.'; return; }
+  const vbtn = document.getElementById('sendVerifyBtn');
+  vbtn.textContent = '…'; vbtn.style.pointerEvents = 'none';
+  try {
+    const res = await callEdgeFunction('transfer-funds', { action: 'lookup', account_number: num });
+    if (res && res.found) {
+      _sendVerified = true;
+      const selfTag = res.is_self ? ' <span style="color:var(--slate-500);">(your account)</span>' : '';
+      document.getElementById('sendRecipBox').innerHTML =
+        `<div class="zrecip-chip"><svg width="16" height="16" fill="none" stroke="#4ade80" stroke-width="2.4" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+          <div><div style="font-size:.82rem;color:#fff;font-weight:600;">${res.recipient_name}${selfTag}</div>
+          <div style="font-size:.68rem;color:var(--slate-400);text-transform:capitalize;">${(res.account_type||'account').replace('_',' ')} account · ••${num.slice(-4)}</div></div></div>`;
+    } else {
+      _sendVerified = false;
+      errEl.textContent = 'No active account found with that number.';
+    }
+  } catch (e) {
+    _sendVerified = false;
+    let msg = 'Could not verify account.'; try { msg = JSON.parse(e.message).error || msg; } catch {}
+    errEl.textContent = msg;
+  } finally {
+    vbtn.textContent = 'Verify'; vbtn.style.pointerEvents = '';
+    updateSendBtn();
+  }
+}
+
+async function submitSend() {
+  const errEl = document.getElementById('sendErr');
+  errEl.textContent = '';
+  if (!_sendVerified) { errEl.textContent = 'Please verify the recipient first.'; return; }
+  const from_account_id   = document.getElementById('sendFromAccount').value;
+  const to_account_number = document.getElementById('sendToNumber').value.trim();
+  const amount = parseFloat(document.getElementById('sendAmount').value);
+  const memo   = document.getElementById('sendMemo').value.trim();
+  const pin    = document.getElementById('sendPin').value.trim();
+
+  if (!from_account_id)             { errEl.textContent = 'Select a source account.'; return; }
+  if (!amount || amount <= 0)       { errEl.textContent = 'Enter a valid amount.'; return; }
+  if (!/^\d{4}$/.test(pin))         { errEl.textContent = 'Enter your 4-digit transaction PIN.'; return; }
+
+  const btn = document.getElementById('sendSubmitBtn');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    const res = await callEdgeFunction('transfer-funds', {
+      action: 'send', from_account_id, to_account_number, amount, memo, pin,
+    });
+    closeSendModal();
+    zenithToast(`$${amount.toLocaleString('en-US',{minimumFractionDigits:2})} sent to ${res.recipient_name}. Ref: ${res.reference}`, 'success', 6000);
+    await loadDashboardData();
+  } catch (e) {
+    let msg = 'Transfer failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    errEl.textContent = msg;
+    btn.disabled = false; btn.textContent = 'Send Money';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  RECEIVE MONEY  (share account numbers)
+// ═══════════════════════════════════════════════════════════════
+function openReceiveModal() {
+  if (!_accounts.length) { zenithToast('No active account found.', 'error'); return; }
+  document.getElementById('receiveBody').innerHTML = _accounts.map(a => {
+    const t = (a.account_type || 'account').replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+    return `<div class="zacct-receive-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div style="font-size:.86rem;font-weight:600;color:#fff;">${t} Account</div>
+        <div class="acct-hero-status" style="margin:0;">${(a.status||'active').replace(/\b\w/g,c=>c.toUpperCase())}</div>
+      </div>
+      <div style="font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--slate-500);margin-bottom:4px;">Account Number</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+        <div style="font-family:'Courier New',monospace;font-size:1.15rem;letter-spacing:.14em;color:#f4ead0;">${fmtAcctNo(a.account_number)}</div>
+        <button class="acct-copy-btn" onclick="copyText('${a.account_number}', this)">Copy</button>
+      </div>
+      <div style="margin-top:10px;font-size:.72rem;color:var(--slate-500);">Routing ${a.routing_number || '021000021'} · ZenithOne Credit Union</div>
+    </div>`;
+  }).join('') + `<div style="font-size:.75rem;color:var(--slate-400);text-align:center;margin-top:8px;line-height:1.6;">Share your account number with another ZenithOne member to receive funds instantly.</div>
+    <button class="zbtn-ghost" onclick="closeReceiveModal()">Done</button>`;
+  document.getElementById('receiveModal').classList.add('open');
+}
+function closeReceiveModal() { document.getElementById('receiveModal').classList.remove('open'); }
+function copyText(text, btn) {
+  const done = () => { if (btn) { const o = btn.textContent; btn.textContent = 'Copied'; setTimeout(() => btn.textContent = o, 1500); } };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  else fallbackCopy(text, done);
 }
 </script>
 </body>

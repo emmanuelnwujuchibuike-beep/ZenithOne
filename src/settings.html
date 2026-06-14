@@ -172,9 +172,19 @@
                   <button class="btn btn-ghost btn-sm" onclick="manage2FA()">Manage</button>
                 </div>
               </div>
-              <div class="settings-row">
-                <div><div style="font-weight:500;margin-bottom:2px;">Biometric Login</div><div style="font-size:.8rem;color:var(--slate-400);">Face ID / Touch ID</div></div>
-                <label class="toggle-switch"><input type="checkbox" checked /><div class="toggle-track"></div></label>
+              <div class="settings-row" id="faceidLoginRow">
+                <div>
+                  <div style="font-weight:500;margin-bottom:2px;">Face ID Sign-In</div>
+                  <div style="font-size:.8rem;color:var(--slate-400);" id="faceidLoginDesc">Face ID · Touch ID · Windows Hello on this device</div>
+                </div>
+                <label class="toggle-switch"><input type="checkbox" id="faceidLoginToggle" /><div class="toggle-track"></div></label>
+              </div>
+              <div class="settings-row" id="faceidTxRow" style="display:none;">
+                <div>
+                  <div style="font-weight:500;margin-bottom:2px;">Face ID for Transactions</div>
+                  <div style="font-size:.8rem;color:var(--slate-400);">Require Face ID to confirm transfers &amp; payments</div>
+                </div>
+                <label class="toggle-switch"><input type="checkbox" id="faceidTxToggle" /><div class="toggle-track"></div></label>
               </div>
               <div class="settings-row">
                 <div><div style="font-weight:500;margin-bottom:2px;">Login Notifications</div><div style="font-size:.8rem;color:var(--slate-400);">Email alert on every sign-in</div></div>
@@ -426,7 +436,62 @@ async function unlinkAccount(btn) {
 document.addEventListener('DOMContentLoaded', () => {
   if (window._supabase) loadSettingsData();
   else document.addEventListener('supabaseReady', loadSettingsData, { once: true });
+  initFaceIdSettings();
 });
+
+// ── Face ID settings ──────────────────────────────────────────────────────────
+async function initFaceIdSettings() {
+  const FID      = window.ZenithFaceID;
+  const row      = document.getElementById('faceidLoginRow');
+  const loginTgl = document.getElementById('faceidLoginToggle');
+  const txRow    = document.getElementById('faceidTxRow');
+  const txTgl    = document.getElementById('faceidTxToggle');
+  const desc     = document.getElementById('faceidLoginDesc');
+  if (!FID || !loginTgl) return;
+
+  const available = await FID.isAvailable();
+  if (!available) {
+    desc.textContent = 'Not supported on this device or browser';
+    loginTgl.disabled = true;
+    row.style.opacity = '.55';
+    return;
+  }
+
+  function refresh() {
+    const on = FID.isEnrolled();
+    loginTgl.checked = on;
+    txRow.style.display = on ? 'flex' : 'none';
+    txTgl.checked = FID.txEnabled();
+    desc.textContent = on
+      ? 'Enabled on this device — sign in instantly'
+      : 'Face ID · Touch ID · Windows Hello on this device';
+  }
+  refresh();
+
+  loginTgl.addEventListener('change', async () => {
+    if (loginTgl.checked) {
+      try {
+        const ok = await FID.enroll();
+        if (!ok) { loginTgl.checked = false; return; }
+        zenithToast('Face ID sign-in enabled on this device.', 'success');
+      } catch (e) {
+        loginTgl.checked = false;
+        zenithToast(e.message || 'Could not enable Face ID.', 'error');
+      }
+    } else {
+      const ok = await zenithConfirm('Remove Face ID sign-in from this device? You can re-enable it anytime.', { title: 'Disable Face ID', confirmLabel: 'Disable', type: 'warning' });
+      if (!ok) { loginTgl.checked = true; return; }
+      FID.disable();
+      zenithToast('Face ID has been removed from this device.', 'success');
+    }
+    refresh();
+  });
+
+  txTgl.addEventListener('change', () => {
+    FID.setTxEnabled(txTgl.checked);
+    zenithToast(txTgl.checked ? 'Face ID will be required for transactions.' : 'Face ID for transactions disabled.', 'success');
+  });
+}
 // Mobile sidebar
 (function(){
   const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
@@ -442,6 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
   s.addEventListener('touchend',   e => { if (_tx - e.changedTouches[0].clientX > 60) closeNav(); }, { passive:true });
 })();
 </script>
+<script src="js/faceid.js"></script>
 <script src="js/notifications.js"></script>
 </body>
 </html>

@@ -223,7 +223,13 @@ async function updatePassword(newPassword) {
 
 // ── Logout ────────────────────────────────────────────────────
 async function logout() {
-  if (window._supabase) await window._supabase.auth.signOut();
+  if (window._supabase) {
+    // If Face ID is enrolled on this device, sign out locally so the refresh
+    // token stays valid for biometric re-entry. Otherwise revoke globally.
+    const faceIdOn = window.ZenithFaceID && window.ZenithFaceID.isEnrolled();
+    try { await window._supabase.auth.signOut({ scope: faceIdOn ? 'local' : 'global' }); }
+    catch { await window._supabase.auth.signOut(); }
+  }
   window.location.href = 'login.html';
 }
 document.querySelectorAll('#logoutBtn').forEach(btn => btn?.addEventListener('click', logout));

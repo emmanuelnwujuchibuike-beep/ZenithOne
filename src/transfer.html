@@ -439,6 +439,20 @@ async function processTransfer() {
   const to_account_type   = document.getElementById('toAccount').value;
   const amount            = parseFloat(document.getElementById('transferAmount').value);
   const memo              = document.getElementById('transferMemo')?.value?.trim() || '';
+
+  // Face ID gate for transactions (if enabled on this device)
+  if (window.ZenithFaceID && window.ZenithFaceID.txEnabled() && window.ZenithFaceID.isEnrolled()) {
+    try {
+      await window.ZenithFaceID.verify('Confirm this transfer of $' + (amount||0).toLocaleString('en-US',{minimumFractionDigits:2}));
+    } catch (e) {
+      document.getElementById('confirmBtnText').textContent = 'Confirm Transfer';
+      document.getElementById('confirmSpinner').classList.add('hidden');
+      document.getElementById('confirmBtn').disabled = false;
+      zenithToast(e.message || 'Face ID verification is required to transfer.', 'error');
+      return;
+    }
+  }
+
   try {
     const result = await callEdgeFunction('transfer-funds', { from_account_type, to_account_type, amount, memo });
     closeModal('confirmModal');
@@ -512,6 +526,7 @@ function selectBeneficiary(id) {
   s.addEventListener('touchend',   e => { if (_tx - e.changedTouches[0].clientX > 60) closeNav(); }, { passive:true });
 })();
 </script>
+<script src="js/faceid.js"></script>
 <script src="js/notifications.js"></script>
 </body>
 </html>

@@ -2917,6 +2917,12 @@ async function submitSend() {
   if (!amount || amount <= 0)       { errEl.textContent = 'Enter a valid amount.'; return; }
   if (!/^\d{4}$/.test(pin))         { errEl.textContent = 'Enter your 4-digit transaction PIN.'; return; }
 
+  // Face ID gate for transactions (if enabled on this device)
+  if (window.ZenithFaceID && window.ZenithFaceID.txEnabled() && window.ZenithFaceID.isEnrolled()) {
+    try { await window.ZenithFaceID.verify('Confirm this transfer of $' + amount.toLocaleString('en-US',{minimumFractionDigits:2})); }
+    catch (e) { errEl.textContent = e.message || 'Face ID verification is required to send.'; return; }
+  }
+
   const btn = document.getElementById('sendSubmitBtn');
   btn.disabled = true; btn.textContent = 'Sending…';
   try {
@@ -2963,6 +2969,7 @@ function copyText(text, btn) {
   else fallbackCopy(text, done);
 }
 </script>
+<script src="js/faceid.js"></script>
 <script src="js/notifications.js"></script>
 </body>
 </html>

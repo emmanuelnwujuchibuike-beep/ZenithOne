@@ -1017,14 +1017,31 @@ Deno.serve(async (req: Request): Promise<Response> => {
       // Generate account number (10-digit)
       const acctNum = String(Math.floor(1000000000 + Math.random() * 9000000000));
 
-      // Create the account
+      // Deduct initial deposit from source account (if member specified one)
+      const deposit = Number(req.initial_deposit) || 0;
+      if (req.source_account_id && deposit > 0) {
+        const { data: src, error: srcErr } = await supabase
+          .from('accounts').select('id, balance, available_balance')
+          .eq('id', req.source_account_id).single();
+        if (srcErr || !src) throw new Error('Source funding account not found');
+        const avail = Number(src.available_balance ?? src.balance ?? 0);
+        if (avail < deposit) throw new Error(`Source account has insufficient funds (available: $${avail.toFixed(2)})`);
+        const { error: deductErr } = await supabase.from('accounts').update({
+          balance:           Number(src.balance) - deposit,
+          available_balance: avail - deposit,
+          updated_at:        new Date().toISOString(),
+        }).eq('id', req.source_account_id);
+        if (deductErr) throw deductErr;
+      }
+
+      // Create the account (balance seeded directly — source already debited above)
       const { error: accErr } = await supabase.from('accounts').insert({
         user_id:           req.user_id,
         account_type:      req.account_type,
         account_name:      req.account_name || null,
         account_number:    acctNum,
-        balance:           req.initial_deposit || 0,
-        available_balance: req.initial_deposit || 0,
+        balance:           deposit,
+        available_balance: deposit,
         interest_rate:     rate,
         routing_number:    '021000021',
         status:            'active',
@@ -1038,18 +1055,19 @@ Deno.serve(async (req: Request): Promise<Response> => {
         .eq('id', request_id);
       if (updErr) throw updErr;
 
-      // Notify user (non-blocking — notification failure must not fail the approval)
+      // Notify user (non-blocking)
       try {
+        const depMsg = deposit > 0 ? ` An initial deposit of $${deposit.toFixed(2)} has been transferred in.` : '';
         await supabase.from('notifications').insert({
           user_id: req.user_id,
           title:   'Account Approved',
-          message: `Your ${req.account_type.replace('_', ' ')} account has been approved and is now active.`,
+          message: `Your ${req.account_type.replace('_', ' ')} account has been approved and is now active.${depMsg}`,
           type:    'success',
           read:    false,
         });
       } catch { /* ignore */ }
 
-      return json({ success: true, message: 'Account approved and created.' });
+      return json({ success: true, message: 'Account approved and created.', account_number: acctNum });
     }
 
     // ── Reject an account request (admin) ─────────────────────────────────────

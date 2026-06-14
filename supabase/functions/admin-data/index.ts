@@ -217,15 +217,92 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
     if (authErr || !user) throw new Error('Unauthorized');
 
+    // Parse body once — must happen before any body reads below
+    const body = await req.json() as { action?: string; [k: string]: unknown };
+    const action = body.action ?? 'stats';
+
+    // ── Minimum credit scores per loan type ───────────────────────────────────
+    const LOAN_MIN_SCORES: Record<string, number> = {
+      personal: 580, auto: 600, mortgage: 620,
+      student: 560, business: 640, heloc: 640, credit_line: 600,
+    };
+    // Default APR per loan type (stored as decimal, e.g. 0.065 = 6.5%)
+    const LOAN_DEFAULT_RATES: Record<string, number> = {
+      personal: 0.1299, auto: 0.0799, mortgage: 0.0699,
+      student: 0.0549, business: 0.1099, heloc: 0.0849, credit_line: 0.1799,
+    };
+
+    // ── USER ACTION: submit a loan application ─────────────────────────────────
+    if (action === 'apply_loan') {
+      const { loan_type, loan_name, requested_amount, term_months, purpose } =
+        body as { action: string; loan_type: string; loan_name: string;
+                  requested_amount: number; term_months?: number; purpose?: string };
+      if (!loan_type)         throw new Error('loan_type required');
+      if (!loan_name)         throw new Error('loan_name required');
+      if (!requested_amount || requested_amount <= 0) throw new Error('requested_amount must be > 0');
+
+      const { data: cp } = await supabase
+        .from('credit_profiles').select('credit_score, total_credit_limit')
+        .eq('user_id', user.id).maybeSingle();
+
+      if (!cp || !cp.credit_score)
+        throw new Error('No credit profile found. Please contact your branch officer.');
+
+      const minScore = LOAN_MIN_SCORES[loan_type] ?? 580;
+      if (cp.credit_score < minScore)
+        throw new Error(
+          `Your credit score (${cp.credit_score}) does not meet the minimum of ${minScore} required for this loan type.`
+        );
+
+      const maxAmount = Number(cp.total_credit_limit ?? 0);
+      if (maxAmount <= 0)
+        throw new Error('No credit limit established. Please contact your branch officer.');
+      if (Number(requested_amount) > maxAmount)
+        throw new Error(
+          `Requested amount exceeds your approved credit limit of $${maxAmount.toLocaleString('en-US', { minimumFractionDigits: 2 })}.`
+        );
+
+      // Prevent duplicate pending applications for same type
+      const { data: existing } = await supabase
+        .from('loan_applications')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('loan_type', loan_type)
+        .eq('status', 'pending')
+        .maybeSingle();
+      if (existing)
+        throw new Error('You already have a pending application for this loan type.');
+
+      const { data: app, error: insErr } = await supabase.from('loan_applications').insert({
+        user_id:   user.id, loan_type, loan_name,
+        requested_amount: Number(requested_amount),
+        term_months: term_months ?? null,
+        purpose: purpose ?? null,
+        status: 'pending',
+        credit_score_at_application: cp.credit_score,
+        credit_limit_at_application: cp.total_credit_limit,
+      }).select().single();
+      if (insErr) throw insErr;
+      return json({ success: true, application: app });
+    }
+
+    // ── USER ACTION: fetch own loan applications ───────────────────────────────
+    if (action === 'get_my_loan_applications') {
+      const { data, error: selErr } = await supabase
+        .from('loan_applications').select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      if (selErr) throw selErr;
+      return json({ applications: data ?? [] });
+    }
+
+    // ── Admin gate ─────────────────────────────────────────────────────────────
     const { data: callerProfile } = await supabase
       .from('profiles')
       .select('is_admin')
       .eq('id', user.id)
       .single();
     if (!callerProfile?.is_admin) throw new Error('Forbidden: admin access required');
-
-    const body = await req.json() as { action?: string };
-    const action = body.action ?? 'stats';
 
     // Helper: build id→email map from auth.users (service role only)
     async function getEmailMap(): Promise<Record<string, string>> {
@@ -1198,6 +1275,120 @@ Deno.serve(async (req: Request): Promise<Response> => {
       const { error } = await supabase.from('loans').delete().eq('id', loan_id);
       if (error) throw error;
       return json({ success: true, message: 'Loan removed.' });
+    }
+
+    // ── List all loan applications (admin) ────────────────────────────────────
+    if (action === 'admin_list_loan_applications') {
+      const { status_filter } = body as { action: string; status_filter?: string };
+      let q = supabase
+        .from('loan_applications')
+        .select('*, profile:user_id(full_name)')
+        .order('created_at', { ascending: false });
+      if (status_filter && status_filter !== 'all') q = q.eq('status', status_filter);
+      const { data, error } = await q;
+      if (error) throw error;
+      return json({ applications: data ?? [] });
+    }
+
+    // ── Approve a loan application (admin) ────────────────────────────────────
+    if (action === 'admin_approve_loan_application') {
+      const { application_id, monthly_payment, interest_rate, admin_note, opened_date } =
+        body as { action: string; application_id: string; monthly_payment?: number;
+                  interest_rate?: number; admin_note?: string; opened_date?: string };
+      if (!application_id) throw new Error('application_id required');
+
+      const { data: app, error: fetchErr } = await supabase
+        .from('loan_applications').select('*').eq('id', application_id).single();
+      if (fetchErr || !app) throw new Error('Loan application not found');
+      if (app.status !== 'pending') throw new Error('Application is not pending');
+
+      const rate     = interest_rate  ?? LOAN_DEFAULT_RATES[app.loan_type] ?? 0.1299;
+      const payment  = monthly_payment ?? 0;
+      const openDate = opened_date     ?? new Date().toISOString().split('T')[0];
+
+      // Next payment = first of the month after today
+      const now = new Date();
+      const nextPayment = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+        .toISOString().split('T')[0];
+
+      const { error: loanErr } = await supabase.from('loans').insert({
+        user_id:          app.user_id,
+        loan_type:        app.loan_type,
+        loan_name:        app.loan_name,
+        lender:           'ZenithOne Credit Union',
+        original_amount:  app.requested_amount,
+        current_balance:  app.requested_amount,
+        interest_rate:    rate,
+        monthly_payment:  payment,
+        next_payment_date: nextPayment,
+        term_months:      app.term_months ?? null,
+        paid_months:      0,
+        opened_date:      openDate,
+        status:           'active',
+      });
+      if (loanErr) throw loanErr;
+
+      const { error: updErr } = await supabase.from('loan_applications').update({
+        status:                    'approved',
+        monthly_payment_approved:  payment,
+        interest_rate_approved:    rate,
+        admin_note:                admin_note ?? null,
+        updated_at:                new Date().toISOString(),
+      }).eq('id', application_id);
+      if (updErr) throw updErr;
+
+      // Notify member
+      const typeLabel: Record<string, string> = {
+        personal:'Personal', auto:'Auto', mortgage:'Mortgage',
+        student:'Student', business:'Business', heloc:'HELOC', credit_line:'Line of Credit',
+      };
+      const fmt = (n: number) => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      try {
+        await supabase.from('notifications').insert({
+          user_id: app.user_id,
+          title:   'Loan Approved',
+          message: `Your ${typeLabel[app.loan_type]||app.loan_type} loan of ${fmt(app.requested_amount)} has been approved and is now active.`,
+          type:    'success',
+          read:    false,
+        });
+      } catch { /* ignore */ }
+
+      return json({ success: true, message: 'Loan application approved and loan created.' });
+    }
+
+    // ── Decline a loan application (admin) ────────────────────────────────────
+    if (action === 'admin_decline_loan_application') {
+      const { application_id, admin_note } =
+        body as { action: string; application_id: string; admin_note?: string };
+      if (!application_id) throw new Error('application_id required');
+
+      const { data: app, error: fetchErr } = await supabase
+        .from('loan_applications').select('*').eq('id', application_id).single();
+      if (fetchErr || !app) throw new Error('Loan application not found');
+      if (app.status !== 'pending') throw new Error('Application is not pending');
+
+      const { error: updErr } = await supabase.from('loan_applications').update({
+        status:     'declined',
+        admin_note: admin_note ?? null,
+        updated_at: new Date().toISOString(),
+      }).eq('id', application_id);
+      if (updErr) throw updErr;
+
+      const typeLabel: Record<string, string> = {
+        personal:'Personal', auto:'Auto', mortgage:'Mortgage',
+        student:'Student', business:'Business', heloc:'HELOC', credit_line:'Line of Credit',
+      };
+      try {
+        await supabase.from('notifications').insert({
+          user_id: app.user_id,
+          title:   'Loan Application Update',
+          message: `Your ${typeLabel[app.loan_type]||app.loan_type} loan application could not be approved at this time.${admin_note ? ' Reason: ' + admin_note : ''}`,
+          type:    'warning',
+          read:    false,
+        });
+      } catch { /* ignore */ }
+
+      return json({ success: true, message: 'Loan application declined.' });
     }
 
     throw new Error(`Unknown action: ${action}`);

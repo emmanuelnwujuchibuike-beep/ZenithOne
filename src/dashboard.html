@@ -851,6 +851,74 @@
   </div>
 </div>
 
+<!-- ── Admin: Loan Applications ─────────────────────────────────────── -->
+<div class="card card-elevated" style="margin-top:24px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+    <div>
+      <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:3px;">Loan Applications</div>
+      <div style="font-size:.78rem;color:var(--slate-400);">Review and approve or decline member loan requests</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <select id="aLoanAppFilter" class="form-input form-select" style="font-size:.8rem;padding:6px 10px;width:auto;" onchange="aLoadLoanApplications()">
+        <option value="pending">Pending</option>
+        <option value="all">All</option>
+        <option value="approved">Approved</option>
+        <option value="declined">Declined</option>
+      </select>
+      <button class="btn btn-ghost btn-sm" onclick="aLoadLoanApplications()" style="font-size:.75rem;">↻ Refresh</button>
+    </div>
+  </div>
+  <div id="aLoanAppList" style="font-size:.85rem;color:var(--slate-400);">Loading…</div>
+</div>
+
+<!-- Admin: Approve Loan Modal -->
+<div id="aApproveLoanModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)aCloseApproveModal()">
+  <div class="card card-elevated" style="width:460px;max-width:96vw;padding:28px;position:relative;" onclick="event.stopPropagation()">
+    <button onclick="aCloseApproveModal()" style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;">✕</button>
+    <div style="font-family:var(--font-display);font-size:1.15rem;margin-bottom:4px;">Approve Loan Application</div>
+    <div style="font-size:.8rem;color:var(--gold-400);margin-bottom:18px;" id="aApproveLoanMeta">—</div>
+    <div class="admin-two-col" style="gap:10px;margin-bottom:12px;">
+      <div>
+        <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;">Monthly Payment ($)</div>
+        <input type="number" id="aApproveMonthly" min="0" step="0.01" placeholder="0.00"
+          style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.9rem;outline:none;" />
+      </div>
+      <div>
+        <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;">Interest Rate (decimal, e.g. 0.0799)</div>
+        <input type="number" id="aApproveRate" min="0" max="1" step="0.0001" placeholder="0.0799"
+          style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.9rem;outline:none;" />
+      </div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;">Admin Note (optional)</div>
+      <input type="text" id="aApproveNote" placeholder="Internal note…"
+        style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-primary" style="flex:1;" id="aApproveLoanBtn" onclick="aConfirmApproveLoan()">Approve &amp; Create Loan</button>
+      <button class="btn btn-ghost" onclick="aCloseApproveModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin: Decline Loan Modal -->
+<div id="aDeclineLoanModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)aCloseDeclineModal()">
+  <div class="card card-elevated" style="width:420px;max-width:96vw;padding:28px;position:relative;" onclick="event.stopPropagation()">
+    <button onclick="aCloseDeclineModal()" style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;">✕</button>
+    <div style="font-family:var(--font-display);font-size:1.15rem;margin-bottom:4px;">Decline Application</div>
+    <div style="font-size:.8rem;color:var(--slate-400);margin-bottom:18px;" id="aDeclineLoanMeta">—</div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;">Reason (shown to member)</div>
+      <input type="text" id="aDeclineNote" placeholder="e.g. Debt-to-income ratio too high"
+        style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:9px 12px;color:#fff;font-size:.85rem;outline:none;" />
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn" style="flex:1;background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.4);color:#f87171;" id="aDeclineLoanBtn" onclick="aConfirmDeclineLoan()">Decline Application</button>
+      <button class="btn btn-ghost" onclick="aCloseDeclineModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- Admin: Give Points Modal -->
 <div id="aGivePointsModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)aCloseGivePoints()">
   <div class="card card-elevated" style="width:420px;max-width:96vw;padding:28px;position:relative;" onclick="event.stopPropagation()">
@@ -1443,8 +1511,7 @@ async function aRejectAcctRequest(requestId, memberName) {
 }
 
 async function refreshAdminAll() {
-  await Promise.all([aLoadStats(), aLoadUsers(), aLoadCardRequests(), aLoadCardPricing(), aLoadRewards(), aLoadPins(), aLoadAccountRequests()]);
-  // Populate credit member selector with latest user list
+  await Promise.all([aLoadStats(), aLoadUsers(), aLoadCardRequests(), aLoadCardPricing(), aLoadRewards(), aLoadPins(), aLoadAccountRequests(), aLoadLoanApplications()]);
   aPopulateCreditMemberSelect();
 }
 
@@ -1588,6 +1655,138 @@ async function aDeleteLoan(loanId, loanName) {
     await aLoadCreditData();
   } catch(e) {
     zenithToast('Error: ' + (e.message || e), 'error');
+  }
+}
+
+// ── Loan Applications (Admin) ─────────────────────────────────────────────────
+const LOAN_TYPE_LABELS = {
+  personal:'Personal', auto:'Auto', mortgage:'Mortgage',
+  student:'Student', business:'Business', heloc:'HELOC', credit_line:'Line of Credit',
+};
+const LOAN_APP_SC = {
+  pending:  { label:'Under Review', c:'#c9a84c', b:'rgba(201,168,76,.1)',   bd:'rgba(201,168,76,.3)' },
+  approved: { label:'Approved',     c:'#4ade80', b:'rgba(74,222,128,.1)',   bd:'rgba(74,222,128,.3)' },
+  declined: { label:'Declined',     c:'#f87171', b:'rgba(248,113,113,.1)', bd:'rgba(248,113,113,.3)' },
+};
+let _pendingLoanAppId = null;
+const fmtLoan = n => '$' + (n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+async function aLoadLoanApplications() {
+  const el = document.getElementById('aLoanAppList');
+  if (!el) return;
+  el.innerHTML = '<div style="color:var(--slate-500);font-size:.83rem;">Loading…</div>';
+  const filter = document.getElementById('aLoanAppFilter')?.value || 'pending';
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_list_loan_applications', status_filter: filter });
+    const apps = res.applications || [];
+    if (!apps.length) {
+      el.innerHTML = `<div style="color:var(--slate-500);font-size:.83rem;padding:8px 0;">No ${filter === 'all' ? '' : filter + ' '}applications.</div>`;
+      return;
+    }
+    el.innerHTML = apps.map(app => {
+      const sc    = LOAN_APP_SC[app.status] || LOAN_APP_SC.pending;
+      const type  = LOAN_TYPE_LABELS[app.loan_type] || app.loan_type;
+      const name  = app.profile?.full_name || 'Unknown';
+      const date  = new Date(app.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      const score = app.credit_score_at_application;
+      const limit = app.credit_limit_at_application;
+      const actions = app.status === 'pending'
+        ? `<button class="btn btn-ghost btn-sm" style="font-size:.72rem;color:#4ade80;border-color:rgba(74,222,128,.3);" onclick="aOpenApproveModal('${app.id}','${name.replace(/'/g,"\\'")}','${type}',${app.requested_amount})">Approve</button>
+           <button class="btn btn-ghost btn-sm" style="font-size:.72rem;color:#f87171;border-color:rgba(248,113,113,.3);" onclick="aOpenDeclineModal('${app.id}','${name.replace(/'/g,"\\'")}','${type}',${app.requested_amount})">Decline</button>`
+        : '';
+      return `<div style="padding:14px 16px;border:1px solid rgba(255,255,255,.07);border-radius:11px;margin-bottom:8px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+          <div style="min-width:0;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px;">
+              <span style="font-size:.85rem;color:#fff;">${app.loan_name}</span>
+              <span style="padding:2px 8px;border-radius:8px;font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:${sc.b};border:1px solid ${sc.bd};color:${sc.c};">${sc.label}</span>
+            </div>
+            <div style="font-size:.72rem;color:var(--slate-400);">${name} · ${type} · Applied ${date}</div>
+            <div style="font-size:.7rem;color:var(--slate-500);margin-top:2px;">Score: ${score ?? '—'} · Credit limit: ${limit != null ? fmtLoan(limit) : '—'}${app.admin_note ? ' · Note: "'+app.admin_note+'"' : ''}</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-family:var(--font-display);font-size:1.15rem;color:#fff;">${fmtLoan(app.requested_amount)}</div>
+            ${app.term_months ? `<div style="font-size:.7rem;color:var(--slate-500);">${app.term_months} months</div>` : ''}
+          </div>
+        </div>
+        ${app.purpose ? `<div style="font-size:.75rem;color:var(--slate-400);font-style:italic;margin-bottom:8px;">"${app.purpose}"</div>` : ''}
+        ${actions ? `<div style="display:flex;gap:8px;">${actions}</div>` : ''}
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = `<div style="color:var(--red-400);font-size:.83rem;">Failed to load: ${e.message||e}</div>`;
+  }
+}
+
+function aOpenApproveModal(appId, memberName, loanType, amount) {
+  _pendingLoanAppId = appId;
+  document.getElementById('aApproveLoanMeta').textContent = `${memberName} · ${loanType} · ${fmtLoan(amount)}`;
+  document.getElementById('aApproveMonthly').value = '';
+  document.getElementById('aApproveRate').value    = '';
+  document.getElementById('aApproveNote').value    = '';
+  const modal = document.getElementById('aApproveLoanModal');
+  modal.style.display = 'flex';
+}
+function aCloseApproveModal() {
+  document.getElementById('aApproveLoanModal').style.display = 'none';
+  _pendingLoanAppId = null;
+}
+
+async function aConfirmApproveLoan() {
+  if (!_pendingLoanAppId) return;
+  const btn     = document.getElementById('aApproveLoanBtn');
+  btn.disabled  = true; btn.textContent = 'Approving…';
+  const payment = document.getElementById('aApproveMonthly').value;
+  const rate    = document.getElementById('aApproveRate').value;
+  const note    = document.getElementById('aApproveNote').value.trim();
+  try {
+    await callEdgeFunction('admin-data', {
+      action:          'admin_approve_loan_application',
+      application_id:  _pendingLoanAppId,
+      monthly_payment: payment ? Number(payment) : null,
+      interest_rate:   rate    ? Number(rate)    : null,
+      admin_note:      note    || null,
+    });
+    zenithToast('Loan approved — loan record created', 'success');
+    aCloseApproveModal();
+    await aLoadLoanApplications();
+  } catch(e) {
+    zenithToast('Error: ' + (e.message || e), 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Approve & Create Loan';
+  }
+}
+
+function aOpenDeclineModal(appId, memberName, loanType, amount) {
+  _pendingLoanAppId = appId;
+  document.getElementById('aDeclineLoanMeta').textContent = `${memberName} · ${loanType} · ${fmtLoan(amount)}`;
+  document.getElementById('aDeclineNote').value = '';
+  const modal = document.getElementById('aDeclineLoanModal');
+  modal.style.display = 'flex';
+}
+function aCloseDeclineModal() {
+  document.getElementById('aDeclineLoanModal').style.display = 'none';
+  _pendingLoanAppId = null;
+}
+
+async function aConfirmDeclineLoan() {
+  if (!_pendingLoanAppId) return;
+  const btn    = document.getElementById('aDeclineLoanBtn');
+  btn.disabled = true; btn.textContent = 'Declining…';
+  const note   = document.getElementById('aDeclineNote').value.trim();
+  try {
+    await callEdgeFunction('admin-data', {
+      action:         'admin_decline_loan_application',
+      application_id: _pendingLoanAppId,
+      admin_note:     note || null,
+    });
+    zenithToast('Application declined', 'success');
+    aCloseDeclineModal();
+    await aLoadLoanApplications();
+  } catch(e) {
+    zenithToast('Error: ' + (e.message || e), 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Decline Application';
   }
 }
 

@@ -230,6 +230,90 @@
       .modal-overlay.open { align-items: flex-end !important; padding: 0 !important; }
       .modal-overlay.open .modal { border-radius: 24px 24px 0 0 !important; max-height: 92dvh !important; width: 100% !important; max-width: 100vw !important; }
     }
+
+    /* ── Loan application modal ── */
+    .lapply-overlay {
+      display: none; position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,.72); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; padding: 24px;
+    }
+    .lapply-overlay.open { display: flex; }
+    .lapply-modal {
+      background: linear-gradient(150deg, #0c1624 0%, #09121e 100%);
+      border: 1px solid rgba(201,168,76,.2); border-radius: 22px;
+      width: 100%; max-width: 600px; max-height: 92dvh;
+      display: flex; flex-direction: column; overflow: hidden;
+      box-shadow: 0 32px 80px rgba(0,0,0,.6);
+    }
+    .lapply-header {
+      padding: 26px 28px 20px; border-bottom: 1px solid rgba(255,255,255,.07);
+      flex-shrink: 0; display: flex; align-items: flex-start; justify-content: space-between;
+    }
+    .lapply-body { padding: 24px 28px; overflow-y: auto; flex: 1; scrollbar-width: none; }
+    .lapply-body::-webkit-scrollbar { display: none; }
+    .lapply-footer { padding: 18px 28px; border-top: 1px solid rgba(255,255,255,.07); flex-shrink: 0; }
+
+    /* Loan type picker */
+    .ltype-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 22px;
+    }
+    .ltype-opt {
+      padding: 12px 8px; border-radius: 12px; cursor: pointer; text-align: center;
+      border: 1.5px solid rgba(255,255,255,.07); background: rgba(255,255,255,.03);
+      transition: border-color .18s, background .18s;
+    }
+    .ltype-opt:hover { border-color: rgba(255,255,255,.18); background: rgba(255,255,255,.06); }
+    .ltype-opt.sel { border-color: rgba(201,168,76,.55); background: rgba(201,168,76,.09); }
+    .ltype-opt-icon { margin-bottom: 6px; }
+    .ltype-opt-label { font-size: .64rem; color: rgba(255,255,255,.65); letter-spacing: .04em; }
+    .ltype-opt.sel .ltype-opt-label { color: var(--gold-400); }
+
+    /* Requirements bar */
+    .lapply-req-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-radius: 11px; margin-bottom: 10px;
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.07);
+    }
+    .lapply-req-label { font-size: .79rem; color: rgba(255,255,255,.7); }
+    .lapply-req-val   { font-family: var(--font-display); font-size: 1rem; }
+    .lapply-req-check { font-size: .78rem; font-weight: 700; }
+    .lapply-req-ok    { color: #4ade80; }
+    .lapply-req-fail  { color: #f87171; }
+
+    /* Application cards (pending/approved/declined) */
+    .app-section { margin-bottom: 28px; }
+    .app-card {
+      display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+      padding: 16px 20px; border-radius: 14px; margin-bottom: 10px;
+      border: 1px solid rgba(255,255,255,.07); background: rgba(255,255,255,.02);
+    }
+    .app-card-icon {
+      width: 40px; height: 40px; border-radius: 11px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .app-card-info { flex: 1; min-width: 0; }
+    .app-card-name { font-size: .88rem; color: #fff; margin-bottom: 2px; }
+    .app-card-meta { font-size: .72rem; color: var(--slate-400); }
+    .app-card-right { text-align: right; flex-shrink: 0; }
+    .app-card-amount { font-family: var(--font-display); font-size: 1.1rem; color: #fff; }
+    .app-status-badge {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 600px) {
+      .ltype-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; }
+      .ltype-opt  { padding: 10px 4px; }
+      .ltype-opt-label { font-size: .58rem; }
+      .lapply-modal { border-radius: 22px 22px 0 0; max-height: 96dvh; }
+      .lapply-header { padding: 20px 20px 14px; }
+      .lapply-body   { padding: 16px 20px; }
+      .lapply-footer { padding: 14px 20px; }
+    }
+    @media (max-width: 400px) {
+      .ltype-grid { grid-template-columns: repeat(2, 1fr); }
+    }
   </style>
 </head>
 <body>
@@ -299,6 +383,82 @@
   </main>
 </div>
 
+<!-- ── Loan Application Modal ─────────────────────────────────── -->
+<div class="lapply-overlay" id="lapplyOverlay" onclick="if(event.target===this)closeLoanModal()">
+  <div class="lapply-modal" onclick="event.stopPropagation()">
+    <div class="lapply-header">
+      <div>
+        <div style="font-family:var(--font-display);font-size:1.25rem;color:#fff;margin-bottom:3px;">Apply for a Loan</div>
+        <div style="font-size:.78rem;color:var(--slate-400);">Select a product and complete your application</div>
+      </div>
+      <button onclick="closeLoanModal()" style="background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;padding:4px;line-height:1;">✕</button>
+    </div>
+    <div class="lapply-body">
+      <!-- Step 1: Loan type -->
+      <div style="font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-500);margin-bottom:10px;">Select Loan Type</div>
+      <div class="ltype-grid" id="ltypeGrid"></div>
+
+      <!-- Requirements display -->
+      <div id="lapplyReqs" style="margin-bottom:20px;">
+        <div class="lapply-req-row" id="lapplyReqScore">
+          <div class="lapply-req-label">Minimum Credit Score</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="lapply-req-val" id="lapplyReqScoreVal">—</div>
+            <div class="lapply-req-check" id="lapplyReqScoreCheck"></div>
+          </div>
+        </div>
+        <div class="lapply-req-row" id="lapplyReqLimit">
+          <div class="lapply-req-label">Your Maximum Loan Amount</div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="lapply-req-val" id="lapplyReqLimitVal" style="color:var(--gold-400);">—</div>
+          </div>
+        </div>
+        <div id="lapplyReqWarn" style="display:none;padding:10px 14px;border-radius:10px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);font-size:.78rem;color:#f87171;margin-top:6px;"></div>
+      </div>
+
+      <!-- Loan name -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase;">Loan Name / Description</div>
+        <input type="text" id="lapplyName" placeholder="e.g. Home Purchase, New Vehicle…"
+          style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 14px;color:#fff;font-size:.9rem;outline:none;box-sizing:border-box;" />
+      </div>
+
+      <!-- Amount -->
+      <div style="margin-bottom:14px;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:5px;">
+          <div style="font-size:.7rem;color:var(--slate-400);letter-spacing:.06em;text-transform:uppercase;">Requested Amount</div>
+          <div id="lapplyAmtMax" style="font-size:.7rem;color:var(--gold-500);"></div>
+        </div>
+        <div style="position:relative;">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.4);font-size:.95rem;">$</span>
+          <input type="number" id="lapplyAmount" min="100" step="100" placeholder="0.00"
+            style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 14px 11px 26px;color:#fff;font-size:.9rem;outline:none;box-sizing:border-box;"
+            oninput="lapplyValidateAmount()" />
+        </div>
+        <div id="lapplyAmtErr" style="display:none;font-size:.72rem;color:#f87171;margin-top:5px;"></div>
+      </div>
+
+      <!-- Term -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase;">Term (months) <span style="color:var(--slate-600);">— Optional</span></div>
+        <input type="number" id="lapplyTerm" min="1" step="1" placeholder="e.g. 60"
+          style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 14px;color:#fff;font-size:.9rem;outline:none;box-sizing:border-box;" />
+      </div>
+
+      <!-- Purpose -->
+      <div style="margin-bottom:6px;">
+        <div style="font-size:.7rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.06em;text-transform:uppercase;">Purpose <span style="color:var(--slate-600);">— Optional</span></div>
+        <textarea id="lapplyPurpose" rows="2" placeholder="Brief description of how you'll use this loan…"
+          style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:11px 14px;color:#fff;font-size:.85rem;outline:none;resize:none;box-sizing:border-box;font-family:inherit;"></textarea>
+      </div>
+    </div>
+    <div class="lapply-footer" style="display:flex;gap:10px;">
+      <button class="btn btn-primary" style="flex:1;" id="lapplySubmitBtn" onclick="submitLoanApplication()">Submit Application</button>
+      <button class="btn btn-ghost" onclick="closeLoanModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
 <script>
@@ -330,6 +490,24 @@ const LOAN_STATUS_CFG = {
 const fmt     = n => '$' + (n||0).toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 });
 const fmtPct  = n => (n||0).toFixed(1) + '%';
 const fmtDate = d => d ? new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+
+const LOAN_MIN_SCORES = {
+  personal: 580, auto: 600, mortgage: 620,
+  student: 560, business: 640, heloc: 640, credit_line: 600,
+};
+const LOAN_TERM_SUGGEST = {
+  personal: 60, auto: 72, mortgage: 360,
+  student: 120, business: 84, heloc: 120, credit_line: null,
+};
+const APP_STATUS_CFG = {
+  pending:  { label:'Under Review', c:'#c9a84c', b:'rgba(201,168,76,.12)',  bd:'rgba(201,168,76,.35)' },
+  approved: { label:'Approved',     c:'#4ade80', b:'rgba(74,222,128,.12)',  bd:'rgba(74,222,128,.35)' },
+  declined: { label:'Declined',     c:'#f87171', b:'rgba(248,113,113,.12)', bd:'rgba(248,113,113,.35)' },
+};
+
+// Page-level state
+let _creditProfile = null;
+let _myApplications = [];
 
 // ── Gauge SVG builder ─────────────────────────────────────────────────────────
 // 270° arc gauge. r=90, cx=cy=110. Full circle circumference = 2π×90 ≈ 565.49.
@@ -390,21 +568,23 @@ function factorImpact(val, type) {
   return                { label:'Poor',     color:'#f87171' };
 }
 
-function renderCreditPage(cp, loans) {
+function renderCreditPage(cp, loans, applications) {
+  _creditProfile  = cp || null;
+  _myApplications = applications || [];
   const score = cp?.credit_score ?? null;
   const tier  = score ? scoreTier(score) : null;
-  const totalDebt     = (loans||[]).filter(l=>l.status==='active').reduce((s,l)=>s+(l.current_balance||0),0);
-  const monthlyDue    = (loans||[]).filter(l=>l.status==='active').reduce((s,l)=>s+(l.monthly_payment||0),0);
-  const utilization   = cp?.credit_utilization ?? null;
+  const totalDebt  = (loans||[]).filter(l=>l.status==='active').reduce((s,l)=>s+(l.current_balance||0),0);
+  const monthlyDue = (loans||[]).filter(l=>l.status==='active').reduce((s,l)=>s+(l.monthly_payment||0),0);
+  const utilization = cp?.credit_utilization ?? null;
 
   document.getElementById('pageContent').innerHTML = `
     ${!cp ? renderNoCredit() : renderHero(cp, score, tier)}
     ${renderStats(cp, totalDebt, monthlyDue, utilization)}
     ${cp ? renderFactors(cp) : ''}
+    ${renderApplicationsSection(_myApplications, cp)}
     ${renderLoans(loans||[])}
   `;
 
-  // Animate gauge fill after DOM renders
   if (cp && score) {
     setTimeout(() => {
       const fill = document.getElementById('gaugeFill');
@@ -574,6 +754,7 @@ function renderLoans(loans) {
         <div class="section-title">Loans &amp; Lines of Credit</div>
         <div class="section-sub">${hasLoans ? `${loans.length} account${loans.length!==1?'s':''} on file` : 'No loan accounts'}</div>
       </div>
+      <button class="btn btn-primary btn-sm" onclick="openLoanModal()" style="flex-shrink:0;">Apply for a Loan</button>
     </div>
     ${hasLoans ? loans.map(renderLoanCard).join('') : `
       <div class="credit-empty" style="padding:40px 24px;">
@@ -638,6 +819,157 @@ function renderLoanCard(loan) {
   </div>`;
 }
 
+// ── Applications section render ───────────────────────────────────────────────
+function renderApplicationsSection(apps, cp) {
+  if (!apps || apps.length === 0) return '';
+  const cards = apps.map(app => {
+    const cfg = LOAN_CFG[app.loan_type] || LOAN_CFG.personal;
+    const sc  = APP_STATUS_CFG[app.status] || APP_STATUS_CFG.pending;
+    const dateStr = fmtDate(app.created_at);
+    return `
+    <div class="app-card">
+      <div class="app-card-icon" style="background:${cfg.bg};color:${cfg.color};">${cfg.icon}</div>
+      <div class="app-card-info">
+        <div class="app-card-name">${app.loan_name}</div>
+        <div class="app-card-meta">${cfg.label} · Applied ${dateStr}${app.admin_note ? ' · Note: "' + app.admin_note + '"' : ''}</div>
+      </div>
+      <div class="app-card-right">
+        <div class="app-card-amount">${fmt(app.requested_amount)}</div>
+        <div class="app-status-badge" style="background:${sc.b};border:1px solid ${sc.bd};color:${sc.c};">${sc.label}</div>
+      </div>
+    </div>`;
+  }).join('');
+  return `
+  <div class="app-section">
+    <div class="section-header">
+      <div>
+        <div class="section-title">My Applications</div>
+        <div class="section-sub">${apps.length} loan application${apps.length !== 1 ? 's' : ''}</div>
+      </div>
+    </div>
+    ${cards}
+  </div>`;
+}
+
+// ── Loan application modal ────────────────────────────────────────────────────
+let _selectedLoanType = 'personal';
+
+function openLoanModal() {
+  const cp = _creditProfile;
+  if (!cp) {
+    zenithToast('No credit profile found. Contact your branch officer.', 'error');
+    return;
+  }
+  // Build type grid
+  const types = Object.entries(LOAN_CFG);
+  document.getElementById('ltypeGrid').innerHTML = types.map(([key, cfg]) => `
+    <div class="ltype-opt ${key === _selectedLoanType ? 'sel' : ''}" onclick="selectLoanType('${key}')" id="ltype_${key}">
+      <div class="ltype-opt-icon" style="color:${cfg.color};">${cfg.icon}</div>
+      <div class="ltype-opt-label">${cfg.label}</div>
+    </div>`).join('');
+  updateLoanTypeUI();
+  document.getElementById('lapplyOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLoanModal() {
+  document.getElementById('lapplyOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  document.getElementById('lapplyReqWarn').style.display = 'none';
+  document.getElementById('lapplyAmtErr').style.display = 'none';
+}
+
+function selectLoanType(type) {
+  _selectedLoanType = type;
+  document.querySelectorAll('.ltype-opt').forEach(el => el.classList.remove('sel'));
+  const el = document.getElementById(`ltype_${type}`);
+  if (el) el.classList.add('sel');
+  const suggest = LOAN_TERM_SUGGEST[type];
+  const termEl = document.getElementById('lapplyTerm');
+  if (termEl && suggest) termEl.value = suggest;
+  else if (termEl) termEl.value = '';
+  updateLoanTypeUI();
+}
+
+function updateLoanTypeUI() {
+  const cp  = _creditProfile;
+  const score = cp?.credit_score ?? null;
+  const limit = Number(cp?.total_credit_limit ?? 0);
+  const minScore = LOAN_MIN_SCORES[_selectedLoanType] ?? 580;
+  const scoreMet = score != null && score >= minScore;
+
+  document.getElementById('lapplyReqScoreVal').textContent   = `${minScore} required${score != null ? ` (yours: ${score})` : ''}`;
+  document.getElementById('lapplyReqScoreCheck').textContent = scoreMet ? '✓ Met' : '✗ Not met';
+  document.getElementById('lapplyReqScoreCheck').className   = 'lapply-req-check ' + (scoreMet ? 'lapply-req-ok' : 'lapply-req-fail');
+  document.getElementById('lapplyReqLimitVal').textContent   = limit > 0 ? fmt(limit) : '—';
+  document.getElementById('lapplyAmtMax').textContent        = limit > 0 ? `Max: ${fmt(limit)}` : '';
+
+  const warnEl = document.getElementById('lapplyReqWarn');
+  const btn    = document.getElementById('lapplySubmitBtn');
+  if (!score || !scoreMet) {
+    warnEl.style.display = 'block';
+    warnEl.textContent   = !score
+      ? 'You do not have a credit profile yet. Please contact your branch officer.'
+      : `Your credit score of ${score} does not meet the minimum of ${minScore} required for this loan type.`;
+    btn.disabled = true;
+  } else if (limit <= 0) {
+    warnEl.style.display = 'block';
+    warnEl.textContent   = 'No credit limit has been established on your account. Contact your branch officer.';
+    btn.disabled = true;
+  } else {
+    warnEl.style.display = 'none';
+    btn.disabled = false;
+  }
+}
+
+function lapplyValidateAmount() {
+  const limit = Number(_creditProfile?.total_credit_limit ?? 0);
+  const val   = Number(document.getElementById('lapplyAmount').value);
+  const errEl = document.getElementById('lapplyAmtErr');
+  if (limit > 0 && val > limit) {
+    errEl.style.display = 'block';
+    errEl.textContent   = `Amount exceeds your credit limit of ${fmt(limit)}.`;
+  } else {
+    errEl.style.display = 'none';
+  }
+}
+
+async function submitLoanApplication() {
+  const name    = document.getElementById('lapplyName').value.trim();
+  const amount  = Number(document.getElementById('lapplyAmount').value);
+  const term    = document.getElementById('lapplyTerm').value;
+  const purpose = document.getElementById('lapplyPurpose').value.trim();
+  const btn     = document.getElementById('lapplySubmitBtn');
+
+  if (!name)    return zenithToast('Please enter a loan name', 'error');
+  if (!amount || amount <= 0) return zenithToast('Please enter a valid amount', 'error');
+
+  const limit = Number(_creditProfile?.total_credit_limit ?? 0);
+  if (limit > 0 && amount > limit)
+    return zenithToast(`Amount exceeds your credit limit of ${fmt(limit)}`, 'error');
+
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+  try {
+    await callEdgeFunction('admin-data', {
+      action: 'apply_loan',
+      loan_type:        _selectedLoanType,
+      loan_name:        name,
+      requested_amount: amount,
+      term_months:      term ? Number(term) : null,
+      purpose:          purpose || null,
+    });
+    zenithToast('Loan application submitted — you\'ll be notified once reviewed.', 'success', 5000);
+    closeLoanModal();
+    loadCreditPage();
+  } catch(e) {
+    zenithToast(e.message || 'Submission failed. Try again.', 'error');
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = 'Submit Application';
+  }
+}
+
 // ── Data loading ──────────────────────────────────────────────────────────────
 async function loadCreditPage() {
   try {
@@ -660,13 +992,14 @@ async function loadCreditPage() {
       }
     });
 
-    // Fetch credit data
-    const [{ data: cp }, { data: loans }] = await Promise.all([
+    // Fetch credit data + applications in parallel
+    const [{ data: cp }, { data: loans }, appsRes] = await Promise.all([
       sb.from('credit_profiles').select('*').eq('user_id', uid).maybeSingle(),
       sb.from('loans').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
+      callEdgeFunction('admin-data', { action: 'get_my_loan_applications' }).catch(() => ({ applications: [] })),
     ]);
 
-    renderCreditPage(cp, loans || []);
+    renderCreditPage(cp, loans || [], appsRes?.applications || []);
   } catch(e) {
     console.error('loadCreditPage:', e);
     document.getElementById('pageContent').innerHTML = `

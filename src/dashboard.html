@@ -50,6 +50,8 @@
     .acct-chip-type { font-size:.72rem; font-weight:600; color:rgba(255,255,255,.82); text-transform:capitalize; }
     .acct-chip.sel .acct-chip-type { color:var(--gold-400); }
     .acct-chip-num { font-size:.64rem; color:rgba(255,255,255,.4); font-family:'Courier New',monospace; letter-spacing:.05em; }
+    .acct-chip-bal { font-size:.72rem; color:rgba(255,255,255,.55); margin-top:1px; }
+    .acct-chip.sel .acct-chip-bal { color:rgba(201,168,76,.8); }
     /* Number row */
     .acct-hero-numrow { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; }
     .acct-hero-number { font-family:'Courier New',monospace; font-size:1.85rem; letter-spacing:.18em; color:#f4ead0;
@@ -1959,10 +1961,11 @@ function renderHero() {
     return `<div class="acct-chip ${i === _selAcct ? 'sel' : ''}" onclick="selectAcct(${i})">
       <div class="acct-chip-type">${t}</div>
       <div class="acct-chip-num">••${(acc.account_number || '').slice(-4)}</div>
+      <div class="acct-chip-bal">${fmtUSD(acc.balance)}</div>
     </div>`;
   }).join('');
 }
-function selectAcct(i) { _selAcct = i; renderHero(); }
+function selectAcct(i) { _selAcct = i; renderHero(); renderAccountsList(); }
 
 function renderAccountsList() {
   const el = document.getElementById('accountsList');

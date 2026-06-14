@@ -1038,14 +1038,16 @@ Deno.serve(async (req: Request): Promise<Response> => {
         .eq('id', request_id);
       if (updErr) throw updErr;
 
-      // Notify user
-      await supabase.from('notifications').insert({
-        user_id: req.user_id,
-        title:   'Account Approved',
-        message: `Your ${req.account_type.replace('_', ' ')} account has been approved and is now active.`,
-        type:    'success',
-        read:    false,
-      }).throwOnError().maybeSingle().catch(() => null);
+      // Notify user (non-blocking — notification failure must not fail the approval)
+      try {
+        await supabase.from('notifications').insert({
+          user_id: req.user_id,
+          title:   'Account Approved',
+          message: `Your ${req.account_type.replace('_', ' ')} account has been approved and is now active.`,
+          type:    'success',
+          read:    false,
+        });
+      } catch { /* ignore */ }
 
       return json({ success: true, message: 'Account approved and created.' });
     }
@@ -1071,14 +1073,16 @@ Deno.serve(async (req: Request): Promise<Response> => {
         .eq('id', request_id);
       if (updErr) throw updErr;
 
-      // Notify user
-      await supabase.from('notifications').insert({
-        user_id: req.user_id,
-        title:   'Account Request Update',
-        message: `Your ${req.account_type.replace('_', ' ')} account request was not approved${admin_note ? ': ' + admin_note : '.'}`,
-        type:    'warning',
-        read:    false,
-      }).throwOnError().maybeSingle().catch(() => null);
+      // Notify user (non-blocking)
+      try {
+        await supabase.from('notifications').insert({
+          user_id: req.user_id,
+          title:   'Account Request Update',
+          message: `Your ${req.account_type.replace('_', ' ')} account request was not approved${admin_note ? ': ' + admin_note : '.'}`,
+          type:    'warning',
+          read:    false,
+        });
+      } catch { /* ignore */ }
 
       return json({ success: true, message: 'Account request rejected.' });
     }

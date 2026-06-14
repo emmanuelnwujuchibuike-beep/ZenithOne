@@ -784,6 +784,15 @@ async function submitNewAccount() {
     return;
   }
 
+  // Insufficient funds check — initial deposit must not exceed total available balance
+  if (deposit > 0 && _accts.length > 0) {
+    const totalAvailable = _accts.reduce((s, a) => s + (a.available_balance ?? a.balance ?? 0), 0);
+    if (deposit > totalAvailable) {
+      zenithToast(`Insufficient funds. Your total available balance is ${fmt(totalAvailable)}, but you requested an initial deposit of ${fmt(deposit)}.`, 'error', 7000);
+      return;
+    }
+  }
+
   const btn = document.getElementById('openAccountBtn');
   btn.disabled = true;
   btn.textContent = 'Submitting…';

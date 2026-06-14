@@ -1666,12 +1666,27 @@ body { background:#f4f0eb; margin:0; padding:0; font-family:'Inter','Helvetica N
       const { status_filter } = body as { action: string; status_filter?: string };
       let q = supabase
         .from('loan_applications')
-        .select('*, profile:user_id(full_name)')
+        .select('*')
         .order('created_at', { ascending: false });
       if (status_filter && status_filter !== 'all') q = q.eq('status', status_filter);
       const { data, error } = await q;
       if (error) throw error;
-      return json({ applications: data ?? [] });
+
+      const apps = data ?? [];
+      if (apps.length > 0) {
+        const userIds = [...new Set(apps.map((a: { user_id: string }) => a.user_id))];
+        const { data: profiles } = await supabase
+          .from('profiles').select('id, full_name').in('id', userIds as string[]);
+        const nameMap: Record<string, string> = {};
+        for (const p of profiles ?? []) nameMap[p.id] = p.full_name || '';
+        return json({
+          applications: apps.map((a: Record<string, unknown>) => ({
+            ...a,
+            profile: { full_name: nameMap[a.user_id as string] || '' },
+          })),
+        });
+      }
+      return json({ applications: [] });
     }
 
     // ── Approve a loan application (admin) ────────────────────────────────────

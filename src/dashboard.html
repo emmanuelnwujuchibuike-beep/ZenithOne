@@ -137,6 +137,99 @@
     .zpin-box { width:52px; height:58px; border-radius:12px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); color:#fff; font-size:1.5rem; text-align:center; outline:none; }
     .zpin-box:focus { border-color:rgba(201,168,76,.6); }
     .zacct-receive-card { border-radius:14px; padding:18px 20px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.08); margin-bottom:10px; }
+
+    /* ═══════ ADMIN PANEL — PREMIUM ═══════ */
+    #adminOverlay { background:linear-gradient(180deg,#060e1c 0%,#04090f 100%); }
+    .a-topbar {
+      position:sticky; top:0; z-index:20;
+      background:rgba(5,10,20,.96); backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(201,168,76,.14);
+      padding:0 28px;
+      display:grid; grid-template-columns:auto 1fr auto;
+      align-items:center; gap:20px; min-height:62px;
+    }
+    .a-brand { display:flex; align-items:center; gap:12px; flex-shrink:0; }
+    .a-brand-pill {
+      font-size:.56rem; letter-spacing:.28em; text-transform:uppercase;
+      color:var(--gold-500); background:rgba(201,168,76,.08);
+      border:1px solid rgba(201,168,76,.22); padding:3px 10px; border-radius:99px;
+    }
+    .a-tab-nav {
+      display:flex; align-items:center; gap:2px;
+      overflow-x:auto; scrollbar-width:none;
+      -webkit-overflow-scrolling:touch;
+    }
+    .a-tab-nav::-webkit-scrollbar { display:none; }
+    .a-tab-btn {
+      position:relative; flex-shrink:0;
+      padding:8px 16px; border-radius:9px; border:none; cursor:pointer;
+      background:transparent; color:rgba(255,255,255,.42); font-size:.78rem;
+      font-weight:500; letter-spacing:.02em; white-space:nowrap;
+      transition:color .18s, background .18s;
+      display:flex; align-items:center; gap:7px;
+    }
+    .a-tab-btn:hover { color:rgba(255,255,255,.75); background:rgba(255,255,255,.05); }
+    .a-tab-btn.active { color:#e8d07a; background:rgba(201,168,76,.08); }
+    .a-tab-btn.active::after {
+      content:''; position:absolute; bottom:-1px; left:12px; right:12px;
+      height:2px; background:linear-gradient(90deg,#c9a84c,#e8d07a); border-radius:2px;
+    }
+    .a-tab-btn svg { opacity:.6; transition:opacity .18s; }
+    .a-tab-btn.active svg, .a-tab-btn:hover svg { opacity:1; }
+    .a-topbar-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+    .a-panel { padding:28px 32px; max-width:1500px; margin:0 auto; }
+    .a-section-header {
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:10px; margin-bottom:22px;
+    }
+    .a-section-title {
+      font-family:var(--font-display); font-size:1.2rem; color:#fff; margin-bottom:3px;
+    }
+    .a-section-sub { font-size:.76rem; color:var(--slate-400); }
+    .a-card {
+      background:rgba(255,255,255,.025); border:1px solid rgba(255,255,255,.07);
+      border-radius:18px; padding:22px 26px;
+    }
+    .a-card + .a-card { margin-top:20px; }
+    .a-card-gold {
+      background:linear-gradient(145deg,rgba(201,168,76,.06) 0%,rgba(8,14,28,.02) 100%);
+      border-color:rgba(201,168,76,.18);
+    }
+    .a-card-purple {
+      background:linear-gradient(145deg,rgba(167,139,250,.05) 0%,rgba(8,14,28,.02) 100%);
+      border-color:rgba(167,139,250,.18);
+    }
+    .a-stat {
+      background:linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.07); border-radius:16px; padding:20px 22px;
+    }
+    .a-stat-icon {
+      width:40px; height:40px; border-radius:11px; display:flex; align-items:center; justify-content:center; margin-bottom:14px;
+    }
+    .a-stat-value { font-family:var(--font-display); font-size:1.55rem; color:#fff; margin-bottom:4px; }
+    .a-stat-label { font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--slate-500); }
+    .a-th { padding:10px 14px; font-size:.68rem; letter-spacing:.08em; color:var(--slate-500); font-weight:600; text-transform:uppercase; text-align:left; }
+    .a-td { padding:12px 14px; border-top:1px solid rgba(255,255,255,.04); font-size:.84rem; }
+    .a-two { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .a-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:99px; font-size:.65rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }
+    .a-badge-green  { background:rgba(74,222,128,.1);   border:1px solid rgba(74,222,128,.25);  color:#4ade80; }
+    .a-badge-gold   { background:rgba(201,168,76,.1);   border:1px solid rgba(201,168,76,.25);  color:#c9a84c; }
+    .a-badge-red    { background:rgba(248,113,113,.1);  border:1px solid rgba(248,113,113,.25); color:#f87171; }
+    .a-badge-blue   { background:rgba(96,165,250,.1);   border:1px solid rgba(96,165,250,.25);  color:#60a5fa; }
+    .a-badge-grey   { background:rgba(100,116,139,.1);  border:1px solid rgba(100,116,139,.2);  color:#94a3b8; }
+    .a-input {
+      width:100%; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1);
+      border-radius:9px; padding:9px 12px; color:#fff; font-size:.88rem; outline:none;
+      transition:border-color .15s;
+    }
+    .a-input:focus { border-color:rgba(201,168,76,.45); }
+    .admin-two-col { display:grid; grid-template-columns:1fr 1fr; }
+    @media(max-width:900px) {
+      .a-topbar { grid-template-columns:auto auto; padding:12px 16px; }
+      .a-tab-nav { display:none; }
+      .a-two { grid-template-columns:1fr; }
+      .a-panel { padding:16px; }
+    }
   </style>
 </head>
 <body>
@@ -513,158 +606,273 @@
 </div>
 
 <!-- ═══════ ADMIN OVERLAY (hidden, gesture-revealed) ═══════ -->
-<div id="adminOverlay" style="display:none;position:fixed;inset:0;z-index:500;background:var(--bg-primary,#080f1a);overflow-y:auto;">
+<div id="adminOverlay" style="display:none;position:fixed;inset:0;z-index:500;overflow-y:auto;">
 
-  <!-- Admin Topbar -->
-  <header style="position:sticky;top:0;z-index:10;background:rgba(8,15,26,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,76,.15);padding:0 28px;height:60px;display:flex;align-items:center;justify-content:space-between;">
-    <div style="display:flex;align-items:center;gap:14px;">
-      <div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div>
-      <div style="font-size:.6rem;letter-spacing:.2em;color:var(--gold-500);text-transform:uppercase;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);padding:3px 10px;border-radius:99px;">Admin Panel</div>
+  <!-- Premium Admin Topbar -->
+  <header class="a-topbar">
+    <!-- Brand -->
+    <div class="a-brand">
+      <div class="nav-logo-mark" style="width:34px;height:34px;border-radius:9px;flex-shrink:0;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1px;">
+        <div style="font-family:var(--font-display);font-size:.95rem;letter-spacing:.08em;color:#fff;">ZENITHONE</div>
+        <div class="a-brand-pill">Administration</div>
+      </div>
     </div>
-    <div style="display:flex;align-items:center;gap:12px;">
-      <button class="btn btn-ghost btn-sm" onclick="refreshAdminAll()">Refresh</button>
-      <button onclick="closeAdminPanel()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--slate-300);border-radius:8px;padding:8px 16px;cursor:pointer;font-size:.85rem;">✕ Exit Admin</button>
+
+    <!-- Tab Navigation -->
+    <nav class="a-tab-nav">
+      <button class="a-tab-btn active" data-tab="overview" onclick="aSelectTab('overview')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Overview
+      </button>
+      <button class="a-tab-btn" data-tab="members" onclick="aSelectTab('members')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Members
+      </button>
+      <button class="a-tab-btn" data-tab="cards" onclick="aSelectTab('cards')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+        Cards
+      </button>
+      <button class="a-tab-btn" data-tab="accounts" onclick="aSelectTab('accounts')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        Accounts
+      </button>
+      <button class="a-tab-btn" data-tab="credit" onclick="aSelectTab('credit')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Credit &amp; Loans
+      </button>
+      <button class="a-tab-btn" data-tab="loanapps" onclick="aSelectTab('loanapps')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Loan Apps
+      </button>
+      <button class="a-tab-btn" data-tab="broadcast" onclick="aSelectTab('broadcast')">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 4S15 8 8 8H4a2 2 0 0 0 0 4h.5l1 8h3l1-4c1 .07 2 .2 3 .4"/><path d="M22 4c0 4-2 7-3 8"/></svg>
+        Broadcast
+      </button>
+    </nav>
+
+    <!-- Actions -->
+    <div class="a-topbar-actions">
+      <button class="btn btn-ghost btn-sm" onclick="refreshAdminAll()" style="display:flex;align-items:center;gap:6px;font-size:.78rem;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Refresh
+      </button>
+      <button onclick="closeAdminPanel()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--slate-300);border-radius:8px;padding:8px 16px;cursor:pointer;font-size:.78rem;font-weight:500;transition:all .18s;" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Exit Admin
+      </button>
     </div>
   </header>
 
   <!-- Access Denied -->
-  <div id="adminAccessDenied" style="display:none;text-align:center;padding:80px 24px;">
-    <div style="font-size:3rem;margin-bottom:16px;">🔒</div>
-    <div style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:8px;">Access Denied</div>
-    <div style="color:var(--slate-400);margin-bottom:24px;">Your account does not have admin privileges.</div>
-    <button class="btn btn-primary" onclick="closeAdminPanel()">Back to Dashboard</button>
+  <div id="adminAccessDenied" style="display:none;text-align:center;padding:100px 24px;">
+    <div style="width:64px;height:64px;border-radius:50%;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+      <svg width="28" height="28" fill="none" stroke="#f87171" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    </div>
+    <div style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:8px;color:#fff;">Access Denied</div>
+    <div style="color:var(--slate-400);margin-bottom:28px;max-width:360px;margin-left:auto;margin-right:auto;line-height:1.6;">Your account does not have administrator privileges. Contact the system administrator to request access.</div>
+    <button class="btn btn-primary" onclick="closeAdminPanel()">Return to Dashboard</button>
   </div>
 
-  <!-- Admin Content -->
-  <div id="adminPanelContent" style="display:none;padding:28px;max-width:1400px;margin:0 auto;">
+  <!-- ══════════════════════════════════════════════════════════════════
+       ADMIN PANEL CONTENT — Tab Panels
+  ══════════════════════════════════════════════════════════════════ -->
+  <div id="adminPanelContent" style="display:none;">
 
-    <!-- Stats -->
-    <div class="grid-4" style="gap:20px;margin-bottom:28px;">
-      <div class="stat-card"><div class="stat-icon gold"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="stat-value" id="aStatUsers">—</div><div class="stat-label">Total Members</div></div>
-      <div class="stat-card"><div class="stat-icon green"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="stat-value" id="aStatDeposits">—</div><div class="stat-label">Total Deposits</div></div>
-      <div class="stat-card"><div class="stat-icon blue"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></div><div class="stat-value" id="aStatTxns">—</div><div class="stat-label">All Transactions</div></div>
-      <div class="stat-card"><div class="stat-icon gold"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div><div class="stat-value" id="aStatUpdated">—</div><div class="stat-label">Last Refreshed</div></div>
-    </div>
+    <!-- ─────────────────────────────────────────────────────
+         TAB: OVERVIEW
+    ───────────────────────────────────────────────────── -->
+    <div id="aTab_overview" class="a-tab-panel a-panel">
 
-    <!-- Two column -->
-    <div class="admin-two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px;">
-      <div class="card card-elevated">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><div style="font-family:var(--font-display);font-size:1.25rem;">Recent Activity</div><div style="font-size:.75rem;color:var(--slate-500);">All users</div></div>
-        <div id="aRecentTxns"><div style="color:var(--slate-500);font-size:.85rem;">Loading…</div></div>
-      </div>
-      <div class="card card-elevated">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;"><div style="font-family:var(--font-display);font-size:1.25rem;">Newest Members</div></div>
-        <div id="aRecentUsers"><div style="color:var(--slate-500);font-size:.85rem;">Loading…</div></div>
-      </div>
-    </div>
-
-    <!-- Members Table -->
-    <div class="card card-elevated">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-        <div style="font-family:var(--font-display);font-size:1.25rem;">All Members</div>
-        <input type="search" id="aUserSearch" placeholder="Search members…" class="form-input" style="width:240px;padding:8px 12px;font-size:.85rem;" oninput="aFilterUsers()" />
-      </div>
-      <div id="aUsersTable"><div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading members…</div></div>
-    </div>
-
-    <!-- Card Requests -->
-    <div class="card card-elevated" style="margin-top:24px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-        <div style="display:flex;align-items:center;gap:14px;">
-          <div style="font-family:var(--font-display);font-size:1.25rem;">Card Requests</div>
-          <div id="aCardReqBadge" style="display:none;font-size:.7rem;letter-spacing:.08em;color:#f59e0b;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);padding:3px 10px;border-radius:99px;"></div>
+      <!-- Stats row -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
+        <div class="a-stat">
+          <div class="a-stat-icon" style="background:rgba(201,168,76,.1);color:#c9a84c;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="a-stat-value" id="aStatUsers">—</div>
+          <div class="a-stat-label">Total Members</div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <select id="aCardReqFilter" class="form-input form-select" style="width:160px;padding:7px 12px;font-size:.82rem;" onchange="aRenderCardRequests()">
-            <option value="pending">Pending</option>
-            <option value="all">All Requests</option>
-            <option value="issued">Approved</option>
-            <option value="rejected">Rejected</option>
-          </select>
-          <button class="btn btn-ghost btn-sm" onclick="aLoadCardRequests()">Refresh</button>
+        <div class="a-stat">
+          <div class="a-stat-icon" style="background:rgba(74,222,128,.1);color:#4ade80;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <div class="a-stat-value" id="aStatDeposits">—</div>
+          <div class="a-stat-label">Total Deposits</div>
+        </div>
+        <div class="a-stat">
+          <div class="a-stat-icon" style="background:rgba(96,165,250,.1);color:#60a5fa;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          </div>
+          <div class="a-stat-value" id="aStatTxns">—</div>
+          <div class="a-stat-label">All Transactions</div>
+        </div>
+        <div class="a-stat">
+          <div class="a-stat-icon" style="background:rgba(201,168,76,.1);color:#c9a84c;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div class="a-stat-value" id="aStatUpdated">—</div>
+          <div class="a-stat-label">Last Refreshed</div>
         </div>
       </div>
-      <div id="aCardRequestsList"><div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading requests…</div></div>
-    </div>
 
-    <!-- Account Requests -->
-    <div class="card card-elevated" style="margin-top:24px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
-        <div>
-          <div style="font-family:var(--font-display);font-size:1.25rem;">Account Requests</div>
-          <div style="font-size:.78rem;color:var(--slate-400);margin-top:2px;">Review and approve member account opening requests</div>
+      <!-- Two-column: Recent Activity + Newest Members -->
+      <div class="a-two">
+        <div class="a-card">
+          <div class="a-section-header">
+            <div>
+              <div class="a-section-title">Recent Activity</div>
+              <div class="a-section-sub">Last 20 transactions across all members</div>
+            </div>
+          </div>
+          <div id="aRecentTxns"><div style="color:var(--slate-500);font-size:.85rem;">Loading…</div></div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-          <select class="form-input form-select" id="aAcctReqFilter" onchange="aLoadAccountRequests()" style="font-size:.8rem;padding:6px 10px;width:auto;">
-            <option value="pending">Pending</option>
-            <option value="all">All Requests</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-          </select>
-          <button class="btn btn-ghost btn-sm" onclick="aLoadAccountRequests()">Refresh</button>
+        <div class="a-card">
+          <div class="a-section-header">
+            <div>
+              <div class="a-section-title">Newest Members</div>
+              <div class="a-section-sub">Most recently joined</div>
+            </div>
+          </div>
+          <div id="aRecentUsers"><div style="color:var(--slate-500);font-size:.85rem;">Loading…</div></div>
         </div>
       </div>
-      <div id="aAcctRequestsList"><div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading requests…</div></div>
-    </div>
 
-    <!-- Card Pricing -->
-    <div class="card card-elevated" style="margin-top:24px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:8px;">
-        <div style="font-family:var(--font-display);font-size:1.25rem;">Card Pricing</div>
-        <div style="font-size:.75rem;color:var(--slate-500);">Base annual fee (Visa). Network surcharges added on top.</div>
-      </div>
-      <div style="font-size:.8rem;color:var(--slate-400);margin-bottom:16px;">Surcharges: <span style="color:var(--slate-300);">Visa +$0 · Discover +$30 · Mastercard +$60 · Amex +$120</span></div>
-      <div id="aCardPricingList"><div style="color:var(--slate-500);font-size:.85rem;">Loading prices…</div></div>
-    </div>
+    </div><!-- /aTab_overview -->
 
-    <!-- Card Number Backfill -->
-    <div class="card card-elevated" style="margin-top:24px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-        <div>
-          <div style="font-family:var(--font-display);font-size:1.25rem;margin-bottom:4px;">Card Number Backfill</div>
-          <div style="font-size:.82rem;color:var(--slate-400);max-width:520px;line-height:1.55;">Assigns realistic, network-matched card numbers (Visa / Mastercard / Amex / Discover) to any issued cards that don't have one yet. Safe to run repeatedly.</div>
-          <div id="aBackfillResult" style="font-size:.8rem;color:#4ade80;margin-top:10px;display:none;"></div>
+
+    <!-- ─────────────────────────────────────────────────────
+         TAB: MEMBERS
+    ───────────────────────────────────────────────────── -->
+    <div id="aTab_members" class="a-tab-panel a-panel" style="display:none;">
+      <div class="a-card">
+        <div class="a-section-header">
+          <div>
+            <div class="a-section-title">All Members</div>
+            <div class="a-section-sub">Manage accounts, add funds, view cards &amp; financials</div>
+          </div>
+          <input type="search" id="aUserSearch" placeholder="Search by name or email…" class="a-input" style="width:260px;" oninput="aFilterUsers()" />
         </div>
-        <button class="btn btn-primary" id="aBackfillBtn" onclick="aRunBackfill()" style="flex-shrink:0;display:flex;align-items:center;gap:8px;">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
-          Backfill Card Numbers
-        </button>
+        <div id="aUsersTable"><div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading members…</div></div>
       </div>
-    </div>
+    </div><!-- /aTab_members -->
 
-  </div>
-</div>
 
-<!-- Admin: Reward Points Management -->
-<div id="aRewardsSection" style="display:none;max-width:1400px;margin:24px auto 0;">
-  <div class="card card-elevated" style="padding:24px 28px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
-      <div>
-        <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:3px;">Reward Points</div>
-        <div style="font-size:.78rem;color:var(--slate-400);">Give points to members · 20 pts auto-earned per transaction</div>
+    <!-- ─────────────────────────────────────────────────────
+         TAB: CARDS
+    ───────────────────────────────────────────────────── -->
+    <div id="aTab_cards" class="a-tab-panel a-panel" style="display:none;">
+
+      <!-- Card Requests -->
+      <div class="a-card">
+        <div class="a-section-header">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="a-section-title">Card Requests</div>
+              <div id="aCardReqBadge" style="display:none;font-size:.68rem;letter-spacing:.08em;color:#f59e0b;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);padding:3px 10px;border-radius:99px;"></div>
+            </div>
+            <div class="a-section-sub">Review and approve or reject member card applications</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select id="aCardReqFilter" class="form-input form-select" style="width:160px;padding:7px 12px;font-size:.8rem;" onchange="aRenderCardRequests()">
+              <option value="pending">Pending</option>
+              <option value="all">All Requests</option>
+              <option value="issued">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="aLoadCardRequests()">↻</button>
+          </div>
+        </div>
+        <div id="aCardRequestsList"><div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading…</div></div>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="aLoadRewards()" style="font-size:.75rem;">↻ Refresh</button>
-    </div>
-    <div id="aRewardsList" style="font-size:.85rem;color:var(--slate-400);">Loading…</div>
-  </div>
-</div>
 
-<!-- Admin: PIN Management -->
-<div id="aPinSection" style="display:none;max-width:1400px;margin:24px auto 0;">
-  <div class="card card-elevated" style="padding:24px 28px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">
-      <div>
-        <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:3px;">Transaction PIN Management</div>
-        <div style="font-size:.78rem;color:var(--slate-400);">View PIN status per member · Reset if forgotten</div>
+      <!-- Card Pricing -->
+      <div class="a-card" style="margin-top:20px;">
+        <div class="a-section-header">
+          <div>
+            <div class="a-section-title">Card Pricing</div>
+            <div class="a-section-sub">Base annual fee per card type (Visa). Network surcharges: Visa +$0 · Discover +$30 · Mastercard +$60 · Amex +$120</div>
+          </div>
+        </div>
+        <div id="aCardPricingList"><div style="color:var(--slate-500);font-size:.85rem;">Loading…</div></div>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="aLoadPins()" style="font-size:.75rem;">↻ Refresh</button>
-    </div>
-    <div id="aPinList" style="font-size:.85rem;color:var(--slate-400);">Loading…</div>
-  </div>
-</div>
 
-<!-- ── Admin: Credit & Loans ────────────────────────────────────────── -->
-<div class="card card-elevated" id="aCreditLoansPanel" style="margin-top:24px;display:none;">
+      <!-- Card Number Backfill -->
+      <div class="a-card a-card-gold" style="margin-top:20px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+          <div>
+            <div class="a-section-title" style="margin-bottom:6px;">Card Number Backfill</div>
+            <div style="font-size:.8rem;color:var(--slate-400);max-width:520px;line-height:1.6;">Assigns realistic, network-matched card numbers (Visa / Mastercard / Amex / Discover) to any issued cards that don't have one yet. Safe to run repeatedly.</div>
+            <div id="aBackfillResult" style="font-size:.8rem;color:#4ade80;margin-top:10px;display:none;"></div>
+          </div>
+          <button class="btn btn-primary" id="aBackfillBtn" onclick="aRunBackfill()" style="flex-shrink:0;display:flex;align-items:center;gap:8px;white-space:nowrap;">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+            Backfill Card Numbers
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /aTab_cards -->
+
+
+    <!-- ─────────────────────────────────────────────────────
+         TAB: ACCOUNTS
+    ───────────────────────────────────────────────────── -->
+    <div id="aTab_accounts" class="a-tab-panel a-panel" style="display:none;">
+      <div class="a-card">
+        <div class="a-section-header">
+          <div>
+            <div class="a-section-title">Account Opening Requests</div>
+            <div class="a-section-sub">Review and approve member requests to open new bank accounts</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select class="form-input form-select" id="aAcctReqFilter" onchange="aLoadAccountRequests()" style="font-size:.8rem;padding:7px 12px;width:auto;">
+              <option value="pending">Pending</option>
+              <option value="all">All Requests</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="aLoadAccountRequests()">↻</button>
+          </div>
+        </div>
+        <div id="aAcctRequestsList"><div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading…</div></div>
+      </div>
+    </div><!-- /aTab_accounts -->
+
+
+    <!-- ─────────────────────────────────────────────────────
+         TAB: CREDIT & LOANS
+    ───────────────────────────────────────────────────── -->
+    <div id="aTab_credit" class="a-tab-panel a-panel" style="display:none;">
+
+      <!-- Reward Points -->
+      <div class="a-card" id="aRewardsSection">
+        <div class="a-section-header">
+          <div>
+            <div class="a-section-title">Reward Points</div>
+            <div class="a-section-sub">Give or adjust reward points per member · 20 pts auto-earned per transaction</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="aLoadRewards()">↻ Refresh</button>
+        </div>
+        <div id="aRewardsList" style="font-size:.85rem;color:var(--slate-400);">Loading…</div>
+      </div>
+
+      <!-- PIN Management -->
+      <div class="a-card" id="aPinSection" style="margin-top:20px;">
+        <div class="a-section-header">
+          <div>
+            <div class="a-section-title">Transaction PIN Management</div>
+            <div class="a-section-sub">View PIN status per member and reset if forgotten</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="aLoadPins()">↻ Refresh</button>
+        </div>
+        <div id="aPinList" style="font-size:.85rem;color:var(--slate-400);">Loading…</div>
+      </div>
+
+      <!-- Credit & Loans -->
+      <div class="a-card" id="aCreditLoansPanel" style="margin-top:20px;">
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
     <div>
       <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:3px;">Credit &amp; Loans</div>
@@ -851,84 +1059,99 @@
       </div>
     </div>
   </div>
-</div>
+      </div><!-- /aCreditLoansPanel -->
 
-<!-- ── Admin: Loan Applications ─────────────────────────────────────── -->
-<div class="card card-elevated" id="aLoanAppsPanel" style="margin-top:24px;display:none;">
-  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
-    <div>
-      <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:3px;">Loan Applications</div>
-      <div style="font-size:.78rem;color:var(--slate-400);">Review and approve or decline member loan requests</div>
-    </div>
-    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-      <select id="aLoanAppFilter" class="form-input form-select" style="font-size:.8rem;padding:6px 10px;width:auto;" onchange="aLoadLoanApplications()">
-        <option value="pending">Pending</option>
-        <option value="all">All</option>
-        <option value="approved">Approved</option>
-        <option value="declined">Declined</option>
-      </select>
-      <button class="btn btn-ghost btn-sm" onclick="aLoadLoanApplications()" style="font-size:.75rem;">↻ Refresh</button>
-    </div>
-  </div>
-  <div id="aLoanAppList" style="font-size:.85rem;color:var(--slate-400);">Loading…</div>
-</div>
+    </div><!-- /aTab_credit -->
 
-<!-- ── Admin: Broadcast Announcement ────────────────────────────────── -->
-<div class="card card-elevated" id="aBroadcastPanel" style="margin-top:24px;display:none;background:linear-gradient(145deg,rgba(167,139,250,.05) 0%,rgba(8,14,28,.0) 100%);border-color:rgba(167,139,250,.18);">
-  <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
-    <div style="width:40px;height:40px;border-radius:11px;background:rgba(167,139,250,.12);display:flex;align-items:center;justify-content:center;color:#a78bfa;flex-shrink:0;">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M22 4S15 8 8 8H4a2 2 0 0 0 0 4h.5l1 8h3l1-4c1 .07 2 .2 3 .4"/><path d="M22 4c0 4-2 7-3 8"/></svg>
-    </div>
-    <div>
-      <div style="font-family:var(--font-display);font-size:1.1rem;margin-bottom:2px;">Broadcast Announcement</div>
-      <div style="font-size:.78rem;color:var(--slate-400);">Send a notification to all members or a specific member</div>
-    </div>
-  </div>
 
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
-    <div>
-      <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Target</div>
-      <select id="aAnnTarget" class="form-input form-select" style="font-size:.85rem;" onchange="document.getElementById('aAnnUserRow').style.display=this.value==='user'?'block':'none'">
-        <option value="all">All Members</option>
-        <option value="user">Specific Member</option>
-      </select>
-    </div>
-    <div>
-      <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Type</div>
-      <select id="aAnnType" class="form-input form-select" style="font-size:.85rem;">
-        <option value="announcement">Announcement</option>
-        <option value="info">Info</option>
-        <option value="warning">Warning</option>
-        <option value="success">Success</option>
-        <option value="security">Security Alert</option>
-      </select>
-    </div>
-  </div>
+    <!-- ─────────────────────────────────────────────────────
+         TAB: LOAN APPLICATIONS
+    ───────────────────────────────────────────────────── -->
+    <div id="aTab_loanapps" class="a-tab-panel a-panel" style="display:none;">
+      <div class="a-card" id="aLoanAppsPanel">
+        <div class="a-section-header">
+          <div>
+            <div class="a-section-title">Loan Applications</div>
+            <div class="a-section-sub">Review and approve or decline member loan requests</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select id="aLoanAppFilter" class="form-input form-select" style="font-size:.8rem;padding:7px 12px;width:auto;" onchange="aLoadLoanApplications()">
+              <option value="pending">Pending</option>
+              <option value="all">All</option>
+              <option value="approved">Approved</option>
+              <option value="declined">Declined</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="aLoadLoanApplications()">↻</button>
+          </div>
+        </div>
+        <div id="aLoanAppList" style="font-size:.85rem;color:var(--slate-400);">Loading…</div>
+      </div>
+    </div><!-- /aTab_loanapps -->
 
-  <div id="aAnnUserRow" style="display:none;margin-bottom:14px;">
-    <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Member</div>
-    <select id="aAnnUserSelect" class="form-input form-select" style="font-size:.85rem;">
-      <option value="">— Choose a member —</option>
-    </select>
-  </div>
 
-  <div style="margin-bottom:12px;">
-    <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Title</div>
-    <input type="text" id="aAnnTitle" class="form-input" placeholder="e.g. Scheduled Maintenance Notice" style="font-size:.87rem;" />
-  </div>
-  <div style="margin-bottom:18px;">
-    <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Message</div>
-    <textarea id="aAnnMessage" class="form-input" rows="4" placeholder="Write your announcement here…" style="font-size:.85rem;resize:vertical;line-height:1.6;"></textarea>
-  </div>
+    <!-- ─────────────────────────────────────────────────────
+         TAB: BROADCAST
+    ───────────────────────────────────────────────────── -->
+    <div id="aTab_broadcast" class="a-tab-panel a-panel" style="display:none;">
+      <div class="a-card a-card-purple" id="aBroadcastPanel">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px;">
+          <div style="width:46px;height:46px;border-radius:13px;background:rgba(167,139,250,.14);border:1px solid rgba(167,139,250,.22);display:flex;align-items:center;justify-content:center;color:#a78bfa;flex-shrink:0;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M22 4S15 8 8 8H4a2 2 0 0 0 0 4h.5l1 8h3l1-4c1 .07 2 .2 3 .4"/><path d="M22 4c0 4-2 7-3 8"/></svg>
+          </div>
+          <div>
+            <div class="a-section-title">Broadcast Announcement</div>
+            <div class="a-section-sub">Send a notification to all members or a specific member</div>
+          </div>
+        </div>
 
-  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-    <button class="btn btn-primary" onclick="aSendAnnouncement()" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);border:none;">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="margin-right:6px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-      Send Announcement
-    </button>
-    <span id="aAnnStatus" style="font-size:.8rem;color:var(--slate-400);"></span>
-  </div>
-</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div>
+            <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Target</div>
+            <select id="aAnnTarget" class="form-input form-select" style="font-size:.85rem;" onchange="document.getElementById('aAnnUserRow').style.display=this.value==='user'?'block':'none'">
+              <option value="all">All Members</option>
+              <option value="user">Specific Member</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Type</div>
+            <select id="aAnnType" class="form-input form-select" style="font-size:.85rem;">
+              <option value="announcement">Announcement</option>
+              <option value="info">Info</option>
+              <option value="warning">Warning</option>
+              <option value="success">Success</option>
+              <option value="security">Security Alert</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="aAnnUserRow" style="display:none;margin-bottom:14px;">
+          <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Member</div>
+          <select id="aAnnUserSelect" class="form-input form-select" style="font-size:.85rem;">
+            <option value="">— Choose a member —</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Title</div>
+          <input type="text" id="aAnnTitle" class="form-input" placeholder="e.g. Scheduled Maintenance Notice" style="font-size:.87rem;" />
+        </div>
+        <div style="margin-bottom:22px;">
+          <div style="font-size:.72rem;color:var(--slate-400);margin-bottom:5px;letter-spacing:.05em;text-transform:uppercase;">Message</div>
+          <textarea id="aAnnMessage" class="form-input" rows="5" placeholder="Write your announcement here…" style="font-size:.85rem;resize:vertical;line-height:1.6;"></textarea>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="aSendAnnouncement()" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);border:none;display:flex;align-items:center;gap:8px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Send Announcement
+          </button>
+          <span id="aAnnStatus" style="font-size:.8rem;color:var(--slate-400);"></span>
+        </div>
+      </div><!-- /aBroadcastPanel -->
+    </div><!-- /aTab_broadcast -->
+
+  </div><!-- /adminPanelContent -->
+</div><!-- /adminOverlay -->
 
 <!-- Admin: Approve Loan Modal -->
 <div id="aApproveLoanModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)aCloseApproveModal()">
@@ -1364,27 +1587,26 @@ function openPayBillModal() { zenithToast('Bill Pay is coming soon. Contact Zeni
     : init();
 })();
 
+function aSelectTab(name) {
+  document.querySelectorAll('.a-tab-panel').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.a-tab-btn').forEach(btn => btn.classList.remove('active'));
+  const panel = document.getElementById('aTab_' + name);
+  if (panel) panel.style.display = '';
+  const btn = document.querySelector('.a-tab-btn[data-tab="' + name + '"]');
+  if (btn) btn.classList.add('active');
+  document.getElementById('adminOverlay').scrollTop = 0;
+}
+
 async function openAdminPanel() {
   const overlay = document.getElementById('adminOverlay');
-  // Relocate any admin panels that were authored outside the scroll container
-  // so they render inside the admin panel (and never leak onto the user dashboard).
-  const apc = document.getElementById('adminPanelContent');
-  ['aRewardsSection','aPinSection','aCreditLoansPanel','aLoanAppsPanel','aBroadcastPanel'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el && el.parentElement !== apc) apc.appendChild(el);
-  });
   overlay.style.display = '';
   overlay.scrollTop = 0;
-  document.getElementById('adminAccessDenied').style.display  = 'none';
-  document.getElementById('adminPanelContent').style.display  = 'none';
+  document.getElementById('adminAccessDenied').style.display = 'none';
+  document.getElementById('adminPanelContent').style.display = 'none';
   try {
     await refreshAdminAll();
     document.getElementById('adminPanelContent').style.display = '';
-    document.getElementById('aRewardsSection').style.display   = '';
-    document.getElementById('aPinSection').style.display       = '';
-    document.getElementById('aCreditLoansPanel').style.display = '';
-    document.getElementById('aLoanAppsPanel').style.display    = '';
-    document.getElementById('aBroadcastPanel').style.display   = '';
+    aSelectTab('overview');
   } catch(e) {
     let msg = e.message || '';
     try { msg = JSON.parse(e.message).error || msg; } catch {}
@@ -1395,12 +1617,7 @@ async function openAdminPanel() {
 }
 
 function closeAdminPanel() {
-  document.getElementById('adminOverlay').style.display  = 'none';
-  document.getElementById('aRewardsSection').style.display = 'none';
-  document.getElementById('aPinSection').style.display     = 'none';
-  document.getElementById('aCreditLoansPanel').style.display = 'none';
-  document.getElementById('aLoanAppsPanel').style.display    = 'none';
-  document.getElementById('aBroadcastPanel').style.display   = 'none';
+  document.getElementById('adminOverlay').style.display = 'none';
 }
 
 let _aAllUsers = [];

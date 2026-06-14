@@ -550,84 +550,98 @@
             @keyframes lux-sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
             .lux-holo { position:absolute;top:14px;right:18px;width:30px;height:22px;border-radius:4px;background:linear-gradient(135deg,rgba(201,168,76,.7),rgba(120,200,255,.5),rgba(201,168,76,.7));animation:lux-h 3s infinite alternate; }
             @keyframes lux-h { 0%{filter:hue-rotate(0deg) brightness(1)} 100%{filter:hue-rotate(50deg) brightness(1.4)} }
-            .dash-card-snapshot { display:flex; flex-direction:column; gap:20px; }
-            .dash-card-col { display:flex; flex-direction:column; }
-            @media(min-width:1100px) {
-              .dash-card-snapshot { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
-              .dash-card-col {
-                display:flex; flex-direction:column; align-items:center; justify-content:center;
-                background:rgba(255,255,255,.025); border:1px solid rgba(255,255,255,.07);
-                border-radius:18px; padding:22px 24px;
-              }
-              .dash-card-col #dashNoCard, .dash-card-col #dashLuxCard { width:100%; }
+            /* Card + Wealth Snapshot row */
+            .dash-card-snapshot {
+              display:flex; flex-direction:column; gap:18px;
+            }
+            .dash-card-col, .dash-wealth-col {
+              background:var(--card-bg,rgba(10,20,40,.7)); border:1px solid rgba(255,255,255,.07);
+              border-radius:18px; padding:24px;
+            }
+            .dash-card-col {
+              display:flex; flex-direction:column; align-items:center; justify-content:center;
+            }
+            .dash-card-col #dashNoCard { width:100%; }
+            .dash-card-col #dashLuxCard { width:100%; max-width:320px; }
+            @media(min-width:900px) {
+              .dash-card-snapshot { flex-direction:row; align-items:stretch; }
+              .dash-card-col  { flex:0 0 auto; width:320px; }
+              .dash-wealth-col { flex:1 1 0; }
+            }
+            @media(max-width:899px) {
+              .dash-card-col #dashLuxCard { max-width:100%; }
             }
           </style>
         <div class="dash-card-snapshot">
+          <!-- Card column -->
           <div class="dash-card-col">
-
-          <!-- No-card CTA -->
-          <div id="dashNoCard" style="border-radius:18px;background:linear-gradient(135deg,rgba(201,168,76,.05),rgba(36,71,110,.08));border:1px solid rgba(201,168,76,.15);padding:26px 20px;text-align:center;cursor:pointer;" onclick="window.location.href='cards.html'">
-            <div style="width:48px;height:48px;border-radius:12px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
-              <svg width="20" height="20" fill="none" stroke="#c9a84c" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
-            </div>
-            <div style="font-family:var(--font-display);font-size:.95rem;margin-bottom:6px;">No Card Yet</div>
-            <div style="font-size:.75rem;color:var(--slate-400);line-height:1.5;margin-bottom:14px;">Apply for a premium ZenithOne card — Virtual, Gold, Titanium, Black &amp; more.</div>
-            <div style="display:inline-block;background:linear-gradient(135deg,#c9a84c,#b8960a);color:#040d18;font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:7px 18px;border-radius:99px;text-transform:uppercase;">Request a Card →</div>
-          </div>
-
-          <!-- Ultra-luxury card (hidden until card loads) -->
-          <div id="dashLuxCard" style="display:none;position:relative;border-radius:20px;overflow:hidden;cursor:pointer;" onclick="window.location.href='cards.html'"
-               onmousemove="(function(e){var r=this.getBoundingClientRect();var x=(e.clientX-r.left)/r.width-.5;var y=(e.clientY-r.top)/r.height-.5;this.style.transform='perspective(600px) rotateY('+x*16+'deg) rotateX('+(-y*10)+'deg) scale(1.02)';}).call(this,event)"
-               onmouseleave="this.style.transform='perspective(600px) rotateY(0) rotateX(0) scale(1)'">
-            <div style="background:linear-gradient(135deg,#050c18 0%,#0d1a2e 40%,#111f35 70%,#0a1526 100%);padding:24px 22px 20px;border:1px solid rgba(201,168,76,.35);border-radius:20px;box-shadow:0 24px 64px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.04) inset,0 1px 0 rgba(201,168,76,.25) inset;">
-              <div class="lux-shimmer"></div>
-              <div class="lux-holo"></div>
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;">
-                <svg width="36" height="26" viewBox="0 0 36 28"><rect width="36" height="28" rx="5" fill="url(#chip_d)"/><defs><linearGradient id="chip_d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8c96b"/><stop offset="100%" stop-color="#9a7220"/></linearGradient></defs><rect x="2" y="8" width="32" height="12" rx="2" fill="rgba(255,255,255,.1)"/><line x1="18" y1="8" x2="18" y2="20" stroke="rgba(255,255,255,.1)" stroke-width="1"/></svg>
-                <div id="dashCardTierLabel" style="font-size:.55rem;letter-spacing:.22em;color:rgba(201,168,76,.55);text-transform:uppercase;text-align:right;line-height:1.5;">ZENITHONE<br/>CREDIT UNION</div>
+            <!-- No-card CTA -->
+            <div id="dashNoCard" style="border-radius:16px;background:linear-gradient(135deg,rgba(201,168,76,.05),rgba(36,71,110,.08));border:1px solid rgba(201,168,76,.15);padding:26px 20px;text-align:center;cursor:pointer;width:100%;" onclick="window.location.href='cards.html'">
+              <div style="width:48px;height:48px;border-radius:12px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
+                <svg width="20" height="20" fill="none" stroke="#c9a84c" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
               </div>
-              <div id="dashCardNumber" style="font-size:.85rem;letter-spacing:.22em;color:rgba(255,255,255,.55);margin-bottom:16px;font-family:'Courier New',monospace;text-shadow:0 1px 3px rgba(0,0,0,.6);">•••• •••• •••• ••••</div>
-              <div style="display:flex;justify-content:space-between;align-items:flex-end;">
-                <div>
-                  <div style="font-size:.55rem;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px;">Cardholder</div>
-                  <div id="cardholderName" style="font-size:.75rem;color:rgba(255,255,255,.6);letter-spacing:.1em;text-transform:uppercase;font-weight:500;">CARD HOLDER</div>
+              <div style="font-family:var(--font-display);font-size:.95rem;margin-bottom:6px;">No Card Yet</div>
+              <div style="font-size:.75rem;color:var(--slate-400);line-height:1.5;margin-bottom:14px;">Apply for a premium ZenithOne card — Virtual, Gold, Titanium, Black &amp; more.</div>
+              <div style="display:inline-block;background:linear-gradient(135deg,#c9a84c,#b8960a);color:#040d18;font-size:.7rem;font-weight:700;letter-spacing:.1em;padding:7px 18px;border-radius:99px;text-transform:uppercase;">Request a Card →</div>
+            </div>
+
+            <!-- Ultra-luxury card -->
+            <div id="dashLuxCard" style="display:none;position:relative;border-radius:20px;overflow:hidden;cursor:pointer;" onclick="window.location.href='cards.html'"
+                 onmousemove="(function(e){var r=this.getBoundingClientRect();var x=(e.clientX-r.left)/r.width-.5;var y=(e.clientY-r.top)/r.height-.5;this.style.transform='perspective(600px) rotateY('+x*16+'deg) rotateX('+(-y*10)+'deg) scale(1.02)';}).call(this,event)"
+                 onmouseleave="this.style.transform='perspective(600px) rotateY(0) rotateX(0) scale(1)'">
+              <div style="background:linear-gradient(135deg,#050c18 0%,#0d1a2e 40%,#111f35 70%,#0a1526 100%);padding:26px 22px 22px;border:1px solid rgba(201,168,76,.35);border-radius:20px;box-shadow:0 24px 64px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.04) inset,0 1px 0 rgba(201,168,76,.25) inset;">
+                <div class="lux-shimmer"></div>
+                <div class="lux-holo"></div>
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;">
+                  <svg width="40" height="30" viewBox="0 0 36 28"><rect width="36" height="28" rx="5" fill="url(#chip_d)"/><defs><linearGradient id="chip_d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8c96b"/><stop offset="100%" stop-color="#9a7220"/></linearGradient></defs><rect x="2" y="8" width="32" height="12" rx="2" fill="rgba(255,255,255,.1)"/><line x1="18" y1="8" x2="18" y2="20" stroke="rgba(255,255,255,.1)" stroke-width="1"/></svg>
+                  <div id="dashCardTierLabel" style="font-size:.55rem;letter-spacing:.22em;color:rgba(201,168,76,.55);text-transform:uppercase;text-align:right;line-height:1.6;">ZENITHONE<br/>STANDARD</div>
                 </div>
-                <div style="display:flex;">
-                  <div style="width:26px;height:26px;border-radius:50%;background:rgba(201,168,76,.4);margin-right:-9px;box-shadow:0 0 10px rgba(201,168,76,.25);"></div>
-                  <div style="width:26px;height:26px;border-radius:50%;background:rgba(201,168,76,.65);box-shadow:0 0 14px rgba(201,168,76,.35);"></div>
+                <div style="display:flex;gap:6px;margin-bottom:6px;">
+                  <span style="font-size:.75rem;color:rgba(255,255,255,.35);letter-spacing:.18em;">• • • •</span>
+                  <span style="font-size:.75rem;color:rgba(255,255,255,.35);letter-spacing:.18em;">• • • •</span>
+                </div>
+                <div id="dashCardNumber" style="font-size:.9rem;letter-spacing:.22em;color:rgba(255,255,255,.6);margin-bottom:18px;font-family:'Courier New',monospace;text-shadow:0 1px 3px rgba(0,0,0,.6);">•••• 0000</div>
+                <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+                  <div>
+                    <div style="font-size:.5rem;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px;">Cardholder</div>
+                    <div id="cardholderName" style="font-size:.8rem;color:rgba(255,255,255,.75);letter-spacing:.1em;text-transform:uppercase;font-weight:600;">CARD HOLDER</div>
+                  </div>
+                  <div style="display:flex;">
+                    <div style="width:28px;height:28px;border-radius:50%;background:rgba(201,168,76,.45);margin-right:-10px;box-shadow:0 0 10px rgba(201,168,76,.3);"></div>
+                    <div style="width:28px;height:28px;border-radius:50%;background:rgba(201,168,76,.7);box-shadow:0 0 14px rgba(201,168,76,.4);"></div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           </div><!-- /dash-card-col -->
 
           <!-- Wealth Snapshot -->
-          <div class="card card-elevated dash-wealth-col">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
-              <div style="font-family:var(--font-display);font-size:1.1rem;">Wealth Snapshot</div>
-              <a href="investments.html" style="font-size:.72rem;color:var(--gold-500);">Portfolio</a>
+          <div class="dash-wealth-col">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+              <div style="font-family:var(--font-display);font-size:1.15rem;">Wealth Snapshot</div>
+              <a href="investments.html" style="font-size:.72rem;color:var(--gold-500);font-weight:500;">Portfolio</a>
             </div>
-            <div style="display:flex;flex-direction:column;gap:14px;">
-              <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.05);">
-                <div style="display:flex;align-items:center;gap:11px;">
-                  <div style="width:34px;height:34px;border-radius:10px;background:rgba(74,222,128,.1);display:flex;align-items:center;justify-content:center;color:#4ade80;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div>
-                  <div style="font-size:.82rem;color:var(--slate-300);">Portfolio Value</div>
+            <div style="display:flex;flex-direction:column;gap:0;">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06);">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(74,222,128,.1);display:flex;align-items:center;justify-content:center;color:#4ade80;flex-shrink:0;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div>
+                  <div style="font-size:.84rem;color:var(--slate-300);">Portfolio Value</div>
                 </div>
-                <div style="font-family:var(--font-display);font-size:1rem;color:#fff;" id="snapPortfolio">$0.00</div>
+                <div style="font-family:var(--font-display);font-size:1.05rem;color:#fff;" id="snapPortfolio">$0.00</div>
               </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.05);">
-                <div style="display:flex;align-items:center;gap:11px;">
-                  <div style="width:34px;height:34px;border-radius:10px;background:rgba(96,165,250,.1);display:flex;align-items:center;justify-content:center;color:#60a5fa;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div>
-                  <div style="font-size:.82rem;color:var(--slate-300);">Available Credit</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06);">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(96,165,250,.1);display:flex;align-items:center;justify-content:center;color:#60a5fa;flex-shrink:0;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div>
+                  <div style="font-size:.84rem;color:var(--slate-300);">Available Credit</div>
                 </div>
-                <div style="font-family:var(--font-display);font-size:1rem;color:#fff;" id="snapCredit">$0.00</div>
+                <div style="font-family:var(--font-display);font-size:1.05rem;color:#fff;" id="snapCredit">$0.00</div>
               </div>
-              <div style="display:flex;align-items:center;justify-content:space-between;">
-                <div style="display:flex;align-items:center;gap:11px;">
-                  <div style="width:34px;height:34px;border-radius:10px;background:rgba(201,168,76,.1);display:flex;align-items:center;justify-content:center;color:var(--gold-400);"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
-                  <div style="font-size:.82rem;color:var(--slate-300);">Reward Points</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:36px;height:36px;border-radius:10px;background:rgba(201,168,76,.1);display:flex;align-items:center;justify-content:center;color:var(--gold-400);flex-shrink:0;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+                  <div style="font-size:.84rem;color:var(--slate-300);">Reward Points</div>
                 </div>
-                <div style="font-family:var(--font-display);font-size:1rem;color:var(--gold-400);" id="snapPoints">0</div>
+                <div style="font-family:var(--font-display);font-size:1.05rem;color:var(--gold-400);" id="snapPoints">0</div>
               </div>
             </div>
           </div>
@@ -1728,9 +1742,6 @@ window.addEventListener('load', () => {
   drawBalanceChart(currentChartData);
   window.addEventListener('resize', () => drawBalanceChart(currentChartData));
   loadDashboardData();
-  // Load credit score in background — doesn't block main dashboard
-  if (window._supabase) loadMyCreditData();
-  else document.addEventListener('supabaseReady', () => loadMyCreditData(), { once: true });
 });
 
 function openPayBillModal() { zenithToast('Bill Pay is coming soon. Contact ZenithOne Private Banking to arrange a payment.', 'info'); }
@@ -3212,10 +3223,15 @@ async function loadDashboardData() {
       document.getElementById('dashLuxCard').style.display = hasCard ? '' : 'none';
       if (hasCard && summary.primary_card) {
         const pc = summary.primary_card;
-        document.getElementById('dashCardNumber').textContent  = `•••• •••• •••• ${pc.last_four}`;
-        const tierLabel = (pc.tier || 'standard').toUpperCase().replace('_', ' ');
+        document.getElementById('dashCardNumber').textContent  = `•••• ${pc.last_four}`;
+        const tierLabel = (pc.tier || 'standard').toUpperCase().replace(/_/g, ' ');
         document.getElementById('dashCardTierLabel').innerHTML = `ZENITHONE<br/>${tierLabel}`;
+        const holder = document.getElementById('cardholderName');
+        if (holder && pc.cardholder_name) holder.textContent = pc.cardholder_name.toUpperCase();
       }
+
+      // Credit score + loan applications (bundled with summary — no extra API call)
+      renderCreditSection(summary.credit_profile || null, summary.loan_applications || []);
     }
 
     // Real balance history
@@ -3312,43 +3328,46 @@ function renderFicoGauge(score) {
 
 let _myCreditProfile = null;
 
+function renderCreditSection(cp, apps) {
+  _myCreditProfile = cp;
+
+  const noneEl  = document.getElementById('creditScoreNone');
+  const dispEl  = document.getElementById('creditScoreDisplay');
+  const applyBtn = document.getElementById('applyLoanBtn');
+
+  if (!cp || !cp.credit_score) {
+    if (noneEl) { noneEl.style.display = ''; noneEl.textContent = 'No credit profile on file. Contact your branch officer to establish credit.'; }
+    if (dispEl)  dispEl.style.display = 'none';
+    if (applyBtn) applyBtn.style.display = 'none';
+  } else {
+    if (noneEl)  noneEl.style.display = 'none';
+    if (dispEl)  dispEl.style.display = '';
+
+    renderFicoGauge(cp.credit_score);
+
+    const limit = Number(cp.total_credit_limit || 0);
+    const used  = Number(cp.total_credit_used  || 0);
+    const util  = limit > 0 ? ((used / limit) * 100).toFixed(1) : (cp.credit_utilization != null ? Number(cp.credit_utilization).toFixed(1) : null);
+
+    document.getElementById('ficoCreditLimit').textContent    = limit > 0 ? '$' + limit.toLocaleString('en-US') : '—';
+    document.getElementById('ficoCreditUtil').textContent     = util != null ? util + '%' : '—';
+    document.getElementById('ficoCreditPay').textContent      = cp.payment_history_pct != null ? Number(cp.payment_history_pct).toFixed(0) + '%' : '—';
+    document.getElementById('ficoCreditProvider').textContent = cp.score_provider || 'FICO';
+
+    if (applyBtn) applyBtn.style.display = cp.credit_score >= 580 ? '' : 'none';
+  }
+
+  renderMyLoans(apps || []);
+}
+
+// Legacy: kept so apply-modal refresh still works after submitting
 async function loadMyCreditData() {
   try {
-    const { credit_profile: cp, loans } = await callEdgeFunction('admin-data', { action: 'get_my_credit' });
-    _myCreditProfile = cp;
-
-    const noneEl  = document.getElementById('creditScoreNone');
-    const dispEl  = document.getElementById('creditScoreDisplay');
-    const applyBtn = document.getElementById('applyLoanBtn');
-
-    if (!cp || !cp.credit_score) {
-      if (noneEl) noneEl.style.display = '';
-      if (dispEl) dispEl.style.display = 'none';
-      if (applyBtn) applyBtn.style.display = 'none';
-    } else {
-      if (noneEl) noneEl.style.display = 'none';
-      if (dispEl) dispEl.style.display = '';
-
-      renderFicoGauge(cp.credit_score);
-
-      const limit = Number(cp.total_credit_limit || 0);
-      const used  = Number(cp.total_credit_used  || 0);
-      const util  = limit > 0 ? ((used / limit) * 100).toFixed(1) : null;
-
-      document.getElementById('ficoCreditLimit').textContent    = limit > 0 ? '$' + limit.toLocaleString('en-US') : '—';
-      document.getElementById('ficoCreditUtil').textContent     = util ? util + '%' : '—';
-      document.getElementById('ficoCreditPay').textContent      = cp.payment_history_pct != null ? cp.payment_history_pct + '%' : '—';
-      document.getElementById('ficoCreditProvider').textContent = cp.score_provider || 'FICO';
-
-      // Show "Apply" button only if score meets minimum for personal loan (580)
-      if (applyBtn) applyBtn.style.display = cp.credit_score >= 580 ? '' : 'none';
-    }
-
-    // Render loan applications
-    renderMyLoans(loans || []);
+    const summary = await callEdgeFunction('account-summary', {});
+    renderCreditSection(summary.credit_profile || null, summary.loan_applications || []);
   } catch (e) {
-    document.getElementById('creditScoreNone').textContent = 'Credit data unavailable.';
-    document.getElementById('myLoansList').textContent = 'Unable to load loan applications.';
+    const el = document.getElementById('myLoansList');
+    if (el) el.textContent = 'Unable to reload.';
   }
 }
 

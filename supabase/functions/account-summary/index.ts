@@ -66,6 +66,20 @@ Deno.serve(async (req: Request): Promise<Response> => {
     const holdingsValue = (investments || []).reduce((s, i) => s + (i.total_value || 0), 0);
     const holdingsGain  = (investments || []).reduce((s, i) => s + (i.gain_loss   || 0), 0);
 
+    // Credit profile
+    const { data: creditProfile } = await supabase
+      .from('credit_profiles')
+      .select('credit_score, score_provider, payment_history_pct, credit_utilization, total_credit_limit, total_credit_used')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    // Loan applications
+    const { data: loanApplications } = await supabase
+      .from('loan_applications')
+      .select('id, loan_type, loan_name, requested_amount, term_months, status, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
     // Unread notifications
     const { count: unreadNotifications } = await supabase
       .from('notifications')
@@ -141,6 +155,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
         cardholder_name:(primaryCard as { cardholder_name?: string }).cardholder_name || '',
       } : null,
       last_updated:         new Date().toISOString(),
+      credit_profile:       creditProfile ?? null,
+      loan_applications:    loanApplications ?? [],
     });
 
   } catch (err) {

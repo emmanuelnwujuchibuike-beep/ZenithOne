@@ -40,6 +40,7 @@ function _loadClient(url, anonKey) {
         autoRefreshToken:   true,
         persistSession:     true,
         detectSessionInUrl: true, // handles magic-link & password-recovery callbacks
+        storage:            window.sessionStorage, // cleared when history is cleared → forces re-login
       },
     });
     document.dispatchEvent(new Event('supabaseReady'));

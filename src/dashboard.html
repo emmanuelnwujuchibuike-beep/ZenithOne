@@ -144,9 +144,11 @@
       position:sticky; top:0; z-index:20;
       background:rgba(5,10,20,.96); backdrop-filter:blur(16px);
       border-bottom:1px solid rgba(201,168,76,.14);
-      padding:0 28px;
+      display:flex; flex-direction:column;
+    }
+    .a-topbar-main {
       display:grid; grid-template-columns:auto 1fr auto;
-      align-items:center; gap:20px; min-height:62px;
+      align-items:center; gap:20px; padding:0 28px; min-height:62px;
     }
     .a-brand { display:flex; align-items:center; gap:12px; flex-shrink:0; }
     .a-brand-pill {
@@ -224,11 +226,31 @@
     }
     .a-input:focus { border-color:rgba(201,168,76,.45); }
     .admin-two-col { display:grid; grid-template-columns:1fr 1fr; }
+    .a-mobile-tabs {
+      display:none; overflow-x:auto; -webkit-overflow-scrolling:touch;
+      scrollbar-width:none; padding:9px 16px; gap:8px;
+      border-top:1px solid rgba(255,255,255,.06);
+    }
+    .a-mobile-tabs::-webkit-scrollbar { display:none; }
+    .a-mtab {
+      flex-shrink:0; display:inline-flex; align-items:center;
+      padding:7px 16px; border-radius:99px;
+      border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04);
+      color:rgba(255,255,255,.5); font-size:.73rem; font-weight:500;
+      cursor:pointer; white-space:nowrap; letter-spacing:.02em; transition:all .16s;
+    }
+    .a-mtab.active { background:rgba(201,168,76,.12); border-color:rgba(201,168,76,.38); color:#e8d07a; }
     @media(max-width:900px) {
-      .a-topbar { grid-template-columns:auto auto; padding:12px 16px; }
+      .a-topbar-main { grid-template-columns:auto auto; padding:8px 16px; min-height:50px; }
       .a-tab-nav { display:none; }
+      .a-mobile-tabs { display:flex; }
       .a-two { grid-template-columns:1fr; }
       .a-panel { padding:16px; }
+      .admin-two-col { grid-template-columns:1fr; }
+    }
+    @media(max-width:600px) {
+      .a-btn-text { display:none; }
+      .a-panel { padding:12px; }
     }
   </style>
 </head>
@@ -610,59 +632,72 @@
 
   <!-- Premium Admin Topbar -->
   <header class="a-topbar">
-    <!-- Brand -->
-    <div class="a-brand">
-      <div class="nav-logo-mark" style="width:34px;height:34px;border-radius:9px;flex-shrink:0;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    <div class="a-topbar-main">
+      <!-- Brand -->
+      <div class="a-brand">
+        <div class="nav-logo-mark" style="width:34px;height:34px;border-radius:9px;flex-shrink:0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <div style="font-family:var(--font-display);font-size:1rem;letter-spacing:.1em;color:#fff;line-height:1;">ZENITHONE</div>
+          <div style="font-size:.55rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(201,168,76,.72);">Administrator</div>
+        </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:1px;">
-        <div style="font-family:var(--font-display);font-size:.95rem;letter-spacing:.08em;color:#fff;">ZENITHONE</div>
-        <div class="a-brand-pill">Administration</div>
+
+      <!-- Tab Navigation (desktop) -->
+      <nav class="a-tab-nav">
+        <button class="a-tab-btn active" data-tab="overview" onclick="aSelectTab('overview')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Overview
+        </button>
+        <button class="a-tab-btn" data-tab="members" onclick="aSelectTab('members')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Members
+        </button>
+        <button class="a-tab-btn" data-tab="cards" onclick="aSelectTab('cards')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+          Cards
+        </button>
+        <button class="a-tab-btn" data-tab="accounts" onclick="aSelectTab('accounts')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          Accounts
+        </button>
+        <button class="a-tab-btn" data-tab="credit" onclick="aSelectTab('credit')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Credit &amp; Loans
+        </button>
+        <button class="a-tab-btn" data-tab="loanapps" onclick="aSelectTab('loanapps')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Loan Apps
+        </button>
+        <button class="a-tab-btn" data-tab="broadcast" onclick="aSelectTab('broadcast')">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 4S15 8 8 8H4a2 2 0 0 0 0 4h.5l1 8h3l1-4c1 .07 2 .2 3 .4"/><path d="M22 4c0 4-2 7-3 8"/></svg>
+          Broadcast
+        </button>
+      </nav>
+
+      <!-- Actions -->
+      <div class="a-topbar-actions">
+        <button class="btn btn-ghost btn-sm" onclick="refreshAdminAll()" style="display:flex;align-items:center;gap:6px;font-size:.78rem;">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          <span class="a-btn-text">Refresh</span>
+        </button>
+        <button onclick="closeAdminPanel()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--slate-300);border-radius:8px;padding:8px 16px;cursor:pointer;font-size:.78rem;font-weight:500;transition:all .18s;" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <span class="a-btn-text">Exit Admin</span>
+        </button>
       </div>
     </div>
 
-    <!-- Tab Navigation -->
-    <nav class="a-tab-nav">
-      <button class="a-tab-btn active" data-tab="overview" onclick="aSelectTab('overview')">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        Overview
-      </button>
-      <button class="a-tab-btn" data-tab="members" onclick="aSelectTab('members')">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-        Members
-      </button>
-      <button class="a-tab-btn" data-tab="cards" onclick="aSelectTab('cards')">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
-        Cards
-      </button>
-      <button class="a-tab-btn" data-tab="accounts" onclick="aSelectTab('accounts')">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-        Accounts
-      </button>
-      <button class="a-tab-btn" data-tab="credit" onclick="aSelectTab('credit')">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Credit &amp; Loans
-      </button>
-      <button class="a-tab-btn" data-tab="loanapps" onclick="aSelectTab('loanapps')">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-        Loan Apps
-      </button>
-      <button class="a-tab-btn" data-tab="broadcast" onclick="aSelectTab('broadcast')">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 4S15 8 8 8H4a2 2 0 0 0 0 4h.5l1 8h3l1-4c1 .07 2 .2 3 .4"/><path d="M22 4c0 4-2 7-3 8"/></svg>
-        Broadcast
-      </button>
-    </nav>
-
-    <!-- Actions -->
-    <div class="a-topbar-actions">
-      <button class="btn btn-ghost btn-sm" onclick="refreshAdminAll()" style="display:flex;align-items:center;gap:6px;font-size:.78rem;">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-        Refresh
-      </button>
-      <button onclick="closeAdminPanel()" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--slate-300);border-radius:8px;padding:8px 16px;cursor:pointer;font-size:.78rem;font-weight:500;transition:all .18s;" onmouseover="this.style.background='rgba(255,255,255,.1)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        Exit Admin
-      </button>
+    <!-- Mobile Tab Strip (hidden on desktop via CSS) -->
+    <div class="a-mobile-tabs">
+      <button class="a-mtab active" data-tab="overview" onclick="aSelectTab('overview')">Overview</button>
+      <button class="a-mtab" data-tab="members" onclick="aSelectTab('members')">Members</button>
+      <button class="a-mtab" data-tab="cards" onclick="aSelectTab('cards')">Cards</button>
+      <button class="a-mtab" data-tab="accounts" onclick="aSelectTab('accounts')">Accounts</button>
+      <button class="a-mtab" data-tab="credit" onclick="aSelectTab('credit')">Credit &amp; Loans</button>
+      <button class="a-mtab" data-tab="loanapps" onclick="aSelectTab('loanapps')">Loan Apps</button>
+      <button class="a-mtab" data-tab="broadcast" onclick="aSelectTab('broadcast')">Broadcast</button>
     </div>
   </header>
 
@@ -1589,11 +1624,10 @@ function openPayBillModal() { zenithToast('Bill Pay is coming soon. Contact Zeni
 
 function aSelectTab(name) {
   document.querySelectorAll('.a-tab-panel').forEach(el => el.style.display = 'none');
-  document.querySelectorAll('.a-tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.a-tab-btn, .a-mtab').forEach(btn => btn.classList.remove('active'));
   const panel = document.getElementById('aTab_' + name);
   if (panel) panel.style.display = '';
-  const btn = document.querySelector('.a-tab-btn[data-tab="' + name + '"]');
-  if (btn) btn.classList.add('active');
+  document.querySelectorAll('[data-tab="' + name + '"]').forEach(el => el.classList.add('active'));
   document.getElementById('adminOverlay').scrollTop = 0;
 }
 
@@ -1604,9 +1638,14 @@ async function openAdminPanel() {
   document.getElementById('adminAccessDenied').style.display = 'none';
   document.getElementById('adminPanelContent').style.display = 'none';
   try {
-    await refreshAdminAll();
+    await aLoadStats(); // single fast call — shows overview immediately
     document.getElementById('adminPanelContent').style.display = '';
     aSelectTab('overview');
+    // Background-load all other tab data without blocking the UI
+    Promise.all([
+      aLoadUsers(), aLoadCardRequests(), aLoadCardPricing(),
+      aLoadRewards(), aLoadPins(), aLoadAccountRequests(), aLoadLoanApplications(),
+    ]).then(() => aPopulateCreditMemberSelect()).catch(() => {});
   } catch(e) {
     let msg = e.message || '';
     try { msg = JSON.parse(e.message).error || msg; } catch {}

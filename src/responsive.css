@@ -899,9 +899,7 @@
    46. ADMIN OVERLAY — topbar & content padding
    ══════════════════════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
-  #adminOverlay > header { padding: 0 16px !important; height: 56px !important; }
-  /* Hide "Refresh" button text on mobile — only keep Exit button */
-  #adminOverlay > header .btn-ghost.btn-sm { display: none !important; }
+  #adminOverlay > header { padding: 0 !important; height: auto !important; }
   #adminPanelContent { padding: 16px !important; }
   /* Recent Activity + Newest Members: 2-col → 1-col */
   .admin-two-col { grid-template-columns: 1fr !important; }

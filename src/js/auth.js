@@ -29,6 +29,7 @@ async function checkAuthGuard() {
     populateUserUI(session.user);
     subscribeToRealtimeUpdates(session.user.id);
     _updatePublicNav(true);
+    if (isPrivate && window._startSessionLock) window._startSessionLock();
   } else {
     _updatePublicNav(false);
   }
@@ -270,3 +271,70 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
   }
 });
+
+// ── Session inactivity lock ───────────────────────────────────
+// Runs only on private pages (started by checkAuthGuard above).
+// Locks after 2 min idle; requires Face ID or password to unlock.
+(function () {
+  const TIMEOUT_MS = 120000;
+  let _timer = null, _locked = false, _el = null;
+
+  const FID_SVG = '<svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10h.01M15 10h.01"/><path d="M9.5 15a3.5 3.5 0 0 0 5 0"/></svg>';
+
+  function _build() {
+    if (_el) return;
+    _el = document.createElement('div');
+    _el.id = 'z-session-lock';
+    _el.style.cssText = 'display:none;position:fixed;inset:0;z-index:1800;background:rgba(3,7,18,.93);backdrop-filter:blur(20px);align-items:center;justify-content:center;padding:24px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;';
+    _el.innerHTML = `
+      <div style="width:360px;max-width:100%;text-align:center;background:linear-gradient(165deg,#0b1829,#060e1c);border:1px solid rgba(201,168,76,.2);border-radius:24px;padding:42px 36px 36px;box-shadow:0 40px 120px rgba(0,0,0,.8);position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.65) 50%,transparent);border-radius:24px 24px 0 0;"></div>
+        <div style="width:58px;height:58px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.22);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+          <svg width="24" height="24" fill="none" stroke="#c9a84c" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div style="font-family:'Cormorant Garamond','Georgia',serif;font-size:1.85rem;font-weight:300;color:#fff;margin-bottom:10px;line-height:1.1;">Session Locked</div>
+        <div style="font-size:.83rem;color:rgba(255,255,255,.42);line-height:1.65;margin-bottom:32px;">Locked after 2 minutes of inactivity.<br>Verify your identity to continue.</div>
+        <button id="z-lock-fid" style="width:100%;padding:13px 16px;border-radius:11px;border:1px solid rgba(201,168,76,.32);background:rgba(201,168,76,.1);color:#e8d07a;font-size:.88rem;font-weight:500;cursor:pointer;margin-bottom:10px;display:none;align-items:center;justify-content:center;gap:10px;transition:all .18s;"></button>
+        <button id="z-lock-pwd" style="width:100%;padding:13px 16px;border-radius:11px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:rgba(255,255,255,.65);font-size:.88rem;cursor:pointer;transition:all .18s;">Sign in with Password</button>
+      </div>`;
+    document.body.appendChild(_el);
+
+    _el.querySelector('#z-lock-fid').addEventListener('click', async function () {
+      this.disabled = true; this.style.opacity = '.5';
+      try {
+        await window.ZenithFaceID.verify('Unlock your ZenithOne session');
+        _hide();
+      } catch { this.disabled = false; this.style.opacity = ''; }
+    });
+    _el.querySelector('#z-lock-pwd').addEventListener('click', () => logout());
+  }
+
+  function _show() {
+    if (_locked) return;
+    _locked = true;
+    _build();
+    const fid = _el.querySelector('#z-lock-fid');
+    const hasFid = window.ZenithFaceID && window.ZenithFaceID.isEnrolled() && window.ZenithFaceID.loginEnabled();
+    fid.innerHTML = FID_SVG + ' Unlock with Face ID';
+    fid.disabled = false; fid.style.opacity = '';
+    fid.style.display = hasFid ? 'flex' : 'none';
+    _el.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function _hide() {
+    _locked = false;
+    if (_el) _el.style.display = 'none';
+    document.body.style.overflow = '';
+    _arm();
+  }
+
+  function _arm() { clearTimeout(_timer); _timer = setTimeout(_show, TIMEOUT_MS); }
+  function _ping() { if (!_locked) _arm(); }
+
+  const EVS = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'];
+  window._startSessionLock = function () {
+    EVS.forEach(e => window.addEventListener(e, _ping, { passive: true, capture: true }));
+    _arm();
+  };
+})();

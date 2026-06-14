@@ -3,11 +3,37 @@
  * Handles login, signup, logout, session guard, and password reset.
  */
 
-const PUBLIC_PAGES  = ['index.html','login.html','signup.html','forgot-password.html','reset-password.html',''];
+const PUBLIC_PAGES  = ['index.html','login.html','signup.html','forgot-password.html','reset-password.html','reauth.html',''];
 const PRIVATE_PAGES = ['dashboard.html','accounts.html','transactions.html','transfer.html','cards.html','investments.html','settings.html'];
+
+// Where to send the user when auth is required.
+// If they previously chose "Remember me" and we have their email stored,
+// send them to the streamlined reauth page (password only + Face ID).
+// Otherwise send them to the full login page.
+function _goToAuth() {
+  const hasRemember = localStorage.getItem('zo_remember') === '1';
+  const hasEmail    = !!(localStorage.getItem('zo_user_email') ||
+    (function () { try { return JSON.parse(localStorage.getItem('zo_faceid_cred') || 'null'); } catch { return null; } })()?.email);
+  if (hasRemember && hasEmail) {
+    localStorage.setItem('zo_reauth_target', window.location.pathname + window.location.search);
+    window.location.href = 'reauth.html';
+  } else {
+    window.location.href = 'login.html';
+  }
+}
 
 // ── Auth Guard ────────────────────────────────────────────────
 async function checkAuthGuard() {
+  // Immediately hydrate UI from localStorage cache — prevents name flash before async auth resolves
+  (function () {
+    const cn = localStorage.getItem('zo_user_name');
+    if (!cn) return;
+    const ci = cn.split(' ').filter(Boolean).slice(0, 2).map(function (n) { return n[0]; }).join('').toUpperCase();
+    document.querySelectorAll('.sidebar-user-name, #sidebarName').forEach(function (el) { if (!el.textContent.trim()) el.textContent = cn; });
+    document.querySelectorAll('.sidebar-avatar, #topbarAvatar').forEach(function (el) { if (!el.textContent.trim()) el.textContent = ci; });
+    document.querySelectorAll('#welcomeName').forEach(function (el) { if (!el.textContent.trim()) el.textContent = cn.split(' ')[0]; });
+  })();
+
   const sb = window._supabase;
   if (!sb) return;
 
@@ -17,7 +43,7 @@ async function checkAuthGuard() {
   const { data: { session } } = await sb.auth.getSession();
 
   if (isPrivate && !session) {
-    window.location.href = 'login.html';
+    _goToAuth();
     return;
   }
   if ((page === 'login.html' || page === 'signup.html') && session) {
@@ -34,7 +60,7 @@ async function checkAuthGuard() {
       const hasTabSession = sessionStorage.getItem('zo_session_only') === '1';
       if (!hasRemember && !hasTabSession) {
         await sb.auth.signOut({ scope: 'local' });
-        window.location.href = 'login.html';
+        _goToAuth();
         return;
       }
     }
@@ -82,11 +108,14 @@ async function populateUserUI(user) {
 
   const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
+  // Persist for reauth page display (not sensitive — just display name)
+  localStorage.setItem('zo_user_name', name);
+
   // Sidebar name + avatar
   document.querySelectorAll('.sidebar-user-name, #sidebarName').forEach(el => el.textContent = name);
   document.querySelectorAll('.sidebar-avatar, #topbarAvatar').forEach(el => {
-    // Only replace placeholder initials (avoid overwriting icons)
-    if (/^[A-Z]{1,2}$/.test(el.textContent.trim())) el.textContent = initials;
+    // Replace placeholder initials or empty — avoid overwriting icons
+    if (/^[A-Z]{0,2}$/.test(el.textContent.trim())) el.textContent = initials;
   });
   document.querySelectorAll('#welcomeName').forEach(el => el.textContent = name.split(' ')[0]);
   document.querySelectorAll('#cardholderName').forEach(el => el.textContent = name.toUpperCase());
@@ -146,14 +175,20 @@ if (loginForm) {
       // Set persistence flags after successful login
       localStorage.removeItem('zo_remember');
       localStorage.removeItem('zo_remember_until');
+      localStorage.removeItem('zo_user_email');
       sessionStorage.removeItem('zo_session_only');
       if (rememberMe) {
         localStorage.setItem('zo_remember', '1');
         localStorage.setItem('zo_remember_until', String(Date.now() + 30 * 24 * 60 * 60 * 1000));
+        localStorage.setItem('zo_user_email', email); // store for future reauth page
       } else {
         sessionStorage.setItem('zo_session_only', '1');
       }
-      window.location.href = 'dashboard.html';
+      // Redirect: back to reauth target if there was one, otherwise dashboard
+      const _t = localStorage.getItem('zo_reauth_target') || '';
+      localStorage.removeItem('zo_reauth_target');
+      const _safe = _t && !_t.startsWith('http') && !_t.startsWith('//') && !_t.includes('://');
+      window.location.href = _safe ? _t : 'dashboard.html';
     }
   });
 }
@@ -249,6 +284,9 @@ async function updatePassword(newPassword) {
 async function logout() {
   localStorage.removeItem('zo_remember');
   localStorage.removeItem('zo_remember_until');
+  localStorage.removeItem('zo_user_email');
+  localStorage.removeItem('zo_user_name');
+  localStorage.removeItem('zo_reauth_target');
   sessionStorage.removeItem('zo_session_only');
   if (window._supabase) {
     // If Face ID is enrolled on this device, sign out locally so the refresh
@@ -332,7 +370,25 @@ document.addEventListener('DOMContentLoaded', () => {
         _hide();
       } catch { this.disabled = false; this.style.opacity = ''; }
     });
-    _el.querySelector('#z-lock-pwd').addEventListener('click', () => logout());
+    _el.querySelector('#z-lock-pwd').addEventListener('click', async function () {
+      this.disabled = true;
+      // Sign out locally so the session is cleared before re-auth
+      if (window._supabase) {
+        try { await window._supabase.auth.signOut({ scope: 'local' }); } catch (_) {}
+      }
+      const hasRemember = localStorage.getItem('zo_remember') === '1';
+      const hasEmail    = !!(localStorage.getItem('zo_user_email') ||
+        (function () { try { return JSON.parse(localStorage.getItem('zo_faceid_cred') || 'null'); } catch { return null; } })()?.email);
+      localStorage.setItem('zo_reauth_target', window.location.pathname + window.location.search);
+      if (hasRemember && hasEmail) {
+        window.location.href = 'reauth.html';
+      } else {
+        localStorage.removeItem('zo_remember');
+        localStorage.removeItem('zo_remember_until');
+        sessionStorage.removeItem('zo_session_only');
+        window.location.href = 'login.html';
+      }
+    });
   }
 
   function _show() {
@@ -341,7 +397,8 @@ document.addEventListener('DOMContentLoaded', () => {
     _build();
     const fid = _el.querySelector('#z-lock-fid');
     const hasFid = window.ZenithFaceID && window.ZenithFaceID.isEnrolled() && window.ZenithFaceID.loginEnabled();
-    fid.innerHTML = FID_SVG + ' Unlock with Face ID';
+    const _bioLabel = (window.ZenithFaceID && window.ZenithFaceID.getBiometricLabel) ? window.ZenithFaceID.getBiometricLabel() : 'Face ID';
+    fid.innerHTML = FID_SVG + ' Unlock with ' + _bioLabel;
     fid.disabled = false; fid.style.opacity = '';
     fid.style.display = hasFid ? 'flex' : 'none';
     _el.style.display = 'flex';

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify Identity — ZenithOne Credit Union</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      position: relative;
+      overflow: hidden;
+      background: #03070f;
+    }
+
+    /* Ambient background glows */
+    .ra-bg-glow-1 {
+      position: fixed; pointer-events: none;
+      top: -20%; left: -10%;
+      width: 70%; height: 70%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(201,168,76,.05) 0%, transparent 68%);
+    }
+    .ra-bg-glow-2 {
+      position: fixed; pointer-events: none;
+      bottom: -15%; right: -5%;
+      width: 55%; height: 55%;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(70,130,220,.04) 0%, transparent 68%);
+    }
+    .ra-bg-grid {
+      position: fixed; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(201,168,76,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,.018) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* Card */
+    .ra-card {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 440px;
+      background: linear-gradient(165deg, #0a1726 0%, #06101e 100%);
+      border: 1px solid rgba(201,168,76,.15);
+      border-radius: 28px;
+      padding: 44px 40px 38px;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.03) inset,
+        0 50px 130px rgba(0,0,0,.75),
+        0 20px 50px rgba(0,0,0,.5);
+      overflow: hidden;
+    }
+    .ra-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(201,168,76,.7) 50%, transparent 100%);
+      border-radius: 28px 28px 0 0;
+    }
+    /* Subtle inner glow at top */
+    .ra-card::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 60%;
+      background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201,168,76,.04) 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    /* Logo */
+    .ra-logo {
+      display: flex; align-items: center; gap: 11px;
+      text-decoration: none; margin-bottom: 40px;
+      position: relative; z-index: 1;
+    }
+
+    /* Avatar circle */
+    .ra-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c9a84c 0%, #8a6010 100%);
+      border: 2px solid rgba(201,168,76,.35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.35rem; font-weight: 700;
+      color: #fff;
+      letter-spacing: .04em;
+      text-shadow: 0 1px 4px rgba(0,0,0,.4);
+      margin: 0 auto 18px;
+      box-shadow: 0 0 0 6px rgba(201,168,76,.06), 0 0 40px rgba(201,168,76,.18);
+      position: relative; z-index: 1;
+    }
+
+    /* Face ID button */
+    .ra-fid-btn {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 13px;
+      border: 1px solid rgba(201,168,76,.30);
+      background: rgba(201,168,76,.08);
+      color: #e8d07a;
+      font-size: .9rem; font-weight: 500;
+      cursor: pointer;
+      display: none; align-items: center; justify-content: center; gap: 11px;
+      transition: background .18s, border-color .18s, transform .12s;
+      margin-bottom: 8px;
+      position: relative; z-index: 1;
+    }
+    .ra-fid-btn:hover  { background: rgba(201,168,76,.16); border-color: rgba(201,168,76,.5); }
+    .ra-fid-btn:active { transform: scale(.98); }
+    .ra-fid-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* OR divider */
+    .ra-divider {
+      display: none; align-items: center; gap: 12px;
+      font-size: .75rem; color: rgba(255,255,255,.22);
+      margin: 16px 0;
+      position: relative; z-index: 1;
+    }
+    .ra-divider::before, .ra-divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: rgba(255,255,255,.06);
+    }
+
+    /* Password show/hide toggle */
+    .ra-pwd-toggle {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: rgba(255,255,255,.35);
+      cursor: pointer; padding: 4px; line-height: 1;
+      transition: color .15s;
+    }
+    .ra-pwd-toggle:hover { color: rgba(255,255,255,.7); }
+
+    /* Submit button */
+    .ra-submit {
+      width: 100%; padding: 14px;
+      margin-top: 4px;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+
+    /* Bottom links */
+    .ra-links {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 10px; margin-top: 22px;
+      position: relative; z-index: 1;
+    }
+    .ra-link {
+      font-size: .8rem; color: rgba(255,255,255,.32);
+      background: none; border: none; cursor: pointer; padding: 0;
+      text-decoration: none;
+      transition: color .16s;
+    }
+    .ra-link:hover { color: rgba(255,255,255,.65); }
+    .ra-link.gold:hover { color: #c9a84c; }
+
+    /* Security footer */
+    .ra-security {
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid rgba(255,255,255,.05);
+      display: flex; align-items: center; justify-content: center; gap: 16px;
+      position: relative; z-index: 1;
+      flex-wrap: wrap;
+    }
+    .ra-sec-item {
+      display: flex; align-items: center; gap: 5px;
+      font-size: .67rem; color: rgba(255,255,255,.2); letter-spacing: .02em;
+    }
+
+    /* Error alert override — make it more compact */
+    #reauthError { margin-bottom: 14px; }
+
+    @keyframes ra-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .ra-spinner { animation: ra-spin .9s linear infinite; }
+
+    @media (max-width: 480px) {
+      .ra-card { padding: 36px 24px 30px; border-radius: 22px; }
+      .ra-avatar { width: 62px; height: 62px; font-size: 1.15rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="ra-bg-glow-1" aria-hidden="true"></div>
+<div class="ra-bg-glow-2" aria-hidden="true"></div>
+<div class="ra-bg-grid"   aria-hidden="true"></div>
+
+<div class="ra-card">
+
+  <!-- Logo -->
+  <a href="index.html" class="ra-logo">
+    <div class="nav-logo-mark" style="width:30px;height:30px;border-radius:7px;flex-shrink:0;">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <path d="M2 17l10 5 10-5"/>
+        <path d="M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <div>
+      <div class="nav-logo-text" style="font-size:.82rem;">ZENITHONE</div>
+      <div class="nav-logo-sub" style="font-size:.6rem;">Credit Union</div>
+    </div>
+  </a>
+
+  <!-- User identity block -->
+  <div style="text-align:center;margin-bottom:32px;position:relative;z-index:1;">
+    <div class="ra-avatar" id="reauthAvatar">
+      <span id="reauthInitials">?</span>
+    </div>
+    <div style="font-size:.72rem;color:rgba(255,255,255,.32);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Welcome back</div>
+    <div style="font-family:'Cormorant Garamond','Georgia',serif;font-size:2rem;font-weight:300;color:#fff;line-height:1.1;margin-bottom:8px;" id="reauthFirstName">—</div>
+    <div style="font-size:.78rem;color:rgba(255,255,255,.28);">Verify your identity to continue</div>
+  </div>
+
+  <!-- Error alert -->
+  <div class="alert alert-error hidden" id="reauthError" style="margin-bottom:14px;">
+    <svg class="alert-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+    </svg>
+    <span id="reauthErrorMsg">Incorrect password. Please try again.</span>
+  </div>
+
+  <!-- Biometric button (shown by JS if enrolled + available; label set dynamically) -->
+  <button class="ra-fid-btn" id="reauthFidBtn" type="button" aria-label="Sign in with biometrics">
+    <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/>
+      <path d="M9 10h.01M15 10h.01"/>
+      <path d="M9.5 15a3.5 3.5 0 0 0 5 0"/>
+    </svg>
+    <span id="reauthBioLabel">Sign in with Face ID</span>
+  </button>
+
+  <!-- OR divider (shown only when Face ID is available) -->
+  <div class="ra-divider" id="reauthDivider">or enter your password</div>
+
+  <!-- Password form -->
+  <form id="reauthForm" novalidate style="position:relative;z-index:1;">
+    <!-- Hidden email field for password managers / autocomplete -->
+    <input type="email" name="email" autocomplete="username" style="display:none;" id="reauthEmailHidden" />
+
+    <div class="form-group" style="margin-bottom:18px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">
+        <label class="form-label" for="reauthPassword" style="margin-bottom:0;">Password</label>
+        <a href="forgot-password.html" class="ra-link gold" style="font-size:.75rem;">Forgot password?</a>
+      </div>
+      <div class="input-group" style="position:relative;">
+        <svg class="input-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        <input
+          id="reauthPassword"
+          type="password"
+          class="form-input"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          style="padding-right:44px;"
+          required
+        />
+        <button type="button" class="ra-pwd-toggle" id="reauthTogglePwd" tabindex="-1" aria-label="Show or hide password">
+          <svg id="reauthEyeIcon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary ra-submit" id="reauthBtn">
+      <span id="reauthBtnText">Continue</span>
+      <svg id="reauthSpinner" class="ra-spinner hidden" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+      </svg>
+    </button>
+  </form>
+
+  <!-- Navigation links -->
+  <div class="ra-links">
+    <button type="button" class="ra-link" id="reauthNotYou">
+      Not you? Sign in with a different account
+    </button>
+  </div>
+
+  <!-- Security badges -->
+  <div class="ra-security">
+    <div class="ra-sec-item">
+      <svg width="11" height="11" fill="none" stroke="rgba(201,168,76,.45)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      256-bit SSL
+    </div>
+    <div class="ra-sec-item">
+      <svg width="11" height="11" fill="none" stroke="rgba(201,168,76,.45)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      End-to-end encrypted
+    </div>
+    <div class="ra-sec-item">
+      <svg width="11" height="11" fill="none" stroke="rgba(201,168,76,.45)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+      FDIC Insured
+    </div>
+  </div>
+
+</div><!-- /ra-card -->
+
+<script src="js/supabase-config.js"></script>
+<script src="js/faceid.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ── Read stored identity ────────────────────────────────────────────────────
+  const storedEmail = localStorage.getItem('zo_user_email') || '';
+  const storedName  = localStorage.getItem('zo_user_name')  || '';
+  const fidCred     = (function () { try { return JSON.parse(localStorage.getItem('zo_faceid_cred') || 'null'); } catch { return null; } })();
+  const reauthEmail = storedEmail || (fidCred && fidCred.email) || '';
+
+  // If we have no idea who this is, send them to full login
+  if (!reauthEmail) {
+    window.location.replace('login.html');
+    return;
+  }
+
+  // ── Populate UI ─────────────────────────────────────────────────────────────
+  const firstName = storedName
+    ? storedName.split(' ').filter(Boolean)[0]
+    : (reauthEmail.split('@')[0] || 'there');
+  const initials = storedName
+    ? storedName.split(' ').filter(Boolean).slice(0, 2).map(function (n) { return n[0]; }).join('').toUpperCase()
+    : (reauthEmail[0] || '?').toUpperCase();
+
+  document.getElementById('reauthInitials').textContent   = initials;
+  document.getElementById('reauthFirstName').textContent  = firstName;
+  document.getElementById('reauthEmailHidden').value      = reauthEmail;
+
+  // ── Helper: safe redirect target ────────────────────────────────────────────
+  function getSafeTarget() {
+    var t = localStorage.getItem('zo_reauth_target') || '';
+    localStorage.removeItem('zo_reauth_target');
+    // Only accept same-origin relative paths (no http://, no //)
+    if (t && !t.startsWith('http') && !t.startsWith('//') && !t.includes('://')) {
+      return t;
+    }
+    return 'dashboard.html';
+  }
+
+  // ── Password show/hide ──────────────────────────────────────────────────────
+  document.getElementById('reauthTogglePwd').addEventListener('click', function () {
+    var inp = document.getElementById('reauthPassword');
+    var showing = inp.type === 'text';
+    inp.type = showing ? 'password' : 'text';
+    document.getElementById('reauthEyeIcon').innerHTML = showing
+      ? '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>'
+      : '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+  });
+
+  // ── Face ID ─────────────────────────────────────────────────────────────────
+  function _showFaceIdBtn() {
+    var label = (window.ZenithFaceID && window.ZenithFaceID.getBiometricLabel)
+      ? window.ZenithFaceID.getBiometricLabel()
+      : 'Face ID';
+    document.getElementById('reauthBioLabel').textContent  = 'Sign in with ' + label;
+    document.getElementById('reauthFidBtn').setAttribute('aria-label', 'Sign in with ' + label);
+    document.getElementById('reauthFidBtn').style.display  = 'flex';
+    document.getElementById('reauthDivider').style.display = 'flex';
+  }
+
+  async function _checkFaceId() {
+    if (!window.ZenithFaceID) return;
+    if (!window.ZenithFaceID.isEnrolled()) return;
+    if (!window.ZenithFaceID.loginEnabled()) return;
+    try {
+      var avail = await window.ZenithFaceID.isAvailable();
+      if (avail) _showFaceIdBtn();
+    } catch (_) {}
+  }
+
+  document.getElementById('reauthFidBtn').addEventListener('click', async function () {
+    this.disabled = true;
+    try {
+      await window.ZenithFaceID.loginWithFaceId();
+      // loginWithFaceId() handles redirect to zo_reauth_target or dashboard
+    } catch (_) {
+      this.disabled = false;
+    }
+  });
+
+  // ── Password submit ─────────────────────────────────────────────────────────
+  document.getElementById('reauthForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    var password = document.getElementById('reauthPassword').value;
+    var btn      = document.getElementById('reauthBtn');
+    var errEl    = document.getElementById('reauthError');
+    var errMsg   = document.getElementById('reauthErrorMsg');
+
+    errEl.classList.add('hidden');
+
+    if (!password) {
+      errMsg.textContent = 'Please enter your password.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+
+    btn.disabled = true;
+    document.getElementById('reauthBtnText').textContent = 'Verifying…';
+    document.getElementById('reauthSpinner').classList.remove('hidden');
+
+    // Wait for Supabase to be ready
+    await _ready;
+    var sb = window._supabase;
+    if (!sb) {
+      // Demo mode — just proceed
+      localStorage.setItem('zo_remember', '1');
+      localStorage.setItem('zo_remember_until', String(Date.now() + 30 * 24 * 60 * 60 * 1000));
+      window.location.href = getSafeTarget();
+      return;
+    }
+
+    var result = await sb.auth.signInWithPassword({ email: reauthEmail, password: password });
+
+    if (result.error) {
+      var msg = result.error.message.toLowerCase().includes('invalid')
+        ? 'Incorrect password. Please try again.'
+        : result.error.message;
+      errMsg.textContent = msg;
+      errEl.classList.remove('hidden');
+      btn.disabled = false;
+      document.getElementById('reauthBtnText').textContent = 'Continue';
+      document.getElementById('reauthSpinner').classList.add('hidden');
+    } else {
+      // Restore 30-day remember-me
+      localStorage.setItem('zo_remember', '1');
+      localStorage.setItem('zo_remember_until', String(Date.now() + 30 * 24 * 60 * 60 * 1000));
+      sessionStorage.removeItem('zo_session_only');
+      window.location.href = getSafeTarget();
+    }
+  });
+
+  // ── Not you? ────────────────────────────────────────────────────────────────
+  document.getElementById('reauthNotYou').addEventListener('click', function () {
+    localStorage.removeItem('zo_remember');
+    localStorage.removeItem('zo_remember_until');
+    localStorage.removeItem('zo_user_email');
+    localStorage.removeItem('zo_user_name');
+    localStorage.removeItem('zo_reauth_target');
+    sessionStorage.removeItem('zo_session_only');
+    if (window._supabase) window._supabase.auth.signOut({ scope: 'local' }).catch(function(){});
+    window.location.href = 'login.html';
+  });
+
+  // ── Bootstrap Face ID check ─────────────────────────────────────────────────
+  if (window._supabase) {
+    _checkFaceId();
+  } else {
+    document.addEventListener('supabaseReady', _checkFaceId, { once: true });
+  }
+
+})();
+</script>
+</body>
+</html>

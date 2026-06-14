@@ -1,18 +1,3 @@
-/*!
- * ZenithOne Credit Union — Face ID / Biometric Authentication
- * Uses the WebAuthn platform authenticator (Face ID · Touch ID · Windows Hello).
- * Self-contained: injects its own CSS + premium scanning overlay.
- *
- * Public API (window.ZenithFaceID):
- *   isAvailable()        → Promise<bool>  device supports platform biometrics
- *   isEnrolled()         → bool           a credential is stored on this device
- *   enroll()             → Promise<bool>  register Face ID (must be signed in)
- *   verify(reason)       → Promise<bool>  biometric gate (must already be enrolled)
- *   loginWithFaceId()    → Promise<bool>  biometric gate + restore Supabase session
- *   disable()            → void           remove credential from this device
- *   syncToken()          → Promise        keep stored refresh token fresh
- *   txEnabled() / setTxEnabled(bool)      Face-ID-for-transactions preference
- */
 (function (global) {
   'use strict';
 
@@ -46,6 +31,17 @@
   function setLoginEnabled(v) { localStorage.setItem(LS_LOGIN, v ? '1' : '0'); }
   function txEnabled() { return isEnrolled() && localStorage.getItem(LS_TX) !== '0'; }
   function setTxEnabled(v) { localStorage.setItem(LS_TX, v ? '1' : '0'); }
+
+  // ─── Platform-appropriate biometric label ───────────────────────────────────
+  function getBiometricLabel() {
+    var ua = navigator.userAgent || '';
+    var pl = ((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || '').toLowerCase();
+    if (/android/i.test(ua))           return 'Fingerprint';
+    if (/iphone|ipad|ipod/i.test(ua))  return 'Face ID / Touch ID';
+    if (/win/.test(pl))                return 'Windows Hello';
+    if (/mac/.test(pl))                return 'Touch ID';
+    return 'Face ID / Fingerprint';
+  }
 
   async function isAvailable() {
     if (!global.PublicKeyCredential || !global.isSecureContext) return false;
@@ -220,10 +216,10 @@
     if (!(await isAvailable())) throw new Error('This device does not support Face ID / biometric sign-in.');
 
     const { data: { session } } = await sb.auth.getSession();
-    if (!session) throw new Error('Please sign in before enabling Face ID.');
+    if (!session) throw new Error('Please sign in before enabling ' + getBiometricLabel() + '.');
     const user = session.user;
 
-    showScanning('Set Up Face ID', 'Follow your device prompt to enrol…');
+    showScanning('Set Up ' + getBiometricLabel(), 'Follow your device prompt to enrol…');
     let cancelled = false;
     const ac = new AbortController();
     _onCancel = () => { cancelled = true; ac.abort(); hideOverlay(); };
@@ -255,7 +251,7 @@
       localStorage.setItem(LS_CRED, JSON.stringify({ id: bufToB64u(cred.rawId), email: user.email, userId: user.id }));
       localStorage.setItem(LS_TOKEN, session.refresh_token);
 
-      showResult(true, 'Face ID Enabled', 'You can now sign in instantly.');
+      showResult(true, getBiometricLabel() + ' Enabled', 'You can now sign in instantly.');
       setTimeout(hideOverlay, 1400);
       return true;
     } catch (e) {
@@ -269,9 +265,9 @@
   // ─── Verify (biometric gate only) ───────────────────────────────────────────
   async function verify(reason) {
     const cred = getCred();
-    if (!cred) throw new Error('Face ID is not set up on this device.');
+    if (!cred) throw new Error(getBiometricLabel() + ' is not set up on this device.');
 
-    showScanning('Verify with Face ID', reason || 'Confirm your identity to continue…');
+    showScanning('Verify with ' + getBiometricLabel(), reason || 'Confirm your identity to continue…');
     let cancelled = false;
     const ac = new AbortController();
     _onCancel = () => { cancelled = true; ac.abort(); hideOverlay(); };
@@ -305,9 +301,9 @@
     const sb = global._supabase;
     if (!sb) throw new Error('Not connected.');
     const cred = getCred();
-    if (!cred) throw new Error('Face ID is not set up on this device.');
+    if (!cred) throw new Error(getBiometricLabel() + ' is not set up on this device.');
 
-    showScanning('Sign In with Face ID', 'Look at your device to sign in…');
+    showScanning('Sign In with ' + getBiometricLabel(), 'Look at your device to sign in…');
     let cancelled = false;
     const ac = new AbortController();
     _onCancel = () => { cancelled = true; ac.abort(); hideOverlay(); };
@@ -338,7 +334,12 @@
       localStorage.setItem('zo_remember_until', String(Date.now() + 30 * 24 * 60 * 60 * 1000));
       sessionStorage.removeItem('zo_session_only');
       showResult(true, 'Welcome Back', 'Signing you in…');
-      setTimeout(() => { window.location.href = 'dashboard.html'; }, 900);
+      setTimeout(() => {
+        const _t = localStorage.getItem('zo_reauth_target') || '';
+        localStorage.removeItem('zo_reauth_target');
+        const _safe = _t && !_t.startsWith('http') && !_t.startsWith('//') && !_t.includes('://');
+        window.location.href = _safe ? _t : 'dashboard.html';
+      }, 900);
       return true;
     } catch (e) {
       if (cancelled) { hideOverlay(); throw new Error('Sign-in cancelled.'); }
@@ -376,5 +377,6 @@
     isAvailable, isEnrolled, enroll, verify, loginWithFaceId,
     syncToken, disable,
     loginEnabled, setLoginEnabled, txEnabled, setTxEnabled,
+    getBiometricLabel,
   };
 })(window);

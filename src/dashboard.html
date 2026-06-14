@@ -320,10 +320,10 @@
 
     <div class="sidebar-footer">
       <div class="sidebar-user">
-        <div class="sidebar-avatar" id="sidebarAvatar">AR</div>
+        <div class="sidebar-avatar" id="sidebarAvatar"></div>
         <div class="sidebar-user-info">
-          <div class="sidebar-user-name" id="sidebarName">Alexandra Reynolds</div>
-          <div class="sidebar-user-tier">Private Banking Client</div>
+          <div class="sidebar-user-name" id="sidebarName"></div>
+          <div class="sidebar-user-tier">Member</div>
         </div>
       </div>
     </div>
@@ -345,7 +345,7 @@
         <button class="btn btn-icon btn-ghost notif-dot" id="notifBtn">
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         </button>
-        <div class="sidebar-avatar" style="cursor:pointer;" id="topbarAvatar">AR</div>
+        <div class="sidebar-avatar" style="cursor:pointer;" id="topbarAvatar"></div>
       </div>
     </header>
 
@@ -355,7 +355,7 @@
       <!-- Welcome Banner -->
       <div class="welcome-banner" id="welcomeBanner">
         <div>
-          <div style="font-family:var(--font-display);font-size:1.5rem;margin-bottom:4px;">Good <span id="timeGreeting">morning</span>, <span id="welcomeName">Alexandra</span> 👋</div>
+          <div style="font-family:var(--font-display);font-size:1.5rem;margin-bottom:4px;">Good <span id="timeGreeting">morning</span>, <span id="welcomeName"></span> 👋</div>
           <div style="font-size:.875rem;color:var(--slate-400);">Here's your financial overview for <span id="bannerDate">today</span>.</div>
         </div>
         <div style="text-align:right;">
@@ -515,7 +515,7 @@
       </div>
 
       <!-- Bottom row -->
-      <div class="dash-bottom-row" style="display:grid;grid-template-columns:1fr 1fr 320px;gap:24px;">
+      <div class="dash-bottom-row" style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
 
         <!-- Recent Transactions -->
         <div class="card card-elevated">
@@ -542,37 +542,162 @@
             <!-- populated by JS -->
           </div>
         </div>
+      </div>
 
-        <!-- Card + Wealth Snapshot -->
+      <!-- Card + Wealth Snapshot -->
           <style>
-            #dashLuxCard { transform-style:preserve-3d; transition:transform .12s ease-out; }
-            .lux-shimmer { position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.07) 50%,transparent 70%);background-size:200% 100%;animation:lux-sh 4s infinite linear;pointer-events:none;border-radius:20px; }
-            @keyframes lux-sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-            .lux-holo { position:absolute;top:14px;right:18px;width:30px;height:22px;border-radius:4px;background:linear-gradient(135deg,rgba(201,168,76,.7),rgba(120,200,255,.5),rgba(201,168,76,.7));animation:lux-h 3s infinite alternate; }
-            @keyframes lux-h { 0%{filter:hue-rotate(0deg) brightness(1)} 100%{filter:hue-rotate(50deg) brightness(1.4)} }
-            /* Card + Wealth Snapshot row */
-            .dash-card-snapshot {
-              display:flex; flex-direction:column; gap:18px;
+            /* ══ Ultra-Premium Card ═══════════════════════════════════════ */
+            #dashLuxCard {
+              transform-style:preserve-3d;
+              transition:transform .18s cubic-bezier(.25,.46,.45,.94),box-shadow .18s ease;
             }
-            .dash-card-col, .dash-wealth-col {
-              background:var(--card-bg,rgba(10,20,40,.7)); border:1px solid rgba(255,255,255,.07);
-              border-radius:18px; padding:24px;
+            .luxc-inner {
+              position:absolute;inset:0;border-radius:22px;overflow:hidden;
+              display:flex;flex-direction:column;justify-content:space-between;
+              padding:clamp(15px,5%,24px) clamp(17px,5.5%,26px);
+              background:linear-gradient(158deg,#05101f 0%,#091728 22%,#0b1e3c 52%,#071830 78%,#04101e 100%);
+              box-shadow:
+                inset 0 1.5px 0 rgba(201,168,76,.22),
+                inset 0 -1px 0 rgba(0,0,0,.7),
+                0 0 0 1px rgba(201,168,76,.26),
+                0 40px 100px rgba(0,0,0,.92),
+                0 18px 44px rgba(0,0,0,.58),
+                0 0 90px rgba(201,168,76,.04);
+            }
+            .luxc-inner::before {
+              content:'';position:absolute;inset:0;border-radius:22px;padding:1px;
+              background:linear-gradient(148deg,
+                rgba(201,168,76,.58) 0%,
+                rgba(255,224,100,.16) 38%,
+                rgba(201,168,76,.03) 60%,
+                rgba(201,168,76,.42) 100%);
+              -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+              -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;
+            }
+            /* Sweeping gold shimmer */
+            .luxc-sweep {
+              position:absolute;inset:0;border-radius:22px;
+              background:linear-gradient(110deg,
+                transparent 25%,
+                rgba(201,168,76,.045) 44%,
+                rgba(255,242,180,.038) 54%,
+                transparent 73%);
+              background-size:300% 100%;
+              animation:luxc-sw 8s ease-in-out infinite;
+              pointer-events:none;
+            }
+            @keyframes luxc-sw {
+              0%,100%{background-position:300% 0}
+              48%{background-position:-100% 0}
+            }
+            /* Atmospheric glows */
+            .luxc-glow-tl {
+              position:absolute;top:-30%;left:-15%;width:65%;height:70%;border-radius:50%;
+              background:radial-gradient(ellipse,rgba(80,150,255,.07) 0%,transparent 68%);
+              pointer-events:none;
+            }
+            .luxc-glow-br {
+              position:absolute;bottom:-25%;right:-10%;width:58%;height:58%;border-radius:50%;
+              background:radial-gradient(ellipse,rgba(201,168,76,.07) 0%,transparent 68%);
+              pointer-events:none;
+            }
+            /* Hairline accent stripe */
+            .luxc-stripe {
+              position:absolute;left:0;right:0;top:40%;height:.5px;
+              background:linear-gradient(90deg,
+                transparent 0%,rgba(201,168,76,.07) 15%,
+                rgba(201,168,76,.16) 50%,
+                rgba(201,168,76,.07) 85%,transparent 100%);
+              pointer-events:none;
+            }
+            /* ── Layout ── */
+            .luxc-row-top {
+              display:flex;justify-content:space-between;align-items:flex-start;
+              position:relative;z-index:1;gap:12px;
+            }
+            .luxc-chip { flex-shrink:0;filter:drop-shadow(0 3px 7px rgba(0,0,0,.65)); }
+            /* Brand: right-aligned, never overlaps chip */
+            .luxc-brand { text-align:right;flex-shrink:0;min-width:0; }
+            .luxc-brand-name {
+              font-size:.68rem;font-weight:800;letter-spacing:.2em;line-height:1;
+              background:linear-gradient(135deg,#b08820 0%,#e6c84a 30%,#f8e06a 52%,#c8a030 76%,#8a6010 100%);
+              -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+              background-clip:text;white-space:nowrap;
+            }
+            .luxc-brand-tier {
+              font-size:.46rem;letter-spacing:.26em;color:rgba(201,168,76,.46);
+              text-transform:uppercase;margin-top:6px;white-space:nowrap;line-height:1;
+            }
+            /* ── Number ── */
+            .luxc-num-section {
+              position:relative;z-index:1;display:flex;flex-direction:column;gap:6px;
+            }
+            .luxc-num-dots { display:flex;gap:clamp(10px,3%,16px);align-items:center; }
+            .luxc-num-dots span {
+              font-size:.68rem;color:rgba(255,255,255,.26);letter-spacing:.2em;
+              font-family:'Courier New',monospace;
+            }
+            .luxc-num-last {
+              font-size:1.02rem;color:rgba(255,255,255,.86);letter-spacing:.3em;
+              font-family:'Courier New','SF Mono',monospace;
+              font-weight:700;text-shadow:0 1px 8px rgba(0,0,0,.55);
+            }
+            /* ── Bottom row ── */
+            .luxc-row-bottom {
+              display:flex;justify-content:space-between;align-items:flex-end;
+              position:relative;z-index:1;gap:8px;
+            }
+            .luxc-label {
+              font-size:.4rem;color:rgba(255,255,255,.24);letter-spacing:.15em;
+              text-transform:uppercase;margin-bottom:4px;line-height:1;
+            }
+            .luxc-holder { min-width:0;flex:1 1 0; }
+            .luxc-holder-val {
+              font-size:.72rem;color:rgba(255,255,255,.87);letter-spacing:.1em;
+              text-transform:uppercase;font-weight:600;
+              white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+              max-width:min(130px,100%);line-height:1.2;
+            }
+            .luxc-expiry { flex-shrink:0; }
+            .luxc-expiry-val {
+              font-size:.72rem;color:rgba(255,255,255,.62);letter-spacing:.12em;
+              font-family:'Courier New',monospace;line-height:1.2;white-space:nowrap;
+            }
+            /* Gold brand mark (Mastercard-style) */
+            .luxc-mark { display:flex;align-items:center;flex-shrink:0; }
+            .luxc-circ-l {
+              width:28px;height:28px;border-radius:50%;
+              background:rgba(201,168,76,.52);
+              margin-right:-11px;
+              box-shadow:0 0 14px rgba(201,168,76,.22),0 2px 4px rgba(0,0,0,.4);
+            }
+            .luxc-circ-r {
+              width:28px;height:28px;border-radius:50%;
+              background:linear-gradient(140deg,#c9a84c 0%,#f0d060 48%,#b89030 100%);
+              box-shadow:0 0 20px rgba(201,168,76,.40),0 2px 8px rgba(0,0,0,.35);
+            }
+            /* ══ Card + Wealth layout ══════════════════════════════════════ */
+            .dash-card-snapshot { display:flex;flex-direction:column;gap:18px; }
+            .dash-card-col,.dash-wealth-col {
+              background:var(--card-bg,rgba(10,20,40,.7));
+              border:1px solid rgba(255,255,255,.07);
+              border-radius:18px;padding:24px;
             }
             .dash-card-col {
-              display:flex; flex-direction:column; align-items:center; justify-content:center;
+              display:flex;flex-direction:column;align-items:center;justify-content:center;
             }
             .dash-card-col #dashNoCard { width:100%; }
-            .dash-card-col #dashLuxCard { width:100%; max-width:320px; }
+            .dash-card-col #dashLuxCard { width:100%;max-width:380px; }
             @media(min-width:900px) {
-              .dash-card-snapshot { flex-direction:row; align-items:stretch; }
-              .dash-card-col  { flex:0 0 auto; width:320px; }
+              .dash-card-snapshot { flex-direction:row;align-items:stretch; }
+              .dash-card-col { flex:0 0 auto;width:340px; }
               .dash-wealth-col { flex:1 1 0; }
             }
             @media(max-width:899px) {
               .dash-card-col #dashLuxCard { max-width:100%; }
             }
           </style>
-        <div class="dash-card-snapshot">
+        <div class="dash-card-snapshot" style="margin-top:24px;">
           <!-- Card column -->
           <div class="dash-card-col">
             <!-- No-card CTA -->
@@ -586,29 +711,85 @@
             </div>
 
             <!-- Ultra-luxury card -->
-            <div id="dashLuxCard" style="display:none;position:relative;border-radius:20px;overflow:hidden;cursor:pointer;" onclick="window.location.href='cards.html'"
-                 onmousemove="(function(e){var r=this.getBoundingClientRect();var x=(e.clientX-r.left)/r.width-.5;var y=(e.clientY-r.top)/r.height-.5;this.style.transform='perspective(600px) rotateY('+x*16+'deg) rotateX('+(-y*10)+'deg) scale(1.02)';}).call(this,event)"
-                 onmouseleave="this.style.transform='perspective(600px) rotateY(0) rotateX(0) scale(1)'">
-              <div style="background:linear-gradient(135deg,#050c18 0%,#0d1a2e 40%,#111f35 70%,#0a1526 100%);padding:26px 22px 22px;border:1px solid rgba(201,168,76,.35);border-radius:20px;box-shadow:0 24px 64px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.04) inset,0 1px 0 rgba(201,168,76,.25) inset;">
-                <div class="lux-shimmer"></div>
-                <div class="lux-holo"></div>
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;">
-                  <svg width="40" height="30" viewBox="0 0 36 28"><rect width="36" height="28" rx="5" fill="url(#chip_d)"/><defs><linearGradient id="chip_d" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e8c96b"/><stop offset="100%" stop-color="#9a7220"/></linearGradient></defs><rect x="2" y="8" width="32" height="12" rx="2" fill="rgba(255,255,255,.1)"/><line x1="18" y1="8" x2="18" y2="20" stroke="rgba(255,255,255,.1)" stroke-width="1"/></svg>
-                  <div id="dashCardTierLabel" style="font-size:.55rem;letter-spacing:.22em;color:rgba(201,168,76,.55);text-transform:uppercase;text-align:right;line-height:1.6;">ZENITHONE<br/>STANDARD</div>
-                </div>
-                <div style="display:flex;gap:6px;margin-bottom:6px;">
-                  <span style="font-size:.75rem;color:rgba(255,255,255,.35);letter-spacing:.18em;">• • • •</span>
-                  <span style="font-size:.75rem;color:rgba(255,255,255,.35);letter-spacing:.18em;">• • • •</span>
-                </div>
-                <div id="dashCardNumber" style="font-size:.9rem;letter-spacing:.22em;color:rgba(255,255,255,.6);margin-bottom:18px;font-family:'Courier New',monospace;text-shadow:0 1px 3px rgba(0,0,0,.6);">•••• 0000</div>
-                <div style="display:flex;justify-content:space-between;align-items:flex-end;">
-                  <div>
-                    <div style="font-size:.5rem;color:rgba(255,255,255,.28);letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px;">Cardholder</div>
-                    <div id="cardholderName" style="font-size:.8rem;color:rgba(255,255,255,.75);letter-spacing:.1em;text-transform:uppercase;font-weight:600;">CARD HOLDER</div>
+            <div id="dashLuxCard"
+                 style="display:none;width:100%;max-width:380px;aspect-ratio:1.586;position:relative;border-radius:22px;cursor:pointer;"
+                 onclick="window.location.href='cards.html'"
+                 onmousemove="(function(e){var r=this.getBoundingClientRect();var x=(e.clientX-r.left)/r.width-.5;var y=(e.clientY-r.top)/r.height-.5;this.style.transform='perspective(900px) rotateY('+(x*14)+'deg) rotateX('+(-y*9)+'deg) scale(1.02)';}).call(this,event)"
+                 onmouseleave="this.style.transform='perspective(900px) rotateY(0) rotateX(0) scale(1)'">
+              <div class="luxc-inner">
+                <!-- Decorative layers -->
+                <div class="luxc-sweep"    aria-hidden="true"></div>
+                <div class="luxc-glow-tl"  aria-hidden="true"></div>
+                <div class="luxc-glow-br"  aria-hidden="true"></div>
+                <div class="luxc-stripe"   aria-hidden="true"></div>
+
+                <!-- Row 1 — Chip (left) · Brand (right) — completely separated, no collision -->
+                <div class="luxc-row-top">
+                  <div class="luxc-chip">
+                    <svg width="46" height="35" viewBox="0 0 46 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <defs>
+                        <linearGradient id="luxcg1" x1="0" y1="0" x2="1" y2="1">
+                          <stop offset="0%"   stop-color="#dfc040"/>
+                          <stop offset="28%"  stop-color="#f6e272"/>
+                          <stop offset="60%"  stop-color="#c49022"/>
+                          <stop offset="100%" stop-color="#8a6012"/>
+                        </linearGradient>
+                        <linearGradient id="luxcg2" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%"   stop-color="rgba(255,255,255,.24)"/>
+                          <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+                        </linearGradient>
+                      </defs>
+                      <!-- Chip body -->
+                      <rect x=".5" y=".5" width="45" height="34" rx="5" fill="url(#luxcg1)" stroke="rgba(0,0,0,.28)" stroke-width=".5"/>
+                      <!-- Top sheen overlay -->
+                      <rect x=".5" y=".5" width="45" height="17" rx="5" fill="url(#luxcg2)" opacity=".9"/>
+                      <!-- Contact grid lines -->
+                      <line x1=".5" y1="11.5" x2="45.5" y2="11.5" stroke="rgba(0,0,0,.2)"  stroke-width=".75"/>
+                      <line x1=".5" y1="23"   x2="45.5" y2="23"   stroke="rgba(0,0,0,.2)"  stroke-width=".75"/>
+                      <line x1="23" y1=".5"   x2="23"   y2="34.5" stroke="rgba(0,0,0,.16)" stroke-width=".75"/>
+                      <!-- Contact pad highlights (6 pads) -->
+                      <rect x="2.5" y="2.5"  width="18" height="7.5" rx="1.2" fill="rgba(255,255,255,.11)"/>
+                      <rect x="2.5" y="13.5" width="18" height="7.5" rx="1.2" fill="rgba(255,255,255,.11)"/>
+                      <rect x="2.5" y="25"   width="18" height="7.5" rx="1.2" fill="rgba(255,255,255,.11)"/>
+                      <rect x="25.5" y="2.5"  width="18" height="7.5" rx="1.2" fill="rgba(255,255,255,.11)"/>
+                      <rect x="25.5" y="13.5" width="18" height="7.5" rx="1.2" fill="rgba(255,255,255,.11)"/>
+                      <rect x="25.5" y="25"   width="18" height="7.5" rx="1.2" fill="rgba(255,255,255,.11)"/>
+                      <!-- IC die (center) -->
+                      <rect x="16.5" y="12.5" width="13" height="10" rx="1.5" fill="rgba(4,8,28,.6)"   stroke="rgba(255,255,255,.08)" stroke-width=".5"/>
+                      <rect x="18"   y="14"   width="10" height="7"  rx="1"   fill="rgba(35,72,180,.32)" stroke="rgba(110,155,255,.2)"  stroke-width=".4"/>
+                      <!-- Micro circuit lines on IC -->
+                      <line x1="20" y1="15.5" x2="26" y2="15.5" stroke="rgba(110,175,255,.28)" stroke-width=".4"/>
+                      <line x1="20" y1="17.2" x2="26" y2="17.2" stroke="rgba(110,175,255,.28)" stroke-width=".4"/>
+                      <line x1="20" y1="18.8" x2="26" y2="18.8" stroke="rgba(110,175,255,.28)" stroke-width=".4"/>
+                    </svg>
                   </div>
-                  <div style="display:flex;">
-                    <div style="width:28px;height:28px;border-radius:50%;background:rgba(201,168,76,.45);margin-right:-10px;box-shadow:0 0 10px rgba(201,168,76,.3);"></div>
-                    <div style="width:28px;height:28px;border-radius:50%;background:rgba(201,168,76,.7);box-shadow:0 0 14px rgba(201,168,76,.4);"></div>
+                  <div class="luxc-brand">
+                    <div class="luxc-brand-name">ZENITHONE</div>
+                    <div class="luxc-brand-tier" id="dashCardTier">STANDARD</div>
+                  </div>
+                </div>
+
+                <!-- Row 2 — Card number -->
+                <div class="luxc-num-section">
+                  <div class="luxc-num-dots">
+                    <span>••••</span><span>••••</span><span>••••</span>
+                  </div>
+                  <div class="luxc-num-last" id="dashCardNumber">0000</div>
+                </div>
+
+                <!-- Row 3 — Holder · Valid Thru · Brand mark -->
+                <div class="luxc-row-bottom">
+                  <div class="luxc-holder">
+                    <div class="luxc-label">Card Holder</div>
+                    <div class="luxc-holder-val" id="cardholderName">CARD HOLDER</div>
+                  </div>
+                  <div class="luxc-expiry">
+                    <div class="luxc-label">Valid Thru</div>
+                    <div class="luxc-expiry-val" id="dashCardExpiry">--/--</div>
+                  </div>
+                  <div class="luxc-mark">
+                    <div class="luxc-circ-l"></div>
+                    <div class="luxc-circ-r"></div>
                   </div>
                 </div>
               </div>
@@ -646,7 +827,6 @@
             </div>
           </div>
         </div>
-      </div>
 
       <!-- Credit Score & Loans -->
       <div class="card card-elevated" id="creditLoansSection" style="margin-top:24px;">
@@ -1432,6 +1612,32 @@
   </div>
 </div>
 
+<!-- Admin: Adjust / Deduct Points Modal -->
+<div id="aAdjustPointsModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)aCloseAdjustPoints()">
+  <div class="card card-elevated" style="width:420px;max-width:96vw;padding:28px;position:relative;" onclick="event.stopPropagation()">
+    <button onclick="aCloseAdjustPoints()" style="position:absolute;top:14px;right:14px;background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;">✕</button>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <div style="width:32px;height:32px;border-radius:8px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+        <svg width="14" height="14" fill="none" stroke="#f87171" stroke-width="2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+      <div style="font-family:var(--font-display);font-size:1.1rem;">Adjust Reward Points</div>
+    </div>
+    <div style="font-size:.8rem;color:var(--slate-400);margin-bottom:20px;" id="aAdjPtsName">Member</div>
+    <div style="margin-bottom:12px;">
+      <div style="font-size:.75rem;color:var(--slate-400);margin-bottom:6px;">Points to Deduct</div>
+      <input type="number" min="1" step="1" id="aAdjPtsInput" placeholder="e.g. 200"
+        style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 14px;color:#fff;font-size:.9rem;outline:none;" />
+      <div style="font-size:.72rem;color:var(--slate-500);margin-top:5px;">Points cannot go below 0 — any excess will stop at zero.</div>
+    </div>
+    <div id="aAdjPtsErr" style="display:none;font-size:.76rem;color:var(--red-400);margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-sm" style="flex:1;background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.4);color:#f87171;" id="aAdjPtsBtn" onclick="aSubmitAdjustPoints(false)">Deduct Points</button>
+      <button class="btn btn-sm" style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.25);color:rgba(248,113,113,.7);padding:0 14px;" onclick="zenithConfirm('Clear ALL reward points for this member? This cannot be undone.',{title:'Clear Points',confirmLabel:'Clear All',type:'error'}).then(ok=>{if(ok)aSubmitAdjustPoints(true)})">Clear All</button>
+      <button class="btn btn-ghost btn-sm" onclick="aCloseAdjustPoints()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- Admin Card Management Modal -->
 <div id="aCardsModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)aCloseAdminCards()">
   <div class="card card-elevated" style="width:540px;max-width:96vw;max-height:88vh;display:flex;flex-direction:column;position:relative;overflow:hidden;" onclick="event.stopPropagation()">
@@ -1583,8 +1789,21 @@
       <div class="zfield-label">Memo (optional)</div>
       <input id="sendMemo" class="zinput" maxlength="80" placeholder="What's it for?">
 
-      <div class="zfield-label">Transaction PIN</div>
-      <input id="sendPin" class="zinput mono" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="••••" style="text-align:center;letter-spacing:.5em;font-size:1.3rem;">
+      <!-- Auth: biometric (primary) or PIN (fallback) -->
+      <div id="sendBioRow" style="display:none;">
+        <div class="zfield-label" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+          Transaction Authorization
+          <button type="button" style="background:none;border:none;font-size:.72rem;color:rgba(201,168,76,.75);cursor:pointer;padding:0;letter-spacing:.02em;" onclick="switchSendToPIN()">Use PIN instead →</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:11px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.18);">
+          <svg width="16" height="16" fill="none" stroke="#c9a84c" stroke-width="1.7" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10h.01M15 10h.01"/><path d="M9.5 15a3.5 3.5 0 0 0 5 0"/></svg>
+          <span style="font-size:.82rem;color:rgba(255,255,255,.55);" id="sendBioHint">Tap Send to authorize with Face ID</span>
+        </div>
+      </div>
+      <div id="sendPinRow">
+        <div class="zfield-label">Transaction PIN</div>
+        <input id="sendPin" class="zinput mono" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="••••" style="text-align:center;letter-spacing:.5em;font-size:1.3rem;">
+      </div>
 
       <div class="zerr" id="sendErr"></div>
       <button class="zbtn-primary" id="sendSubmitBtn" onclick="submitSend()" disabled>Verify recipient to continue</button>
@@ -2378,8 +2597,9 @@ function aRenderRewards() {
             </td>
             <td style="padding:10px 12px;text-align:right;color:var(--gold-400);font-weight:600;">${(m.total_reward_points||0).toLocaleString()}</td>
             <td style="padding:10px 12px;text-align:right;color:var(--slate-300);">$${((m.total_reward_points||0)*0.01).toFixed(2)}</td>
-            <td style="padding:10px 12px;text-align:right;">
-              <button class="btn btn-ghost btn-sm" style="font-size:.72rem;" onclick="aOpenGivePoints('${m.id}','${(m.full_name||'').replace(/'/g,"\\'")}',${m.total_reward_points||0})">+ Give Points</button>
+            <td style="padding:10px 12px;text-align:right;white-space:nowrap;">
+              <button class="btn btn-ghost btn-sm" style="font-size:.72rem;margin-right:4px;" onclick="aOpenGivePoints('${m.id}','${(m.full_name||'').replace(/'/g,"\\'")}',${m.total_reward_points||0})">+ Give Points</button>
+              <button class="btn btn-ghost btn-sm" style="font-size:.72rem;color:#f87171;border-color:rgba(248,113,113,.3);" onclick="aOpenAdjustPoints('${m.id}','${(m.full_name||'').replace(/'/g,"\\'")}',${m.total_reward_points||0})">− Adjust</button>
             </td>
           </tr>`).join('')}
         </tbody>
@@ -2411,6 +2631,51 @@ async function aSubmitGivePoints() {
     const res = await callEdgeFunction('admin-data', { action: 'admin_give_points', target_user_id: _aGivePointsUserId, points: pts, reason });
     aCloseGivePoints();
     zenithToast(res.message || `${pts} points given.`, 'success');
+    await aLoadRewards();
+  } catch(e) {
+    let msg = 'Failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    errEl.textContent = msg; errEl.style.display = '';
+    btn.disabled = false; btn.textContent = orig;
+  }
+}
+
+// ── Reward Points Adjustment ──────────────────────────────────────────────────
+let _aAdjustPointsUserId = null;
+let _aAdjustPointsCurrent = 0;
+
+function aOpenAdjustPoints(userId, name, currentPts) {
+  _aAdjustPointsUserId = userId;
+  _aAdjustPointsCurrent = currentPts;
+  document.getElementById('aAdjPtsName').textContent = `${name} · Current: ${currentPts.toLocaleString()} pts`;
+  document.getElementById('aAdjPtsInput').value = '';
+  document.getElementById('aAdjPtsErr').style.display = 'none';
+  document.getElementById('aAdjPtsBtn').disabled = false;
+  document.getElementById('aAdjPtsBtn').textContent = 'Deduct Points';
+  document.getElementById('aAdjustPointsModal').style.display = 'flex';
+}
+function aCloseAdjustPoints() { document.getElementById('aAdjustPointsModal').style.display = 'none'; _aAdjustPointsUserId = null; }
+
+async function aSubmitAdjustPoints(clearAll) {
+  const errEl = document.getElementById('aAdjPtsErr');
+  const btn = document.getElementById('aAdjPtsBtn');
+  errEl.style.display = 'none';
+  let newTotal;
+  if (clearAll) {
+    newTotal = 0;
+  } else {
+    const deduct = parseInt(document.getElementById('aAdjPtsInput').value);
+    if (!_aAdjustPointsUserId || isNaN(deduct) || deduct < 1) {
+      errEl.textContent = 'Enter a valid amount to deduct (≥ 1).';
+      errEl.style.display = '';
+      return;
+    }
+    newTotal = Math.max(0, _aAdjustPointsCurrent - deduct);
+  }
+  const orig = btn.textContent; btn.disabled = true; btn.textContent = 'Updating…';
+  try {
+    const res = await callEdgeFunction('admin-data', { action: 'admin_set_points', target_user_id: _aAdjustPointsUserId, points: newTotal });
+    aCloseAdjustPoints();
+    zenithToast(res.message || `Points set to ${newTotal.toLocaleString()}.`, 'success');
     await aLoadRewards();
   } catch(e) {
     let msg = 'Failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
@@ -3223,11 +3488,14 @@ async function loadDashboardData() {
       document.getElementById('dashLuxCard').style.display = hasCard ? '' : 'none';
       if (hasCard && summary.primary_card) {
         const pc = summary.primary_card;
-        document.getElementById('dashCardNumber').textContent  = `•••• ${pc.last_four}`;
+        document.getElementById('dashCardNumber').textContent = pc.last_four || '0000';
         const tierLabel = (pc.tier || 'standard').toUpperCase().replace(/_/g, ' ');
-        document.getElementById('dashCardTierLabel').innerHTML = `ZENITHONE<br/>${tierLabel}`;
+        const tierEl = document.getElementById('dashCardTier');
+        if (tierEl) tierEl.textContent = tierLabel;
         const holder = document.getElementById('cardholderName');
         if (holder && pc.cardholder_name) holder.textContent = pc.cardholder_name.toUpperCase();
+        const expEl = document.getElementById('dashCardExpiry');
+        if (expEl && pc.expiry_month) expEl.textContent = String(pc.expiry_month).padStart(2,'0') + '/' + String(pc.expiry_year || '').slice(-2);
       }
 
       // Credit score + loan applications (bundled with summary — no extra API call)
@@ -3492,10 +3760,26 @@ function openSendModal() {
   document.getElementById('sendRecipBox').innerHTML = '';
   document.getElementById('sendErr').textContent = '';
   _sendVerified = false;
+
+  // Show biometric auth option if enrolled + txEnabled; otherwise show PIN
+  const _bioOn = window.ZenithFaceID && window.ZenithFaceID.isEnrolled() && window.ZenithFaceID.txEnabled();
+  document.getElementById('sendBioRow').style.display = _bioOn ? '' : 'none';
+  document.getElementById('sendPinRow').style.display = _bioOn ? 'none' : '';
+  if (_bioOn) {
+    const _bl = (window.ZenithFaceID.getBiometricLabel ? window.ZenithFaceID.getBiometricLabel() : 'Face ID');
+    document.getElementById('sendBioHint').textContent = 'Tap Send to authorize with ' + _bl;
+  }
+
   updateSendBtn();
   document.getElementById('sendModal').classList.add('open');
 }
 function closeSendModal() { document.getElementById('sendModal').classList.remove('open'); }
+
+function switchSendToPIN() {
+  document.getElementById('sendBioRow').style.display = 'none';
+  document.getElementById('sendPinRow').style.display = '';
+  document.getElementById('sendPin').focus();
+}
 
 function onSendNumberInput() {
   const el = document.getElementById('sendToNumber');
@@ -3552,21 +3836,33 @@ async function submitSend() {
   const memo   = document.getElementById('sendMemo').value.trim();
   const pin    = document.getElementById('sendPin').value.trim();
 
-  if (!from_account_id)             { errEl.textContent = 'Select a source account.'; return; }
-  if (!amount || amount <= 0)       { errEl.textContent = 'Enter a valid amount.'; return; }
-  if (!/^\d{4}$/.test(pin))         { errEl.textContent = 'Enter your 4-digit transaction PIN.'; return; }
+  if (!from_account_id)       { errEl.textContent = 'Select a source account.'; return; }
+  if (!amount || amount <= 0) { errEl.textContent = 'Enter a valid amount.'; return; }
 
-  // Face ID gate for transactions (if enabled on this device)
-  if (window.ZenithFaceID && window.ZenithFaceID.txEnabled() && window.ZenithFaceID.isEnrolled()) {
-    try { await window.ZenithFaceID.verify('Confirm this transfer of $' + amount.toLocaleString('en-US',{minimumFractionDigits:2})); }
-    catch (e) { errEl.textContent = e.message || 'Face ID verification is required to send.'; return; }
+  // Determine auth path: biometric (primary) or PIN (fallback)
+  const _useBio = window.ZenithFaceID && window.ZenithFaceID.isEnrolled() && window.ZenithFaceID.txEnabled()
+    && document.getElementById('sendBioRow').style.display !== 'none';
+
+  if (_useBio) {
+    // Biometric path — verify replaces PIN entry
+    const _bioLabel = (window.ZenithFaceID.getBiometricLabel ? window.ZenithFaceID.getBiometricLabel() : 'Face ID');
+    try {
+      await window.ZenithFaceID.verify('Confirm transfer of ' + fmtUSD(amount));
+    } catch (e) {
+      errEl.textContent = e.message || (_bioLabel + ' authorization failed. Try again or use PIN.');
+      return;
+    }
+  } else {
+    // PIN path
+    if (!/^\d{4}$/.test(pin)) { errEl.textContent = 'Enter your 4-digit transaction PIN.'; return; }
   }
 
   const btn = document.getElementById('sendSubmitBtn');
   btn.disabled = true; btn.textContent = 'Sending…';
   try {
     const res = await callEdgeFunction('transfer-funds', {
-      action: 'send', from_account_id, to_account_number, amount, memo, pin,
+      action: 'send', from_account_id, to_account_number, amount, memo,
+      ...(_useBio ? {} : { pin }),
     });
     closeSendModal();
     zenithToast(`$${amount.toLocaleString('en-US',{minimumFractionDigits:2})} sent to ${res.recipient_name}. Ref: ${res.reference}`, 'success', 6000);

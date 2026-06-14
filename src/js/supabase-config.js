@@ -40,7 +40,17 @@ function _loadClient(url, anonKey) {
         autoRefreshToken:   true,
         persistSession:     true,
         detectSessionInUrl: true, // handles magic-link & password-recovery callbacks
-        storage:            window.sessionStorage, // cleared when history is cleared → forces re-login
+        // Routes to localStorage when "remember me for 30 days" is active, sessionStorage otherwise.
+        // Clearing browser history clears sessionStorage → forces re-login when not remembered.
+        storage: (function () {
+          const R = 'zo_remember', U = 'zo_remember_until';
+          function _ls() { return localStorage.getItem(R) === '1' && Date.now() < +localStorage.getItem(U); }
+          return {
+            getItem:    function (k) { return _ls() ? localStorage.getItem(k)    : sessionStorage.getItem(k); },
+            setItem:    function (k, v) { _ls() ? localStorage.setItem(k, v)    : sessionStorage.setItem(k, v); },
+            removeItem: function (k) { localStorage.removeItem(k); sessionStorage.removeItem(k); },
+          };
+        })(),
       },
     });
     document.dispatchEvent(new Event('supabaseReady'));

@@ -119,9 +119,22 @@ if (loginForm) {
       return;
     }
 
+    // Set remember-me flag BEFORE signIn so the custom storage routes correctly
+    const rememberMe = document.getElementById('rememberMe')?.checked;
+    if (rememberMe) {
+      localStorage.setItem('zo_remember', '1');
+      localStorage.setItem('zo_remember_until', String(Date.now() + 30 * 24 * 60 * 60 * 1000));
+    } else {
+      localStorage.removeItem('zo_remember');
+      localStorage.removeItem('zo_remember_until');
+    }
+
     const { error } = await window._supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
+      // Clear remember flag if login failed — don't persist a flag with no session
+      localStorage.removeItem('zo_remember');
+      localStorage.removeItem('zo_remember_until');
       const friendly = error.message.toLowerCase().includes('invalid')
         ? 'Incorrect email or password. Please try again.'
         : error.message;
@@ -224,6 +237,9 @@ async function updatePassword(newPassword) {
 
 // ── Logout ────────────────────────────────────────────────────
 async function logout() {
+  // Clear the remember-me flag so a fresh login chooses its own persistence
+  localStorage.removeItem('zo_remember');
+  localStorage.removeItem('zo_remember_until');
   if (window._supabase) {
     // If Face ID is enrolled on this device, sign out locally so the refresh
     // token stays valid for biometric re-entry. Otherwise revoke globally.

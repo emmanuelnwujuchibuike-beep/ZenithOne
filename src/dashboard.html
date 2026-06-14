@@ -543,17 +543,23 @@
           </div>
         </div>
 
-        <!-- Card + Market Snapshot -->
-        <div style="display:flex;flex-direction:column;gap:20px;">
-
-          <!-- ULTRA-PREMIUM CARD or Request CTA -->
+        <!-- Card + Wealth Snapshot -->
           <style>
             #dashLuxCard { transform-style:preserve-3d; transition:transform .12s ease-out; }
             .lux-shimmer { position:absolute;inset:0;background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.07) 50%,transparent 70%);background-size:200% 100%;animation:lux-sh 4s infinite linear;pointer-events:none;border-radius:20px; }
             @keyframes lux-sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
             .lux-holo { position:absolute;top:14px;right:18px;width:30px;height:22px;border-radius:4px;background:linear-gradient(135deg,rgba(201,168,76,.7),rgba(120,200,255,.5),rgba(201,168,76,.7));animation:lux-h 3s infinite alternate; }
             @keyframes lux-h { 0%{filter:hue-rotate(0deg) brightness(1)} 100%{filter:hue-rotate(50deg) brightness(1.4)} }
+            .dash-card-snapshot { display:flex; flex-direction:column; gap:20px; }
+            .dash-card-col { display:flex; flex-direction:column; }
+            @media(min-width:1100px) {
+              .dash-card-snapshot { flex-direction:row; align-items:stretch; gap:24px; }
+              .dash-card-col { flex:1; justify-content:center; }
+              .dash-wealth-col { flex:1; display:flex; flex-direction:column; }
+            }
           </style>
+        <div class="dash-card-snapshot">
+          <div class="dash-card-col">
 
           <!-- No-card CTA -->
           <div id="dashNoCard" style="border-radius:18px;background:linear-gradient(135deg,rgba(201,168,76,.05),rgba(36,71,110,.08));border:1px solid rgba(201,168,76,.15);padding:26px 20px;text-align:center;cursor:pointer;" onclick="window.location.href='cards.html'">
@@ -589,9 +595,10 @@
               </div>
             </div>
           </div>
+          </div><!-- /dash-card-col -->
 
           <!-- Wealth Snapshot -->
-          <div class="card card-elevated" style="flex:1;">
+          <div class="card card-elevated dash-wealth-col">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
               <div style="font-family:var(--font-display);font-size:1.1rem;">Wealth Snapshot</div>
               <a href="investments.html" style="font-size:.72rem;color:var(--gold-500);">Portfolio</a>

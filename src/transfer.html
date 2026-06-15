@@ -1291,10 +1291,9 @@ function confirmExternalRecipient(acct){
   document.getElementById('sendSubmitBtn').querySelector('.xfr-btn-txt').textContent='Send Money';
 }
 
-// ── Zelle recipient search ────────────────────────────────────────────────────
-function searchZelle(mode){
-  var val='';
-  var stateId='';
+// ── Zelle recipient search (real lookup against ZenithOne members) ────────────
+async function searchZelle(mode){
+  var val='', stateId='';
   if(mode==='email'){
     val=document.getElementById('zelleEmail').value.trim();
     stateId='zelleEmailState';
@@ -1306,15 +1305,24 @@ function searchZelle(mode){
     if(digits.length<10){ showSearchState(stateId,'err','Please enter a valid 10-digit US number.'); return; }
   }
   showSearchState(stateId,'searching','Looking up Zelle account…');
-  setTimeout(function(){
-    _zelleVerified=true;
-    var names=['Alex Johnson','Maria Rodriguez','James Chen','Sarah Williams','Michael Brown','Emily Davis','Daniel Lee','Jessica Taylor'];
-    var name=names[Math.floor(Math.random()*names.length)];
-    _zelleRecipInfo={name:name, contact:val};
-    showSearchState(stateId,'found',name,'Zelle Network',mode==='email'?val:val);
-    document.getElementById('zelleSubmitBtn').disabled=false;
-    document.getElementById('zelleSubmitBtn').querySelector('.xfr-btn-txt').textContent='Send via Zelle';
-  }, 1800);
+  try {
+    var res=await callEdgeFunction('transfer-funds',{action:'zelle_lookup',contact:val,mode:mode});
+    if(res&&res.found){
+      _zelleVerified=true;
+      _zelleRecipInfo={name:res.recipient_name, contact:val};
+      showSearchState(stateId,'found',res.recipient_name,'Zelle · ZenithOne Member',val);
+      document.getElementById('zelleSubmitBtn').disabled=false;
+      document.getElementById('zelleSubmitBtn').querySelector('.xfr-btn-txt').textContent='Send via Zelle';
+    } else {
+      _zelleVerified=false; _zelleRecipInfo=null;
+      showSearchState(stateId,'err','No ZenithOne Zelle account found for that '+(mode==='email'?'email address':'phone number')+'.');
+      document.getElementById('zelleSubmitBtn').disabled=true;
+      document.getElementById('zelleSubmitBtn').querySelector('.xfr-btn-txt').textContent='Search Recipient to Continue';
+    }
+  } catch(e){
+    _zelleVerified=false;
+    showSearchState(stateId,'err',(e&&e.message)||'Could not look up recipient. Please try again.');
+  }
 }
 
 // ── Wire routing lookup ───────────────────────────────────────────────────────
@@ -1492,11 +1500,11 @@ async function executeTransfer(){
       return;
     }
   } else {
-    // Not enrolled — require password via reauth page, then return here
-    sessionStorage.setItem('zo_pending_xfr', JSON.stringify(_pending));
-    localStorage.setItem('zo_reauth_target', 'transfer.html');
-    window.location.href = 'reauth.html';
-    return;
+    // No biometric enrolled — show PIN modal
+    var pin;
+    try { pin = await _showPinModal(); } catch(e) { return; }
+    // Attach pin to payload so edge function can verify it server-side
+    _pending._pin = pin;
   }
   // ─────────────────────────────────────────────────────────────────────────────
 
@@ -1504,7 +1512,9 @@ async function executeTransfer(){
   btnLoad(btn);
   clearErr('confirmErr');
   try {
-    var res=await callEdgeFunction('transfer-funds',Object.assign({action:'request'},_pending.payload,{transfer_type:_pending.type}));
+    var xfrPayload=Object.assign({action:'request'},_pending.payload,{transfer_type:_pending.type});
+    if(_pending._pin) xfrPayload.pin=_pending._pin;
+    var res=await callEdgeFunction('transfer-funds',xfrPayload);
     document.getElementById('xfrConfirmOvl').style.display='none';
     var reqId=(res&&res.request_id)||('ZO-'+Date.now().toString(36).toUpperCase());
     showProcOverlay(_pending.payload.amount, reqId);
@@ -1570,6 +1580,7 @@ function _onApproved(note){
     document.getElementById('procActions').style.display='';
     document.getElementById('procRef').style.display='';
     document.getElementById('procIcon').innerHTML='<svg width="18" height="18" fill="none" stroke="#4ade80" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>';
+    setTimeout(function(){ closeProcOverlay(); }, 5000);
   }
   _procReqId=null;
 }
@@ -1587,6 +1598,7 @@ function _onDeclined(note){
     document.getElementById('procStatusTxt').textContent='Declined — no funds deducted';
     document.getElementById('procActions').style.display='';
     document.getElementById('procIcon').innerHTML='<svg width="18" height="18" fill="none" stroke="#f87171" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    setTimeout(function(){ closeProcOverlay(); }, 6000);
   }
   _procReqId=null;
 }
@@ -1873,11 +1885,62 @@ function _resumePendingFromStorage(){
   } catch(e){ sessionStorage.removeItem('zo_pending_xfr'); }
 }
 
+// ── PIN modal — for devices without biometric ─────────────────────────────────
+var _pinResolve=null, _pinReject=null;
+
+function _showPinModal(){
+  return new Promise(function(resolve,reject){
+    _pinResolve=resolve; _pinReject=reject;
+    var el=document.getElementById('xfrPinModal');
+    el.style.display='flex';
+    document.getElementById('xfrPinInput').value='';
+    document.getElementById('xfrPinError').textContent='';
+    setTimeout(function(){ document.getElementById('xfrPinInput').focus(); }, 80);
+  });
+}
+function _closePinModal(ok){
+  document.getElementById('xfrPinModal').style.display='none';
+  if(!ok && _pinReject){ _pinReject(new Error('PIN entry cancelled.')); _pinResolve=null; _pinReject=null; }
+}
+function _submitPin(){
+  var pin=document.getElementById('xfrPinInput').value.trim();
+  if(!/^\d{4,6}$/.test(pin)){
+    document.getElementById('xfrPinError').textContent='Enter your 4–6 digit transaction PIN.';
+    document.getElementById('xfrPinInput').focus();
+    return;
+  }
+  document.getElementById('xfrPinModal').style.display='none';
+  if(_pinResolve){ _pinResolve(pin); _pinResolve=null; _pinReject=null; }
+}
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&document.getElementById('xfrPinModal').style.display==='flex') _closePinModal(false);
+  if(e.key==='Enter' &&document.getElementById('xfrPinModal').style.display==='flex') _submitPin();
+});
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 window.addEventListener('load', function(){
   xfrBoot();
   loadNotifications();
 });
 </script>
+
+<!-- PIN modal for non-biometric devices -->
+<div id="xfrPinModal" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(2,7,18,.85);backdrop-filter:blur(12px);align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)_closePinModal(false)">
+  <div style="background:linear-gradient(160deg,#081522,#0d1f35);border:1px solid rgba(201,168,76,.22);border-radius:20px;width:100%;max-width:360px;padding:32px 28px;box-shadow:0 32px 80px rgba(0,0,0,.7);text-align:center;" onclick="event.stopPropagation()">
+    <div style="font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(201,168,76,.6);margin-bottom:14px;">ZenithOne Secure</div>
+    <div style="width:56px;height:56px;margin:0 auto 18px;border-radius:50%;background:rgba(201,168,76,.08);border:1.5px solid rgba(201,168,76,.25);display:flex;align-items:center;justify-content:center;">
+      <svg width="24" height="24" fill="none" stroke="rgba(201,168,76,.85)" stroke-width="1.6" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="12" cy="16" r="1" fill="rgba(201,168,76,.85)" stroke="none"/></svg>
+    </div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:#fff;font-weight:400;margin-bottom:6px;">Enter Transaction PIN</div>
+    <div style="font-size:.8rem;color:rgba(255,255,255,.38);margin-bottom:22px;line-height:1.55;">Required to authorise this transfer</div>
+    <input id="xfrPinInput" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="PIN" autocomplete="off"
+      style="width:100%;padding:14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;color:#fff;font-size:1.5rem;text-align:center;letter-spacing:.4em;outline:none;margin-bottom:8px;"
+      oninput="this.value=this.value.replace(/[^0-9]/g,'');document.getElementById('xfrPinError').textContent='';">
+    <div id="xfrPinError" style="font-size:.76rem;color:#f87171;min-height:18px;margin-bottom:14px;"></div>
+    <button onclick="_submitPin()" style="width:100%;padding:13px;background:linear-gradient(135deg,rgba(201,168,76,.2),rgba(201,168,76,.1));border:1px solid rgba(201,168,76,.4);border-radius:12px;color:#e8d07a;font-size:.92rem;font-weight:600;cursor:pointer;margin-bottom:10px;">Confirm Transfer</button>
+    <button onclick="_closePinModal(false)" style="width:100%;padding:11px;background:transparent;border:1px solid rgba(255,255,255,.08);border-radius:12px;color:rgba(255,255,255,.35);font-size:.84rem;cursor:pointer;">Cancel</button>
+    <div style="margin-top:16px;font-size:.72rem;color:rgba(255,255,255,.2);">Set or change your PIN in <a href="settings.html" style="color:rgba(201,168,76,.5);text-decoration:none;">Settings</a></div>
+  </div>
+</div>
 </body>
 </html>

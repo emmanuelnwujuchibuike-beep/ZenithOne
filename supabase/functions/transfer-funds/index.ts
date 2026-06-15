@@ -52,6 +52,40 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     // ─────────────────────────────────────────────────────────────────────────
     // LOOKUP — resolve a ZenithOne account number to a name
+    // ─────────────────────────────────────────────────────────────────────────
+    // ZELLE_LOOKUP — find a ZenithOne member by email or phone for Zelle send
+    // Returns { found: true, recipient_name } or { found: false }
+    // ─────────────────────────────────────────────────────────────────────────
+    if (action === 'zelle_lookup') {
+      const contact = ((body.contact as string) || '').trim().toLowerCase();
+      const mode    = (body.mode as string) === 'phone' ? 'phone' : 'email';
+      if (!contact) throw new Error('No contact provided.');
+
+      let query = supabase.from('profiles').select('id, full_name');
+      if (mode === 'email') {
+        // match against auth.users email via profiles join
+        const { data: authUsers } = await supabase.auth.admin.listUsers();
+        const matched = (authUsers?.users || []).find(
+          (u: { email?: string; id: string }) => (u.email || '').toLowerCase() === contact
+        );
+        if (!matched) return json({ found: false });
+        const { data: prof } = await supabase
+          .from('profiles').select('id, full_name').eq('id', matched.id).maybeSingle();
+        if (!prof || prof.id === user.id) return json({ found: false });
+        return json({ found: true, recipient_name: maskName(prof.full_name || 'ZenithOne Member') });
+      } else {
+        // phone: normalize digits only, search profiles.phone
+        const digits = contact.replace(/\D/g, '');
+        const { data: prof } = await supabase
+          .from('profiles').select('id, full_name, phone')
+          .filter('phone', 'ilike', '%' + digits.slice(-10) + '%')
+          .neq('id', user.id)
+          .maybeSingle();
+        if (!prof) return json({ found: false });
+        return json({ found: true, recipient_name: maskName(prof.full_name || 'ZenithOne Member') });
+      }
+    }
+
     // Returns { found: true, recipient_name, is_self, account_type }
     // or      { found: false }   ← never throws for "not found"
     // ─────────────────────────────────────────────────────────────────────────
@@ -86,12 +120,21 @@ Deno.serve(async (req: Request): Promise<Response> => {
       const {
         transfer_type, from_account_id, to_account_id, to_account_number,
         recipient_name, recipient_contact, routing_number, bank_name,
-        wire_type, amount, memo, is_external,
+        wire_type, amount, memo, is_external, pin,
       } = body as Record<string, unknown>;
 
       if (!amount || Number(amount) <= 0)    throw new Error('Invalid amount.');
       if (Number(amount) > SINGLE_LIMIT)     throw new Error(`Single transfer limit is $${SINGLE_LIMIT.toLocaleString()}.`);
       if (!from_account_id)                  throw new Error('Source account required.');
+
+      // If a PIN was supplied (non-biometric device path) — verify it server-side
+      if (pin) {
+        const { data: meProf } = await supabase
+          .from('profiles').select('transaction_pin').eq('id', user.id).single();
+        if (!meProf?.transaction_pin) throw new Error('No transaction PIN set. Go to Settings to create one before transferring.');
+        const supplied = await hashPin(user.id, String(pin));
+        if (supplied !== meProf.transaction_pin) throw new Error('Incorrect PIN. Transfer blocked.');
+      }
 
       // Verify source account belongs to caller
       const { data: fromAcc } = await supabase

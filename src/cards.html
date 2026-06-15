@@ -78,12 +78,64 @@
     .acc-pill-bal      { font-size:.67rem; color:rgba(255,255,255,.35); }
     .acc-pill.sel .acc-pill-bal  { color:rgba(201,168,76,.6); }
 
+    /* ── Category filter ──────────────────────────────────── */
+    .cat-filter        { display:flex; gap:6px; margin-bottom:32px; flex-wrap:wrap; }
+    .cat-filter-btn    { padding:9px 22px; border-radius:100px; font-size:.78rem; font-weight:500; letter-spacing:.05em; cursor:pointer; border:1px solid rgba(255,255,255,.1); background:transparent; color:rgba(255,255,255,.45); transition:all .2s; }
+    .cat-filter-btn:hover { border-color:rgba(255,255,255,.22); color:rgba(255,255,255,.8); background:rgba(255,255,255,.04); }
+    .cat-filter-btn.active { background:rgba(201,168,76,.12); border-color:rgba(201,168,76,.45); color:var(--gold-400); }
+
     /* ── Catalog grid ─────────────────────────────────────── */
-    .catalog-grid      { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:20px; }
-    .catalog-card      { border-radius:16px; border:1px solid rgba(255,255,255,.07); overflow:hidden; transition:transform .2s,box-shadow .2s; }
-    .catalog-card:hover { transform:translateY(-4px); box-shadow:0 20px 40px rgba(0,0,0,.5); }
-    .catalog-card.owned { border-color:rgba(74,222,128,.2); }
-    .catalog-card.pending { border-color:rgba(251,191,36,.18); }
+    .catalog-grid      { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+    @media(max-width:1200px){ .catalog-grid { grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:720px) { .catalog-grid { grid-template-columns:1fr; } }
+
+    /* ── Premium catalog card ─────────────────────────────── */
+    .catalog-card      { border-radius:20px; border:1px solid rgba(255,255,255,.07); overflow:hidden; transition:transform .25s cubic-bezier(.23,1,.32,1),box-shadow .25s,border-color .25s; position:relative; background:rgba(255,255,255,.025); display:flex; flex-direction:column; }
+    .catalog-card:hover { transform:translateY(-7px); box-shadow:0 40px 70px rgba(0,0,0,.55); border-color:rgba(255,255,255,.13); }
+    .catalog-card.owned { border-color:rgba(74,222,128,.22); }
+    .catalog-card.pending { border-color:rgba(251,191,36,.2); }
+    .catalog-card.featured { border-color:rgba(201,168,76,.25); }
+
+    /* Card visual in catalog (aspect ratio 1.586:1 = credit card) */
+    .cat-visual        { position:relative; width:100%; padding-bottom:62.5%; overflow:hidden; flex-shrink:0; }
+    .cat-visual-inner  { position:absolute; inset:0; }
+
+    /* Badge ribbon */
+    .cat-ribbon        { position:absolute; top:12px; left:12px; z-index:10; font-size:.58rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; padding:4px 11px; border-radius:100px; backdrop-filter:blur(8px); }
+    .cat-ribbon.popular  { background:rgba(201,168,76,.2); border:1px solid rgba(201,168,76,.45); color:var(--gold-400); }
+    .cat-ribbon.travel   { background:rgba(56,189,248,.15); border:1px solid rgba(56,189,248,.4); color:#38bdf8; }
+    .cat-ribbon.value    { background:rgba(74,222,128,.12); border:1px solid rgba(74,222,128,.35); color:#4ade80; }
+    .cat-ribbon.editor   { background:rgba(167,139,250,.12); border:1px solid rgba(167,139,250,.35); color:#a78bfa; }
+    .cat-ribbon.premium  { background:rgba(201,168,76,.2); border:1px solid rgba(201,168,76,.45); color:var(--gold-400); }
+    .cat-ribbon.builder  { background:rgba(167,139,250,.12); border:1px solid rgba(167,139,250,.35); color:#a78bfa; }
+
+    /* Owned/pending absolute badge (top-right) */
+    .cat-status-badge  { position:absolute; top:12px; right:12px; z-index:10; padding:4px 11px; border-radius:100px; font-size:.58rem; font-weight:700; letter-spacing:.1em; backdrop-filter:blur(8px); }
+
+    /* Card body */
+    .cat-body          { padding:20px 22px 22px; display:flex; flex-direction:column; flex:1; }
+    .cat-header        { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:14px; }
+    .cat-name          { font-family:var(--font-display); font-size:1.05rem; color:#fff; line-height:1.2; }
+    .cat-type-badge    { font-size:.58rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; padding:3px 10px; border-radius:100px; flex-shrink:0; margin-top:3px; }
+    .cat-type-badge.debit   { background:rgba(96,165,250,.1); border:1px solid rgba(96,165,250,.25); color:#60a5fa; }
+    .cat-type-badge.credit  { background:rgba(201,168,76,.1); border:1px solid rgba(201,168,76,.25); color:var(--gold-400); }
+
+    /* Highlight stat box */
+    .cat-highlight     { padding:13px 16px; border-radius:12px; margin-bottom:16px; }
+    .cat-hl-value      { font-size:1.45rem; font-weight:700; line-height:1.1; }
+    .cat-hl-sub        { font-size:.7rem; margin-top:4px; opacity:.72; }
+
+    /* Benefits list */
+    .cat-benefits      { list-style:none; padding:0; margin:0 0 16px; display:flex; flex-direction:column; gap:7px; flex:1; }
+    .cat-benefit       { display:flex; align-items:flex-start; gap:8px; font-size:.75rem; color:rgba(255,255,255,.62); line-height:1.45; }
+    .cat-benefit-dot   { width:5px; height:5px; border-radius:50%; flex-shrink:0; margin-top:5px; }
+
+    /* Pricing row */
+    .cat-pricing       { display:flex; gap:0; margin-bottom:16px; padding:11px 14px; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); border-radius:11px; }
+    .cat-price-col     { flex:1; }
+    .cat-price-col+.cat-price-col { border-left:1px solid rgba(255,255,255,.06); padding-left:14px; margin-left:0; }
+    .cat-price-label   { font-size:.58rem; color:rgba(255,255,255,.28); text-transform:uppercase; letter-spacing:.1em; margin-bottom:4px; }
+    .cat-price-val     { font-size:.9rem; font-weight:700; color:#fff; }
 
     /* ── Apply modal (bottom sheet → center on desktop) ──── */
     #applyModal { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.72); backdrop-filter:blur(8px); align-items:flex-end; justify-content:center; }
@@ -186,9 +238,13 @@
 
     <div class="app-content">
       <!-- Page header -->
-      <div style="margin-bottom:24px;">
-        <div style="font-family:var(--font-display);font-size:1.6rem;letter-spacing:.03em;color:#fff;">Payment Cards</div>
-        <div style="font-size:.82rem;color:var(--slate-400);margin-top:4px;">Manage your ZenithOne cards and rewards</div>
+      <div style="margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid rgba(255,255,255,.06);">
+        <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;">
+          <div style="font-family:var(--font-display);font-size:1.8rem;letter-spacing:.04em;color:#fff;line-height:1.1;">Card Portfolio</div>
+          <div style="width:1px;height:18px;background:rgba(201,168,76,.3);"></div>
+          <div style="font-size:.72rem;letter-spacing:.22em;color:rgba(201,168,76,.65);text-transform:uppercase;">ZenithOne Credit Union</div>
+        </div>
+        <div style="font-size:.82rem;color:var(--slate-500);margin-top:6px;">Manage your cards, rewards, and spending controls</div>
       </div>
 
       <!-- Reward points banner (shown when user has points) -->
@@ -209,9 +265,9 @@
       </div>
 
       <!-- Tab navigation -->
-      <div class="cards-tabs">
+      <div class="cards-tabs" style="margin-bottom:28px;">
         <button class="cards-tab-btn active" id="tabBtnMyCards" onclick="switchCardsTab('myCards')">My Cards</button>
-        <button class="cards-tab-btn" id="tabBtnCatalog" onclick="switchCardsTab('catalog')">Apply for a Card</button>
+        <button class="cards-tab-btn" id="tabBtnCatalog" onclick="switchCardsTab('catalog')">Explore Cards</button>
       </div>
 
       <!-- ═══ MY CARDS TAB ══════════════════════════════════════ -->
@@ -238,8 +294,17 @@
 
       <!-- ═══ CATALOG TAB ════════════════════════════════════ -->
       <div id="tabCatalog" style="display:none;">
-        <div style="margin-bottom:20px;">
-          <div style="font-size:.82rem;color:var(--slate-400);">Cards you own or have requested are highlighted. Annual fees charged immediately on approval.</div>
+        <!-- Section intro -->
+        <div style="margin-bottom:24px;">
+          <div style="font-family:var(--font-display);font-size:1.25rem;color:#fff;margin-bottom:6px;">Choose Your Card</div>
+          <div style="font-size:.8rem;color:var(--slate-400);line-height:1.6;">Eight cards designed for every lifestyle and goal. Annual fees are charged immediately upon approval.</div>
+        </div>
+        <!-- Category filter -->
+        <div class="cat-filter" id="catFilter">
+          <button class="cat-filter-btn active" onclick="filterCatalog('all',this)">All Cards</button>
+          <button class="cat-filter-btn" onclick="filterCatalog('debit',this)">Debit</button>
+          <button class="cat-filter-btn" onclick="filterCatalog('credit',this)">Credit</button>
+          <button class="cat-filter-btn" onclick="filterCatalog('business',this)">Business</button>
         </div>
         <div id="catalogGrid" class="catalog-grid"></div>
       </div>
@@ -387,105 +452,146 @@ const CARD_NETWORKS = [
 ];
 
 const CARD_CATALOG = [
-  { key:'virtual',       name:'ZenithOne Virtual',     type:'Debit',  fee:249,  gradient:'linear-gradient(135deg,#1a3a5c 0%,#0d2840 100%)',            accent:'#60a5fa', benefits:['Instant digital issuance','Online & in-app payments','No physical card needed','1× rewards on all purchases'] },
-  { key:'classic_debit', name:'ZenithOne Classic',     type:'Debit',  fee:299,  gradient:'linear-gradient(135deg,#1e293b 0%,#0f172a 100%)',            accent:'#94a3b8', benefits:['Physical debit card','ATM access worldwide','1× rewards on all purchases','Contactless & chip enabled'] },
-  { key:'gold',          name:'ZenithOne Gold',        type:'Credit', fee:399,  gradient:'linear-gradient(135deg,#b8860b 0%,#6b4f06 100%)',            accent:'#fbbf24', benefits:['2× points on all purchases','Travel accident insurance','No foreign transaction fees','Concierge service'] },
-  { key:'platinum',      name:'ZenithOne Platinum',    type:'Credit', fee:549,  gradient:'linear-gradient(135deg,#64748b 0%,#334155 100%)',            accent:'#cbd5e1', benefits:['3× points on travel & dining','$200 annual travel credit','Global lounge access','Cell phone protection'] },
-  { key:'titanium',      name:'ZenithOne Titanium',    type:'Credit', fee:749,  gradient:'linear-gradient(135deg,#9ca3af 0%,#6b7280 100%)',            accent:'#f3f4f6', benefits:['4× points everywhere','Real metal card','$300 travel credit','Priority Pass lounge access','Dedicated advisor'] },
-  { key:'black',         name:'ZenithOne Black',       type:'Credit', fee:999,  gradient:'linear-gradient(135deg,#111827 0%,#000000 100%)',            accent:'#c9a84c', benefits:['5× points on all spend','$500 annual credits','Global lounge access','24/7 elite concierge','No preset spending limit'] },
-  { key:'black_gold',    name:'Black Gold Elite',      type:'Credit', fee:1299, gradient:'linear-gradient(135deg,#1a0a00 0%,#3d2000 60%,#c9a84c 100%)',accent:'#f59e0b', benefits:['Unlimited 5× on everything','$1,000 annual credits','Private jet partnership','Personal relationship manager','Invitation only'] },
-  { key:'business',      name:'Business Platinum',     type:'Credit', fee:699,  gradient:'linear-gradient(135deg,#1e3a5f 0%,#0a1929 100%)',            accent:'#38bdf8', benefits:['4× on business spend','Employee cards included','$400 annual business credits','Expense management tools','Dedicated business support'] },
+  {
+    key:'basic_debit', name:'Basic Debit', type:'Debit', category:'debit', fee:0, apr:null,
+    highlight:'No Fees', highlightSub:'Zero annual or monthly fees', ribbon:null,
+    gradient:'linear-gradient(135deg,#0a1428 0%,#162a52 60%,#0d1a36 100%)', accent:'#60a5fa',
+    benefits:['No monthly or annual fees','Free ATM access nationwide','Instant account-to-account transfers','Contactless & chip-enabled','Apple Pay & Google Pay','Real-time transaction alerts'],
+  },
+  {
+    key:'rewards_debit', name:'Rewards Debit', type:'Debit', category:'debit', fee:99, apr:null,
+    highlight:'1.5% Cash Back', highlightSub:'On every purchase, every day', ribbon:'Best Value',
+    gradient:'linear-gradient(135deg,#1a0e00 0%,#6b4400 50%,#c9920a 88%)', accent:'#f5b823',
+    benefits:['1.5% cash back on all purchases','3× points at groceries & gas','No foreign transaction fees','Premium metal card design','Priority customer support','Monthly rewards dashboard'],
+  },
+  {
+    key:'platinum_credit', name:'Platinum Credit', type:'Credit', category:'credit', fee:299, apr:'18.99%',
+    highlight:'3× Points', highlightSub:'On all travel and dining', ribbon:"Editor's Choice",
+    gradient:'linear-gradient(135deg,#9298a0 0%,#cdd4da 22%,#eef2f5 40%,#a4abb4 100%)', accent:'#94a3b8',
+    benefits:['3× points on travel & dining','$200 annual travel statement credit','Global airport lounge access','Cell phone protection up to $1,000','No preset spending limit','Dedicated platinum concierge'],
+  },
+  {
+    key:'cashback_credit', name:'Cashback Credit', type:'Credit', category:'credit', fee:149, apr:'21.99%',
+    highlight:'5% Cash Back', highlightSub:'On rotating bonus categories', ribbon:'Most Popular',
+    gradient:'linear-gradient(135deg,#002a10 0%,#006828 55%,#00a844 100%)', accent:'#4ade80',
+    benefits:['5% cash back on rotating categories','2% on dining & entertainment','1% on all other purchases','$200 welcome bonus after $500 spend','No annual fee the first year','Quarterly bonus cash back promotions'],
+  },
+  {
+    key:'travel_credit', name:'Travel Rewards Credit', type:'Credit', category:'credit', fee:449, apr:'19.99%',
+    highlight:'5× Miles', highlightSub:'On flights, hotels & travel', ribbon:'Best for Travel',
+    gradient:'linear-gradient(135deg,#001840 0%,#003d8a 50%,#0080e8 100%)', accent:'#38bdf8',
+    benefits:['5× miles on flights & hotel bookings','3× miles on dining & all travel','$300 annual travel statement credit','Global Entry / TSA PreCheck credit ($100)','Priority boarding on partner airlines','24/7 travel concierge & trip protection'],
+  },
+  {
+    key:'secured_credit', name:'Secured Credit', type:'Credit', category:'credit', fee:49, apr:'24.99%',
+    highlight:'Build Credit', highlightSub:'Monthly FICO® score reporting', ribbon:'Credit Builder',
+    gradient:'linear-gradient(135deg,#1a0030 0%,#450080 50%,#7700d8 100%)', accent:'#a78bfa',
+    benefits:['Build or rebuild your credit history','1% cash back on all purchases','Monthly FICO® credit score updates','Refundable security deposit','Automatic upgrade path to unsecured card','Real-time fraud protection & alerts'],
+  },
+  {
+    key:'business_debit', name:'Business Debit', type:'Debit', category:'business', fee:0, apr:null,
+    highlight:'5 Sub-Cards', highlightSub:'Employee cards with spend controls', ribbon:null,
+    gradient:'linear-gradient(135deg,#071228 0%,#143058 46%,#1c4070 100%)', accent:'#38bdf8',
+    benefits:['Up to 5 employee sub-cards included','Detailed expense categorization & reporting','Free business ATM withdrawals','QuickBooks & Xero integration','Dedicated business support line','Real-time per-card spend controls'],
+  },
+  {
+    key:'business_credit', name:'Business Credit', type:'Credit', category:'business', fee:499, apr:'17.99%',
+    highlight:'4× Points', highlightSub:'On every business purchase', ribbon:'Premium',
+    gradient:'linear-gradient(135deg,#0a0a0a 0%,#1c1813 28%,#221c12 74%,#0c0a07 100%)', accent:'#c9a84c',
+    benefits:['4× points on all business purchases','$400 annual business statement credits','Up to 10 employee cards included','Advanced expense management platform','Dedicated business relationship manager','No preset spending limit for eligible purchases'],
+  },
 ];
 
 // ══════════════════════════════════════════════════════════════
 //  LUXURY CARD STYLE DATA  (matched to inspo design system)
 // ══════════════════════════════════════════════════════════════
 const LUXURY_CARD_DATA = {
-  virtual: {
-    frontBg:'linear-gradient(135deg,#060324 0%,#0a0a4e 24%,#1530a0 46%,#0d1f7a 64%,#0a0a3c 82%,#161668 100%)',
-    mesh:'radial-gradient(ellipse 70% 60% at 18% 14%,rgba(99,179,255,.4) 0%,transparent 55%),radial-gradient(ellipse 60% 50% at 88% 82%,rgba(56,120,255,.34) 0%,transparent 58%),radial-gradient(circle at 70% 30%,rgba(0,229,255,.16) 0%,transparent 45%)',
-    backBg:'linear-gradient(135deg,#040420 0%,#0a0a44 60%,#101060 100%)',
-    edge:'#4fc3f7', shimmer:'rgba(120,200,255,.42)', chip:'#3a7ac0', accent:'#7ec8e3',
-    txt:'#cdeaff', txt2:'rgba(120,190,255,.5)', netColor:'#9fd6f5', stripe:'#0a0a40',
-    glow:'99,179,255', holo:true, engraved:false,
-    material:'VIRTUAL · DIGITAL CARD', subtitle:'Digital First',
+  basic_debit: {
+    frontBg:'linear-gradient(135deg,#0a1428 0%,#0f2040 35%,#162a52 60%,#0d1a36 100%)',
+    mesh:'radial-gradient(ellipse 70% 60% at 20% 20%,rgba(96,165,250,.25) 0%,transparent 55%),radial-gradient(ellipse 55% 50% at 80% 80%,rgba(59,130,246,.2) 0%,transparent 55%)',
+    backBg:'linear-gradient(135deg,#07101e 0%,#0c1830 100%)',
+    edge:'#60a5fa', shimmer:'rgba(96,165,250,.3)', chip:'#c9a84c', accent:'#60a5fa',
+    txt:'rgba(235,245,255,.94)', txt2:'rgba(120,170,230,.5)', netColor:'rgba(235,245,255,.9)', stripe:'#0a1428',
+    glow:'96,165,250', holo:false, engraved:false,
+    material:'BASIC DEBIT · ZENITHONE', subtitle:'Foundation Card',
   },
-  classic_debit: {
-    frontBg:'linear-gradient(135deg,#0a1020 0%,#14203a 24%,#22304e 46%,#2c3e60 62%,#1a2742 80%,#0c1428 100%)',
-    mesh:'radial-gradient(ellipse 72% 60% at 16% 16%,rgba(150,180,220,.24) 0%,transparent 56%),radial-gradient(ellipse 58% 52% at 86% 84%,rgba(90,120,170,.26) 0%,transparent 58%)',
-    backBg:'linear-gradient(135deg,#070b14 0%,#101a2e 100%)',
-    edge:'#aebdd0', shimmer:'rgba(180,200,230,.3)', chip:'#c9a84c', accent:'#c9a84c',
-    txt:'rgba(248,250,255,.94)', txt2:'rgba(170,190,220,.55)', netColor:'rgba(248,250,255,.9)', stripe:'#0d1422',
-    glow:'150,180,220', holo:false, engraved:false,
-    material:'CLASSIC DEBIT · WORLDWIDE', subtitle:'Foundation Card',
+  rewards_debit: {
+    frontBg:'linear-gradient(135deg,#1a0e00 0%,#3d2200 25%,#6b4400 50%,#9a6800 70%,#c9920a 88%,#f5b823 100%)',
+    mesh:'radial-gradient(ellipse 65% 55% at 22% 18%,rgba(255,200,80,.45) 0%,transparent 52%),radial-gradient(ellipse 58% 50% at 80% 82%,rgba(180,110,10,.4) 0%,transparent 55%)',
+    backBg:'linear-gradient(135deg,#180d00 0%,#3a2000 60%,#5a3500 100%)',
+    edge:'#f5b823', shimmer:'rgba(245,200,80,.65)', chip:'#1a0e00', accent:'#f5b823',
+    txt:'rgba(255,240,200,.96)', txt2:'rgba(220,170,60,.55)', netColor:'rgba(255,240,200,.9)', stripe:'#2a1800',
+    glow:'245,184,35', holo:false, engraved:true,
+    material:'REWARDS DEBIT · 1.5% CASH BACK', subtitle:'Earn Every Purchase',
   },
-  gold: {
-    frontBg:'linear-gradient(135deg,#5a3205 0%,#8a5208 16%,#c2870f 32%,#f0c843 48%,#ffe88a 58%,#f0c030 70%,#c98f12 84%,#7e4f06 100%)',
-    mesh:'radial-gradient(ellipse 64% 56% at 22% 18%,rgba(255,250,200,.7) 0%,transparent 50%),radial-gradient(ellipse 60% 54% at 84% 86%,rgba(160,100,10,.5) 0%,transparent 55%),radial-gradient(circle at 60% 40%,rgba(255,255,230,.3) 0%,transparent 38%)',
-    backBg:'linear-gradient(135deg,#6a4a05 0%,#a87a14 50%,#d4a528 100%)',
-    edge:'#ffe27a', shimmer:'rgba(255,248,190,.72)', chip:'#5a3505', accent:'#3a2200',
-    txt:'#2a1700', txt2:'rgba(70,42,0,.6)', netColor:'#2d1800', stripe:'#5a3e00',
-    glow:'255,210,90', holo:false, engraved:true,
-    material:'24-KARAT GOLD LEAF', subtitle:'Sovereign Class',
-  },
-  platinum: {
+  platinum_credit: {
     frontBg:'linear-gradient(135deg,#9298a0 0%,#cdd4da 22%,#eef2f5 40%,#b6bdc6 58%,#e2e7ec 76%,#a4abb4 100%)',
-    mesh:'radial-gradient(ellipse 66% 58% at 20% 16%,rgba(255,255,255,.85) 0%,transparent 52%),radial-gradient(ellipse 58% 52% at 84% 86%,rgba(120,135,155,.4) 0%,transparent 56%),radial-gradient(circle at 64% 36%,rgba(200,225,255,.4) 0%,transparent 42%)',
+    mesh:'radial-gradient(ellipse 66% 58% at 20% 16%,rgba(255,255,255,.85) 0%,transparent 52%),radial-gradient(ellipse 58% 52% at 84% 86%,rgba(120,135,155,.4) 0%,transparent 56%)',
     backBg:'linear-gradient(135deg,#868d96 0%,#bcc3cb 60%,#d8dde2 100%)',
     edge:'#f4f8fc', shimmer:'rgba(255,255,255,.7)', chip:'#363c44', accent:'#0a1020',
     txt:'#0c1424', txt2:'rgba(20,30,55,.55)', netColor:'#0a1020', stripe:'#6e757e',
     glow:'210,225,245', holo:true, engraved:false,
-    material:'.9995 PURE PLATINUM', subtitle:'Elite Membership',
+    material:'.9995 PURE PLATINUM · ELITE', subtitle:'Elite Membership',
   },
-  titanium: {
-    frontBg:'linear-gradient(135deg,#161616 0%,#323232 22%,#4a4a4a 42%,#272727 58%,#404040 76%,#1c1c1c 100%)',
-    mesh:'radial-gradient(ellipse 68% 58% at 20% 16%,rgba(225,225,225,.24) 0%,transparent 54%),radial-gradient(ellipse 56% 50% at 84% 86%,rgba(120,120,120,.28) 0%,transparent 56%),radial-gradient(circle at 62% 38%,rgba(255,255,255,.1) 0%,transparent 40%)',
-    backBg:'linear-gradient(135deg,#121212 0%,#262626 60%,#343434 100%)',
-    edge:'#dadada', shimmer:'rgba(235,235,235,.34)', chip:'#9a9a9a', accent:'#f0f0f0',
-    txt:'#ededed', txt2:'rgba(180,180,180,.6)', netColor:'#ededed', stripe:'#181818',
-    glow:'210,210,210', holo:true, engraved:true,
-    material:'GRADE-5 AEROSPACE TITANIUM', subtitle:'Infinite Series',
+  cashback_credit: {
+    frontBg:'linear-gradient(135deg,#002a10 0%,#004a1e 30%,#006828 55%,#008a38 75%,#00a844 92%,#00c050 100%)',
+    mesh:'radial-gradient(ellipse 68% 58% at 18% 16%,rgba(74,222,128,.4) 0%,transparent 52%),radial-gradient(ellipse 58% 50% at 85% 85%,rgba(22,163,74,.3) 0%,transparent 55%),radial-gradient(circle at 65% 35%,rgba(134,239,172,.2) 0%,transparent 40%)',
+    backBg:'linear-gradient(135deg,#001a0a 0%,#003818 60%,#005a26 100%)',
+    edge:'#4ade80', shimmer:'rgba(74,222,128,.45)', chip:'#c9a84c', accent:'#4ade80',
+    txt:'rgba(240,255,245,.96)', txt2:'rgba(74,222,128,.55)', netColor:'rgba(240,255,245,.9)', stripe:'#001a0a',
+    glow:'74,222,128', holo:false, engraved:false,
+    material:'CASHBACK CREDIT · 5% REWARDS', subtitle:'Maximum Cash Back',
   },
-  black: {
-    frontBg:'linear-gradient(135deg,#0a0a0a 0%,#1c1813 28%,#100d09 52%,#221c12 74%,#0c0a07 100%)',
-    mesh:'radial-gradient(ellipse 66% 56% at 20% 16%,rgba(201,168,76,.26) 0%,transparent 52%),radial-gradient(ellipse 56% 50% at 84% 86%,rgba(140,110,40,.22) 0%,transparent 56%),radial-gradient(circle at 64% 36%,rgba(255,225,150,.08) 0%,transparent 40%)',
-    backBg:'linear-gradient(135deg,#080808 0%,#1a160f 60%,#241e14 100%)',
-    edge:'#d4b35a', shimmer:'rgba(212,179,90,.38)', chip:'#c9a84c', accent:'#c9a84c',
-    txt:'#ecd9a8', txt2:'rgba(201,168,76,.5)', netColor:'#d4b35a', stripe:'#1c1914',
-    glow:'201,168,76', holo:true, engraved:true,
-    material:'TUNGSTEN · 18K PVD BLACK', subtitle:'By Invitation Only',
+  travel_credit: {
+    frontBg:'linear-gradient(135deg,#001840 0%,#002a62 25%,#003d8a 50%,#0050b0 68%,#0066cc 84%,#0080e8 100%)',
+    mesh:'radial-gradient(ellipse 70% 60% at 20% 18%,rgba(56,189,248,.45) 0%,transparent 52%),radial-gradient(ellipse 60% 52% at 82% 84%,rgba(14,165,233,.35) 0%,transparent 56%),radial-gradient(circle at 68% 32%,rgba(186,230,253,.25) 0%,transparent 40%)',
+    backBg:'linear-gradient(135deg,#001030 0%,#001e50 60%,#002e70 100%)',
+    edge:'#38bdf8', shimmer:'rgba(56,189,248,.5)', chip:'#c9a84c', accent:'#38bdf8',
+    txt:'rgba(224,247,255,.96)', txt2:'rgba(56,189,248,.55)', netColor:'rgba(224,247,255,.9)', stripe:'#001030',
+    glow:'56,189,248', holo:true, engraved:false,
+    material:'TRAVEL REWARDS · 5× MILES', subtitle:'World Explorer',
   },
-  black_gold: {
-    frontBg:'linear-gradient(135deg,#070707 0%,#100c04 16%,#241500 34%,#3e2400 50%,#7a4a0a 66%,#c89218 80%,#f0cd5e 92%,#caa033 100%)',
-    mesh:'radial-gradient(ellipse 62% 56% at 20% 16%,rgba(255,235,160,.42) 0%,transparent 50%),radial-gradient(ellipse 58% 52% at 86% 86%,rgba(140,90,10,.5) 0%,transparent 56%),radial-gradient(circle at 60% 40%,rgba(255,245,200,.22) 0%,transparent 38%)',
-    backBg:'linear-gradient(135deg,#070707 0%,#1c1400 50%,#422c00 100%)',
-    edge:'#f0d57a', shimmer:'rgba(240,210,120,.45)', chip:'#caa033', accent:'#f0d57a',
-    txt:'rgba(255,248,220,.96)', txt2:'rgba(240,210,120,.5)', netColor:'#f0d57a', stripe:'#1c1000',
-    glow:'212,170,80', holo:true, engraved:true,
-    material:'TUNGSTEN · 24K GOLD INLAY', subtitle:'Beyond Classification',
+  secured_credit: {
+    frontBg:'linear-gradient(135deg,#1a0030 0%,#2d0055 25%,#450080 50%,#5800a8 70%,#6600c0 88%,#7700d8 100%)',
+    mesh:'radial-gradient(ellipse 68% 58% at 20% 18%,rgba(167,139,250,.45) 0%,transparent 52%),radial-gradient(ellipse 58% 50% at 84% 84%,rgba(109,40,217,.35) 0%,transparent 56%)',
+    backBg:'linear-gradient(135deg,#100020 0%,#200040 60%,#300060 100%)',
+    edge:'#a78bfa', shimmer:'rgba(167,139,250,.45)', chip:'#c9a84c', accent:'#a78bfa',
+    txt:'rgba(240,235,255,.96)', txt2:'rgba(167,139,250,.55)', netColor:'rgba(240,235,255,.9)', stripe:'#100020',
+    glow:'167,139,250', holo:false, engraved:false,
+    material:'SECURED CREDIT · FICO® REPORTING', subtitle:'Build Your Credit',
   },
-  business: {
+  business_debit: {
     frontBg:'linear-gradient(135deg,#071228 0%,#0c2046 24%,#143058 46%,#1c4070 62%,#102a52 80%,#08142c 100%)',
     mesh:'radial-gradient(ellipse 70% 60% at 18% 16%,rgba(80,180,255,.3) 0%,transparent 54%),radial-gradient(ellipse 58% 52% at 86% 84%,rgba(40,120,200,.28) 0%,transparent 58%),radial-gradient(circle at 66% 36%,rgba(120,220,255,.12) 0%,transparent 42%)',
     backBg:'linear-gradient(135deg,#050d1e 0%,#0e2044 60%,#16335c 100%)',
     edge:'#5cc4f8', shimmer:'rgba(90,196,248,.32)', chip:'#c9a84c', accent:'#7ec8e3',
     txt:'rgba(235,248,255,.95)', txt2:'rgba(90,196,248,.5)', netColor:'rgba(235,248,255,.92)', stripe:'#08142e',
     glow:'80,180,255', holo:false, engraved:false,
-    material:'BUSINESS PLATINUM · CORPORATE', subtitle:'Corporate Excellence',
+    material:'BUSINESS DEBIT · CORPORATE', subtitle:'Business Excellence',
+  },
+  business_credit: {
+    frontBg:'linear-gradient(135deg,#0a0a0a 0%,#1c1813 28%,#100d09 52%,#221c12 74%,#0c0a07 100%)',
+    mesh:'radial-gradient(ellipse 66% 56% at 20% 16%,rgba(201,168,76,.26) 0%,transparent 52%),radial-gradient(ellipse 56% 50% at 84% 86%,rgba(140,110,40,.22) 0%,transparent 56%),radial-gradient(circle at 64% 36%,rgba(255,225,150,.08) 0%,transparent 40%)',
+    backBg:'linear-gradient(135deg,#080808 0%,#1a160f 60%,#241e14 100%)',
+    edge:'#d4b35a', shimmer:'rgba(212,179,90,.38)', chip:'#c9a84c', accent:'#c9a84c',
+    txt:'#ecd9a8', txt2:'rgba(201,168,76,.5)', netColor:'#d4b35a', stripe:'#1c1914',
+    glow:'201,168,76', holo:true, engraved:true,
+    material:'BUSINESS CREDIT · 4× REWARDS', subtitle:'Corporate Premium',
   },
 };
 
 function _luxData(card) {
   const t=(card.card_tier||card.key||card.card_name||'').toLowerCase().replace(/[\s-]/g,'_');
-  if(t.includes('black_gold')||t.includes('black gold')) return LUXURY_CARD_DATA.black_gold;
-  if(t.includes('black'))    return LUXURY_CARD_DATA.black;
-  if(t.includes('titanium')) return LUXURY_CARD_DATA.titanium;
-  if(t.includes('platinum')) return LUXURY_CARD_DATA.platinum;
-  if(t.includes('gold'))     return LUXURY_CARD_DATA.gold;
-  if(t.includes('business')) return LUXURY_CARD_DATA.business;
-  if(t.includes('virtual'))  return LUXURY_CARD_DATA.virtual;
-  if(t.includes('classic')||t.includes('debit')) return LUXURY_CARD_DATA.classic_debit;
-  return LUXURY_CARD_DATA.black; // premium default
+  if(t.includes('business_credit')||(t.includes('business')&&t.includes('credit'))) return LUXURY_CARD_DATA.business_credit;
+  if(t.includes('business_debit')||(t.includes('business')&&t.includes('debit')))   return LUXURY_CARD_DATA.business_debit;
+  if(t.includes('business'))       return LUXURY_CARD_DATA.business_credit;
+  if(t.includes('travel'))         return LUXURY_CARD_DATA.travel_credit;
+  if(t.includes('cashback')||t.includes('cash_back')) return LUXURY_CARD_DATA.cashback_credit;
+  if(t.includes('secured'))        return LUXURY_CARD_DATA.secured_credit;
+  if(t.includes('platinum'))       return LUXURY_CARD_DATA.platinum_credit;
+  if(t.includes('rewards_debit')||(t.includes('rewards')&&!t.includes('credit'))) return LUXURY_CARD_DATA.rewards_debit;
+  if(t.includes('basic')||t.includes('debit')) return LUXURY_CARD_DATA.basic_debit;
+  return LUXURY_CARD_DATA.business_credit;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1255,97 +1361,125 @@ function buildCatalog() {
     const owned  =_ownedRequests[c.key];
     const pending=_pendingRequests[c.key];
     const mp=minPrice(c);
-    const accentColor=lux.edge||lux.accent||'#c9a84c';
+    const ac=lux.edge||lux.accent||'#c9a84c';
+    const acRgb=lux.glow||'201,168,76';
+
+    // Ribbon class map
+    const ribbonClassMap={'Best Value':'value','Editor\'s Choice':'editor','Most Popular':'popular','Best for Travel':'travel','Credit Builder':'builder','Premium':'premium'};
+    const ribbonClass=c.ribbon?ribbonClassMap[c.ribbon]||'popular':'';
+
     let statusBadge='', actionBtn='';
     if(owned){
-      statusBadge=`<div style="position:absolute;top:10px;right:10px;z-index:10;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.38);border-radius:20px;padding:3px 10px;font-size:.58rem;color:#4ade80;font-weight:700;letter-spacing:.1em;backdrop-filter:blur(8px);">✓ OWNED</div>`;
-      actionBtn=`<button class="btn btn-sm" style="width:100%;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.25);color:#4ade80;font-size:.75rem;gap:6px;" onclick="switchCardsTab('myCards')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>Manage Card</button>`;
+      statusBadge=`<div class="cat-status-badge" style="background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.38);color:#4ade80;">✓ ACTIVE</div>`;
+      actionBtn=`<button class="btn btn-sm" style="width:100%;background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.28);color:#4ade80;font-size:.78rem;padding:12px;" onclick="switchCardsTab('myCards')">Manage Card →</button>`;
     } else if(pending){
-      const lbl=pending.status==='approved'?'APPROVED':'REQUESTED';
-      const pc=pending.status==='approved'?'#60a5fa':'#fbbf24';
-      statusBadge=`<div style="position:absolute;top:10px;right:10px;z-index:10;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);border-radius:20px;padding:3px 10px;font-size:.58rem;color:${pc};font-weight:700;letter-spacing:.1em;backdrop-filter:blur(8px);">⏳ ${lbl}</div>`;
-      actionBtn=`<button class="btn btn-sm" style="width:100%;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.2);color:#fbbf24;font-size:.75rem;" onclick="showPendingStatus('${c.key}')">View Status</button>`;
+      const isApproved=pending.status==='approved';
+      statusBadge=`<div class="cat-status-badge" style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);color:#fbbf24;">${isApproved?'✓ APPROVED':'⏳ PENDING'}</div>`;
+      actionBtn=`<button class="btn btn-sm" style="width:100%;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.22);color:#fbbf24;font-size:.78rem;padding:12px;" onclick="showPendingStatus('${c.key}')">View Status</button>`;
     } else {
-      actionBtn=`<button class="btn btn-ghost btn-sm" style="width:100%;border-color:${accentColor}38;color:${accentColor};font-size:.75rem;" onclick="openApply('${c.key}')">Apply Now →</button>`;
+      actionBtn=`<button class="btn btn-ghost btn-sm" style="width:100%;border-color:${ac}44;color:${ac};font-size:.78rem;padding:12px;letter-spacing:.04em;" onclick="openApply('${c.key}')">Apply Now &rarr;</button>`;
     }
+
+    const hlBg=`rgba(${acRgb},.08)`;
+    const hlBorder=`rgba(${acRgb},.18)`;
+    const feeStr=mp===0?'Free':`from $${mp}/yr`;
+
     return `
-    <div class="catalog-card${owned?' owned':pending?' pending':''}" style="position:relative;">
+    <div class="catalog-card${owned?' owned':pending?' pending':''}${c.ribbon==='Most Popular'?' featured':''}" data-category="${c.category||'all'}">
+      <!-- Ribbon badge -->
+      ${c.ribbon?`<div class="cat-ribbon ${ribbonClass}">${c.ribbon}</div>`:''}
+      <!-- Status badge -->
       ${statusBadge}
 
-      <!-- ── Luxury card visual ── -->
-      <div style="position:relative;overflow:hidden;aspect-ratio:1.586/1;cursor:pointer;border-radius:14px 14px 0 0;"
-           onclick="${owned?`switchCardsTab('myCards')`:pending?`showPendingStatus('${c.key}')`:''}"
-           onmousemove="(function(el,e){var r=el.getBoundingClientRect();el.style.transform='perspective(700px) rotateY('+((e.clientX-r.left)/r.width-.5)*14+'deg) rotateX('+(-(e.clientY-r.top)/r.height+.5)*9+'deg) scale(1.02)';el.style.transition='transform .06s linear';}).call(this,this,event)"
-           onmouseleave="this.style.transform='';this.style.transition='transform .5s cubic-bezier(.23,1,.32,1)'">
-
-        <!-- Background -->
-        <div style="position:absolute;inset:0;background:${lux.frontBg};"></div>
-        <!-- Mesh color-blend -->
-        <div style="position:absolute;inset:0;background:${lux.mesh||''};mix-blend-mode:screen;opacity:.88;pointer-events:none;z-index:1;"></div>
-        <!-- Drifting sheen -->
-        <div style="position:absolute;inset:-40%;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.1) 50%,transparent 58%);animation:sheenDrift 9s ease-in-out infinite;pointer-events:none;z-index:2;"></div>
-        <!-- Shimmer sweep -->
-        <div style="position:absolute;inset:0;background:linear-gradient(125deg,transparent 20%,${lux.shimmer} 52%,transparent 82%);animation:shimmerSweep 5s ${c.key.length*.3}s infinite linear;pointer-events:none;z-index:2;"></div>
-        <!-- Bottom vignette -->
-        <div style="position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to top,rgba(0,0,0,.5) 0%,transparent 100%);pointer-events:none;z-index:3;"></div>
-        <!-- Edge border -->
-        <div style="position:absolute;inset:0;border-radius:14px 14px 0 0;border:1px solid ${lux.edge};opacity:.35;pointer-events:none;z-index:4;box-shadow:inset 0 1px 0 rgba(255,255,255,.12);"></div>
-        <!-- Particles -->
-        <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1;">${_particles(lux.glow,7)}</div>
-
-        <!-- Card content -->
-        <div style="position:absolute;inset:0;padding:14px 16px 12px;display:flex;flex-direction:column;justify-content:space-between;z-index:5;">
-          <!-- Top row -->
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-            <div>
-              <div style="font-size:.3rem;letter-spacing:.3em;color:${lux.txt2};text-transform:uppercase;margin-bottom:3px;">${lux.subtitle||c.type}</div>
-              <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.05rem;font-style:italic;font-weight:700;letter-spacing:.26em;color:${lux.txt};text-transform:uppercase;line-height:1;${lux.engraved?'text-shadow:0 1px 0 rgba(255,255,255,.18),0 -1px 0 rgba(0,0,0,.5);':''}">ZENITHONE</div>
+      <!-- ── Full card visual with 3D tilt ── -->
+      <div class="cat-visual"
+        onmousemove="(function(el,e){var r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;el.style.transform='perspective(800px) rotateY('+(x*16)+'deg) rotateX('+(-y*10)+'deg) scale(1.025)';el.style.transition='transform .06s linear';var sh=el.querySelector('.csh-cat');if(sh){sh.style.background='radial-gradient(ellipse 70% 60% at '+((x+.5)*100)+'% '+((y+.5)*100)+'%,rgba(255,255,255,.22) 0%,rgba(255,255,255,.08) 35%,transparent 65%)';sh.style.opacity='1';}}).call(this,this,event)"
+        onmouseleave="this.style.transform='';this.style.transition='transform .55s cubic-bezier(.23,1,.32,1)';var sh=this.querySelector('.csh-cat');if(sh)sh.style.opacity='0';">
+        <div class="cat-visual-inner">
+          <div style="position:absolute;inset:0;background:${lux.frontBg};border-radius:20px 20px 0 0;"></div>
+          <div style="position:absolute;inset:0;background:${lux.mesh||''};mix-blend-mode:screen;opacity:.88;pointer-events:none;z-index:1;border-radius:20px 20px 0 0;"></div>
+          <div style="position:absolute;inset:-40%;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.1) 50%,transparent 58%);animation:sheenDrift 9s ease-in-out infinite;pointer-events:none;z-index:2;"></div>
+          <div style="position:absolute;inset:0;background:linear-gradient(125deg,transparent 20%,${lux.shimmer} 52%,transparent 82%);animation:shimmerSweep 5s ${c.key.length*.28}s infinite linear;pointer-events:none;z-index:2;border-radius:20px 20px 0 0;"></div>
+          <div style="position:absolute;bottom:0;left:0;right:0;height:55%;background:linear-gradient(to top,rgba(0,0,0,.55) 0%,transparent 100%);pointer-events:none;z-index:3;"></div>
+          <div style="position:absolute;inset:0;border-radius:20px 20px 0 0;border:1px solid ${lux.edge};border-bottom:none;opacity:.38;pointer-events:none;z-index:4;box-shadow:inset 0 1px 0 rgba(255,255,255,.14);"></div>
+          <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1;border-radius:20px 20px 0 0;">${_particles(lux.glow,6)}</div>
+          <!-- Mouse shine -->
+          <div class="csh-cat" style="position:absolute;inset:0;z-index:6;pointer-events:none;border-radius:20px 20px 0 0;opacity:0;transition:opacity .4s;mix-blend-mode:soft-light;"></div>
+          <!-- Card content -->
+          <div style="position:absolute;inset:0;padding:16px 18px 14px;display:flex;flex-direction:column;justify-content:space-between;z-index:5;">
+            <!-- Top -->
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+              <div>
+                <div style="font-size:.3rem;letter-spacing:.28em;color:${lux.txt2};text-transform:uppercase;margin-bottom:4px;">${lux.subtitle||''}</div>
+                <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.1rem;font-style:italic;font-weight:700;letter-spacing:.28em;color:${lux.txt};text-transform:uppercase;line-height:1;${lux.engraved?'text-shadow:0 1px 0 rgba(255,255,255,.18),0 -1px 0 rgba(0,0,0,.5);':''}">ZENITHONE</div>
+              </div>
+              ${lux.holo?`<div style="width:24px;height:24px;border-radius:50%;background:conic-gradient(from 0deg,#ff0080,#ff8c00,#ffd700,#00ff88,#00cfff,#8000ff,#ff0080);animation:holoPulse 3s ease-in-out infinite;box-shadow:0 0 8px rgba(255,255,255,.22);flex-shrink:0;"></div>`:''}
             </div>
-            ${lux.holo?`<div style="width:26px;height:26px;border-radius:50%;background:conic-gradient(from 0deg,#ff0080 0%,#ff8c00 16%,#ffd700 33%,#00ff88 50%,#00cfff 66%,#8000ff 83%,#ff0080 100%);animation:holoPulse 3s ease-in-out infinite;box-shadow:0 0 10px rgba(255,255,255,.25);"></div>`:''}
-          </div>
-          <!-- Chip + contactless -->
-          <div style="display:flex;align-items:center;gap:10px;">
-            ${_chipSvg(c.key+'_cat', lux.chip)}
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-              <path d="M8 12a4 4 0 0 1 4-4" stroke="${lux.txt}" stroke-width="1.6" stroke-linecap="round" opacity=".38"/>
-              <path d="M6 12a6 6 0 0 1 6-6" stroke="${lux.txt}" stroke-width="1.6" stroke-linecap="round" opacity=".62"/>
-              <path d="M4 12a8 8 0 0 1 8-8" stroke="${lux.txt}" stroke-width="1.6" stroke-linecap="round" opacity=".86"/>
-              <circle cx="12" cy="12" r="1.5" fill="${lux.txt}"/>
-            </svg>
-          </div>
-          <!-- Card number placeholder -->
-          <div style="font-family:'Courier New',monospace;font-size:.62rem;letter-spacing:.2em;color:${lux.txt};opacity:.7;">•••• •••• •••• ••••</div>
-          <!-- Bottom row -->
-          <div style="display:flex;justify-content:space-between;align-items:flex-end;">
-            <div>
-              <div style="font-size:.28rem;color:${lux.txt2};letter-spacing:.22em;text-transform:uppercase;margin-bottom:2px;">Card Name</div>
-              <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:.72rem;font-weight:700;color:${lux.txt};letter-spacing:.1em;">${c.name}</div>
+            <!-- Chip -->
+            <div style="display:flex;align-items:center;gap:10px;">
+              ${_chipSvg(c.key+'_cat',lux.chip)}
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M8 12a4 4 0 0 1 4-4" stroke="${lux.txt}" stroke-width="1.7" stroke-linecap="round" opacity=".38"/><path d="M6 12a6 6 0 0 1 6-6" stroke="${lux.txt}" stroke-width="1.7" stroke-linecap="round" opacity=".62"/><path d="M4 12a8 8 0 0 1 8-8" stroke="${lux.txt}" stroke-width="1.7" stroke-linecap="round" opacity=".86"/><circle cx="12" cy="12" r="1.4" fill="${lux.txt}"/></svg>
             </div>
-            <div style="text-align:right;flex-shrink:0;">
-              <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:.6rem;font-style:italic;font-weight:700;letter-spacing:.18em;color:${lux.txt};text-transform:uppercase;${lux.engraved?'text-shadow:0 1px 0 rgba(255,255,255,.15),0 -1px 0 rgba(0,0,0,.4);':''}">${(c.key||'').replace(/_/g,' ')}</div>
-              <div style="font-size:.28rem;color:${lux.txt2};letter-spacing:.2em;text-transform:uppercase;margin-top:2px;">${c.type}</div>
+            <!-- PAN -->
+            <div style="font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.2em;color:${lux.txt};opacity:.72;">•••• •••• •••• ••••</div>
+            <!-- Bottom -->
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:4px;">
+              <div style="min-width:0;">
+                <div style="font-size:.28rem;color:${lux.txt2};letter-spacing:.2em;text-transform:uppercase;margin-bottom:2px;">Card Name</div>
+                <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:.68rem;font-weight:700;color:${lux.txt};letter-spacing:.1em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.name}</div>
+              </div>
+              <div style="font-size:.3rem;color:${lux.txt2};letter-spacing:.18em;text-transform:uppercase;text-align:right;flex-shrink:0;">${c.type}</div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ── Info panel below card ── -->
-      <div style="background:rgba(255,255,255,.02);padding:14px 16px;">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
-          <div style="font-size:.78rem;font-weight:600;color:#fff;">${c.name}</div>
-          <div style="text-align:right;flex-shrink:0;margin-left:8px;">
-            <div style="font-size:.76rem;font-weight:700;color:${accentColor};">from $${mp}/yr</div>
-            <div style="font-size:.58rem;color:rgba(255,255,255,.28);">+15% renewal</div>
+      <!-- ── Card body ── -->
+      <div class="cat-body">
+        <!-- Name + type badge -->
+        <div class="cat-header">
+          <div class="cat-name">${c.name}</div>
+          <span class="cat-type-badge ${c.type.toLowerCase()}">${c.type}</span>
+        </div>
+
+        <!-- Highlight stat -->
+        <div class="cat-highlight" style="background:${hlBg};border:1px solid ${hlBorder};">
+          <div class="cat-hl-value" style="color:${ac};">${c.highlight}</div>
+          <div class="cat-hl-sub" style="color:rgba(255,255,255,.5);">${c.highlightSub}</div>
+        </div>
+
+        <!-- Benefits -->
+        <ul class="cat-benefits">
+          ${c.benefits.slice(0,4).map(b=>`
+          <li class="cat-benefit">
+            <div class="cat-benefit-dot" style="background:${ac};"></div>
+            ${b}
+          </li>`).join('')}
+        </ul>
+
+        <!-- Pricing -->
+        <div class="cat-pricing">
+          <div class="cat-price-col">
+            <div class="cat-price-label">Annual Fee</div>
+            <div class="cat-price-val" style="color:${ac};">${feeStr}</div>
           </div>
+          ${c.apr?`<div class="cat-price-col" style="padding-left:14px;margin-left:14px;border-left:1px solid rgba(255,255,255,.06);"><div class="cat-price-label">Variable APR</div><div class="cat-price-val">${c.apr}</div></div>`:''}
         </div>
-        <div style="font-size:.64rem;color:var(--slate-500);margin-bottom:8px;">${c.type} · All major networks</div>
-        <div style="margin-bottom:10px;">
-          ${c.benefits.slice(0,3).map(b=>`<div style="font-size:.65rem;color:var(--slate-400);padding:2px 0;display:flex;align-items:center;gap:6px;"><span style="color:${accentColor};font-size:.58rem;">✦</span>${b}</div>`).join('')}
-        </div>
+
+        <!-- CTA -->
         ${actionBtn}
       </div>
     </div>`;
   }).join('');
+}
+
+function filterCatalog(cat, btn) {
+  document.querySelectorAll('.cat-filter-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.querySelectorAll('#catalogGrid .catalog-card').forEach(el=>{
+    const elCat=el.dataset.category||'all';
+    el.style.display=(cat==='all'||elCat===cat)?'':'none';
+  });
 }
 
 function showPendingStatus(key) {

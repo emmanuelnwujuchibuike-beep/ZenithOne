@@ -419,6 +419,9 @@
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span class="export-text">Export CSV</span>
         </button>
+        <button class="btn btn-icon btn-ghost" id="txnBalToggle" onclick="txnToggleBalances()" title="Hide balances">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
         <button class="btn btn-icon btn-ghost">
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         </button>
@@ -572,12 +575,32 @@ var _accounts = [];          // from account-summary
 var _openId   = null;        // drawer transaction id
 
 /* ── Formatters ── */
+var _txnBalHidden = localStorage.getItem('zo_bal_hidden') === '1';
+
 function _usd(v) {
+  if (_txnBalHidden) return '••••••';
   return new Intl.NumberFormat('en-US', { style:'currency', currency:'USD' }).format(Math.abs(+v || 0));
 }
 function _usdSigned(v) {
+  if (_txnBalHidden) return (v >= 0 ? '+' : '−') + '••••••';
   var n = +v || 0;
   return (n >= 0 ? '+' : '−') + _usd(n);
+}
+
+function txnToggleBalances() {
+  _txnBalHidden = !_txnBalHidden;
+  localStorage.setItem('zo_bal_hidden', _txnBalHidden ? '1' : '0');
+  var btn = document.getElementById('txnBalToggle');
+  if (btn) {
+    btn.title = _txnBalHidden ? 'Show balances' : 'Hide balances';
+    btn.innerHTML = _txnBalHidden
+      ? '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+      : '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+  }
+  // Re-render everything — _usd() will now return masked values
+  if (typeof renderPage === 'function') renderPage();
+  // Also refresh the summary strip
+  if (typeof _updateSummaryStrip === 'function') _updateSummaryStrip();
 }
 function _fmtDateLong(iso) {
   return new Date(iso).toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
@@ -692,7 +715,8 @@ function loadAll() {
     }
 
     /* Summary strip */
-    _renderStrip(txnRes.summary || {}, summRes, invRes);
+    _stripCache = { txnSumm: txnRes.summary || {}, summ: summRes, inv: invRes };
+    _renderStrip(_stripCache.txnSumm, _stripCache.summ, _stripCache.inv);
 
     /* Transactions */
     _all = txnRes.transactions || [];
@@ -726,6 +750,11 @@ function _showErr() {
 }
 
 /* ── Summary strip ── */
+var _stripCache = null;
+function _updateSummaryStrip() {
+  if (_stripCache) _renderStrip(_stripCache.txnSumm, _stripCache.summ, _stripCache.inv);
+}
+
 function _renderStrip(summary, summ, inv) {
   var credits = summary.total_credits || 0;
   var debits  = summary.total_debits  || 0;
@@ -1108,6 +1137,16 @@ function resetFilters() {
 
 /* ── Keyboard escape ── */
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDrawer(); });
+
+// Apply saved balance-hide state on load
+(function() {
+  if (!_txnBalHidden) return;
+  var btn = document.getElementById('txnBalToggle');
+  if (btn) {
+    btn.title = 'Show balances';
+    btn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  }
+})();
 
 /* ── Mobile sidebar ── */
 (function() {

@@ -322,6 +322,153 @@
     .aa-app-card:hover { border-color:rgba(201,168,76,.25); }
     .aa-app-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px; }
     .aa-app-card-bot { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+
+    /* ═══════════════════════════════════════════════════
+       ULTRA-PREMIUM ACCOUNT TILES
+    ═══════════════════════════════════════════════════ */
+    #accountsList { display:flex; flex-direction:column; gap:10px; }
+
+    .pact-tile {
+      position:relative;
+      background:linear-gradient(145deg,rgba(255,255,255,.027) 0%,rgba(255,255,255,.01) 100%);
+      border:1px solid rgba(255,255,255,.07);
+      border-radius:18px;
+      padding:17px 18px;
+      cursor:pointer;
+      transition:transform .2s cubic-bezier(.25,.46,.45,.94),box-shadow .2s ease,border-color .2s ease,background .2s ease;
+      overflow:hidden;
+    }
+    /* Accent stripe */
+    .pact-tile::before {
+      content:'';position:absolute;top:12%;left:0;bottom:12%;
+      width:3px;border-radius:0 3px 3px 0;
+      background:var(--pc,#c9a84c);
+      opacity:.75;transition:opacity .2s,top .2s,bottom .2s;
+    }
+    /* Ambient glow from left */
+    .pact-tile::after {
+      content:'';position:absolute;inset:0;border-radius:18px;
+      background:radial-gradient(ellipse 80% 70% at -5% 50%,var(--pc-fade,rgba(201,168,76,.08)) 0%,transparent 70%);
+      pointer-events:none;opacity:0;transition:opacity .25s;
+    }
+    .pact-tile:hover::after,.pact-tile.pact-sel::after { opacity:1; }
+    .pact-tile:hover {
+      transform:translateX(3px);
+      border-color:rgba(255,255,255,.11);
+      box-shadow:0 6px 28px rgba(0,0,0,.28);
+    }
+    .pact-tile:hover::before { top:8%;bottom:8%; }
+    .pact-tile.pact-sel {
+      border-color:var(--pc-border,rgba(201,168,76,.30));
+      background:linear-gradient(145deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.015) 100%);
+      box-shadow:0 0 0 1px var(--pc-border,rgba(201,168,76,.16)) inset,0 8px 32px rgba(0,0,0,.3);
+      transform:translateX(2px);
+    }
+    .pact-tile.pact-sel::before { top:0;bottom:0;opacity:1;border-radius:0; }
+
+    /* Top row */
+    .pact-row1 { display:flex;align-items:center;gap:12px;margin-bottom:14px;position:relative;z-index:1; }
+    .pact-icon-wrap {
+      width:38px;height:38px;border-radius:11px;flex-shrink:0;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
+      display:flex;align-items:center;justify-content:center;
+      color:var(--pc,#c9a84c);
+      box-shadow:0 2px 8px rgba(0,0,0,.18);
+      transition:background .2s,border-color .2s;
+    }
+    .pact-tile:hover .pact-icon-wrap,.pact-tile.pact-sel .pact-icon-wrap {
+      background:rgba(var(--pc-rgb,201,168,76),.1);
+      border-color:rgba(var(--pc-rgb,201,168,76),.2);
+    }
+    .pact-meta { flex:1;min-width:0; }
+    .pact-type-lbl {
+      font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;
+      color:var(--pc,#c9a84c);margin-bottom:3px;line-height:1;font-weight:600;
+    }
+    .pact-acct-name {
+      font-family:var(--font-display);font-size:.97rem;
+      color:rgba(255,255,255,.9);line-height:1.2;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    }
+    .pact-status-chip {
+      margin-left:auto;flex-shrink:0;
+      display:inline-flex;align-items:center;gap:4px;
+      font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;
+      padding:3px 9px;border-radius:99px;
+      background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.22);color:#4ade80;
+    }
+    .pact-status-chip.pact-pend { background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.22);color:#fbbf24; }
+    .pact-status-chip::before {
+      content:'';width:5px;height:5px;border-radius:50%;background:currentColor;
+      animation:pactPulse 2.5s ease infinite;
+    }
+    @keyframes pactPulse { 0%,100%{opacity:1}50%{opacity:.35} }
+
+    /* Balance row */
+    .pact-row2 { display:flex;align-items:flex-end;justify-content:space-between;gap:8px;position:relative;z-index:1; }
+    .pact-bal-val {
+      font-family:var(--font-display);font-size:1.5rem;color:#fff;
+      line-height:1;letter-spacing:-.01em;
+      text-shadow:0 2px 10px rgba(0,0,0,.3);
+    }
+    .pact-bal-sub { font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-top:5px; }
+    .pact-right { text-align:right;flex-shrink:0; }
+    .pact-num-txt { font-family:'Courier New',monospace;font-size:.68rem;color:rgba(255,255,255,.28);letter-spacing:.08em; }
+    .pact-apy-txt { font-size:.65rem;font-weight:600;color:var(--pc,#c9a84c);margin-top:3px;letter-spacing:.04em; }
+
+    /* Skeleton loader */
+    .pact-skel {
+      height:100px;border-radius:18px;margin-bottom:10px;
+      background:linear-gradient(90deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.07) 50%,rgba(255,255,255,.04) 100%);
+      background-size:200% 100%;
+      animation:pactShim 1.6s ease infinite;
+    }
+    @keyframes pactShim { 0%{background-position:-200% 0}100%{background-position:200% 0} }
+
+    /* ═══════════════════════════════════════════════════
+       PREMIUM STAT CARDS OVERRIDE (dashboard-only)
+    ═══════════════════════════════════════════════════ */
+    .dash-stat-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:28px; }
+    @media(max-width:1100px){ .dash-stat-grid{grid-template-columns:repeat(2,1fr);} }
+    @media(max-width:540px){ .dash-stat-grid{grid-template-columns:1fr;} }
+    .dsc {
+      position:relative;overflow:hidden;
+      border-radius:18px;padding:22px 22px 18px;
+      background:linear-gradient(145deg,rgba(255,255,255,.025) 0%,rgba(255,255,255,.01) 100%);
+      border:1px solid rgba(255,255,255,.07);
+      transition:transform .18s ease,box-shadow .18s ease;
+    }
+    .dsc:hover { transform:translateY(-2px);box-shadow:0 16px 48px rgba(0,0,0,.35); }
+    /* Top hairline glow */
+    .dsc::before { content:'';position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,var(--dsc-glow,rgba(201,168,76,.65)) 50%,transparent);
+      border-radius:18px 18px 0 0; }
+    /* Ambient radial */
+    .dsc::after { content:'';position:absolute;inset:0;border-radius:18px;
+      background:radial-gradient(ellipse 70% 55% at 0% 0%,var(--dsc-fill,rgba(201,168,76,.08)) 0%,transparent 70%);
+      pointer-events:none; }
+    .dsc-icon {
+      width:42px;height:42px;border-radius:12px;margin-bottom:16px;
+      display:flex;align-items:center;justify-content:center;
+      background:var(--dsc-icon-bg,rgba(201,168,76,.1));
+      border:1px solid var(--dsc-icon-border,rgba(201,168,76,.2));
+      color:var(--dsc-color,#c9a84c);position:relative;z-index:1;
+    }
+    .dsc-value {
+      font-family:var(--font-display);font-size:1.6rem;color:#fff;line-height:1;
+      margin-bottom:6px;position:relative;z-index:1;
+    }
+    .dsc-label {
+      font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+      color:rgba(255,255,255,.35);margin-bottom:8px;position:relative;z-index:1;
+    }
+    .dsc-sub { font-size:.75rem;position:relative;z-index:1; }
+
+    /* ═══════════════════════════════════════════════════
+       BALANCE TOGGLE BUTTON
+    ═══════════════════════════════════════════════════ */
+    #balToggleBtn { position:relative; }
+    #balToggleBtn[aria-pressed="true"] { color:var(--gold-400); }
   </style>
 </head>
 <body>
@@ -412,6 +559,9 @@
       </div>
       <div class="app-topbar-right">
         <div style="font-size:.75rem;color:var(--slate-400);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);padding:6px 14px;border-radius:8px;" id="topbarDate"></div>
+        <button class="btn btn-icon btn-ghost" id="balToggleBtn" onclick="toggleBalances()" aria-pressed="false" title="Hide balances">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
         <button class="btn btn-icon btn-ghost notif-dot" id="notifBtn">
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         </button>
@@ -422,26 +572,72 @@
     <!-- Content -->
     <div class="app-content">
 
-      <!-- Welcome Banner -->
-      <div class="welcome-banner" id="welcomeBanner">
-        <div style="display:flex;align-items:center;gap:14px;">
-          <div id="greetingIcon" style="width:44px;height:44px;border-radius:12px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.18);display:flex;align-items:center;justify-content:center;color:var(--gold-400);flex-shrink:0;">
-            <!-- Sun icon (day) — replaced with moon at night by JS -->
-            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <!-- ══ WORLD-CLASS WELCOME HEADER ══ -->
+      <div id="welcomeBanner" style="position:relative;overflow:hidden;border-radius:22px;padding:26px 30px;margin-bottom:24px;background:linear-gradient(135deg,#06101f 0%,#0c1e38 50%,#071526 100%);border:1px solid rgba(201,168,76,.2);box-shadow:0 24px 64px -20px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.03) inset;">
+        <!-- Mesh overlays -->
+        <div style="position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 55% 70% at 0% 0%,rgba(201,168,76,.12) 0%,transparent 60%),radial-gradient(ellipse 45% 55% at 100% 100%,rgba(56,120,200,.12) 0%,transparent 60%);"></div>
+        <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.65) 50%,transparent);"></div>
+        <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+          <!-- Left: Greeting -->
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div id="greetingIcon" style="width:50px;height:50px;border-radius:14px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.22);display:flex;align-items:center;justify-content:center;color:var(--gold-400);flex-shrink:0;box-shadow:0 4px 16px rgba(201,168,76,.12);">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+            </div>
+            <div>
+              <div style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(201,168,76,.65);margin-bottom:6px;">ZenithOne Private Banking</div>
+              <div style="font-family:var(--font-display);font-size:1.75rem;line-height:1.1;color:#fff;">Good <span id="timeGreeting">morning</span>, <span id="welcomeName" style="color:var(--gold-300);"></span></div>
+              <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-top:5px;"><span id="bannerDate">Today</span> · <span id="lastLogin" style="color:rgba(255,255,255,.5);">—</span></div>
+            </div>
           </div>
-          <div>
-            <div style="font-family:var(--font-display);font-size:1.5rem;margin-bottom:4px;">Good <span id="timeGreeting">morning</span>, <span id="welcomeName"></span></div>
-            <div style="font-size:.875rem;color:var(--slate-400);">Your financial overview for <span id="bannerDate">today</span>.</div>
+          <!-- Right: Session badge + net worth hint -->
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <div style="text-align:right;">
+              <div style="font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:4px;">Total Net Worth</div>
+              <div style="font-family:var(--font-display);font-size:1.55rem;color:#fff;line-height:1;" id="bannerNetWorth">—</div>
+            </div>
+            <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.2);border-radius:99px;padding:5px 12px 5px 10px;">
+              <svg width="9" height="9" viewBox="0 0 9 9"><circle cx="4.5" cy="4.5" r="4.5" fill="#4ade80"/></svg>
+              <span style="font-size:.62rem;font-weight:600;letter-spacing:.1em;color:#4ade80;text-transform:uppercase;">Secure Session</span>
+            </div>
           </div>
         </div>
-        <div style="text-align:right;flex-shrink:0;">
-          <div style="font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--slate-500);margin-bottom:5px;">Last Login</div>
-          <div style="font-size:.84rem;color:var(--slate-300);font-weight:500;" id="lastLogin">—</div>
-          <div style="display:inline-flex;align-items:center;gap:5px;margin-top:7px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:99px;padding:3px 10px 3px 8px;">
-            <svg width="9" height="9" viewBox="0 0 9 9"><circle cx="4.5" cy="4.5" r="4.5" fill="#4ade80"/></svg>
-            <span style="font-size:.65rem;font-weight:600;letter-spacing:.08em;color:#4ade80;text-transform:uppercase;">Secure Session</span>
-          </div>
+      </div>
+
+      <!-- ══ ULTRA-PREMIUM STAT CARDS ══ -->
+      <div class="dash-stat-grid" style="margin-bottom:24px;">
+
+        <!-- Total Balance -->
+        <div class="dsc" style="--dsc-glow:rgba(201,168,76,.7);--dsc-fill:rgba(201,168,76,.07);--dsc-icon-bg:rgba(201,168,76,.1);--dsc-icon-border:rgba(201,168,76,.22);--dsc-color:#c9a84c;">
+          <div class="dsc-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="dsc-value" id="totalBalance">$0.00</div>
+          <div class="dsc-label">Total Balance</div>
+          <div class="dsc-sub" id="balanceChange" style="color:var(--slate-500);">—</div>
         </div>
+
+        <!-- Portfolio Value -->
+        <div class="dsc" style="--dsc-glow:rgba(74,222,128,.55);--dsc-fill:rgba(74,222,128,.06);--dsc-icon-bg:rgba(74,222,128,.1);--dsc-icon-border:rgba(74,222,128,.2);--dsc-color:#4ade80;">
+          <div class="dsc-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <div class="dsc-value" id="portfolioValue">$0.00</div>
+          <div class="dsc-label">Portfolio Value</div>
+          <div class="dsc-sub" id="portfolioChange" style="color:var(--slate-500);">—</div>
+        </div>
+
+        <!-- Available Credit -->
+        <div class="dsc" style="--dsc-glow:rgba(96,165,250,.55);--dsc-fill:rgba(96,165,250,.06);--dsc-icon-bg:rgba(96,165,250,.1);--dsc-icon-border:rgba(96,165,250,.2);--dsc-color:#60a5fa;">
+          <div class="dsc-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div>
+          <div class="dsc-value" id="creditAvailable">$0.00</div>
+          <div class="dsc-label">Available Credit</div>
+          <div class="dsc-sub" id="creditCardHint" style="color:var(--slate-500);">—</div>
+        </div>
+
+        <!-- Reward Points -->
+        <div class="dsc" style="--dsc-glow:rgba(167,139,250,.55);--dsc-fill:rgba(167,139,250,.06);--dsc-icon-bg:rgba(167,139,250,.1);--dsc-icon-border:rgba(167,139,250,.2);--dsc-color:#a78bfa;">
+          <div class="dsc-icon"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          <div class="dsc-value" id="rewardPoints">0</div>
+          <div class="dsc-label">Reward Points</div>
+          <div class="dsc-sub" id="rewardChange" style="color:var(--slate-500);">—</div>
+        </div>
+
       </div>
 
       <!-- ═══ PREMIUM ACCOUNT HERO ═══ -->
@@ -580,14 +776,21 @@
             </div>
           </div>
 
-          <!-- My Accounts mini -->
-          <div class="card card-elevated" style="flex:1;">
-            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-              <div style="font-family:var(--font-display);font-size:1.1rem;">My Accounts</div>
-              <a href="accounts.html" style="font-size:.75rem;color:var(--gold-500);">View all</a>
+          <!-- My Accounts premium -->
+          <div class="card card-elevated" style="flex:1;overflow:hidden;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+              <div>
+                <div style="font-family:var(--font-display);font-size:1.15rem;color:#fff;">My Accounts</div>
+                <div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:3px;">Select to view details</div>
+              </div>
+              <a href="accounts.html" style="font-size:.72rem;color:var(--gold-500);font-weight:500;display:flex;align-items:center;gap:4px;">
+                View all
+                <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
             </div>
             <div id="accountsList">
-              <div style="color:var(--slate-500);font-size:.85rem;padding:8px 0;">Loading accounts…</div>
+              <div class="pact-skel"></div>
+              <div class="pact-skel" style="opacity:.55;height:80px;"></div>
             </div>
           </div>
         </div>
@@ -4048,24 +4251,39 @@ function _acctTypeIcon(t) {
 
 // ═══ ACCOUNT STATE (premium hero + switcher + send/receive) ═══
 let _summary  = null;
-let _accounts = [];
-let _selAcct  = 0;
-const fmtUSD = n => '$' + (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
+let _accounts   = [];
+let _selAcct    = 0;
+let _summary    = null;
+let _balHidden  = localStorage.getItem('zo_bal_hidden') === '1';
+const fmtUSD    = n => '$' + (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2 });
+const _fmtBal   = n => _balHidden ? '$••••••' : fmtUSD(n);
+const _fmtAmt   = (n, credit) => _balHidden ? (credit ? '+' : '−') + '••••••' : (credit ? '+' : '−') + '$' + Math.abs(Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2});
 const fmtAcctNo = s => (s || '').replace(/(\d{4})(?=\d)/g, '$1 ').trim();
+
+// Initialise the balance toggle button icon on load
+(function _initBalToggle() {
+  document.addEventListener('DOMContentLoaded', function() {
+    const btn = document.getElementById('balToggleBtn');
+    if (btn && _balHidden) {
+      btn.setAttribute('aria-pressed', 'true');
+      btn.title = 'Show balances';
+      btn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+    }
+  });
+})();
 
 function renderHero() {
   if (!_accounts.length) return;
   if (_selAcct >= _accounts.length) _selAcct = 0;
   const a = _accounts[_selAcct];
-  const typeName = (a.account_type || 'account').replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+  const typeName = (a.account_type || 'account').replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
   document.getElementById('heroType').textContent     = a.account_name || (typeName + ' Account');
   document.getElementById('heroNumber').textContent   = fmtAcctNo(a.account_number);
-  document.getElementById('heroBalance').textContent  = fmtUSD(a.balance);
+  document.getElementById('heroBalance').textContent  = _fmtBal(a.balance);
   document.getElementById('heroRouting').textContent  = a.routing_number || '021000021';
   const st = document.getElementById('heroStatus');
   st.textContent = (a.status || 'active').replace(/\b\w/g, c => c.toUpperCase());
 
-  // Switcher: only show wrapper when there are accounts
   const switcherWrap = document.getElementById('heroSwitcherWrap');
   if (switcherWrap) switcherWrap.style.display = _accounts.length ? '' : 'none';
 
@@ -4073,46 +4291,161 @@ function renderHero() {
     const t = (acc.account_type || 'account').replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
     return `<div class="acct-chip ${i === _selAcct ? 'sel' : ''}" onclick="selectAcct(${i})" role="button" aria-label="${t} ••${(acc.account_number||'').slice(-4)}">
       <div class="acct-chip-type">${t}</div>
-      <div class="acct-chip-bal">${fmtUSD(acc.balance)}</div>
+      <div class="acct-chip-bal">${_fmtBal(acc.balance)}</div>
       <div class="acct-chip-num">Account ••${(acc.account_number || '????').slice(-4)}</div>
     </div>`;
   }).join('');
 }
 function selectAcct(i) { _selAcct = i; renderHero(); renderAccountsList(); }
 
+const _PACT = {
+  checking:          { color:'#c9a84c', fade:'rgba(201,168,76,.08)', border:'rgba(201,168,76,.28)', label:'Checking',
+    icon:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>' },
+  savings:           { color:'#60a5fa', fade:'rgba(96,165,250,.08)',  border:'rgba(96,165,250,.28)',  label:'Savings',
+    icon:'<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' },
+  money_market:      { color:'#4ade80', fade:'rgba(74,222,128,.08)',  border:'rgba(74,222,128,.28)',  label:'Money Market',
+    icon:'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>' },
+  cd:                { color:'#38bdf8', fade:'rgba(56,189,248,.08)',  border:'rgba(56,189,248,.28)',  label:'CD',
+    icon:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' },
+  ira:               { color:'#a78bfa', fade:'rgba(167,139,250,.08)', border:'rgba(167,139,250,.28)', label:'IRA',
+    icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
+  business_checking: { color:'#818cf8', fade:'rgba(129,140,248,.08)', border:'rgba(129,140,248,.28)', label:'Business Checking',
+    icon:'<path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>' },
+  business_savings:  { color:'#2dd4bf', fade:'rgba(45,212,191,.08)',  border:'rgba(45,212,191,.28)',  label:'Business Savings',
+    icon:'<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' },
+  business:          { color:'#818cf8', fade:'rgba(129,140,248,.08)', border:'rgba(129,140,248,.28)', label:'Business',
+    icon:'<path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>' },
+};
+
 function renderAccountsList() {
   const el = document.getElementById('accountsList');
   if (!el) return;
-  if (!_accounts.length) { el.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;padding:8px 0;">No accounts yet.</div>'; return; }
-  const ICON = {
-    checking:     '<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
-    savings:      '<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
-    money_market: '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>',
-    business:     '<path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>',
-  };
+  if (!_accounts.length) {
+    el.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;padding:12px 0;text-align:center;">No accounts yet.</div>';
+    return;
+  }
   el.innerHTML = _accounts.map((a, i) => {
-    const type  = (a.account_type || 'account').replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
-    const icon  = ICON[a.account_type] || ICON.checking;
-    const sub   = a.interest_rate ? (a.interest_rate * 100).toFixed(2) + '% APY' : 'ZenithOne Credit Union';
-    const tint  = a.account_type === 'savings' ? '96,165,250' : a.account_type === 'money_market' ? '74,222,128' : '201,168,76';
-    const stroke= a.account_type === 'savings' ? '#60a5fa' : a.account_type === 'money_market' ? '#4ade80' : 'var(--gold-400)';
-    const selRing = i === _selAcct ? 'box-shadow:0 0 0 1px rgba(201,168,76,.35) inset;' : '';
-    return `<div class="account-card-mini" onclick="selectAcct(${i})" style="${selRing}" title="Show on account header">
-      <div style="display:flex;align-items:center;gap:12px;min-width:0;">
-        <div style="width:36px;height:36px;border-radius:10px;background:rgba(${tint},.12);display:flex;align-items:center;justify-content:center;color:${stroke};flex-shrink:0;">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">${icon}</svg>
+    const s    = _PACT[a.account_type] || _PACT.checking;
+    const name = a.account_name || (s.label + ' Account');
+    const last4 = (a.account_number || '????').slice(-4);
+    const apy  = a.interest_rate ? (a.interest_rate * 100).toFixed(2) + '% APY' : null;
+    const active = (a.status || 'active').toLowerCase() === 'active';
+    return `<div class="pact-tile${i === _selAcct ? ' pact-sel' : ''}"
+               style="--pc:${s.color};--pc-fade:${s.fade};--pc-border:${s.border};"
+               onclick="selectAcct(${i})">
+      <div class="pact-row1">
+        <div class="pact-icon-wrap">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">${s.icon}</svg>
         </div>
-        <div style="min-width:0;">
-          <div style="font-size:.85rem;font-weight:500;">${type}</div>
-          <div style="font-size:.72rem;color:var(--slate-500);font-family:'Courier New',monospace;">••${(a.account_number || '').slice(-4)} · ${sub}</div>
+        <div class="pact-meta">
+          <div class="pact-type-lbl">${s.label}</div>
+          <div class="pact-acct-name">${name}</div>
+        </div>
+        <div class="pact-status-chip${active ? '' : ' pact-pend'}">
+          ${active ? 'Active' : (a.status||'Pending').replace(/\b\w/g,c=>c.toUpperCase())}
         </div>
       </div>
-      <div style="text-align:right;flex-shrink:0;">
-        <div style="font-family:var(--font-display);font-size:1rem;">${fmtUSD(a.balance)}</div>
-        <div class="badge badge-green" style="font-size:.6rem;padding:2px 6px;">${(a.status || 'active').replace(/\b\w/g, c => c.toUpperCase())}</div>
+      <div class="pact-row2">
+        <div>
+          <div class="pact-bal-val">${_fmtBal(a.balance)}</div>
+          <div class="pact-bal-sub">Available Balance</div>
+        </div>
+        <div class="pact-right">
+          <div class="pact-num-txt">••••&nbsp;&nbsp;${last4}</div>
+          ${apy ? `<div class="pact-apy-txt">${apy}</div>` : ''}
+        </div>
       </div>
     </div>`;
   }).join('');
+}
+
+// ─── Balance visibility toggle ────────────────────────────────
+const _EYE_OPEN = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+const _EYE_OFF  = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+
+function toggleBalances() {
+  _balHidden = !_balHidden;
+  localStorage.setItem('zo_bal_hidden', _balHidden ? '1' : '0');
+  const btn = document.getElementById('balToggleBtn');
+  if (btn) {
+    btn.innerHTML = _balHidden ? _EYE_OFF : _EYE_OPEN;
+    btn.setAttribute('aria-pressed', _balHidden ? 'true' : 'false');
+    btn.title = _balHidden ? 'Show balances' : 'Hide balances';
+  }
+  refreshBalanceDisplays();
+}
+
+function refreshBalanceDisplays() {
+  if (!_summary) return;
+  const _s = id => document.getElementById(id);
+  const set = (id, val) => { const e = _s(id); if (e) e.textContent = val; };
+  set('totalBalance',    _fmtBal(_summary.total_balance));
+  set('portfolioValue',  _fmtBal(_summary.portfolio_value));
+  set('creditAvailable', _fmtBal(_summary.credit_available));
+  set('snapPortfolio',   _fmtBal(_summary.portfolio_value));
+  set('snapCredit',      _fmtBal(_summary.credit_available));
+  set('bannerNetWorth',  _fmtBal(_summary.total_balance));
+  renderHero();
+  renderAccountsList();
+  // Re-render recent transactions so amounts are masked
+  if (_lastTxns) _renderRecentTxns(_lastTxns);
+  // Re-render spending
+  if (_lastSpending) _renderSpending(_lastSpending.entries, _lastSpending.total);
+}
+
+let _lastTxns = null, _lastSpending = null;
+
+function _renderRecentTxns(txns) {
+  _lastTxns = txns;
+  const el = document.getElementById('recentTransactions');
+  if (!el) return;
+  if (!txns || !txns.length) { el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--slate-500);">No transactions yet.</div>'; return; }
+  const now = new Date();
+  el.innerHTML = txns.slice(0, 5).map(t => {
+    const isCredit = ['credit','transfer_in','interest','refund'].includes(t.transaction_type);
+    const amt = _fmtAmt(t.amount, isCredit);
+    const icon = _txCatIcon(t.category);
+    const d = new Date(t.created_at);
+    const dateStr = d.toDateString() === now.toDateString() ? 'Today'
+      : d.toDateString() === new Date(now - 864e5).toDateString() ? 'Yesterday'
+      : d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    return `<div class="transaction-item">
+      <div class="transaction-icon">${icon}</div>
+      <div class="transaction-info">
+        <div class="transaction-name">${t.description}</div>
+        <div class="transaction-date">${dateStr} · ${t.category}</div>
+      </div>
+      <div>
+        <div class="transaction-amount ${isCredit ? 'credit' : 'debit'}">${amt}</div>
+        <div class="transaction-status completed">Completed</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function _renderSpending(entries, total) {
+  _lastSpending = { entries, total };
+  const COLORS = ['#c9a84c','#60a5fa','#a78bfa','#4ade80','#f87171'];
+  const catTotal = entries.reduce((s,[,v]) => s + v, 0) || 1;
+  const totalEl = document.getElementById('totalSpent');
+  if (totalEl) totalEl.textContent = _balHidden ? '••••••' : ('$' + total.toLocaleString('en-US', { minimumFractionDigits:2 }));
+  const catEl = document.getElementById('spendingCategories');
+  if (catEl) catEl.innerHTML = entries.length === 0
+    ? '<div style="color:var(--slate-500);font-size:.85rem;padding:8px 0;">No spending this month.</div>'
+    : entries.map(([name, amt], i) => {
+        const pct  = Math.round((amt / catTotal) * 100);
+        const disp = _balHidden ? '••••••' : ('$' + amt.toLocaleString('en-US', { minimumFractionDigits:2 }));
+        return `<div class="spending-row">
+          <div class="spending-dot" style="background:${COLORS[i]};"></div>
+          <div style="flex:1;">
+            <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:5px;">
+              <span style="color:var(--slate-300);">${name}</span>
+              <span style="color:var(--white);">${disp}</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${COLORS[i]};opacity:.8;"></div></div>
+          </div>
+        </div>`;
+      }).join('');
 }
 
 function copyAcctNumber() {
@@ -4152,6 +4485,28 @@ function sampleSeries(arr, n) {
 }
 
 async function loadDashboardData() {
+  // ── Instant render from cache — accounts appear immediately on return visits ──
+  (function _restoreFromCache() {
+    try {
+      const c = JSON.parse(localStorage.getItem('zo_dash_cache') || 'null');
+      if (!c || !Array.isArray(c.accounts) || !c.accounts.length) return;
+      _summary  = c;
+      _accounts = c.accounts;
+      const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+      set('totalBalance',    _fmtBal(c.total_balance));
+      set('portfolioValue',  _fmtBal(c.portfolio_value));
+      set('creditAvailable', _fmtBal(c.credit_available));
+      set('rewardPoints',    (c.reward_points || 0).toLocaleString());
+      set('snapPortfolio',   _fmtBal(c.portfolio_value));
+      set('snapCredit',      _fmtBal(c.credit_available));
+      set('snapPoints',      (c.reward_points || 0).toLocaleString());
+      set('bannerNetWorth',  _fmtBal(c.total_balance));
+      if (c.full_name) { const wn = document.getElementById('welcomeName'); if (wn && !wn.textContent.trim()) wn.textContent = c.full_name.split(' ')[0]; }
+      renderHero();
+      renderAccountsList();
+    } catch (_) {}
+  })();
+
   try {
     const [summary, txnResult] = await Promise.all([
       callEdgeFunction('account-summary', {}),
@@ -4164,27 +4519,34 @@ async function loadDashboardData() {
       _summary  = summary;
       _accounts = summary.accounts || [];
 
-      document.getElementById('totalBalance').textContent    = fmtUSD(summary.total_balance);
-      document.getElementById('portfolioValue').textContent  = fmtUSD(summary.portfolio_value);
-      document.getElementById('creditAvailable').textContent = fmtUSD(summary.credit_available);
+      // Persist to cache for instant next-visit render
+      try { localStorage.setItem('zo_dash_cache', JSON.stringify(summary)); } catch (_) {}
+
+      document.getElementById('totalBalance').textContent    = _fmtBal(summary.total_balance);
+      document.getElementById('portfolioValue').textContent  = _fmtBal(summary.portfolio_value);
+      document.getElementById('creditAvailable').textContent = _fmtBal(summary.credit_available);
       document.getElementById('rewardPoints').textContent    = (summary.reward_points || 0).toLocaleString();
 
-      // Portfolio profit / loss (admin-controlled or computed from holdings)
+      // Banner net worth
+      const bnw = document.getElementById('bannerNetWorth');
+      if (bnw) bnw.textContent = _fmtBal(summary.total_balance);
+
+      // Portfolio profit / loss
       const gain = Number(summary.portfolio_gain) || 0;
-      const gEl = document.getElementById('portfolioChange');
+      const gEl  = document.getElementById('portfolioChange');
       if (gEl) {
         if (summary.portfolio_value > 0 || gain !== 0) {
-          gEl.textContent = (gain >= 0 ? '+' : '−') + fmtUSD(Math.abs(gain)).slice(1) + ' total';
+          gEl.textContent = _balHidden ? '——' : ((gain >= 0 ? '+' : '−') + fmtUSD(Math.abs(gain)).slice(1) + ' total');
           gEl.style.color = gain >= 0 ? 'var(--green-400)' : 'var(--red-400)';
         } else { gEl.textContent = '—'; gEl.style.color = 'var(--slate-500)'; }
       }
 
       // Wealth snapshot
-      document.getElementById('snapPortfolio').textContent = fmtUSD(summary.portfolio_value);
-      document.getElementById('snapCredit').textContent    = fmtUSD(summary.credit_available);
+      document.getElementById('snapPortfolio').textContent = _fmtBal(summary.portfolio_value);
+      document.getElementById('snapCredit').textContent    = _fmtBal(summary.credit_available);
       document.getElementById('snapPoints').textContent    = (summary.reward_points || 0).toLocaleString();
 
-      // Premium account hero + My Accounts list
+      // Account hero + My Accounts list
       renderHero();
       renderAccountsList();
 
@@ -4211,16 +4573,15 @@ async function loadDashboardData() {
       if (hasCard && summary.primary_card) {
         const pc = summary.primary_card;
         document.getElementById('dashCardNumber').textContent = pc.last_four || '0000';
-        const tierLabel = (pc.tier || 'standard').toUpperCase().replace(/_/g, ' ');
         const tierEl = document.getElementById('dashCardTier');
-        if (tierEl) tierEl.textContent = tierLabel;
+        if (tierEl) tierEl.textContent = (pc.tier || 'standard').toUpperCase().replace(/_/g, ' ');
         const holder = document.getElementById('cardholderName');
         if (holder && pc.cardholder_name) holder.textContent = pc.cardholder_name.toUpperCase();
         const expEl = document.getElementById('dashCardExpiry');
         if (expEl && pc.expiry_month) expEl.textContent = String(pc.expiry_month).padStart(2,'0') + '/' + String(pc.expiry_year || '').slice(-2);
       }
 
-      // Credit score + loan applications (bundled with summary — no extra API call)
+      // Credit score + loan applications
       renderCreditSection(summary.credit_profile || null, summary.loan_applications || []);
     }
 
@@ -4230,58 +4591,20 @@ async function loadDashboardData() {
     currentChartData = chartData['1Y'];
     drawBalanceChart(currentChartData);
 
-    // Recent transactions + spending
+    // Recent transactions (via shared renderer so toggle re-uses it)
+    _renderRecentTxns(allTxns);
+
+    // Spending by category
     {
-      const txns = allTxns;
-
-      document.getElementById('recentTransactions').innerHTML = txns.length === 0
-        ? '<div style="padding:24px;text-align:center;color:var(--slate-500);">No transactions yet.</div>'
-        : txns.slice(0, 5).map(t => {
-            const isCredit = ['credit','transfer_in','interest','refund'].includes(t.transaction_type);
-            const amt = (isCredit ? '+' : '-') + '$' + Math.abs(t.amount).toLocaleString('en-US', { minimumFractionDigits: 2 });
-            const icon = _txCatIcon(t.category);
-            const d = new Date(t.created_at), now = new Date();
-            const dateStr = d.toDateString() === now.toDateString() ? 'Today'
-              : d.toDateString() === new Date(now - 864e5).toDateString() ? 'Yesterday'
-              : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            return `<div class="transaction-item">
-              <div class="transaction-icon">${icon}</div>
-              <div class="transaction-info">
-                <div class="transaction-name">${t.description}</div>
-                <div class="transaction-date">${dateStr} · ${t.category}</div>
-              </div>
-              <div>
-                <div class="transaction-amount ${isCredit ? 'credit' : 'debit'}">${amt}</div>
-                <div class="transaction-status completed">Completed</div>
-              </div>
-            </div>`;
-          }).join('');
-
       const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
       const spending = {};
       let totalSpent = 0;
-      txns.filter(t => ['debit','fee','transfer_out'].includes(t.transaction_type) && new Date(t.created_at) >= monthStart)
-          .forEach(t => { spending[t.category] = (spending[t.category]||0) + t.amount; totalSpent += t.amount; });
-      const COLORS = ['#c9a84c','#60a5fa','#a78bfa','#4ade80','#f87171'];
+      allTxns.filter(t => ['debit','fee','transfer_out'].includes(t.transaction_type) && new Date(t.created_at) >= monthStart)
+             .forEach(t => { spending[t.category] = (spending[t.category]||0) + t.amount; totalSpent += t.amount; });
       const entries = Object.entries(spending).sort((a,b) => b[1]-a[1]).slice(0,4);
-      const catTotal = entries.reduce((s,[,v]) => s + v, 0) || 1;
-      document.getElementById('spendingCategories').innerHTML = entries.length === 0
-        ? '<div style="color:var(--slate-500);font-size:.85rem;padding:8px 0;">No spending this month.</div>'
-        : entries.map(([name,amt],i) => {
-            const pct = Math.round((amt/catTotal)*100);
-            return `<div class="spending-row">
-              <div class="spending-dot" style="background:${COLORS[i]};"></div>
-              <div style="flex:1;">
-                <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:5px;">
-                  <span style="color:var(--slate-300);">${name}</span>
-                  <span style="color:var(--white);">$${amt.toLocaleString('en-US',{minimumFractionDigits:2})}</span>
-                </div>
-                <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${COLORS[i]};opacity:.8;"></div></div>
-              </div>
-            </div>`;
-          }).join('');
-      document.getElementById('totalSpent').textContent = '$' + totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      _renderSpending(entries, totalSpent);
     }
+
   } catch(e) {
     console.warn('Dashboard data load failed:', e);
   }

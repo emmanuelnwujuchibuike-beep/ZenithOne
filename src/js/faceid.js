@@ -44,7 +44,7 @@
   }
 
   async function isAvailable() {
-    if (!global.PublicKeyCredential || !global.isSecureContext) return false;
+    if (!global.PublicKeyCredential) return false;
     try { return await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable(); }
     catch { return false; }
   }
@@ -345,10 +345,19 @@
       if (!assertion) throw new Error('Authentication failed.');
 
       const rt = localStorage.getItem(LS_TOKEN);
-      if (!rt) throw new Error('Your secure session expired. Please sign in with your password once.');
+      if (!rt) {
+        showResult(false, 'Session Expired', 'Sign in with your password once to re-link ' + getBiometricLabel() + '.');
+        setTimeout(() => { hideOverlay(); window.location.href = 'login.html'; }, 2400);
+        throw new Error('session_expired');
+      }
 
       const { data, error } = await sb.auth.refreshSession({ refresh_token: rt });
-      if (error || !data?.session) throw new Error('Your secure session expired. Please sign in with your password once.');
+      if (error || !data?.session) {
+        localStorage.removeItem(LS_TOKEN); // clear stale token; credential stays enrolled
+        showResult(false, 'Session Expired', 'Sign in with your password once to re-link ' + getBiometricLabel() + '.');
+        setTimeout(() => { hideOverlay(); window.location.href = 'login.html'; }, 2400);
+        throw new Error('session_expired');
+      }
 
       localStorage.setItem(LS_TOKEN, data.session.refresh_token); // keep fresh (rotation)
       // Face ID is device-bound — treat as remember-me for 30 days
@@ -365,6 +374,7 @@
       return true;
     } catch (e) {
       if (cancelled) { hideOverlay(); throw new Error('Sign-in cancelled.'); }
+      if (e && e.message === 'session_expired') throw e; // already handled above
       const msg = friendlyError(e);
       showResult(false, 'Sign-In Failed', msg);
       setTimeout(hideOverlay, 2000);

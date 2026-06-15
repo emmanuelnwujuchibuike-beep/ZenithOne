@@ -4,7 +4,8 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" },
+        { "key": "Permissions-Policy", "value": "publickey-credentials-create=(*), publickey-credentials-get=(*)" }
       ]
     }
   ]

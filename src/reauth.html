@@ -554,8 +554,9 @@
     _showBioScanning();
     try {
       await window.ZenithFaceID.loginWithFaceId();
-      // loginWithFaceId() redirects on success — code below only runs on failure
+      // loginWithFaceId() redirects on success or session_expired — code below only on auth failure
     } catch (e) {
+      if (e && e.message === 'session_expired') return; // already redirecting to login.html
       _showBioFailed(e && e.message ? e.message : null);
     }
   };

@@ -3778,6 +3778,33 @@ async function aLoadCardRequests() {
   }
 }
 
+// Mini card visual data keyed by card_type_key
+const ADMIN_CARD_VISUAL = {
+  basic_debit:     { grad:'linear-gradient(135deg,#0a1428,#162a52)',  edge:'#60a5fa', accent:'#60a5fa', label:'Debit' },
+  rewards_debit:   { grad:'linear-gradient(135deg,#1a0e00,#c9920a)',  edge:'#f5b823', accent:'#f5b823', label:'Debit' },
+  platinum_credit: { grad:'linear-gradient(135deg,#9298a0,#eef2f5)',  edge:'#e0e5ea', accent:'#94a3b8', label:'Credit' },
+  cashback_credit: { grad:'linear-gradient(135deg,#002a10,#00a844)',  edge:'#4ade80', accent:'#4ade80', label:'Credit' },
+  travel_credit:   { grad:'linear-gradient(135deg,#001840,#0080e8)',  edge:'#38bdf8', accent:'#38bdf8', label:'Credit' },
+  secured_credit:  { grad:'linear-gradient(135deg,#1a0030,#7700d8)',  edge:'#a78bfa', accent:'#a78bfa', label:'Credit' },
+  business_debit:  { grad:'linear-gradient(135deg,#071228,#1c4070)',  edge:'#5cc4f8', accent:'#38bdf8', label:'Debit' },
+  business_credit: { grad:'linear-gradient(135deg,#0a0a0a,#221c12)',  edge:'#d4b35a', accent:'#c9a84c', label:'Credit' },
+};
+
+function _adminCardVisual(key) {
+  if (!key) return ADMIN_CARD_VISUAL.basic_debit;
+  const k = key.toLowerCase().replace(/[\s-]/g,'_');
+  return ADMIN_CARD_VISUAL[k] || ADMIN_CARD_VISUAL[Object.keys(ADMIN_CARD_VISUAL).find(x => k.includes(x.split('_')[0])) || ''] || ADMIN_CARD_VISUAL.basic_debit;
+}
+
+function _extractNetwork(cardName) {
+  const m = (cardName || '').match(/\(([^)]+)\)/);
+  return m ? m[1] : null;
+}
+
+function _stripNetwork(cardName) {
+  return (cardName || '').replace(/\s*\([^)]*\)/, '').trim();
+}
+
 function aRenderCardRequests() {
   const filter = document.getElementById('aCardReqFilter').value;
   const list   = filter === 'all' ? _aCardRequests : _aCardRequests.filter(r => r.status === filter);
@@ -3789,38 +3816,65 @@ function aRenderCardRequests() {
   }
 
   const STATUS_COLORS = { pending:'#f59e0b', issued:'#4ade80', rejected:'#f87171', approved:'#4ade80' };
-  const STATUS_LABELS = { pending:'Pending', issued:'Approved', rejected:'Rejected', approved:'Approved' };
+  const STATUS_LABELS = { pending:'Pending', issued:'Issued', rejected:'Rejected', approved:'Approved' };
 
   el.innerHTML = `<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:.84rem;">
     <thead><tr style="border-bottom:1px solid rgba(255,255,255,.08);">
       <th style="text-align:left;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Member</th>
-      <th style="text-align:left;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Card</th>
+      <th style="text-align:left;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Card Applied For</th>
       <th style="text-align:right;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Fee</th>
-      <th style="text-align:left;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Date</th>
+      <th style="text-align:left;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Applied</th>
       <th style="text-align:center;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Status</th>
       <th style="text-align:center;padding:10px 12px;font-size:.7rem;letter-spacing:.06em;color:var(--slate-500);font-weight:500;text-transform:uppercase;">Actions</th>
     </tr></thead>
     <tbody>${list.map(r => {
-      const date    = new Date(r.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-      const fee     = r.annual_fee === 0 ? 'Free' : '$' + r.annual_fee + '/yr';
-      const col     = STATUS_COLORS[r.status] || '#64748b';
-      const lbl     = STATUS_LABELS[r.status] || r.status;
+      const date     = new Date(r.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+      const fee      = r.annual_fee === 0 ? 'Free' : '$' + r.annual_fee + '/yr';
+      const col      = STATUS_COLORS[r.status] || '#64748b';
+      const lbl      = STATUS_LABELS[r.status] || r.status;
       const initials = (r.user_name || r.user_email || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
       const isPending = r.status === 'pending';
+
+      // Card visual data
+      const cv       = _adminCardVisual(r.card_type_key);
+      const network  = _extractNetwork(r.card_name);
+      const cardLabel= _stripNetwork(r.card_name);
+      const isCredit = (r.card_category || cv.label).toLowerCase() === 'credit';
+      const typeColor= isCredit ? 'var(--gold-400)' : '#60a5fa';
+      const typeLabel= isCredit ? 'Credit' : 'Debit';
+
       return `<tr style="border-bottom:1px solid rgba(255,255,255,.04);" onmouseover="this.style.background='rgba(255,255,255,.025)'" onmouseout="this.style.background=''">
         <td style="padding:12px;">
           <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:30px;height:30px;border-radius:50%;background:rgba(201,168,76,.1);display:flex;align-items:center;justify-content:center;color:var(--gold-400);font-family:var(--font-display);font-size:.75rem;flex-shrink:0;">${initials}</div>
+            <div style="width:32px;height:32px;border-radius:50%;background:rgba(201,168,76,.1);display:flex;align-items:center;justify-content:center;color:var(--gold-400);font-family:var(--font-display);font-size:.78rem;flex-shrink:0;">${initials}</div>
             <div style="min-width:0;">
               <div style="color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;">${r.user_name || '—'}</div>
-              <div style="font-size:.75rem;color:var(--slate-500);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;">${r.user_email || ''}</div>
+              <div style="font-size:.73rem;color:var(--slate-500);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;">${r.user_email || ''}</div>
             </div>
           </div>
         </td>
-        <td style="padding:12px;color:var(--slate-300);">${r.card_name}</td>
-        <td style="padding:12px;text-align:right;color:var(--slate-400);">${fee}</td>
-        <td style="padding:12px;color:var(--slate-500);font-size:.8rem;">${date}</td>
-        <td style="padding:12px;text-align:center;"><span style="font-size:.72rem;letter-spacing:.05em;color:${col};background:${col}18;border:1px solid ${col}30;padding:3px 10px;border-radius:99px;">${lbl}</span></td>
+        <td style="padding:12px;">
+          <div style="display:flex;align-items:center;gap:11px;">
+            <!-- Mini card visual -->
+            <div style="width:52px;height:33px;border-radius:6px;background:${cv.grad};border:1px solid ${cv.edge};flex-shrink:0;position:relative;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.4);">
+              <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.18) 0%,transparent 55%);"></div>
+              <div style="position:absolute;bottom:5px;left:5px;width:10px;height:8px;border-radius:2px;background:${cv.edge};opacity:.55;"></div>
+              <div style="position:absolute;top:5px;right:5px;font-size:.28rem;letter-spacing:.08em;color:${cv.edge};opacity:.7;font-weight:700;line-height:1;">ZO</div>
+              <div style="position:absolute;inset:0;background:linear-gradient(125deg,transparent 30%,rgba(255,255,255,.08) 55%,transparent 80%);animation:shimmerSweep 5s infinite linear;"></div>
+            </div>
+            <div style="min-width:0;">
+              <div style="color:#fff;font-weight:500;font-size:.84rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">${cardLabel}</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                <span style="font-size:.6rem;padding:2px 8px;border-radius:99px;background:${typeColor}18;border:1px solid ${typeColor}35;color:${typeColor};font-weight:600;letter-spacing:.08em;text-transform:uppercase;">${typeLabel}</span>
+                ${network ? `<span style="font-size:.7rem;color:var(--slate-500);">${network}</span>` : ''}
+                ${r.card_type_key ? `<span style="font-size:.65rem;color:rgba(255,255,255,.2);font-family:monospace;">${r.card_type_key}</span>` : ''}
+              </div>
+            </div>
+          </div>
+        </td>
+        <td style="padding:12px;text-align:right;color:${cv.accent};font-weight:600;">${fee}</td>
+        <td style="padding:12px;color:var(--slate-500);font-size:.8rem;white-space:nowrap;">${date}</td>
+        <td style="padding:12px;text-align:center;"><span style="font-size:.72rem;letter-spacing:.05em;color:${col};background:${col}18;border:1px solid ${col}30;padding:3px 12px;border-radius:99px;font-weight:600;">${lbl}</span></td>
         <td style="padding:12px;text-align:center;">
           ${isPending ? `
             <div style="display:flex;justify-content:center;gap:8px;">

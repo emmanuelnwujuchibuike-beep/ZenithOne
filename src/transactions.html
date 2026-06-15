@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <title>Transactions — ZenithOne Credit Union</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
@@ -13,21 +16,23 @@
     .txn-summary-strip {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 16px;
+      gap: 14px;
       margin-bottom: 24px;
     }
-    @media (max-width: 1100px) { .txn-summary-strip { grid-template-columns: repeat(3, 1fr); } }
-    @media (max-width: 680px)  { .txn-summary-strip { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 440px)  { .txn-summary-strip { grid-template-columns: 1fr; } }
+    @media (max-width: 1200px) { .txn-summary-strip { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 700px)  { .txn-summary-strip { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 400px)  { .txn-summary-strip { grid-template-columns: 1fr 1fr; gap: 10px; } }
 
     .txn-stat {
-      background: linear-gradient(145deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,.02) 100%);
+      background: linear-gradient(145deg, rgba(255,255,255,.035) 0%, rgba(255,255,255,.015) 100%);
       border: 1px solid rgba(255,255,255,.07);
       border-radius: 16px;
-      padding: 18px 20px;
+      padding: 16px 18px;
       position: relative;
       overflow: hidden;
+      transition: border-color .2s, transform .2s;
     }
+    .txn-stat:hover { border-color: rgba(255,255,255,.13); transform: translateY(-1px); }
     .txn-stat::before {
       content: '';
       position: absolute;
@@ -41,62 +46,100 @@
     .txn-stat.s-portfolio::before{ background: linear-gradient(90deg,#818cf8,#6366f1); }
     .txn-stat.s-credit::before   { background: linear-gradient(90deg,#38bdf8,#0ea5e9); }
 
-    .txn-stat-label { font-size:.7rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--slate-500); margin-bottom:8px; }
-    .txn-stat-value { font-family:var(--font-display); font-size:1.3rem; font-weight:700; line-height:1.1; }
-    .txn-stat-sub   { font-size:.68rem; color:var(--slate-500); margin-top:5px; }
+    .txn-stat-label { font-size:.66rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--slate-500); margin-bottom:9px; }
+    .txn-stat-value { font-family:var(--font-display); font-size:1.25rem; font-weight:400; line-height:1.1; }
+    .txn-stat-sub   { font-size:.66rem; color:var(--slate-500); margin-top:6px; }
 
     /* ── Controls ── */
-    .txn-controls { display:flex; flex-direction:column; gap:14px; margin-bottom:20px; }
+    .txn-controls {
+      display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px;
+      background: rgba(255,255,255,.02);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 18px; padding: 16px 18px;
+    }
 
-    .txn-account-tabs { display:flex; gap:8px; flex-wrap:wrap; }
+    /* Account tabs — horizontal scroll, no wrap */
+    .txn-account-tabs {
+      display: flex; gap: 8px;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; flex-wrap: nowrap;
+      padding-bottom: 2px;
+    }
+    .txn-account-tabs::-webkit-scrollbar { display: none; }
+
     .acct-tab {
-      padding:7px 16px; border-radius:20px; font-size:.74rem; font-weight:600;
-      border:1px solid rgba(255,255,255,.08); background:transparent;
-      color:var(--slate-400); cursor:pointer; transition:all .18s; letter-spacing:.03em;
-      white-space:nowrap;
+      padding: 7px 16px; border-radius: 99px; font-size: .74rem; font-weight: 600;
+      border: 1px solid rgba(255,255,255,.08); background: transparent;
+      color: var(--slate-400); cursor: pointer; transition: all .18s; letter-spacing: .03em;
+      white-space: nowrap; flex-shrink: 0;
     }
-    .acct-tab:hover  { border-color:rgba(255,255,255,.18); color:var(--white); }
-    .acct-tab.active { background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.2); color:var(--white); }
+    .acct-tab:hover  { border-color: rgba(255,255,255,.18); color: var(--white); }
+    .acct-tab.active { background: rgba(255,255,255,.09); border-color: rgba(255,255,255,.22); color: var(--white); }
 
-    .txn-period-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    /* Period pills — horizontal scroll */
+    .txn-period-row {
+      display: flex; align-items: center; gap: 6px;
+      overflow-x: auto; flex-wrap: nowrap;
+      scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    }
+    .txn-period-row::-webkit-scrollbar { display: none; }
+    .txn-period-label { font-size: .64rem; color: var(--slate-500); font-weight: 700; letter-spacing: .1em; text-transform: uppercase; flex-shrink: 0; margin-right: 2px; }
+
     .period-pill {
-      padding:6px 14px; border-radius:20px; font-size:.74rem; font-weight:600;
-      border:1px solid rgba(255,255,255,.1); background:transparent;
-      color:var(--slate-400); cursor:pointer; transition:all .18s; letter-spacing:.04em;
+      padding: 6px 14px; border-radius: 99px; font-size: .74rem; font-weight: 600;
+      border: 1px solid rgba(255,255,255,.1); background: transparent;
+      color: var(--slate-400); cursor: pointer; transition: all .18s; letter-spacing: .04em;
+      white-space: nowrap; flex-shrink: 0;
     }
-    .period-pill:hover  { border-color:rgba(201,168,76,.4); color:var(--gold-400); }
-    .period-pill.active { background:rgba(201,168,76,.12); border-color:rgba(201,168,76,.5); color:var(--gold-400); }
+    .period-pill:hover  { border-color: rgba(201,168,76,.4); color: var(--gold-400); }
+    .period-pill.active { background: rgba(201,168,76,.12); border-color: rgba(201,168,76,.5); color: var(--gold-400); }
 
-    .txn-filter-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-    .txn-search-wrap { position:relative; flex:1; min-width:200px; }
-    .txn-search-wrap svg { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--slate-500); pointer-events:none; }
-    .txn-search-wrap input { padding-left:40px; }
+    /* Filter row + mobile toggle */
+    .txn-filter-toggle {
+      display: none; align-items: center; gap: 6px; flex-shrink: 0;
+      padding: 6px 14px; border-radius: 99px; font-size: .74rem; font-weight: 600;
+      border: 1px solid rgba(255,255,255,.1); background: transparent;
+      color: var(--slate-400); cursor: pointer; transition: all .18s; white-space: nowrap;
+    }
+    .txn-filter-toggle.active { border-color: rgba(201,168,76,.4); color: var(--gold-400); background: rgba(201,168,76,.07); }
+    .txn-filter-toggle svg { transition: transform .25s; }
+    .txn-filter-toggle.active svg { transform: rotate(180deg); }
+
+    .txn-filter-collapsible { display: flex; flex-direction: column; gap: 8px; }
+
+    .txn-filter-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .txn-search-wrap { position: relative; flex: 1; min-width: 180px; }
+    .txn-search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--slate-500); pointer-events: none; }
+    .txn-search-wrap input { padding-left: 40px; }
 
     /* ── Transaction card/list ── */
     .txn-card {
-      background:linear-gradient(145deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.02) 100%);
-      border:1px solid rgba(255,255,255,.07);
-      border-radius:20px;
-      overflow:hidden;
+      background: linear-gradient(145deg, rgba(255,255,255,.035) 0%, rgba(255,255,255,.015) 100%);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 20px;
+      overflow: hidden;
     }
 
     .txn-group-hdr {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:14px 20px 6px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px 6px;
+      position: sticky; top: 0; z-index: 2;
+      background: linear-gradient(180deg, rgba(6,18,37,.98) 70%, transparent);
     }
-    .txn-group-date { font-size:.69rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--slate-500); }
-    .txn-group-net  { font-size:.74rem; font-weight:600; }
+    .txn-group-date { font-size: .66rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-500); min-width: 0; }
+    .txn-date-short { display: none; }
+    .txn-group-net  { font-size: .74rem; font-weight: 600; flex-shrink: 0; }
 
     .txn-row {
-      display:grid;
-      grid-template-columns:48px 1fr auto;
-      align-items:center;
-      gap:14px;
-      padding:13px 20px;
-      cursor:pointer;
-      transition:background .15s;
-      position:relative;
-      border-top:1px solid rgba(255,255,255,.04);
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 20px;
+      cursor: pointer;
+      transition: background .15s;
+      position: relative;
+      border-top: 1px solid rgba(255,255,255,.04);
     }
     .txn-row::before {
       content:'';
@@ -235,12 +278,96 @@
     .txn-detail-val { font-size:.82rem; color:var(--white); text-align:right; word-break:break-all; }
 
     .txn-drawer-ftr {
-      padding:18px 24px;
-      border-top:1px solid rgba(255,255,255,.06);
-      display:flex; gap:10px; flex-shrink:0;
+      padding: 18px 24px;
+      border-top: 1px solid rgba(255,255,255,.06);
+      display: flex; gap: 10px; flex-shrink: 0;
     }
 
-    .sec-label { font-size:.68rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--slate-500); margin-bottom:12px; }
+    /* Mobile bottom-sheet handle */
+    .txn-drawer-handle {
+      display: none;
+      justify-content: center;
+      padding: 12px 0 6px;
+      flex-shrink: 0;
+    }
+    .txn-drawer-handle-bar {
+      width: 36px; height: 4px; border-radius: 2px;
+      background: rgba(255,255,255,.18);
+    }
+
+    .sec-label { font-size: .68rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--slate-500); margin-bottom: 12px; }
+
+    /* Export text hide on mobile */
+    @media (max-width: 600px) { .export-text { display: none; } }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      /* Filter toggle button visible on mobile */
+      .txn-filter-toggle { display: flex; }
+
+      /* Collapse filter by default on mobile */
+      .txn-filter-collapsible {
+        max-height: 0; overflow: hidden;
+        transition: max-height .28s ease, opacity .28s ease;
+        opacity: 0;
+      }
+      .txn-filter-collapsible.open { max-height: 260px; opacity: 1; }
+
+      /* Filter row becomes vertical on mobile */
+      .txn-filter-row { flex-direction: column; align-items: stretch; }
+      .txn-search-wrap { min-width: 0; }
+      .txn-filter-row .form-select { width: 100% !important; }
+
+      /* Transaction row: tighten on mobile */
+      .txn-row { padding: 12px 16px; gap: 11px; }
+      .txn-acct-label { display: none; }
+
+      /* Date format: short on mobile */
+      .txn-date-long  { display: none; }
+      .txn-date-short { display: inline; }
+
+      /* Bottom sheet drawer */
+      .txn-drawer {
+        right: 0; left: 0; bottom: 0; top: auto;
+        width: 100%; max-height: 88vh; max-height: 88dvh;
+        border-left: none;
+        border-radius: 22px 22px 0 0;
+        border-top: 1px solid rgba(201,168,76,.15);
+        transform: translateX(0) translateY(100%);
+        box-shadow: 0 -24px 60px rgba(0,0,0,.65);
+      }
+      .txn-drawer.open { transform: translateX(0) translateY(0); }
+      .txn-drawer-handle { display: flex; }
+      .txn-drawer-hdr { padding: 10px 20px 16px; }
+      .txn-drawer-body { padding: 16px 20px; }
+      .txn-drawer-ftr { padding: 14px 20px 20px; }
+
+      /* Pagination compact */
+      .txn-pag-info { display: none; }
+      .txn-pagination { justify-content: center; }
+    }
+
+    @media (max-width: 400px) {
+      .txn-summary-strip { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .txn-controls { padding: 12px 14px; }
+      .txn-row { grid-template-columns: 38px 1fr auto; gap: 10px; padding: 11px 14px; }
+    }
+
+    /* Print Statement modal period pills */
+    .stmt-pill {
+      padding: 5px 14px; border-radius: 99px; font-size: .72rem; font-weight: 600;
+      border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.04);
+      color: var(--slate-400); cursor: pointer; transition: all .15s;
+    }
+    .stmt-pill:hover { border-color: rgba(201,168,76,.4); color: #c9a84c; background: rgba(201,168,76,.07); }
+    .stmt-pill.active { border-color: rgba(201,168,76,.5); color: #e8d07a; background: rgba(201,168,76,.12); }
+
+    /* Print styles — statement only */
+    @media print {
+      body * { visibility: hidden !important; }
+      #stmtPrintDoc, #stmtPrintDoc * { visibility: visible !important; }
+      #stmtPrintDoc { position: fixed; inset: 0; width: 100%; padding: 0; margin: 0; }
+    }
   </style>
 </head>
 <body>
@@ -304,9 +431,13 @@
         <div class="app-topbar-title">Transactions</div>
       </div>
       <div class="app-topbar-right">
-        <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+        <button class="btn btn-ghost btn-sm" onclick="openPrintModal()" title="Print Statement" style="display:flex;align-items:center;gap:6px;">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          <span class="export-text">Statement</span>
+        </button>
+        <button class="btn btn-ghost btn-sm" onclick="exportCSV()" title="Export CSV">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export CSV
+          <span class="export-text">Export CSV</span>
         </button>
         <button class="btn btn-icon btn-ghost">
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -354,36 +485,45 @@
           <button class="acct-tab active" onclick="selectAccount(this,'')">All Accounts</button>
         </div>
 
-        <!-- Period pills -->
-        <div class="txn-period-row">
-          <span style="font-size:.68rem;color:var(--slate-500);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-right:4px;">Period</span>
-          <button class="period-pill active" onclick="selectPeriod(this,30)">30D</button>
-          <button class="period-pill"        onclick="selectPeriod(this,90)">3M</button>
-          <button class="period-pill"        onclick="selectPeriod(this,180)">6M</button>
-          <button class="period-pill"        onclick="selectPeriod(this,'ytd')">YTD</button>
-          <button class="period-pill"        onclick="selectPeriod(this,365)">1Y</button>
-          <button class="period-pill"        onclick="selectPeriod(this,'all')">All</button>
+        <!-- Period pills + filter toggle -->
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:nowrap;">
+          <div class="txn-period-row" style="flex:1;">
+            <span class="txn-period-label">Period</span>
+            <button class="period-pill active" onclick="selectPeriod(this,30)">30D</button>
+            <button class="period-pill"        onclick="selectPeriod(this,90)">3M</button>
+            <button class="period-pill"        onclick="selectPeriod(this,180)">6M</button>
+            <button class="period-pill"        onclick="selectPeriod(this,'ytd')">YTD</button>
+            <button class="period-pill"        onclick="selectPeriod(this,365)">1Y</button>
+            <button class="period-pill"        onclick="selectPeriod(this,'all')">All</button>
+          </div>
+          <button class="txn-filter-toggle" id="filterToggle" onclick="toggleFilters()" aria-expanded="false">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+            Filters
+            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
         </div>
 
-        <!-- Search + type + category + reset -->
-        <div class="txn-filter-row">
-          <div class="txn-search-wrap">
-            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-            <input type="search" id="txnSearch" class="form-input" placeholder="Search description, merchant, category…" oninput="applyFilters()" />
+        <!-- Search + type + category + reset — collapsible on mobile -->
+        <div class="txn-filter-collapsible" id="filterCollapsible">
+          <div class="txn-filter-row">
+            <div class="txn-search-wrap">
+              <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <input type="search" id="txnSearch" class="form-input" placeholder="Search transactions…" oninput="applyFilters()" />
+            </div>
+            <select class="form-input form-select" id="filterType" style="width:148px;" onchange="applyFilters()">
+              <option value="">All Types</option>
+              <option value="credit">Credits</option>
+              <option value="debit">Debits</option>
+              <option value="transfer">Transfers</option>
+            </select>
+            <select class="form-input form-select" id="filterCat" style="width:148px;" onchange="applyFilters()">
+              <option value="">All Categories</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="resetFilters()">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              Reset
+            </button>
           </div>
-          <select class="form-input form-select" id="filterType" style="width:148px;" onchange="applyFilters()">
-            <option value="">All Types</option>
-            <option value="credit">Credits</option>
-            <option value="debit">Debits</option>
-            <option value="transfer">Transfers</option>
-          </select>
-          <select class="form-input form-select" id="filterCat" style="width:148px;" onchange="applyFilters()">
-            <option value="">All Categories</option>
-          </select>
-          <button class="btn btn-ghost btn-sm" onclick="resetFilters()">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-            Reset
-          </button>
         </div>
 
       </div>
@@ -405,9 +545,72 @@
   </main>
 </div>
 
+<!-- ── Print Statement Modal ── -->
+<div id="printModalOvl" style="display:none;position:fixed;inset:0;z-index:800;background:rgba(4,16,30,.82);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)closePrintModal()">
+  <div style="background:linear-gradient(160deg,#081522,#0d1f35);border:1px solid rgba(201,168,76,.22);border-radius:20px;width:100%;max-width:520px;max-height:90dvh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.7);" onclick="event.stopPropagation()">
+    <!-- Header -->
+    <div style="padding:24px 28px 0;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:18px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(201,168,76,.65);margin-bottom:6px;">ZenithOne Credit Union</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:#fff;font-weight:400;">Account Statement</div>
+        </div>
+        <button onclick="closePrintModal()" style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--slate-400);cursor:pointer;padding:8px;line-height:0;">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+    <!-- Options -->
+    <div style="padding:22px 28px;display:flex;flex-direction:column;gap:18px;">
+      <!-- Account select -->
+      <div>
+        <div style="font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;color:var(--slate-500);font-weight:600;margin-bottom:8px;">Account</div>
+        <select id="stmtAcctSel" style="width:100%;padding:11px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:.88rem;outline:none;appearance:none;">
+          <option value="">All Accounts</option>
+        </select>
+      </div>
+      <!-- Period -->
+      <div>
+        <div style="font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;color:var(--slate-500);font-weight:600;margin-bottom:8px;">Statement Period</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div>
+            <div style="font-size:.68rem;color:var(--slate-500);margin-bottom:4px;">From</div>
+            <input type="date" id="stmtFrom" style="width:100%;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:.84rem;outline:none;color-scheme:dark;">
+          </div>
+          <div>
+            <div style="font-size:.68rem;color:var(--slate-500);margin-bottom:4px;">To</div>
+            <input type="date" id="stmtTo" style="width:100%;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:10px;color:#fff;font-size:.84rem;outline:none;color-scheme:dark;">
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">
+          <button onclick="setStmtPeriod(30)"  class="stmt-pill">30 Days</button>
+          <button onclick="setStmtPeriod(90)"  class="stmt-pill">3 Months</button>
+          <button onclick="setStmtPeriod(180)" class="stmt-pill">6 Months</button>
+          <button onclick="setStmtPeriod(365)" class="stmt-pill">1 Year</button>
+          <button onclick="setStmtPeriodYTD()" class="stmt-pill">YTD</button>
+        </div>
+      </div>
+      <!-- Statement info -->
+      <div id="stmtPreviewInfo" style="background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:12px 14px;font-size:.78rem;color:var(--slate-400);line-height:1.6;"></div>
+      <!-- Actions -->
+      <div style="display:flex;gap:10px;">
+        <button onclick="generateStatement()" style="flex:1;padding:13px;background:linear-gradient(135deg,rgba(201,168,76,.18),rgba(201,168,76,.1));border:1px solid rgba(201,168,76,.35);border-radius:11px;color:#e8d07a;font-size:.88rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .18s;" onmouseover="this.style.background='linear-gradient(135deg,rgba(201,168,76,.28),rgba(201,168,76,.18))'" onmouseout="this.style.background='linear-gradient(135deg,rgba(201,168,76,.18),rgba(201,168,76,.1))'">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print Statement
+        </button>
+        <button onclick="closePrintModal()" style="padding:13px 20px;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:11px;color:var(--slate-400);font-size:.84rem;cursor:pointer;">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ── Detail Drawer ── -->
 <div class="txn-drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 <div class="txn-drawer" id="txnDrawer">
+  <!-- Handle visible only on mobile bottom-sheet mode -->
+  <div class="txn-drawer-handle">
+    <div class="txn-drawer-handle-bar"></div>
+  </div>
   <div class="txn-drawer-hdr">
     <div class="txn-drawer-title">Transaction Detail</div>
     <button class="txn-drawer-close" onclick="closeDrawer()">
@@ -539,6 +742,11 @@ function loadAll() {
   _showLoading();
   var range = _periodRange(_period);
 
+  // Never let the spinner hang forever — fail to the error/retry state.
+  var _timed = false;
+  var _watchdog = setTimeout(function() { _timed = true; _showErr(); }, 20000);
+  var _clear = function() { clearTimeout(_watchdog); };
+
   Promise.all([
     callEdgeFunction('transaction-history', {
       limit:      500,
@@ -550,6 +758,8 @@ function loadAll() {
     callEdgeFunction('account-summary', {}),
     callEdgeFunction('investment-data', {}),
   ]).then(function(results) {
+    _clear();
+    if (_timed) return;
     var txnRes  = results[0] || {};
     var summRes = results[1] || {};
     var invRes  = results[2] || {};
@@ -569,6 +779,8 @@ function loadAll() {
     applyFilters();
 
   }).catch(function(err) {
+    _clear();
+    if (_timed) return;
     console.error('Transactions load error:', err);
     _showErr();
   });
@@ -651,6 +863,15 @@ function selectPeriod(btn, days) {
   loadAll();
 }
 
+/* ── Filter toggle (mobile) ── */
+function toggleFilters() {
+  var btn  = document.getElementById('filterToggle');
+  var col  = document.getElementById('filterCollapsible');
+  var open = col.classList.toggle('open');
+  btn.classList.toggle('active', open);
+  btn.setAttribute('aria-expanded', open);
+}
+
 /* ── Category filter build ── */
 function _buildCatFilter() {
   var cats = [];
@@ -729,8 +950,13 @@ function _render() {
     var dayNet  = dayTxns.reduce(function(s, t){ return s + (_isCredit(t) ? t.amount : -t.amount); }, 0);
     var netColor = dayNet >= 0 ? 'var(--green-400)' : 'var(--red-400)';
 
+    var dtLong  = _fmtDateLong(dayTxns[0].created_at);
+    var dtShort = new Date(dayTxns[0].created_at).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
     html += '<div class="txn-group-hdr">'
-      + '<div class="txn-group-date">' + _esc(_fmtDateLong(dayTxns[0].created_at)) + '</div>'
+      + '<div class="txn-group-date">'
+      + '<span class="txn-date-long">' + _esc(dtLong) + '</span>'
+      + '<span class="txn-date-short">' + _esc(dtShort) + '</span>'
+      + '</div>'
       + '<div class="txn-group-net" style="color:' + netColor + ';">' + _usdSigned(dayNet) + '</div>'
       + '</div>';
 
@@ -749,7 +975,8 @@ function _render() {
         + '<div class="txn-meta">'
         + '<div class="txn-name">' + _esc(t.description || '—') + '</div>'
         + '<div class="txn-sub"><span class="s-dot ' + dotCls + '"></span>'
-        + _esc(_typeLabel(t.transaction_type)) + ' &middot; ' + _esc(t.category || '—') + ' &middot; ' + _esc(_acctLabel(t.account_id, t.account_type))
+        + _esc(_typeLabel(t.transaction_type)) + ' &middot; ' + _esc(t.category || '—')
+        + '<span class="txn-acct-label"> &middot; ' + _esc(_acctLabel(t.account_id, t.account_type)) + '</span>'
         + '</div></div>'
         + '<div class="txn-right">'
         + '<div class="txn-amt" style="color:' + amtClr + ';">' + amtStr + '</div>'
@@ -920,6 +1147,251 @@ function downloadReceipt() {
 function reportIssue() {
   closeDrawer();
   if (typeof zenithToast === 'function') zenithToast('Dispute filed. A representative will review your case within 2 business days.', 'success', 6000);
+}
+
+/* ════════════════════════════════════════════════
+   PRINT STATEMENT
+   ════════════════════════════════════════════════ */
+var _stmtTxns = [];
+
+function openPrintModal() {
+  // Populate account selector
+  var sel = document.getElementById('stmtAcctSel');
+  sel.innerHTML = '<option value="">All Accounts</option>' +
+    _accounts.map(function(a) {
+      var label = (a.account_name || a.account_type || 'Account').replace(/_/g,' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+      return '<option value="' + a.id + '">' + label + ' ••••' + String(a.account_number||'').slice(-4) + '</option>';
+    }).join('');
+  // Default to current account filter
+  if (_acctId) sel.value = _acctId;
+  // Default dates to current period
+  setStmtPeriod(typeof _period === 'number' ? _period : 30);
+  document.getElementById('printModalOvl').style.display = 'flex';
+  _updateStmtPreview();
+}
+
+function closePrintModal() {
+  document.getElementById('printModalOvl').style.display = 'none';
+}
+
+function setStmtPeriod(days) {
+  var to   = new Date();
+  var from = new Date(to.getTime() - days * 86400000);
+  document.getElementById('stmtFrom').value = from.toISOString().split('T')[0];
+  document.getElementById('stmtTo').value   = to.toISOString().split('T')[0];
+  document.querySelectorAll('.stmt-pill').forEach(function(b){ b.classList.remove('active'); });
+  event && event.target && event.target.classList.add('active');
+  _updateStmtPreview();
+}
+
+function setStmtPeriodYTD() {
+  var now = new Date();
+  document.getElementById('stmtFrom').value = now.getFullYear() + '-01-01';
+  document.getElementById('stmtTo').value   = now.toISOString().split('T')[0];
+  document.querySelectorAll('.stmt-pill').forEach(function(b){ b.classList.remove('active'); });
+  event && event.target && event.target.classList.add('active');
+  _updateStmtPreview();
+}
+
+function _updateStmtPreview() {
+  var from  = document.getElementById('stmtFrom').value;
+  var to    = document.getElementById('stmtTo').value;
+  var acctId = document.getElementById('stmtAcctSel').value;
+  var acct  = acctId ? _accounts.find(function(a){ return a.id === acctId; }) : null;
+  var acctLabel = acct
+    ? (acct.account_name || acct.account_type || 'Account').replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();}) + ' ••••' + String(acct.account_number||'').slice(-4)
+    : 'All Accounts';
+
+  // Filter transactions for preview count
+  var txns = _all.filter(function(t) {
+    if (acctId && t.account_id !== acctId) return false;
+    if (from && t.created_at < from) return false;
+    if (to   && t.created_at.split('T')[0] > to) return false;
+    return true;
+  });
+
+  var credits = 0, debits = 0;
+  txns.forEach(function(t) {
+    if (_isCredit(t)) credits += +t.amount || 0;
+    else debits += +t.amount || 0;
+  });
+
+  var fromLabel = from ? new Date(from + 'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : '—';
+  var toLabel   = to   ? new Date(to   + 'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : '—';
+
+  document.getElementById('stmtPreviewInfo').innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;">' +
+    '<div><span style="color:var(--slate-600);">Account: </span>' + acctLabel + '</div>' +
+    '<div><span style="color:var(--slate-600);">Transactions: </span>' + txns.length + '</div>' +
+    '<div><span style="color:var(--slate-600);">From: </span>' + fromLabel + '</div>' +
+    '<div><span style="color:var(--slate-600);">Credits: </span><span style="color:#4ade80;">+' + _usd(credits) + '</span></div>' +
+    '<div><span style="color:var(--slate-600);">To: </span>' + toLabel + '</div>' +
+    '<div><span style="color:var(--slate-600);">Debits: </span><span style="color:#f87171;">−' + _usd(debits) + '</span></div>' +
+    '</div>';
+}
+
+function generateStatement() {
+  var from   = document.getElementById('stmtFrom').value;
+  var to     = document.getElementById('stmtTo').value;
+  var acctId = document.getElementById('stmtAcctSel').value;
+
+  if (!from || !to) { if(typeof zenithToast==='function') zenithToast('Please select a date range.','info'); return; }
+
+  // Filter transactions
+  var txns = _all.filter(function(t) {
+    if (acctId && t.account_id !== acctId) return false;
+    if (from && t.created_at < from) return false;
+    if (to   && t.created_at.split('T')[0] > to) return false;
+    return true;
+  }).sort(function(a,b){ return new Date(a.created_at) - new Date(b.created_at); });
+
+  if (!txns.length) { if(typeof zenithToast==='function') zenithToast('No transactions found for this period.','info'); return; }
+
+  var acct = acctId ? _accounts.find(function(a){ return a.id === acctId; }) : null;
+  var memberName = document.querySelector('.sidebar-user-name')?.textContent?.trim() || 'Member';
+  var stmtNo = 'ZO-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-6);
+
+  // Compute summary
+  var credits = 0, debits = 0;
+  txns.forEach(function(t) {
+    if (_isCredit(t)) credits += +t.amount || 0;
+    else debits += +t.amount || 0;
+  });
+  var net = credits - debits;
+
+  var fromLabel = new Date(from + 'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  var toLabel   = new Date(to   + 'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  var generated = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric', hour:'2-digit', minute:'2-digit'});
+
+  // Account details for header
+  var acctRows = '';
+  if (acct) {
+    var aLabel = (acct.account_name || acct.account_type || 'Account').replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+    acctRows = '<tr><td>Account</td><td>' + aLabel + ' &bull;&bull;&bull;&bull;' + String(acct.account_number||'').slice(-4) + '</td></tr>' +
+               '<tr><td>Routing Number</td><td>' + (acct.routing_number || '021000021') + '</td></tr>';
+  } else {
+    acctRows = _accounts.map(function(a) {
+      var aLabel = (a.account_name || a.account_type || 'Account').replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();});
+      return '<tr><td>Account</td><td>' + aLabel + ' &bull;&bull;&bull;&bull;' + String(a.account_number||'').slice(-4) + '</td></tr>';
+    }).join('');
+  }
+
+  // Transaction rows with running balance
+  var running = 0;
+  var txnRows = txns.map(function(t, i) {
+    var isCredit = _isCredit(t);
+    var amt = +t.amount || 0;
+    var debitAmt = isCredit ? '' : _usd(amt);
+    var creditAmt = isCredit ? _usd(amt) : '';
+    if (isCredit) running += amt; else running -= amt;
+    var date = new Date(t.created_at).toLocaleDateString('en-US',{month:'2-digit',day:'2-digit',year:'2-digit'});
+    var status = (t.status && t.status !== 'completed') ? ' <span style="color:#b45309;font-size:.7em;font-weight:700;">[' + t.status.toUpperCase() + ']</span>' : '';
+    var ref = t.reference_number || String(t.id||'').slice(0,8).toUpperCase();
+    return '<tr class="' + (i%2===0?'even':'odd') + '">' +
+      '<td style="white-space:nowrap;">' + date + '</td>' +
+      '<td>' + (t.description || '—') + status + '</td>' +
+      '<td style="white-space:nowrap;font-size:.8em;color:#666;">' + _typeLabel(t.transaction_type) + '</td>' +
+      '<td style="text-align:right;color:#c00;white-space:nowrap;">' + debitAmt + '</td>' +
+      '<td style="text-align:right;color:#007a30;white-space:nowrap;">' + creditAmt + '</td>' +
+      '<td style="text-align:right;font-weight:600;white-space:nowrap;color:' + (running>=0?'#002e1a':'#7a0000') + ';">' + (running>=0?'':'-') + _usd(Math.abs(running)) + '</td>' +
+      '</tr>';
+  }).join('');
+
+  // Open print window
+  var win = window.open('', '_blank', 'width=900,height=700,scrollbars=yes');
+  if (!win) { if(typeof zenithToast==='function') zenithToast('Please allow pop-ups to print the statement.','error'); return; }
+
+  win.document.write('<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">');
+  win.document.write('<title>Account Statement — ZenithOne Credit Union</title>');
+  win.document.write('<style>');
+  win.document.write('*{margin:0;padding:0;box-sizing:border-box;}');
+  win.document.write('body{font-family:"Times New Roman",Times,serif;font-size:11pt;color:#111;background:#fff;padding:0;}');
+  win.document.write('.stmt{max-width:800px;margin:0 auto;padding:32px 40px;}');
+  win.document.write('@media print{body{padding:0;}.stmt{padding:18px 24px;max-width:100%;}}');
+  // Header
+  win.document.write('.hd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0a1e3c;padding-bottom:16px;margin-bottom:20px;}');
+  win.document.write('.hd-left .logo{font-size:22pt;font-weight:700;color:#0a1e3c;letter-spacing:-.5px;}');
+  win.document.write('.hd-left .tagline{font-size:8pt;color:#666;letter-spacing:.12em;text-transform:uppercase;margin-top:4px;}');
+  win.document.write('.hd-right{text-align:right;font-size:8.5pt;color:#444;line-height:1.7;}');
+  win.document.write('.hd-right .stmt-type{font-size:14pt;font-weight:700;color:#0a1e3c;margin-bottom:4px;}');
+  // Meta table
+  win.document.write('.meta{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:22px;border:1px solid #ccc;}');
+  win.document.write('.meta-blk{padding:12px 16px;border-right:1px solid #ddd;}');
+  win.document.write('.meta-blk:nth-child(even){border-right:none;}');
+  win.document.write('.meta-blk h3{font-size:7.5pt;text-transform:uppercase;letter-spacing:.12em;color:#666;margin-bottom:8px;font-weight:700;}');
+  win.document.write('.meta-blk table{width:100%;font-size:9.5pt;border-collapse:collapse;}');
+  win.document.write('.meta-blk td{padding:2px 0;vertical-align:top;}');
+  win.document.write('.meta-blk td:first-child{color:#555;width:110px;font-size:8.5pt;}');
+  win.document.write('.meta-blk td:last-child{font-weight:600;color:#111;}');
+  // Summary
+  win.document.write('.summary{background:#f5f7fa;border:1px solid #dde;border-radius:4px;padding:14px 18px;margin-bottom:22px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}');
+  win.document.write('.sum-item{}');
+  win.document.write('.sum-lbl{font-size:7.5pt;text-transform:uppercase;letter-spacing:.1em;color:#666;font-weight:700;margin-bottom:4px;}');
+  win.document.write('.sum-val{font-size:13pt;font-weight:700;color:#0a1e3c;}');
+  win.document.write('.sum-val.cr{color:#007a30;}.sum-val.db{color:#c00;}.sum-val.nt{color:' + (net>=0?'#007a30':'#c00') + ';}');
+  // Transactions table
+  win.document.write('.txn-section{margin-bottom:24px;}');
+  win.document.write('.section-hd{font-size:9pt;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#0a1e3c;border-bottom:2px solid #0a1e3c;padding-bottom:6px;margin-bottom:0;}');
+  win.document.write('table.txns{width:100%;border-collapse:collapse;font-size:9pt;}');
+  win.document.write('table.txns th{background:#0a1e3c;color:#fff;padding:7px 8px;text-align:left;font-size:7.5pt;letter-spacing:.06em;text-transform:uppercase;font-weight:600;}');
+  win.document.write('table.txns th.r{text-align:right;}');
+  win.document.write('table.txns td{padding:6px 8px;border-bottom:1px solid #eee;vertical-align:middle;}');
+  win.document.write('table.txns tr.even td{background:#fafbfc;}');
+  win.document.write('table.txns tr:hover td{background:#f0f4ff;}');
+  // Footer
+  win.document.write('.footer{border-top:1px solid #ccc;margin-top:24px;padding-top:14px;font-size:7.5pt;color:#888;line-height:1.7;text-align:center;}');
+  win.document.write('.footer strong{color:#555;}');
+  win.document.write('.print-btn{display:block;margin:20px auto 0;padding:10px 30px;background:#0a1e3c;color:#fff;border:none;border-radius:6px;font-size:10pt;cursor:pointer;font-family:sans-serif;}');
+  win.document.write('@media print{.print-btn{display:none;}}');
+  win.document.write('</style></head><body>');
+
+  win.document.write('<div class="stmt">');
+
+  // Header
+  win.document.write('<div class="hd">');
+  win.document.write('<div class="hd-left"><div class="logo">ZenithOne</div><div class="tagline">Credit Union &mdash; Member NCUA</div><div style="font-size:7.5pt;color:#888;margin-top:6px;">P.O. Box 10001 &bull; New York, NY 10001<br>www.zenithone.com &bull; 1-800-ZENITH-1</div></div>');
+  win.document.write('<div class="hd-right"><div class="stmt-type">Account Statement</div><div>Statement No: ' + stmtNo + '</div><div>Generated: ' + generated + '</div></div>');
+  win.document.write('</div>');
+
+  // Meta grid
+  win.document.write('<div class="meta">');
+  win.document.write('<div class="meta-blk"><h3>Member Information</h3><table><tr><td>Name</td><td>' + (memberName || 'Member') + '</td></tr><tr><td>Member Since</td><td>' + ((_accounts[0]&&_accounts[0].created_at)?new Date(_accounts[0].created_at).getFullYear():'—') + '</td></tr><tr><td>Member Status</td><td>Active &bull; Good Standing</td></tr></table></div>');
+  win.document.write('<div class="meta-blk"><h3>Statement Period</h3><table><tr><td>From</td><td>' + fromLabel + '</td></tr><tr><td>To</td><td>' + toLabel + '</td></tr><tr><td>Transactions</td><td>' + txns.length + ' transactions</td></tr></table></div>');
+  win.document.write('<div class="meta-blk" style="border-top:1px solid #ddd;"><h3>Account Details</h3><table>' + acctRows + '</table></div>');
+  win.document.write('<div class="meta-blk" style="border-top:1px solid #ddd;border-right:none;"><h3>Financial Institution</h3><table><tr><td>Name</td><td>ZenithOne Credit Union</td></tr><tr><td>ABA Routing</td><td>021000021</td></tr><tr><td>NCUA Charter</td><td>#ZO-2024-001</td></tr></table></div>');
+  win.document.write('</div>');
+
+  // Summary
+  win.document.write('<div class="summary">');
+  win.document.write('<div class="sum-item"><div class="sum-lbl">Total Credits</div><div class="sum-val cr">+' + _usd(credits) + '</div></div>');
+  win.document.write('<div class="sum-item"><div class="sum-lbl">Total Debits</div><div class="sum-val db">&minus;' + _usd(debits) + '</div></div>');
+  win.document.write('<div class="sum-item"><div class="sum-lbl">Net Flow</div><div class="sum-val nt">' + (net>=0?'+':'&minus;') + _usd(Math.abs(net)) + '</div></div>');
+  win.document.write('<div class="sum-item"><div class="sum-lbl">Transactions</div><div class="sum-val">' + txns.length + '</div></div>');
+  win.document.write('</div>');
+
+  // Transactions
+  win.document.write('<div class="txn-section">');
+  win.document.write('<div class="section-hd">Transaction Detail</div>');
+  win.document.write('<table class="txns"><thead><tr>');
+  win.document.write('<th style="width:72px;">Date</th><th>Description</th><th style="width:130px;">Type</th>');
+  win.document.write('<th class="r" style="width:90px;">Debit</th><th class="r" style="width:90px;">Credit</th><th class="r" style="width:100px;">Balance</th>');
+  win.document.write('</tr></thead><tbody>');
+  win.document.write(txnRows);
+  win.document.write('</tbody></table></div>');
+
+  // Footer
+  win.document.write('<div class="footer">');
+  win.document.write('<strong>ZenithOne Credit Union</strong> &bull; NCUA insured up to $250,000 &bull; Equal Housing Lender<br>');
+  win.document.write('This statement is for informational purposes only and has been prepared based on transactions processed through ' + new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) + '.<br>');
+  win.document.write('Questions? Contact Member Services at <strong>1-800-ZENITH-1</strong> or <strong>support@zenithone.com</strong><br>');
+  win.document.write('Statement ID: ' + stmtNo + ' &bull; &copy; ' + new Date().getFullYear() + ' ZenithOne Credit Union. All rights reserved.');
+  win.document.write('</div>');
+
+  win.document.write('<button class="print-btn" onclick="window.print();this.style.display=\'none\'">&#128438; Print / Save as PDF</button>');
+  win.document.write('</div></body></html>');
+  win.document.close();
+
+  closePrintModal();
 }
 
 /* ── Export CSV ── */

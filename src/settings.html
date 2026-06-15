@@ -174,15 +174,15 @@
               </div>
               <div class="settings-row" id="faceidLoginRow">
                 <div>
-                  <div style="font-weight:500;margin-bottom:2px;">Face ID for Sign-In</div>
-                  <div style="font-size:.8rem;color:var(--slate-400);" id="faceidLoginDesc">Face ID · Touch ID · Windows Hello on this device</div>
+                  <div style="font-weight:500;margin-bottom:2px;" id="faceidLoginTitle">Biometric Sign-In</div>
+                  <div style="font-size:.8rem;color:var(--slate-400);" id="faceidLoginDesc">Sign in instantly with Face ID, fingerprint, or PIN</div>
                 </div>
                 <label class="toggle-switch"><input type="checkbox" id="faceidLoginToggle" /><div class="toggle-track"></div></label>
               </div>
               <div class="settings-row" id="faceidTxRow">
                 <div>
-                  <div style="font-weight:500;margin-bottom:2px;">Face ID for Transactions</div>
-                  <div style="font-size:.8rem;color:var(--slate-400);" id="faceidTxDesc">Require Face ID to confirm transfers &amp; payments</div>
+                  <div style="font-weight:500;margin-bottom:2px;" id="faceidTxTitle">Biometric for Transfers</div>
+                  <div style="font-size:.8rem;color:var(--slate-400);" id="faceidTxDesc">Require biometric or PIN to confirm every transfer</div>
                 </div>
                 <label class="toggle-switch"><input type="checkbox" id="faceidTxToggle" /><div class="toggle-track"></div></label>
               </div>
@@ -439,20 +439,27 @@ document.addEventListener('DOMContentLoaded', () => {
   initFaceIdSettings();
 });
 
-// ── Face ID settings — independent Sign-In & Transaction toggles ───────────────
+// ── Biometric settings — Sign-In & Transaction toggles ───────────────────────
 async function initFaceIdSettings() {
-  const FID       = window.ZenithFaceID;
-  const loginRow  = document.getElementById('faceidLoginRow');
-  const txRow     = document.getElementById('faceidTxRow');
-  const loginTgl  = document.getElementById('faceidLoginToggle');
-  const txTgl     = document.getElementById('faceidTxToggle');
-  const loginDesc = document.getElementById('faceidLoginDesc');
-  const txDesc    = document.getElementById('faceidTxDesc');
+  const FID        = window.ZenithFaceID;
+  const loginRow   = document.getElementById('faceidLoginRow');
+  const txRow      = document.getElementById('faceidTxRow');
+  const loginTgl   = document.getElementById('faceidLoginToggle');
+  const txTgl      = document.getElementById('faceidTxToggle');
+  const loginTitle = document.getElementById('faceidLoginTitle');
+  const txTitle    = document.getElementById('faceidTxTitle');
+  const loginDesc  = document.getElementById('faceidLoginDesc');
+  const txDesc     = document.getElementById('faceidTxDesc');
   if (!FID || !loginTgl) return;
+
+  // Set heading to device-appropriate label (Face ID / Windows Hello / Fingerprint / Touch ID)
+  const bioLabel = FID.getBiometricLabel ? FID.getBiometricLabel() : 'Biometric';
+  if (loginTitle) loginTitle.textContent = bioLabel + ' for Sign-In';
+  if (txTitle)    txTitle.textContent    = bioLabel + ' for Transfers';
 
   const available = await FID.isAvailable();
   if (!available) {
-    loginDesc.textContent = 'Not supported on this device or browser';
+    loginDesc.textContent = bioLabel + ' is not available on this device or browser. Make sure a PIN, fingerprint, or Face ID is configured in your device settings.';
     loginTgl.disabled = txTgl.disabled = true;
     loginRow.style.opacity = txRow.style.opacity = '.55';
     return;
@@ -462,20 +469,18 @@ async function initFaceIdSettings() {
     loginTgl.checked = FID.loginEnabled();
     txTgl.checked    = FID.txEnabled();
     loginDesc.textContent = FID.loginEnabled()
-      ? 'Enabled — sign in instantly with Face ID'
-      : 'Use Face ID · Touch ID · Windows Hello to sign in';
+      ? 'Enabled — sign in instantly with ' + bioLabel
+      : 'Use ' + bioLabel + ' to sign in without typing your password';
     txDesc.textContent = FID.txEnabled()
-      ? 'Enabled — Face ID required to confirm transfers'
-      : 'Require Face ID to confirm transfers & payments';
+      ? 'Enabled — ' + bioLabel + ' required before every transfer'
+      : 'Require ' + bioLabel + ' or PIN to confirm transfers & payments';
   }
   refresh();
 
-  // Make sure a biometric credential exists; enrol on demand (shows OS prompt).
   async function ensureEnrolled() {
     if (FID.isEnrolled()) return true;
     return await FID.enroll();
   }
-  // Drop the credential entirely once both features are turned off.
   function cleanupIfUnused() {
     if (!FID.loginEnabled() && !FID.txEnabled()) FID.disable();
   }
@@ -485,12 +490,15 @@ async function initFaceIdSettings() {
       try {
         if (!(await ensureEnrolled())) { loginTgl.checked = false; return; }
         FID.setLoginEnabled(true);
-        zenithToast('Face ID sign-in enabled on this device.', 'success');
-      } catch (e) { loginTgl.checked = false; zenithToast(e.message || 'Could not enable Face ID.', 'error'); }
+        zenithToast(bioLabel + ' sign-in enabled.', 'success');
+      } catch (e) {
+        loginTgl.checked = false;
+        zenithToast(e.message || 'Could not enable ' + bioLabel + '.', 'error');
+      }
     } else {
       FID.setLoginEnabled(false);
       cleanupIfUnused();
-      zenithToast('Face ID sign-in disabled.', 'success');
+      zenithToast(bioLabel + ' sign-in disabled.', 'success');
     }
     refresh();
   });
@@ -500,12 +508,15 @@ async function initFaceIdSettings() {
       try {
         if (!(await ensureEnrolled())) { txTgl.checked = false; return; }
         FID.setTxEnabled(true);
-        zenithToast('Face ID will be required for transactions.', 'success');
-      } catch (e) { txTgl.checked = false; zenithToast(e.message || 'Could not enable Face ID.', 'error'); }
+        zenithToast(bioLabel + ' will be required for all transfers.', 'success');
+      } catch (e) {
+        txTgl.checked = false;
+        zenithToast(e.message || 'Could not enable ' + bioLabel + '.', 'error');
+      }
     } else {
       FID.setTxEnabled(false);
       cleanupIfUnused();
-      zenithToast('Face ID for transactions disabled.', 'success');
+      zenithToast(bioLabel + ' for transfers disabled.', 'success');
     }
     refresh();
   });

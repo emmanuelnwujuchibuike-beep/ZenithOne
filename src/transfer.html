@@ -997,6 +997,7 @@
 
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/faceid.js"></script>
 <script>
 'use strict';
 
@@ -1052,6 +1053,17 @@ async function xfrBoot(){
     loadLinkedAccounts();
     document.getElementById('xfrLoading').style.display='none';
     document.getElementById('xfrContent').style.display='';
+
+    // Restore a pending transfer saved before reauth redirect
+    var savedXfr = sessionStorage.getItem('zo_pending_xfr');
+    if (savedXfr) {
+      sessionStorage.removeItem('zo_pending_xfr');
+      try {
+        _pending = JSON.parse(savedXfr);
+        // Re-open the confirm overlay so user just clicks Confirm & Send
+        document.getElementById('xfrConfirmOvl').style.display='flex';
+      } catch(_) {}
+    }
   } catch(e){
     document.getElementById('xfrLoading').innerHTML='<div style="text-align:center;padding:48px 24px;color:#f87171;">Failed to load accounts.<br><button onclick="xfrBoot()" style="margin-top:14px;background:none;border:none;color:var(--gold-400);cursor:pointer;font-size:.84rem;text-decoration:underline;">Try again</button></div>';
   }
@@ -1467,6 +1479,27 @@ function closeConfirm(e){
 // ── Execute transfer ──────────────────────────────────────────────────────────
 async function executeTransfer(){
   if(!_pending) return;
+
+  // ── Mandatory biometric / password gate ──────────────────────────────────────
+  const FID = window.ZenithFaceID;
+  if (FID && FID.isEnrolled && FID.isEnrolled()) {
+    // Biometric enrolled — must verify before proceeding (cannot skip)
+    try {
+      const bioLabel = FID.getBiometricLabel ? FID.getBiometricLabel() : 'Biometric';
+      await FID.verify('Verify with ' + bioLabel + ' to authorise this transfer');
+    } catch(e) {
+      showErr('confirmErr', (e && e.message) || 'Biometric verification is required to transfer funds.');
+      return;
+    }
+  } else {
+    // Not enrolled — require password via reauth page, then return here
+    sessionStorage.setItem('zo_pending_xfr', JSON.stringify(_pending));
+    localStorage.setItem('zo_reauth_target', 'transfer.html');
+    window.location.href = 'reauth.html';
+    return;
+  }
+  // ─────────────────────────────────────────────────────────────────────────────
+
   var btn=document.getElementById('confirmExecBtn');
   btnLoad(btn);
   clearErr('confirmErr');

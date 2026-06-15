@@ -142,9 +142,24 @@
     document.head.appendChild(s);
   }
 
-  const FACE_SVG = `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/>
-    <path d="M9 10h.01M15 10h.01"/><path d="M9.5 15a3.5 3.5 0 0 0 5 0"/><path d="M12 10v3"/></svg>`;
+  function getBioIconSVG(label) {
+    const isFingerprint = /fingerprint|touch id/i.test(label || '');
+    if (isFingerprint) {
+      return `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/>
+        <path d="M5 19.5C5.5 18 6 15 6 12c0-.7.12-1.37.34-2"/>
+        <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/>
+        <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/>
+        <path d="M8.65 22c.21-.66.45-1.32.57-2"/>
+        <path d="M14 13.12c0 2.38 0 6.38-1 8.88"/>
+        <path d="M2 16h.01"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/>
+        <path d="M9 6.8a6 6 0 0 1 9 5.2c0 .47 0 1.17-.02 2"/></svg>`;
+    }
+    // Face ID / Windows Hello / generic
+    return `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/>
+      <path d="M9 10h.01M15 10h.01"/><path d="M9.5 15a3.5 3.5 0 0 0 5 0"/><path d="M12 10v3"/></svg>`;
+  }
 
   function ensureOverlay() {
     injectStyles();
@@ -158,7 +173,7 @@
           <span class="zfid-bracket tl"></span><span class="zfid-bracket tr"></span>
           <span class="zfid-bracket bl"></span><span class="zfid-bracket br"></span>
           <span class="zfid-scan"></span>
-          <span class="zfid-face">${FACE_SVG}</span>
+          <span class="zfid-face" id="zfidFaceIcon">${getBioIconSVG(getBiometricLabel())}</span>
           <span class="zfid-result" id="zfidResult"></span>
         </div>
         <div class="zfid-title" id="zfidTitle">Face ID</div>
@@ -173,10 +188,12 @@
 
   function showScanning(title, msg) {
     const el = ensureOverlay();
+    const label = getBiometricLabel();
     el.querySelector('#zfidFrame').className = 'zfid-frame scanning';
     el.querySelector('#zfidResult').innerHTML = '';
-    el.querySelector('#zfidTitle').textContent = title || 'Face ID';
-    el.querySelector('#zfidMsg').textContent = msg || 'Look at your device to continue…';
+    el.querySelector('#zfidFaceIcon').innerHTML = getBioIconSVG(label);
+    el.querySelector('#zfidTitle').textContent = title || label;
+    el.querySelector('#zfidMsg').textContent = msg || 'Follow the prompt on your device…';
     el.querySelector('#zfidCancel').style.display = '';
     requestAnimationFrame(() => el.classList.add('open'));
     document.body.style.overflow = 'hidden';
@@ -203,9 +220,12 @@
 
   function friendlyError(e) {
     const n = e && e.name;
-    if (n === 'NotAllowedError') return 'Authentication was cancelled or timed out.';
-    if (n === 'InvalidStateError') return 'This device is already enrolled.';
-    if (n === 'SecurityError') return 'Face ID requires a secure (HTTPS) connection.';
+    if (n === 'NotAllowedError') return 'Verification was cancelled or timed out. Please try again.';
+    if (n === 'InvalidStateError') return 'A credential for this device already exists. Remove the existing enrollment below and try again.';
+    if (n === 'NotSupportedError') return 'Your device or browser does not support this. Make sure Windows Hello, a PIN, fingerprint, or Face ID is fully set up in your device settings, then try again.';
+    if (n === 'SecurityError') return 'Biometric authentication requires a secure (HTTPS) connection.';
+    if (n === 'AbortError') return 'Authentication was aborted. Please try again.';
+    if (n === 'UnknownError') return 'Device authentication failed. Ensure your PIN, fingerprint, or Face ID is set up in your device settings.';
     return (e && e.message) || 'Biometric authentication failed.';
   }
 
@@ -256,9 +276,10 @@
       return true;
     } catch (e) {
       if (cancelled) return false;
-      showResult(false, 'Could Not Enable', friendlyError(e));
-      setTimeout(hideOverlay, 1900);
-      throw e;
+      const msg = friendlyError(e);
+      showResult(false, 'Could Not Enable', msg);
+      setTimeout(hideOverlay, 2400);
+      throw new Error(msg);
     }
   }
 
@@ -290,9 +311,10 @@
       return true;
     } catch (e) {
       if (cancelled) throw new Error('Authentication was cancelled.');
-      showResult(false, 'Verification Failed', friendlyError(e));
+      const msg = friendlyError(e);
+      showResult(false, 'Verification Failed', msg);
       setTimeout(hideOverlay, 1700);
-      throw e;
+      throw new Error(msg);
     }
   }
 
@@ -303,7 +325,7 @@
     const cred = getCred();
     if (!cred) throw new Error(getBiometricLabel() + ' is not set up on this device.');
 
-    showScanning('Sign In with ' + getBiometricLabel(), 'Look at your device to sign in…');
+    showScanning('Sign In with ' + getBiometricLabel(), 'Verify your identity to sign in…');
     let cancelled = false;
     const ac = new AbortController();
     _onCancel = () => { cancelled = true; ac.abort(); hideOverlay(); };
@@ -343,9 +365,10 @@
       return true;
     } catch (e) {
       if (cancelled) { hideOverlay(); throw new Error('Sign-in cancelled.'); }
-      showResult(false, 'Sign-In Failed', friendlyError(e));
+      const msg = friendlyError(e);
+      showResult(false, 'Sign-In Failed', msg);
       setTimeout(hideOverlay, 2000);
-      throw e;
+      throw new Error(msg);
     }
   }
 

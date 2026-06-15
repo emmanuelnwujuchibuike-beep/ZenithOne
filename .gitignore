@@ -1,0 +1,9 @@
+# Local Claude Code config (may contain tokens/secrets) — never commit
+.claude/
+
+# Supabase CLI local state
+supabase/.temp/
+
+# Environment / secrets
+.env
+.env.*

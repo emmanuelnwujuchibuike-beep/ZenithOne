@@ -192,16 +192,18 @@ document.getElementById('togglePwd').addEventListener('click', function() {
   const available = await FID.isAvailable();
   if (!available) return; // device/browser doesn't support platform biometrics
 
-  const enrolled = FID.isEnrolled();
-  const label    = FID.getBiometricLabel ? FID.getBiometricLabel() : 'Biometrics';
+  const enrolled     = FID.isEnrolled();
+  const label        = FID.getBiometricLabel ? FID.getBiometricLabel() : 'Biometrics';
+  const rememberUntil = parseInt(localStorage.getItem('zo_remember_until') || '0');
+  const hasRemember   = localStorage.getItem('zo_remember') === '1' && Date.now() < rememberUntil;
 
   btn.style.display = 'flex';
   div.style.display = 'flex';
 
   if (enrolled && FID.loginEnabled()) {
-    // ── Enrolled: fast biometric login ──────────────────────────────────────
+    // ── Enrolled: show biometric button and auto-prompt when remember-me is active ──
     if (lbl) lbl.textContent = 'Sign in with ' + label;
-    btn.addEventListener('click', async () => {
+    const doLogin = async () => {
       btn.disabled = true;
       if (lbl) lbl.textContent = 'Verifying…';
       try {
@@ -213,7 +215,15 @@ document.getElementById('togglePwd').addEventListener('click', function() {
           e.message || label + ' sign-in failed. Please use your password.'
         );
       }
-    });
+    };
+    btn.addEventListener('click', doLogin);
+
+    // Auto-trigger the biometric prompt when the user was redirected here
+    // via "Sign In" while remember-me is active — skip the click step for them.
+    if (hasRemember) {
+      // Small delay so the page is fully visible before the system dialog appears
+      setTimeout(doLogin, 400);
+    }
   } else {
     // ── Not enrolled: offer setup path ──────────────────────────────────────
     if (lbl) lbl.textContent = 'Set up ' + label + ' for faster sign-in';

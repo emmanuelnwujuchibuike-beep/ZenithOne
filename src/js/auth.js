@@ -46,9 +46,25 @@ async function checkAuthGuard() {
     _goToAuth();
     return;
   }
-  if ((page === 'login.html' || page === 'signup.html') && session) {
+  if (page === 'signup.html' && session) {
     window.location.href = 'dashboard.html';
     return;
+  }
+  if (page === 'login.html' && session) {
+    const rememberUntil = parseInt(localStorage.getItem('zo_remember_until') || '0');
+    const hasRemember   = localStorage.getItem('zo_remember') === '1' && Date.now() < rememberUntil;
+    if (!hasRemember) {
+      // Tab-only session (no remember-me) → safe to fast-forward to dashboard
+      window.location.href = 'dashboard.html';
+      return;
+    }
+    // Remember-me is active: the user clicked "Sign In" intentionally.
+    // Drop the local session token so the page can present biometric/password auth.
+    // Biometric users restore their session via the stored refresh token (zo_faceid_rt).
+    // Password users will log in fresh and re-establish remember-me if they choose.
+    await sb.auth.signOut({ scope: 'local' });
+    sessionStorage.removeItem('zo_session_only');
+    return; // let login.html render normally with the auth form + biometric button
   }
 
   if (session) {

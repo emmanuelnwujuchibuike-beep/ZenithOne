@@ -12,176 +12,245 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; }
 
+    html, body { height: 100%; }
+
     body {
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px 16px;
+      padding: 20px 16px;
       position: relative;
-      overflow: hidden;
       background: #03070f;
     }
 
-    /* Ambient background glows */
+    /* ── Ambient background ── */
     .ra-bg-glow-1 {
-      position: fixed; pointer-events: none;
+      position: fixed; pointer-events: none; z-index: 0;
       top: -20%; left: -10%;
-      width: 70%; height: 70%;
+      width: 70vw; max-width: 700px; height: 70vw; max-height: 700px;
       border-radius: 50%;
-      background: radial-gradient(ellipse, rgba(201,168,76,.05) 0%, transparent 68%);
+      background: radial-gradient(ellipse, rgba(201,168,76,.055) 0%, transparent 65%);
     }
     .ra-bg-glow-2 {
-      position: fixed; pointer-events: none;
+      position: fixed; pointer-events: none; z-index: 0;
       bottom: -15%; right: -5%;
-      width: 55%; height: 55%;
+      width: 55vw; max-width: 560px; height: 55vw; max-height: 560px;
       border-radius: 50%;
-      background: radial-gradient(ellipse, rgba(70,130,220,.04) 0%, transparent 68%);
+      background: radial-gradient(ellipse, rgba(70,130,220,.045) 0%, transparent 65%);
+    }
+    .ra-bg-glow-3 {
+      position: fixed; pointer-events: none; z-index: 0;
+      top: 40%; left: 50%; transform: translate(-50%, -50%);
+      width: 40vw; max-width: 400px; height: 40vw; max-height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(201,168,76,.025) 0%, transparent 70%);
     }
     .ra-bg-grid {
-      position: fixed; inset: 0; pointer-events: none;
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
       background-image:
-        linear-gradient(rgba(201,168,76,.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(201,168,76,.018) 1px, transparent 1px);
-      background-size: 60px 60px;
+        linear-gradient(rgba(201,168,76,.016) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,.016) 1px, transparent 1px);
+      background-size: 52px 52px;
     }
 
-    /* Card */
+    /* ── Main card ── */
     .ra-card {
       position: relative; z-index: 1;
-      width: 100%; max-width: 440px;
-      background: linear-gradient(165deg, #0a1726 0%, #06101e 100%);
-      border: 1px solid rgba(201,168,76,.15);
-      border-radius: 28px;
-      padding: 44px 40px 38px;
+      width: 100%; max-width: 430px;
+      background: linear-gradient(162deg, #0a1826 0%, #060f1d 55%, #040c18 100%);
+      border: 1px solid rgba(201,168,76,.16);
+      border-radius: 26px;
+      padding: 40px 38px 34px;
       box-shadow:
-        0 0 0 1px rgba(255,255,255,.03) inset,
-        0 50px 130px rgba(0,0,0,.75),
-        0 20px 50px rgba(0,0,0,.5);
+        0 0 0 1px rgba(255,255,255,.035) inset,
+        0 40px 100px rgba(0,0,0,.7),
+        0 16px 40px rgba(0,0,0,.5),
+        0 4px 12px rgba(0,0,0,.4);
       overflow: hidden;
     }
+    /* Gold top line */
     .ra-card::before {
       content: '';
       position: absolute; top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent 0%, rgba(201,168,76,.7) 50%, transparent 100%);
-      border-radius: 28px 28px 0 0;
+      background: linear-gradient(90deg, transparent 5%, rgba(201,168,76,.75) 50%, transparent 95%);
     }
-    /* Subtle inner glow at top */
+    /* Top inner glow */
     .ra-card::after {
       content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 60%;
-      background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(201,168,76,.04) 0%, transparent 100%);
+      position: absolute; top: 0; left: 0; right: 0; height: 55%;
+      background: radial-gradient(ellipse 75% 45% at 50% -10%, rgba(201,168,76,.045) 0%, transparent 100%);
       pointer-events: none;
     }
 
-    /* Logo */
+    /* ── Session-expired badge ── */
+    .ra-session-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: .62rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      color: rgba(251,191,36,.8);
+      background: rgba(251,191,36,.07);
+      border: 1px solid rgba(251,191,36,.18);
+      border-radius: 99px; padding: 4px 12px;
+      margin-bottom: 32px;
+      position: relative; z-index: 1;
+    }
+    .ra-session-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #fbbf24;
+      animation: ra-dot-blink 2s ease-in-out infinite;
+    }
+    @keyframes ra-dot-blink {
+      0%,100% { opacity: 1; } 50% { opacity: .25; }
+    }
+
+    /* ── Logo ── */
     .ra-logo {
-      display: flex; align-items: center; gap: 11px;
-      text-decoration: none; margin-bottom: 40px;
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; margin-bottom: 32px;
       position: relative; z-index: 1;
     }
 
-    /* Avatar circle */
+    /* ── Avatar ── */
     .ra-avatar {
-      width: 72px; height: 72px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #c9a84c 0%, #8a6010 100%);
-      border: 2px solid rgba(201,168,76,.35);
+      width: 68px; height: 68px; border-radius: 50%;
+      background: linear-gradient(135deg, #c9a84c 0%, #7c5200 100%);
+      border: 2px solid rgba(201,168,76,.32);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.35rem; font-weight: 700;
-      color: #fff;
-      letter-spacing: .04em;
-      text-shadow: 0 1px 4px rgba(0,0,0,.4);
-      margin: 0 auto 18px;
-      box-shadow: 0 0 0 6px rgba(201,168,76,.06), 0 0 40px rgba(201,168,76,.18);
+      font-size: 1.3rem; font-weight: 700; color: #fff;
+      letter-spacing: .04em; text-shadow: 0 1px 4px rgba(0,0,0,.4);
+      margin: 0 auto 16px;
+      box-shadow: 0 0 0 5px rgba(201,168,76,.06), 0 0 32px rgba(201,168,76,.2);
       position: relative; z-index: 1;
+      flex-shrink: 0;
     }
 
-    /* Face ID button */
-    .ra-fid-btn {
-      width: 100%;
-      padding: 14px 18px;
-      border-radius: 13px;
-      border: 1px solid rgba(201,168,76,.30);
-      background: rgba(201,168,76,.08);
-      color: #e8d07a;
-      font-size: .9rem; font-weight: 500;
+    /* ── Biometric ring ── */
+    .ra-bio-ring {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: rgba(201,168,76,.07);
+      border: 2px solid rgba(201,168,76,.22);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px; color: #c9a84c; position: relative;
+      transition: border-color .25s, background .25s, opacity .25s;
       cursor: pointer;
-      display: none; align-items: center; justify-content: center; gap: 11px;
-      transition: background .18s, border-color .18s, transform .12s;
-      margin-bottom: 8px;
-      position: relative; z-index: 1;
     }
-    .ra-fid-btn:hover  { background: rgba(201,168,76,.16); border-color: rgba(201,168,76,.5); }
-    .ra-fid-btn:active { transform: scale(.98); }
-    .ra-fid-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .ra-bio-ring.scanning {
+      border-color: rgba(201,168,76,.55);
+      animation: ra-bio-pulse 2s ease-in-out infinite;
+    }
+    .ra-bio-ring.failed {
+      border-color: rgba(248,113,113,.38); background: rgba(248,113,113,.06); color: #f87171;
+    }
+    .ra-bio-ring.success {
+      border-color: rgba(74,222,128,.45); background: rgba(74,222,128,.07); color: #4ade80;
+    }
+    @keyframes ra-bio-pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(201,168,76,.28), 0 0 0 0 rgba(201,168,76,.12); }
+      55%      { box-shadow: 0 0 0 12px rgba(201,168,76,.1), 0 0 0 24px rgba(201,168,76,.04); }
+    }
+    .ra-bio-ring-inner {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: rgba(201,168,76,.1);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ra-bio-retry {
+      display: none; align-items: center; gap: 6px;
+      margin-top: 12px; padding: 9px 20px; border-radius: 99px;
+      border: 1px solid rgba(201,168,76,.28); background: rgba(201,168,76,.06);
+      color: #e8d07a; font-size: .78rem; font-weight: 500; cursor: pointer;
+      font-family: inherit;
+      transition: background .15s; position: relative; z-index: 1;
+      min-height: 40px;
+    }
+    .ra-bio-retry:hover { background: rgba(201,168,76,.14); }
 
-    /* OR divider */
+    /* ── Divider ── */
     .ra-divider {
       display: none; align-items: center; gap: 12px;
-      font-size: .75rem; color: rgba(255,255,255,.22);
-      margin: 16px 0;
+      font-size: .72rem; color: rgba(255,255,255,.2);
+      margin: 14px 0;
       position: relative; z-index: 1;
     }
     .ra-divider::before, .ra-divider::after {
-      content: ''; flex: 1; height: 1px;
-      background: rgba(255,255,255,.06);
+      content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.06);
     }
 
-    /* Password show/hide toggle */
+    /* ── Form elements ── */
+    .ra-pwd-wrap { position: relative; }
     .ra-pwd-toggle {
       position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; color: rgba(255,255,255,.35);
-      cursor: pointer; padding: 4px; line-height: 1;
+      background: none; border: none; color: rgba(255,255,255,.32);
+      cursor: pointer; padding: 6px; line-height: 1;
+      min-width: 32px; min-height: 32px;
+      display: flex; align-items: center; justify-content: center;
       transition: color .15s;
     }
     .ra-pwd-toggle:hover { color: rgba(255,255,255,.7); }
 
-    /* Submit button */
     .ra-submit {
-      width: 100%; padding: 14px;
-      margin-top: 4px;
+      width: 100%; padding: 15px;
+      margin-top: 6px;
       display: flex; align-items: center; justify-content: center; gap: 10px;
+      min-height: 50px; font-size: .9rem;
     }
 
-    /* Bottom links */
+    /* ── Bottom links ── */
     .ra-links {
       display: flex; flex-direction: column; align-items: center;
-      gap: 10px; margin-top: 22px;
+      gap: 12px; margin-top: 20px;
       position: relative; z-index: 1;
     }
     .ra-link {
-      font-size: .8rem; color: rgba(255,255,255,.32);
-      background: none; border: none; cursor: pointer; padding: 0;
-      text-decoration: none;
+      font-size: .78rem; color: rgba(255,255,255,.28);
+      background: none; border: none; cursor: pointer; padding: 4px 8px;
+      text-decoration: none; font-family: inherit;
       transition: color .16s;
+      min-height: 36px; display: inline-flex; align-items: center;
     }
-    .ra-link:hover { color: rgba(255,255,255,.65); }
+    .ra-link:hover { color: rgba(255,255,255,.6); }
     .ra-link.gold:hover { color: #c9a84c; }
 
-    /* Security footer */
+    /* ── Security footer ── */
     .ra-security {
-      margin-top: 28px;
-      padding-top: 18px;
+      margin-top: 24px; padding-top: 16px;
       border-top: 1px solid rgba(255,255,255,.05);
-      display: flex; align-items: center; justify-content: center; gap: 16px;
+      display: flex; align-items: center; justify-content: center; gap: 14px;
       position: relative; z-index: 1;
-      flex-wrap: wrap;
+      flex-wrap: wrap; row-gap: 8px;
     }
     .ra-sec-item {
       display: flex; align-items: center; gap: 5px;
-      font-size: .67rem; color: rgba(255,255,255,.2); letter-spacing: .02em;
+      font-size: .65rem; color: rgba(255,255,255,.18); letter-spacing: .02em;
     }
 
-    /* Error alert override — make it more compact */
     #reauthError { margin-bottom: 14px; }
 
     @keyframes ra-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .ra-spinner { animation: ra-spin .9s linear infinite; }
 
+    /* ── Responsive ── */
     @media (max-width: 480px) {
-      .ra-card { padding: 36px 24px 30px; border-radius: 22px; }
-      .ra-avatar { width: 62px; height: 62px; font-size: 1.15rem; }
+      body { padding: 16px 12px; align-items: flex-start; padding-top: clamp(16px, 5vh, 48px); }
+      .ra-card { padding: 32px 22px 28px; border-radius: 22px; }
+      .ra-logo { margin-bottom: 26px; }
+      .ra-session-badge { margin-bottom: 24px; }
+      .ra-avatar { width: 60px; height: 60px; font-size: 1.1rem; margin-bottom: 14px; }
+      .ra-bio-ring { width: 72px; height: 72px; }
+      .ra-bio-ring-inner { width: 50px; height: 50px; }
+      .ra-submit { padding: 14px; font-size: .86rem; }
+      .ra-security { gap: 10px; }
+    }
+    @media (max-width: 360px) {
+      .ra-card { padding: 28px 18px 24px; border-radius: 18px; }
+      .ra-avatar { width: 54px; height: 54px; font-size: 1rem; }
+      .ra-session-badge { font-size: .58rem; }
+    }
+    @media (min-width: 481px) and (max-width: 768px) {
+      body { padding: 32px 20px; }
+      .ra-card { padding: 44px 42px 38px; }
+    }
+    @media (min-height: 800px) {
+      body { align-items: center; }
     }
   </style>
 </head>
@@ -189,6 +258,7 @@
 
 <div class="ra-bg-glow-1" aria-hidden="true"></div>
 <div class="ra-bg-glow-2" aria-hidden="true"></div>
+<div class="ra-bg-glow-3" aria-hidden="true"></div>
 <div class="ra-bg-grid"   aria-hidden="true"></div>
 
 <div class="ra-card">
@@ -208,14 +278,22 @@
     </div>
   </a>
 
+  <!-- Session-expired status badge -->
+  <div style="position:relative;z-index:1;">
+    <div class="ra-session-badge">
+      <span class="ra-session-dot"></span>
+      Session expired — re-verify to continue
+    </div>
+  </div>
+
   <!-- User identity block -->
-  <div style="text-align:center;margin-bottom:32px;position:relative;z-index:1;">
+  <div style="text-align:center;margin-bottom:28px;position:relative;z-index:1;">
     <div class="ra-avatar" id="reauthAvatar">
       <span id="reauthInitials">?</span>
     </div>
-    <div style="font-size:.72rem;color:rgba(255,255,255,.32);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Welcome back</div>
-    <div style="font-family:'Cormorant Garamond','Georgia',serif;font-size:2rem;font-weight:300;color:#fff;line-height:1.1;margin-bottom:8px;" id="reauthFirstName">—</div>
-    <div style="font-size:.78rem;color:rgba(255,255,255,.28);">Verify your identity to continue</div>
+    <div style="font-size:.7rem;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Welcome back</div>
+    <div style="font-family:'Cormorant Garamond','Georgia',serif;font-size:clamp(1.55rem,5vw,2rem);font-weight:300;color:#fff;line-height:1.1;margin-bottom:7px;" id="reauthFirstName">—</div>
+    <div style="font-size:.76rem;color:rgba(255,255,255,.25);">Verify your identity to continue</div>
   </div>
 
   <!-- Error alert -->
@@ -226,30 +304,38 @@
     <span id="reauthErrorMsg">Incorrect password. Please try again.</span>
   </div>
 
-  <!-- Biometric button (shown by JS if enrolled + available; label set dynamically) -->
-  <button class="ra-fid-btn" id="reauthFidBtn" type="button" aria-label="Sign in with biometrics">
-    <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/>
-      <path d="M9 10h.01M15 10h.01"/>
-      <path d="M9.5 15a3.5 3.5 0 0 0 5 0"/>
-    </svg>
-    <span id="reauthBioLabel">Sign in with Face ID</span>
-  </button>
+  <!-- ── Biometric auto-scan section ── -->
+  <div id="reauthBioSection" style="display:none;text-align:center;margin-bottom:22px;position:relative;z-index:1;">
+    <div class="ra-bio-ring scanning" id="reauthBioRing">
+      <div class="ra-bio-ring-inner">
+        <svg id="reauthBioIconSvg" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
+          <path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/>
+          <path d="M9 10h.01M15 10h.01"/>
+          <path d="M9.5 15a3.5 3.5 0 0 0 5 0"/>
+        </svg>
+      </div>
+    </div>
+    <div style="font-size:.88rem;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:4px;" id="reauthBioHeading">Verifying…</div>
+    <div style="font-size:.75rem;color:rgba(255,255,255,.32);line-height:1.55;" id="reauthBioStatus">Follow the prompt on your device</div>
+    <button class="ra-bio-retry" id="reauthBioRetry" onclick="_attemptBio()">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg>
+      Try again
+    </button>
+  </div>
 
-  <!-- OR divider (shown only when Face ID is available) -->
+  <!-- OR divider -->
   <div class="ra-divider" id="reauthDivider">or enter your password</div>
 
   <!-- Password form -->
   <form id="reauthForm" novalidate style="position:relative;z-index:1;">
-    <!-- Hidden email field for password managers / autocomplete -->
     <input type="email" name="email" autocomplete="username" style="display:none;" id="reauthEmailHidden" />
 
-    <div class="form-group" style="margin-bottom:18px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;">
+    <div class="form-group" style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;flex-wrap:wrap;gap:4px;">
         <label class="form-label" for="reauthPassword" style="margin-bottom:0;">Password</label>
-        <a href="forgot-password.html" class="ra-link gold" style="font-size:.75rem;">Forgot password?</a>
+        <a href="forgot-password.html" class="ra-link gold" style="font-size:.74rem;padding:2px 0;">Forgot password?</a>
       </div>
-      <div class="input-group" style="position:relative;">
+      <div class="ra-pwd-wrap input-group">
         <svg class="input-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
         </svg>
@@ -259,7 +345,7 @@
           class="form-input"
           placeholder="Enter your password"
           autocomplete="current-password"
-          style="padding-right:44px;"
+          style="padding-right:46px;"
           required
         />
         <button type="button" class="ra-pwd-toggle" id="reauthTogglePwd" tabindex="-1" aria-label="Show or hide password">
@@ -288,15 +374,15 @@
   <!-- Security badges -->
   <div class="ra-security">
     <div class="ra-sec-item">
-      <svg width="11" height="11" fill="none" stroke="rgba(201,168,76,.45)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <svg width="11" height="11" fill="none" stroke="rgba(201,168,76,.42)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       256-bit SSL
     </div>
     <div class="ra-sec-item">
-      <svg width="11" height="11" fill="none" stroke="rgba(201,168,76,.45)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <svg width="11" height="11" fill="none" stroke="rgba(201,168,76,.42)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       End-to-end encrypted
     </div>
     <div class="ra-sec-item">
-      <svg width="11" height="11" fill="none" stroke="rgba(201,168,76,.45)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
+      <svg width="11" height="11" fill="none" stroke="rgba(201,168,76,.42)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4"/></svg>
       FDIC Insured
     </div>
   </div>
@@ -309,42 +395,84 @@
 (function () {
   'use strict';
 
-  // ── Read stored identity ────────────────────────────────────────────────────
-  const storedEmail = localStorage.getItem('zo_user_email') || '';
-  const storedName  = localStorage.getItem('zo_user_name')  || '';
-  const fidCred     = (function () { try { return JSON.parse(localStorage.getItem('zo_faceid_cred') || 'null'); } catch { return null; } })();
-  const reauthEmail = storedEmail || (fidCred && fidCred.email) || '';
+  // ── Back-button / navigation trap ────────────────────────────────────────────
+  // Locks user on this page — back/forward cannot bypass re-auth
+  history.pushState(null, '', location.href);
+  window.addEventListener('popstate', function () {
+    history.pushState(null, '', location.href);
+  });
 
-  // If we have no idea who this is, send them to full login
+  // ── Read stored identity ─────────────────────────────────────────────────────
+  var storedEmail = localStorage.getItem('zo_user_email') || '';
+  var storedName  = localStorage.getItem('zo_user_name')  || '';
+  var fidCred     = (function () { try { return JSON.parse(localStorage.getItem('zo_faceid_cred') || 'null'); } catch { return null; } })();
+  var reauthEmail = storedEmail || (fidCred && fidCred.email) || '';
+
   if (!reauthEmail) {
     window.location.replace('login.html');
     return;
   }
 
-  // ── Populate UI ─────────────────────────────────────────────────────────────
-  const firstName = storedName
+  // ── Populate UI ──────────────────────────────────────────────────────────────
+  var firstName = storedName
     ? storedName.split(' ').filter(Boolean)[0]
     : (reauthEmail.split('@')[0] || 'there');
-  const initials = storedName
+  var initials = storedName
     ? storedName.split(' ').filter(Boolean).slice(0, 2).map(function (n) { return n[0]; }).join('').toUpperCase()
     : (reauthEmail[0] || '?').toUpperCase();
 
-  document.getElementById('reauthInitials').textContent   = initials;
-  document.getElementById('reauthFirstName').textContent  = firstName;
-  document.getElementById('reauthEmailHidden').value      = reauthEmail;
+  document.getElementById('reauthInitials').textContent  = initials;
+  document.getElementById('reauthFirstName').textContent = firstName;
+  document.getElementById('reauthEmailHidden').value     = reauthEmail;
 
-  // ── Helper: safe redirect target ────────────────────────────────────────────
+  // ── Device-aware biometric label ─────────────────────────────────────────────
+  function detectBioLabel() {
+    if (window.ZenithFaceID && window.ZenithFaceID.getBiometricLabel) {
+      return window.ZenithFaceID.getBiometricLabel();
+    }
+    var ua = navigator.userAgent;
+    if (/iPhone/i.test(ua))           return 'Face ID';
+    if (/iPad/i.test(ua))             return 'Touch ID';
+    if (/Macintosh|Mac OS X/i.test(ua)) return 'Touch ID';
+    if (/Windows NT/i.test(ua))       return 'Windows Hello';
+    if (/Android/i.test(ua))          return 'Fingerprint';
+    if (/CrOS/i.test(ua))             return 'Fingerprint';
+    return 'Biometric';
+  }
+
+  // Returns SVG inner paths for the biometric icon based on type
+  function getBioIconPaths(label) {
+    if (/fingerprint|touch id/i.test(label)) {
+      // Lucide fingerprint icon
+      return '<path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"/>'
+           + '<path d="M5 19.5C5.5 18 6 15 6 12c0-.7.12-1.37.34-2"/>'
+           + '<path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/>'
+           + '<path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/>'
+           + '<path d="M8.65 22c.21-.66.45-1.32.57-2"/>'
+           + '<path d="M14 13.12c0 2.38 0 6.38-1 8.88"/>'
+           + '<path d="M2 16h.01"/>'
+           + '<path d="M21.8 16c.2-2 .131-5.354 0-6"/>'
+           + '<path d="M9 6.8a6 6 0 0 1 9 5.2c0 .47 0 1.17-.02 2"/>';
+    }
+    // Face ID / Windows Hello — face scan corners
+    return '<path d="M4 8V6a2 2 0 0 1 2-2h2"/>'
+         + '<path d="M16 4h2a2 2 0 0 1 2 2v2"/>'
+         + '<path d="M20 16v2a2 2 0 0 1-2 2h-2"/>'
+         + '<path d="M8 20H6a2 2 0 0 1-2-2v-2"/>'
+         + '<path d="M9 10h.01"/>'
+         + '<path d="M15 10h.01"/>'
+         + '<path d="M9.5 15a3.5 3.5 0 0 0 5 0"/>';
+  }
+
+  // ── Safe redirect ────────────────────────────────────────────────────────────
   function getSafeTarget() {
     var t = localStorage.getItem('zo_reauth_target') || '';
     localStorage.removeItem('zo_reauth_target');
-    // Only accept same-origin relative paths (no http://, no //)
-    if (t && !t.startsWith('http') && !t.startsWith('//') && !t.includes('://')) {
-      return t;
-    }
+    if (t && !t.startsWith('http') && !t.startsWith('//') && !t.includes('://')) return t;
     return 'dashboard.html';
   }
 
-  // ── Password show/hide ──────────────────────────────────────────────────────
+  // ── Password show/hide ───────────────────────────────────────────────────────
   document.getElementById('reauthTogglePwd').addEventListener('click', function () {
     var inp = document.getElementById('reauthPassword');
     var showing = inp.type === 'text';
@@ -354,38 +482,114 @@
       : '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
   });
 
-  // ── Face ID ─────────────────────────────────────────────────────────────────
-  function _showFaceIdBtn() {
-    var label = (window.ZenithFaceID && window.ZenithFaceID.getBiometricLabel)
-      ? window.ZenithFaceID.getBiometricLabel()
-      : 'Face ID';
-    document.getElementById('reauthBioLabel').textContent  = 'Sign in with ' + label;
-    document.getElementById('reauthFidBtn').setAttribute('aria-label', 'Sign in with ' + label);
-    document.getElementById('reauthFidBtn').style.display  = 'flex';
-    document.getElementById('reauthDivider').style.display = 'flex';
+  // ── Biometric UI state helpers ───────────────────────────────────────────────
+  var _currentBioLabel = '';
+
+  function _setBioIcon(label) {
+    document.getElementById('reauthBioIconSvg').innerHTML = getBioIconPaths(label);
   }
 
-  async function _checkFaceId() {
-    if (!window.ZenithFaceID) return;
-    if (!window.ZenithFaceID.isEnrolled()) return;
-    if (!window.ZenithFaceID.loginEnabled()) return;
-    try {
-      var avail = await window.ZenithFaceID.isAvailable();
-      if (avail) _showFaceIdBtn();
-    } catch (_) {}
+  function _showBioIdle(label) {
+    _currentBioLabel = label;
+    var ring = document.getElementById('reauthBioRing');
+    ring.className = 'ra-bio-ring';
+    ring.style.cursor = 'pointer';
+    _setBioIcon(label);
+    document.getElementById('reauthBioHeading').textContent = 'Use ' + label;
+    document.getElementById('reauthBioStatus').textContent  = 'Tap to verify instantly';
+    document.getElementById('reauthBioRetry').style.display = 'none';
+    document.getElementById('reauthBioSection').style.display = 'block';
+    document.getElementById('reauthDivider').style.display    = 'flex';
   }
 
-  document.getElementById('reauthFidBtn').addEventListener('click', async function () {
-    this.disabled = true;
-    try {
-      await window.ZenithFaceID.loginWithFaceId();
-      // loginWithFaceId() handles redirect to zo_reauth_target or dashboard
-    } catch (_) {
-      this.disabled = false;
+  function _showBioSuggestion(label) {
+    _currentBioLabel = label;
+    var ring = document.getElementById('reauthBioRing');
+    ring.className = 'ra-bio-ring';
+    ring.style.cursor = 'default';
+    ring.style.opacity = '0.55';
+    _setBioIcon(label);
+    document.getElementById('reauthBioHeading').textContent = label + ' available';
+    document.getElementById('reauthBioStatus').textContent  = 'Enable ' + label + ' in app Settings for instant sign-in';
+    document.getElementById('reauthBioRetry').style.display = 'none';
+    document.getElementById('reauthBioSection').style.display = 'block';
+    document.getElementById('reauthDivider').style.display    = 'flex';
+  }
+
+  function _showBioScanning() {
+    var ring = document.getElementById('reauthBioRing');
+    ring.className = 'ra-bio-ring scanning';
+    ring.style.opacity = '1';
+    ring.style.cursor = 'default';
+    _setBioIcon(_currentBioLabel);
+    document.getElementById('reauthBioHeading').textContent = 'Verifying with ' + _currentBioLabel + '…';
+    document.getElementById('reauthBioStatus').textContent  = 'Follow the prompt on your device';
+    document.getElementById('reauthBioRetry').style.display = 'none';
+    document.getElementById('reauthBioSection').style.display = 'block';
+    document.getElementById('reauthDivider').style.display    = 'flex';
+  }
+
+  function _showBioFailed(msg) {
+    var ring = document.getElementById('reauthBioRing');
+    ring.className = 'ra-bio-ring failed';
+    ring.style.opacity = '1';
+    ring.style.cursor = 'pointer';
+    document.getElementById('reauthBioIconSvg').innerHTML =
+      '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+    document.getElementById('reauthBioHeading').textContent = _currentBioLabel + ' unavailable';
+    document.getElementById('reauthBioStatus').textContent  = msg || 'Enter your password below, or tap to try again.';
+    document.getElementById('reauthBioRetry').style.display = 'inline-flex';
+    setTimeout(function () { document.getElementById('reauthPassword').focus(); }, 150);
+  }
+
+  // ── Clicking the ring triggers bio attempt ───────────────────────────────────
+  document.getElementById('reauthBioRing').addEventListener('click', function () {
+    var ring = document.getElementById('reauthBioRing');
+    if (ring.style.cursor === 'pointer' && window.ZenithFaceID) {
+      window._attemptBio();
     }
   });
 
-  // ── Password submit ─────────────────────────────────────────────────────────
+  window._attemptBio = async function () {
+    _showBioScanning();
+    try {
+      await window.ZenithFaceID.loginWithFaceId();
+      // loginWithFaceId() redirects on success — code below only runs on failure
+    } catch (e) {
+      _showBioFailed(e && e.message ? e.message : null);
+    }
+  };
+
+  // ── Biometric initialisation ─────────────────────────────────────────────────
+  async function _initBiometric() {
+    var label = detectBioLabel();
+
+    // Case 1: ZenithFaceID enrolled + available → show idle, auto-trigger
+    var zfid = window.ZenithFaceID;
+    if (zfid && zfid.isEnrolled && zfid.isEnrolled()) {
+      try {
+        var loginOk = !zfid.loginEnabled || zfid.loginEnabled();
+        var avail   = loginOk && await zfid.isAvailable();
+        if (avail) {
+          _showBioIdle(label);
+          setTimeout(window._attemptBio, 340);
+          return;
+        }
+      } catch (_) {}
+    }
+
+    // Case 2: Device has biometric hardware but not enrolled in app → suggest setup
+    if (window.PublicKeyCredential && window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
+      try {
+        var hasBio = await window.PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+        if (hasBio) {
+          _showBioSuggestion(label);
+        }
+      } catch (_) {}
+    }
+  }
+
+  // ── Password submit ──────────────────────────────────────────────────────────
   document.getElementById('reauthForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -406,11 +610,9 @@
     document.getElementById('reauthBtnText').textContent = 'Verifying…';
     document.getElementById('reauthSpinner').classList.remove('hidden');
 
-    // Wait for Supabase to be ready
     await _ready;
     var sb = window._supabase;
     if (!sb) {
-      // Demo mode — just proceed
       localStorage.setItem('zo_remember', '1');
       localStorage.setItem('zo_remember_until', String(Date.now() + 30 * 24 * 60 * 60 * 1000));
       window.location.href = getSafeTarget();
@@ -429,7 +631,6 @@
       document.getElementById('reauthBtnText').textContent = 'Continue';
       document.getElementById('reauthSpinner').classList.add('hidden');
     } else {
-      // Restore 30-day remember-me
       localStorage.setItem('zo_remember', '1');
       localStorage.setItem('zo_remember_until', String(Date.now() + 30 * 24 * 60 * 60 * 1000));
       sessionStorage.removeItem('zo_session_only');
@@ -437,7 +638,7 @@
     }
   });
 
-  // ── Not you? ────────────────────────────────────────────────────────────────
+  // ── Not you? ─────────────────────────────────────────────────────────────────
   document.getElementById('reauthNotYou').addEventListener('click', function () {
     localStorage.removeItem('zo_remember');
     localStorage.removeItem('zo_remember_until');
@@ -445,15 +646,15 @@
     localStorage.removeItem('zo_user_name');
     localStorage.removeItem('zo_reauth_target');
     sessionStorage.removeItem('zo_session_only');
-    if (window._supabase) window._supabase.auth.signOut({ scope: 'local' }).catch(function(){});
+    if (window._supabase) window._supabase.auth.signOut({ scope: 'local' }).catch(function () {});
     window.location.href = 'login.html';
   });
 
-  // ── Bootstrap Face ID check ─────────────────────────────────────────────────
+  // ── Boot ─────────────────────────────────────────────────────────────────────
   if (window._supabase) {
-    _checkFaceId();
+    _initBiometric();
   } else {
-    document.addEventListener('supabaseReady', _checkFaceId, { once: true });
+    document.addEventListener('supabaseReady', _initBiometric, { once: true });
   }
 
 })();

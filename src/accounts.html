@@ -9,1420 +9,1034 @@
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="responsive.css" />
   <style>
-    /* ── Accounts-page specific luxury styles ── */
-    .acct-hero {
-      background: linear-gradient(135deg, #0a1628 0%, #0f2042 40%, #0a1628 100%);
-      border: 1px solid rgba(201,168,76,.18);
-      border-radius: 20px;
-      padding: 36px 40px;
-      margin-bottom: 28px;
-      position: relative;
-      overflow: hidden;
+
+    /* ════════════════════════════════════════════════════
+       ACCOUNTS PAGE — PREMIUM DESIGN
+       ════════════════════════════════════════════════════ */
+
+    /* ── Portfolio Hero ── */
+    .pa-hero {
+      position: relative; border-radius: 20px; overflow: hidden;
+      background: linear-gradient(135deg, #061627 0%, #0b2040 40%, #071525 100%);
+      border: 1px solid rgba(201,168,76,.22);
+      box-shadow: 0 24px 60px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.03) inset;
+      padding: 36px 40px; margin-bottom: 32px;
     }
-    .acct-hero::before {
-      content: '';
-      position: absolute;
-      top: -60px; right: -60px;
-      width: 280px; height: 280px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(201,168,76,.08) 0%, transparent 70%);
+    .pa-hero::before {
+      content: ''; position: absolute; top: -80px; right: -80px;
+      width: 360px; height: 360px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,76,.1) 0%, transparent 65%);
       pointer-events: none;
     }
-    .acct-hero-label {
-      font-size: .7rem;
-      letter-spacing: .2em;
-      color: var(--gold-500);
-      text-transform: uppercase;
-      margin-bottom: 8px;
+    .pa-hero::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,.3) 50%, transparent);
     }
-    .acct-hero-total {
-      font-family: var(--font-display);
-      font-size: 3rem;
-      font-weight: 300;
-      color: var(--white);
-      line-height: 1;
-      margin-bottom: 6px;
+    .pa-hero-shimmer {
+      position: absolute; inset: 0; pointer-events: none; border-radius: 20px;
+      background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.04) 50%, transparent 65%);
+      background-size: 300% 100%; animation: paSheen 8s infinite linear;
     }
-    .acct-hero-sub {
-      font-size: .82rem;
-      color: var(--slate-400);
-      margin-bottom: 28px;
+    @keyframes paSheen { 0%{background-position:200% 0} 100%{background-position:-100% 0} }
+    .pa-hero-inner { position: relative; z-index: 1; }
+    .pa-hero-eyebrow {
+      font-size: .6rem; letter-spacing: .25em; text-transform: uppercase;
+      color: rgba(201,168,76,.7); margin-bottom: 10px;
     }
-    .acct-hero-chips {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
+    .pa-hero-balance {
+      font-family: var(--font-display); font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 300; color: #fff; line-height: 1; margin-bottom: 8px;
     }
-    .acct-chip {
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 100px;
-      padding: 5px 14px;
-      font-size: .75rem;
-      color: var(--slate-300);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .pa-hero-sub { font-size: .8rem; color: rgba(255,255,255,.38); margin-bottom: 30px; }
+    .pa-hero-stats {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 24px; padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,.08);
     }
-    .acct-chip-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--gold-400);
-      flex-shrink: 0;
+    .pa-stat-lbl {
+      font-size: .58rem; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--slate-500); margin-bottom: 6px;
+    }
+    .pa-stat-val {
+      font-family: var(--font-display); font-size: 1.35rem;
+      font-weight: 400; color: #fff;
+    }
+    .pa-stat-val.gold { color: var(--gold-400); }
+    .pa-stat-val.green { color: var(--green-400); }
+
+    /* ── Section header ── */
+    .pa-section-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 18px; gap: 12px; flex-wrap: wrap;
+    }
+    .pa-section-title {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--font-display); font-size: 1.45rem; font-weight: 300; color: #fff;
+    }
+    .pa-title-dot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--gold-400); flex-shrink: 0;
     }
 
-    /* ── Summary stats row ── */
-    .acct-stats-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-      margin-bottom: 28px;
+    /* ── Existing account card ── */
+    .pa-acct-card {
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(255,255,255,.08); border-radius: 16px;
+      padding: 24px 28px; margin-bottom: 14px;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
     }
-    .acct-stat {
-      background: rgba(255,255,255,.03);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 14px;
-      padding: 20px 22px;
-    }
-    .acct-stat-label {
-      font-size: .68rem;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-      color: var(--slate-500);
-      margin-bottom: 10px;
-    }
-    .acct-stat-value {
-      font-family: var(--font-display);
-      font-size: 1.6rem;
-      font-weight: 300;
-      color: var(--white);
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-    .acct-stat-detail {
-      font-size: .75rem;
-      color: var(--slate-500);
-    }
-
-    /* ── Account card luxury ── */
-    .acct-card {
-      background: linear-gradient(135deg, rgba(255,255,255,.04) 0%, rgba(255,255,255,.02) 100%);
-      border: 1px solid rgba(255,255,255,.09);
-      border-radius: 18px;
-      padding: 30px 32px;
-      margin-bottom: 18px;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    .acct-card:hover {
+    .pa-acct-card:hover {
       border-color: rgba(201,168,76,.25);
-      box-shadow: 0 8px 32px rgba(0,0,0,.25);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 36px rgba(0,0,0,.3);
     }
-    .acct-card-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
-    }
-    .acct-card-icon {
-      width: 56px; height: 56px;
-      border-radius: 16px;
+    .pa-acct-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+    .pa-acct-left { display: flex; align-items: center; gap: 16px; }
+    .pa-acct-icon {
+      width: 46px; height: 46px; border-radius: 13px; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
     }
-    .acct-card-name {
-      font-family: var(--font-display);
-      font-size: 1.4rem;
-      font-weight: 300;
-      color: var(--white);
-      margin-bottom: 4px;
+    .pa-acct-name { font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 3px; }
+    .pa-acct-num { font-size: .72rem; color: var(--slate-500); letter-spacing: .06em; font-family: monospace; }
+    .pa-acct-bal-wrap { text-align: right; flex-shrink: 0; }
+    .pa-acct-bal { font-family: var(--font-display); font-size: 1.8rem; font-weight: 300; color: #fff; line-height: 1; }
+    .pa-acct-bal-lbl { font-size: .65rem; color: var(--slate-500); letter-spacing: .1em; text-transform: uppercase; margin-top: 3px; }
+    .pa-acct-meta {
+      display: grid; grid-template-columns: repeat(4,1fr); gap: 12px;
+      padding: 16px 0; border-top: 1px solid rgba(255,255,255,.06);
+      border-bottom: 1px solid rgba(255,255,255,.06); margin-bottom: 16px;
     }
-    .acct-card-num {
-      font-size: .78rem;
-      color: var(--slate-400);
-      letter-spacing: .04em;
+    .pa-meta-item { text-align: center; }
+    .pa-meta-lbl { font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: var(--slate-500); margin-bottom: 5px; }
+    .pa-meta-val { font-size: .88rem; color: #fff; }
+    .pa-acct-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .pa-btn-close {
+      margin-left: auto; display: flex; align-items: center; gap: 6px;
+      padding: 7px 14px; border-radius: 8px; font-size: .72rem; font-weight: 500;
+      border: 1px solid rgba(248,113,113,.2); background: rgba(248,113,113,.05);
+      color: rgba(248,113,113,.55); cursor: pointer; transition: all .16s;
     }
-    .acct-card-balance {
-      text-align: right;
-      flex-shrink: 0;
+    .pa-btn-close:hover { border-color: rgba(248,113,113,.45); background: rgba(248,113,113,.1); color: #f87171; }
+
+    /* ── Pending applications ── */
+    .pa-apps-card {
+      background: rgba(96,165,250,.03); border: 1px solid rgba(96,165,250,.14);
+      border-radius: 16px; padding: 20px 24px; margin-bottom: 28px;
     }
-    .acct-card-balance-amount {
-      font-family: var(--font-display);
-      font-size: 2.2rem;
-      font-weight: 300;
-      color: var(--white);
-      line-height: 1;
+    .pa-apps-hdr {
+      font-size: .62rem; letter-spacing: .18em; text-transform: uppercase;
+      color: #60a5fa; font-weight: 700; margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
     }
-    .acct-card-balance-sub {
-      font-size: .78rem;
-      color: var(--slate-400);
-      margin-top: 4px;
+    .pa-app-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,.05);
+      gap: 12px; flex-wrap: wrap;
     }
-    .acct-card-meta {
+    .pa-app-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .pa-app-name { font-size: .86rem; font-weight: 500; color: #fff; margin-bottom: 2px; }
+    .pa-app-date { font-size: .72rem; color: var(--slate-400); }
+    .pa-status {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: .65rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; border-radius: 99px; padding: 3px 10px;
+    }
+    .pa-status-pending { background: rgba(251,191,36,.1); color: #fbbf24; border: 1px solid rgba(251,191,36,.25); }
+    .pa-status-approved { background: rgba(74,222,128,.1); color: #4ade80; border: 1px solid rgba(74,222,128,.25); }
+    .pa-status-declined { background: rgba(248,113,113,.1); color: #f87171; border: 1px solid rgba(248,113,113,.25); }
+    .pa-status-under_review { background: rgba(96,165,250,.1); color: #60a5fa; border: 1px solid rgba(96,165,250,.25); }
+
+    /* ── Product grid ── */
+    .pa-products-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      padding: 20px 0;
-      border-top: 1px solid rgba(255,255,255,.07);
-      border-bottom: 1px solid rgba(255,255,255,.07);
-      margin-bottom: 20px;
-    }
-    .acct-meta-item {
-      text-align: center;
-    }
-    .acct-meta-label {
-      font-size: .65rem;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: var(--slate-500);
-      margin-bottom: 6px;
-    }
-    .acct-meta-value {
-      font-size: .9rem;
-      color: var(--white);
-    }
-    .acct-interest-banner {
-      border-radius: 10px;
-      padding: 14px 16px;
-      margin-bottom: 18px;
-      font-size: .8rem;
-      line-height: 1.55;
-    }
-    .acct-card-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    /* Close Account button — subtle destructive */
-    .btn-close-acct {
-      margin-left: auto;
-      display: flex; align-items: center; gap: 6px;
-      padding: 7px 13px; border-radius: 9px; font-size: .73rem;
-      font-weight: 500; letter-spacing: .04em; text-transform: uppercase;
-      border: 1px solid rgba(248,113,113,.22);
-      background: rgba(248,113,113,.06); color: rgba(248,113,113,.6);
-      cursor: pointer; transition: all .18s;
-    }
-    .btn-close-acct:hover {
-      border-color: rgba(248,113,113,.5);
-      background: rgba(248,113,113,.12); color: #f87171;
-      box-shadow: 0 0 0 1px rgba(248,113,113,.12);
+      grid-template-columns: repeat(3,1fr);
+      gap: 18px;
     }
 
-    /* ════════════════════════════════════════════════════════════
-       Close Account — 2-step modal
-       Desktop: centred dialog  |  Mobile ≤640px: bottom sheet
-    ════════════════════════════════════════════════════════════ */
+    /* ── Product card ── */
+    .pa-prod-card {
+      background: linear-gradient(160deg, #08142a 0%, #050d1c 100%);
+      border: 1px solid rgba(255,255,255,.07); border-radius: 18px;
+      padding: 26px 22px; position: relative; overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: border-color .25s, box-shadow .25s, transform .25s;
+    }
+    .pa-prod-card::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: var(--pc-color, rgba(201,168,76,.5));
+    }
+    .pa-prod-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse 100% 60% at 50% -10%, var(--pc-glow, rgba(201,168,76,.05)) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .pa-prod-card:hover {
+      border-color: rgba(255,255,255,.16);
+      transform: translateY(-3px);
+      box-shadow: 0 18px 48px rgba(0,0,0,.45);
+    }
+    .pa-prod-cat {
+      font-size: .56rem; letter-spacing: .2em; text-transform: uppercase;
+      color: var(--pc-text, #c9a84c); opacity: .75; margin-bottom: 5px;
+      position: relative; z-index: 1;
+    }
+    .pa-prod-icon {
+      width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px; position: relative; z-index: 1;
+      background: var(--pc-bg, rgba(201,168,76,.1));
+      border: 1px solid var(--pc-border, rgba(201,168,76,.2));
+    }
+    .pa-prod-name {
+      font-family: var(--font-display); font-size: 1.2rem;
+      color: #fff; line-height: 1.2; margin-bottom: 6px;
+      position: relative; z-index: 1;
+    }
+    .pa-prod-desc {
+      font-size: .76rem; color: var(--slate-400); line-height: 1.55;
+      margin-bottom: 14px; position: relative; z-index: 1;
+    }
+    .pa-prod-rate {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--pc-bg, rgba(201,168,76,.08));
+      border: 1px solid var(--pc-border, rgba(201,168,76,.2));
+      border-radius: 99px; padding: 5px 12px;
+      font-size: .72rem; font-weight: 700; letter-spacing: .06em;
+      color: var(--pc-text, #c9a84c);
+      margin-bottom: 16px; width: fit-content;
+      position: relative; z-index: 1;
+    }
+    .pa-prod-features {
+      list-style: none; padding: 0; margin: 0 0 18px;
+      display: flex; flex-direction: column; gap: 7px;
+      flex: 1; position: relative; z-index: 1;
+    }
+    .pa-prod-features li {
+      display: flex; align-items: flex-start; gap: 8px;
+      font-size: .74rem; color: var(--slate-300); line-height: 1.5;
+    }
+    .pa-prod-features li::before {
+      content: ''; display: block; width: 4px; height: 4px; border-radius: 50%;
+      background: var(--pc-text, #c9a84c); flex-shrink: 0; margin-top: 5px;
+    }
+    .pa-prod-min {
+      font-size: .68rem; color: var(--slate-500);
+      margin-bottom: 16px; position: relative; z-index: 1;
+    }
+    .pa-prod-btn {
+      width: 100%; padding: 12px;
+      background: var(--pc-bg, rgba(201,168,76,.08));
+      border: 1px solid var(--pc-border, rgba(201,168,76,.22));
+      color: var(--pc-text, #c9a84c);
+      border-radius: 11px; font-size: .78rem; font-weight: 700;
+      letter-spacing: .04em; text-transform: uppercase; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      transition: all .18s; position: relative; z-index: 1;
+    }
+    .pa-prod-btn:hover {
+      background: var(--pc-hover, rgba(201,168,76,.18));
+      box-shadow: 0 0 20px var(--pc-shadow, rgba(201,168,76,.15));
+    }
+
+    /* ── Wire info ── */
+    .pa-wire {
+      background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.07);
+      border-radius: 16px; padding: 24px 28px; margin-top: 28px;
+    }
+    .pa-wire-hdr {
+      display: flex; align-items: center; gap: 9px; margin-bottom: 8px;
+      font-size: .62rem; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--gold-500); font-weight: 600;
+    }
+    .pa-wire-sub { font-size: .78rem; color: var(--slate-400); line-height: 1.6; margin-bottom: 18px; }
+    .pa-wire-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .pa-wire-lbl { font-size: .6rem; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-500); margin-bottom: 6px; }
+    .pa-wire-val { font-family: monospace; font-size: 1rem; color: #fff; letter-spacing: .08em; }
+    .pa-wire-note { font-size: .68rem; color: var(--slate-500); margin-top: 3px; }
+
+    /* ── FDIC bar ── */
+    .pa-fdic {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 16px 20px; background: rgba(255,255,255,.02);
+      border: 1px solid rgba(255,255,255,.06); border-radius: 12px;
+      margin-top: 20px; margin-bottom: 48px;
+    }
+    .pa-fdic p { font-size: .74rem; color: var(--slate-400); line-height: 1.65; margin: 0; }
+
+    /* ── Close account modal ── */
     .za-overlay {
       position: fixed; inset: 0; z-index: 1300;
-      background: rgba(2,5,14,.78); backdrop-filter: blur(10px);
-      display: flex; align-items: center; justify-content: center;
-      padding: 20px;
-      opacity: 0; pointer-events: none;
-      transition: opacity .28s ease;
+      background: rgba(2,5,14,.82); backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity .28s;
     }
     .za-overlay.open { opacity: 1; pointer-events: auto; }
-
     .za-modal {
-      width: 500px; max-width: calc(100vw - 40px);
-      background: linear-gradient(160deg,#0b1829 0%,#070f1d 100%);
+      width: 480px; max-width: calc(100vw - 40px);
+      background: linear-gradient(160deg, #0b1829, #060f1d);
       border: 1px solid rgba(255,255,255,.1); border-radius: 22px;
-      position: relative; overflow: hidden;
-      display: flex; flex-direction: column;
+      overflow: hidden; display: flex; flex-direction: column;
       max-height: calc(100dvh - 40px);
       transform: scale(.95) translateY(16px);
       transition: transform .3s cubic-bezier(.34,1.18,.64,1);
-      box-shadow: 0 40px 120px rgba(0,0,0,.75), 0 0 0 1px rgba(255,255,255,.04) inset;
-      will-change: transform;
+      box-shadow: 0 40px 100px rgba(0,0,0,.7);
     }
     .za-overlay.open .za-modal { transform: scale(1) translateY(0); }
-
-    /* Top shimmer accent line */
     .za-modal::before {
-      content:''; position:absolute; top:0; left:0; right:0; height:1px; z-index:2; pointer-events:none;
-      background: linear-gradient(90deg, transparent 0%, rgba(248,113,113,.65) 45%, rgba(201,168,76,.35) 100%);
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; z-index: 2;
+      background: linear-gradient(90deg, transparent, rgba(248,113,113,.6) 45%, rgba(201,168,76,.3) 100%);
     }
-
-    /* Drag handle — hidden on desktop, shown on mobile */
-    .za-handle {
-      display: none;
-      width: 38px; height: 4px; border-radius: 2px;
-      background: rgba(255,255,255,.18);
-      margin: 12px auto 0; flex-shrink: 0;
-    }
-
-    .za-head {
-      padding: 26px 32px 18px; flex-shrink: 0;
-    }
-    .za-steps {
-      display: flex; align-items: center; gap: 8px; margin-bottom: 18px;
-    }
-    .za-step {
-      width: 28px; height: 4px; border-radius: 2px;
-      background: rgba(255,255,255,.1); transition: background .25s;
-    }
-    .za-step.done   { background: rgba(248,113,113,.55); }
-    .za-step.active { background: #f87171; box-shadow: 0 0 8px rgba(248,113,113,.5); }
-    .za-eyebrow {
-      font-size: .6rem; letter-spacing: .25em; text-transform: uppercase;
-      color: rgba(248,113,113,.55); margin-bottom: 7px;
-    }
-    .za-title {
-      font-family: 'Cormorant Garamond','Georgia',serif;
-      font-size: 1.65rem; font-weight: 300; color: #fff;
-      line-height: 1.1; margin-bottom: 4px;
-    }
+    .za-head { padding: 24px 28px 16px; flex-shrink: 0; }
+    .za-steps { display: flex; align-items: center; gap: 6px; margin-bottom: 16px; }
+    .za-step { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.1); transition: background .25s; }
+    .za-step.done  { background: rgba(248,113,113,.5); }
+    .za-step.active { background: #f87171; box-shadow: 0 0 6px rgba(248,113,113,.5); }
+    .za-eyebrow { font-size: .58rem; letter-spacing: .22em; text-transform: uppercase; color: rgba(248,113,113,.55); margin-bottom: 6px; }
+    .za-title { font-family: var(--font-display); font-size: 1.55rem; font-weight: 300; color: #fff; margin-bottom: 4px; }
     .za-sub { font-size: .78rem; color: rgba(255,255,255,.35); line-height: 1.5; }
-
-    .za-body {
-      padding: 0 32px 24px; flex: 1; overflow-y: auto;
-      scrollbar-width: thin; scrollbar-color: rgba(248,113,113,.2) transparent;
-    }
-    .za-body::-webkit-scrollbar       { width: 3px; }
-    .za-body::-webkit-scrollbar-track  { background: transparent; }
-    .za-body::-webkit-scrollbar-thumb  { background: rgba(248,113,113,.2); border-radius: 3px; }
-
-    .za-acct-pill {
-      display: flex; align-items: center; gap: 14px; padding: 14px 16px;
-      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08);
-      border-radius: 14px; margin-bottom: 18px;
-    }
-    .za-acct-icon {
-      width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center; font-size: 1.05rem;
-      background: rgba(255,255,255,.04);
-    }
-    .za-acct-info { flex: 1; min-width: 0; }
-    .za-acct-bal  { text-align: right; flex-shrink: 0; }
-
-    .za-warn-list {
-      display: flex; flex-direction: column; gap: 9px; margin-bottom: 20px;
-    }
-    .za-warn-item {
-      display: flex; align-items: flex-start; gap: 10px;
-      padding: 11px 13px; border-radius: 10px;
-      border: 1px solid rgba(248,113,113,.14); background: rgba(248,113,113,.05);
-      font-size: .79rem; color: rgba(255,255,255,.58); line-height: 1.55;
-    }
+    .za-body { padding: 0 28px 20px; flex: 1; overflow-y: auto; }
+    .za-pill { display: flex; align-items: center; gap: 12px; padding: 14px; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 12px; margin-bottom: 16px; }
+    .za-pill-icon { width: 38px; height: 38px; border-radius: 9px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .za-pill-bal { text-align: right; flex-shrink: 0; }
+    .za-warn-item { display: flex; align-items: flex-start; gap: 10px; padding: 11px 13px; border-radius: 10px; border: 1px solid rgba(248,113,113,.14); background: rgba(248,113,113,.05); font-size: .79rem; color: rgba(255,255,255,.55); line-height: 1.55; margin-bottom: 8px; }
     .za-warn-icon { flex-shrink: 0; color: #f87171; margin-top: 1px; }
+    .za-confirm-input { width: 100%; padding: 14px; border-radius: 12px; box-sizing: border-box; background: rgba(255,255,255,.04); border: 1px solid rgba(248,113,113,.22); color: #fff; font-size: 1.1rem; font-family: 'Courier New',monospace; letter-spacing: .2em; outline: none; text-align: center; transition: border-color .18s, box-shadow .18s; }
+    .za-confirm-input:focus { border-color: rgba(248,113,113,.5); box-shadow: 0 0 0 3px rgba(248,113,113,.1); }
+    .za-confirm-input.valid { border-color: rgba(74,222,128,.4); box-shadow: 0 0 0 3px rgba(74,222,128,.08); }
+    .za-foot { padding: 14px 28px 22px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; border-top: 1px solid rgba(255,255,255,.06); }
+    .za-cancel { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); color: rgba(255,255,255,.45); padding: 12px 18px; border-radius: 10px; font-size: .82rem; cursor: pointer; transition: all .16s; }
+    .za-cancel:hover { background: rgba(255,255,255,.09); color: rgba(255,255,255,.8); }
+    .za-next { flex: 1; padding: 13px; border-radius: 10px; background: rgba(248,113,113,.14); border: 1px solid rgba(248,113,113,.3); color: #fca5a5; font-size: .84rem; font-weight: 600; cursor: pointer; transition: all .18s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .za-next:hover:not(:disabled) { background: rgba(248,113,113,.24); }
+    .za-next:disabled { opacity: .3; cursor: not-allowed; }
+    .za-final { flex: 1; padding: 13px; border-radius: 10px; border: none; background: linear-gradient(135deg,#991b1b,#dc2626); color: #fff; font-size: .84rem; font-weight: 700; cursor: pointer; transition: all .18s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .za-final:hover:not(:disabled) { filter: brightness(1.1); box-shadow: 0 6px 20px rgba(220,38,38,.4); }
+    .za-final:disabled { opacity: .3; cursor: not-allowed; }
 
-    .za-confirm-label {
-      font-size: .7rem; letter-spacing: .08em; text-transform: uppercase;
-      color: rgba(255,255,255,.38); margin-bottom: 8px;
-    }
-    .za-confirm-input {
-      width: 100%; padding: 14px 16px; border-radius: 12px; box-sizing: border-box;
-      background: rgba(255,255,255,.04); border: 1px solid rgba(248,113,113,.22);
-      color: #fff; font-size: 1.15rem; font-family: 'Courier New',monospace;
-      letter-spacing: .2em; outline: none; text-align: center;
-      transition: border-color .18s, box-shadow .18s;
-    }
-    .za-confirm-input:focus {
-      border-color: rgba(248,113,113,.5);
-      box-shadow: 0 0 0 3px rgba(248,113,113,.1);
-    }
-    .za-confirm-input.valid {
-      border-color: rgba(74,222,128,.45);
-      box-shadow: 0 0 0 3px rgba(74,222,128,.08);
-    }
+    /* ── Account details modal ── */
+    .pa-details-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.05); font-size: .84rem; }
+    .pa-details-row:last-child { border-bottom: none; }
+    .pa-details-key { color: var(--slate-400); }
+    .pa-details-val { color: #fff; font-family: monospace; letter-spacing: .04em; }
 
-    .za-foot {
-      padding: 14px 32px 22px;
-      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
-      border-top: 1px solid rgba(255,255,255,.06);
+    /* ── Responsive ──
+       Note: sidebar is ~240px, so content area = window - 240px
+       At window 1300px → content ~1060px (3 col fine)
+       At window 1060px → content ~820px (2 col)
+       At window 800px  → sidebar hidden, content ~full-width
+    ── */
+    @media (max-width: 1060px) {
+      .pa-products-grid { grid-template-columns: repeat(2,1fr); }
     }
-    .za-btn-cancel {
-      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09);
-      color: rgba(255,255,255,.48); padding: 12px 20px; border-radius: 11px;
-      font-size: .82rem; cursor: pointer; transition: all .16s; white-space: nowrap;
+    @media (max-width: 700px) {
+      .pa-products-grid { grid-template-columns: 1fr; }
+      .pa-hero { padding: 22px 20px; }
+      .pa-hero-stats { grid-template-columns: repeat(2,1fr); gap: 14px; }
+      .pa-acct-meta { grid-template-columns: repeat(2,1fr); }
+      .pa-wire-grid { grid-template-columns: 1fr; gap: 12px; }
+      .pa-acct-card { padding: 18px 16px; }
+      .pa-hero-balance { font-size: 2.2rem; }
     }
-    .za-btn-cancel:hover { background: rgba(255,255,255,.09); color: rgba(255,255,255,.8); }
-    .za-btn-next {
-      flex: 1; padding: 13px 18px; border-radius: 11px;
-      background: rgba(248,113,113,.16); border: 1px solid rgba(248,113,113,.35);
-      color: #fca5a5; font-size: .84rem; font-weight: 600; letter-spacing: .03em;
-      cursor: pointer; transition: all .18s; display: flex; align-items: center;
-      justify-content: center; gap: 8px; white-space: nowrap;
+    @media (max-width: 480px) {
+      .pa-acct-top { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .pa-acct-bal-wrap { text-align: left; }
+      .pa-acct-actions { flex-wrap: wrap; }
+      .pa-products-grid { gap: 14px; }
     }
-    .za-btn-next:hover:not(:disabled) {
-      background: rgba(248,113,113,.26); box-shadow: 0 0 18px rgba(248,113,113,.18);
-    }
-    .za-btn-next:disabled { opacity: .35; cursor: not-allowed; }
-    .za-btn-final {
-      flex: 1; padding: 13px 18px; border-radius: 11px; border: none;
-      background: linear-gradient(135deg,#991b1b,#dc2626); color: #fff;
-      font-size: .84rem; font-weight: 700; letter-spacing: .03em;
-      cursor: pointer; transition: all .18s; display: flex; align-items: center;
-      justify-content: center; gap: 8px; white-space: nowrap;
-    }
-    .za-btn-final:hover:not(:disabled) {
-      filter: brightness(1.1); box-shadow: 0 6px 22px rgba(220,38,38,.38);
-    }
-    .za-btn-final:disabled { opacity: .32; cursor: not-allowed; }
-
-    /* ── Pending requests section ── */
-    .pending-section {
-      background: rgba(234,179,8,.04);
-      border: 1px solid rgba(234,179,8,.18);
-      border-radius: 16px;
-      padding: 24px 28px;
-      margin-bottom: 24px;
-    }
-    .pending-section-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: var(--font-display);
-      font-size: 1.1rem;
-      color: var(--white);
-      margin-bottom: 16px;
-    }
-    .pending-req-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-      padding: 14px 0;
-      border-bottom: 1px solid rgba(255,255,255,.06);
-    }
-    .pending-req-row:last-child { border-bottom: none; }
-
-    /* ── Wire info card ── */
-    .wire-card {
-      background: rgba(255,255,255,.02);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 16px;
-      padding: 28px 32px;
-      margin-top: 24px;
-    }
-    .wire-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 28px;
-      margin-top: 20px;
-    }
-    .wire-item-label {
-      font-size: .65rem;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--slate-500);
-      margin-bottom: 8px;
-    }
-    .wire-item-value {
-      font-family: monospace;
-      font-size: 1.05rem;
-      color: var(--white);
-      letter-spacing: .1em;
-      margin-bottom: 4px;
-    }
-    .wire-item-sub {
-      font-size: .72rem;
-      color: var(--slate-500);
-    }
-
-    /* ── Account Details Modal ── */
-    .details-section { margin-bottom: 22px; }
-    .details-section-title {
-      font-size: .65rem;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--gold-500);
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid rgba(201,168,76,.15);
-    }
-    .details-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255,255,255,.05);
-      font-size: .85rem;
-    }
-    .details-row:last-child { border-bottom: none; }
-    .details-row-label { color: var(--slate-400); }
-    .details-row-value { color: var(--white); font-family: monospace; letter-spacing: .04em; }
-
-    /* ── New Account Modal luxury ── */
-    .type-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
-    .type-option {
-      border: 1.5px solid rgba(255,255,255,.1);
-      border-radius: 12px;
-      padding: 14px 12px;
-      cursor: pointer;
-      transition: border-color .2s, background .2s;
-      text-align: center;
-    }
-    .type-option:hover { border-color: rgba(201,168,76,.4); background: rgba(201,168,76,.05); }
-    .type-option.selected { border-color: var(--gold-500); background: rgba(201,168,76,.08); }
-    .type-option-name { font-size: .88rem; color: var(--white); margin-bottom: 2px; }
-    .type-option-rate { font-size: .72rem; color: var(--gold-400); }
-    .type-option-min  { font-size: .68rem; color: var(--slate-500); margin-top: 2px; }
-
-    /* ── Source account picker ── */
-    .source-acct-option {
-      display: flex; align-items: center; justify-content: space-between; gap: 14px;
-      padding: 14px 16px; border-radius: 13px; cursor: pointer;
-      border: 1.5px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,.03);
-      transition: border-color .18s, background .18s;
-      margin-bottom: 8px; position: relative;
-    }
-    .source-acct-option:last-child { margin-bottom: 0; }
-    .source-acct-option:hover { border-color: rgba(201,168,76,.3); background: rgba(201,168,76,.04); }
-    .source-acct-option.sel {
-      border-color: rgba(201,168,76,.55); background: rgba(201,168,76,.09);
-    }
-    .source-acct-option.sel::before {
-      content: '✓';
-      position: absolute; top: 10px; right: 14px;
-      font-size: .7rem; color: var(--gold-400); font-weight: 700;
-    }
-    .source-acct-icon {
-      width: 38px; height: 38px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-    .source-acct-name { font-size: .88rem; color: var(--white); font-weight: 500; margin-bottom: 2px; }
-    .source-acct-num  { font-size: .7rem; color: var(--slate-500); font-family: monospace; letter-spacing: .04em; }
-    .source-acct-bal  { text-align: right; flex-shrink: 0; }
-    .source-acct-bal-amount { font-family: var(--font-display); font-size: 1rem; color: var(--white); }
-    .source-acct-bal-label  { font-size: .65rem; color: var(--slate-500); text-transform: uppercase; letter-spacing: .08em; margin-top: 2px; }
-    .source-acct-option.sel .source-acct-bal-amount { color: var(--gold-400); }
-
-    /* ── Scrollbar elimination ── */
-    #accountDetailsModal .modal, #newAccountModal .modal { scrollbar-width: none; -ms-overflow-style: none; }
-    #accountDetailsModal .modal::-webkit-scrollbar, #newAccountModal .modal::-webkit-scrollbar { display: none; }
-
-    /* ── Responsive ── */
-    @media (max-width: 768px) {
-      .acct-stats-row { grid-template-columns: 1fr 1fr; }
-      .wire-grid { grid-template-columns: 1fr 1fr; }
-      .acct-hero-total { font-size: 2.2rem; }
-    }
-    @media (max-width: 540px) {
-      .acct-stats-row { grid-template-columns: 1fr; }
-      .wire-grid { grid-template-columns: 1fr; gap: 18px; }
-      .acct-card-meta { grid-template-columns: repeat(2, 1fr); }
-      .type-selector { grid-template-columns: 1fr; }
-      .acct-hero { padding: 24px 20px; }
-      .acct-card { padding: 22px 18px; }
-      .acct-hero-total { font-size: 1.9rem; }
-      .acct-card-balance-amount { font-size: 1.8rem; }
-    }
-    @media (max-width: 640px) {
-      /* Other modals */
-      .modal-overlay.open { align-items: flex-end !important; padding: 0 !important; }
-      .modal-overlay.open .modal { border-radius: 24px 24px 0 0 !important; max-height: 92dvh !important; width: 100% !important; max-width: 100vw !important; }
-
-      /* Close-account modal — bottom sheet */
-      .za-overlay { align-items: flex-end; padding: 0; }
-      .za-modal {
-        width: 100%; max-width: 100%;
-        border-radius: 24px 24px 0 0;
-        max-height: 92dvh;
-        /* Switch to slide-up animation */
-        transform: translateY(100%);
-      }
-      .za-overlay.open .za-modal { transform: translateY(0); }
-      .za-handle { display: block; }
-      .za-head  { padding: 14px 22px 16px; }
-      .za-body  { padding: 0 22px 18px; }
-      .za-foot  {
-        padding: 12px 22px calc(18px + env(safe-area-inset-bottom, 0px));
-        flex-direction: column; gap: 8px;
-      }
-      .za-btn-cancel, .za-btn-next, .za-btn-final {
-        width: 100%; flex: none; justify-content: center;
-      }
-      /* Primary action first on mobile */
-      .za-foot { flex-direction: column-reverse; }
-    }
-
-    @media (max-width: 400px) {
-      .za-title { font-size: 1.4rem; }
-      /* Reflow account pill: balance wraps below name on very small screens */
-      .za-acct-pill { flex-wrap: wrap; gap: 10px; }
-      .za-acct-bal  { text-align: left; width: 100%; }
-      /* Prevent iOS Safari from zooming into the input */
-      .za-confirm-input { font-size: 16px; letter-spacing: .12em; }
-      .za-head { padding: 12px 18px 14px; }
-      .za-body { padding: 0 18px 14px; }
-      .za-foot { padding: 10px 18px calc(16px + env(safe-area-inset-bottom, 0px)); }
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 <div class="app-layout">
+
+  <!-- ═══ SIDEBAR ═══ -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <a href="index.html" class="sidebar-logo-mark">
+      <a href="dashboard.html" class="sidebar-logo-mark">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
       </a>
       <div>
         <div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div>
         <div style="font-size:.55rem;letter-spacing:.18em;color:var(--gold-500);text-transform:uppercase;">Credit Union</div>
       </div>
-      <button class="sidebar-close-btn" id="sidebarClose" aria-label="Close"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <button class="sidebar-close-btn" id="sidebarClose" aria-label="Close">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <nav class="sidebar-nav">
       <div class="sidebar-section">
         <div class="sidebar-section-label">Main</div>
-        <a href="dashboard.html"    class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
-        <a href="accounts.html"     class="sidebar-item active"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Accounts</a>
-        <a href="transactions.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Transactions</a>
-        <a href="transfer.html"     class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>Transfer</a>
+        <a href="dashboard.html" class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a href="accounts.html" class="sidebar-item active">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          Accounts
+        </a>
+        <a href="transactions.html" class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          Transactions
+        </a>
+        <a href="transfer.html" class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+          Transfer
+        </a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-section-label">Finance</div>
-        <a href="cards.html"        class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>Cards</a>
-        <a href="investments.html"  class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Investments</a>
-        <a href="credit.html"       class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Credit &amp; Loans</a>
+        <a href="cards.html" class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+          Cards
+        </a>
+        <a href="investments.html" class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Investments
+        </a>
+        <a href="credit.html" class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          Credit &amp; Loans
+        </a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-section-label">Account</div>
-        <a href="settings.html"     class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
-        <button class="sidebar-item" id="logoutBtn" style="width:100%;text-align:left;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+        <a href="settings.html" class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </a>
+        <button class="sidebar-item" id="logoutBtn" style="width:100%;text-align:left;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
       </div>
     </nav>
     <div class="sidebar-footer">
       <div class="sidebar-user">
-        <div class="sidebar-avatar" id="sidebarAvatar">—</div>
+        <div class="sidebar-avatar" id="sidebarAvatar"></div>
         <div class="sidebar-user-info">
-          <div class="sidebar-user-name" id="sidebarName">Loading…</div>
-          <div class="sidebar-user-tier" id="sidebarTier">ZenithOne Member</div>
+          <div class="sidebar-user-name" id="sidebarName"></div>
+          <div class="sidebar-user-tier">Member</div>
         </div>
       </div>
     </div>
   </aside>
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+  <!-- ═══ MAIN ═══ -->
   <main class="app-main">
     <header class="app-topbar">
       <div class="app-topbar-left">
-        <button class="btn btn-icon btn-ghost" id="sidebarToggle"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <button class="btn btn-icon btn-ghost" id="sidebarToggle">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
         <div class="app-topbar-title">Accounts</div>
       </div>
       <div class="app-topbar-right">
-        <button class="btn btn-primary btn-sm" onclick="openNewAccountModal()">+ Open Account</button>
-        <button class="btn btn-icon btn-ghost" id="notifBtn"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
-        <div class="sidebar-avatar" id="topbarAvatar" style="cursor:pointer;" onclick="location.href='settings.html'">—</div>
+        <button class="btn btn-icon btn-ghost" id="notifBtn">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </button>
+        <div class="sidebar-avatar" style="cursor:pointer;" id="topbarAvatar" onclick="location.href='settings.html'"></div>
       </div>
     </header>
 
     <div class="app-content">
 
-      <!-- Mobile action strip -->
-      <button onclick="openNewAccountModal()" class="btn btn-primary mobile-action-strip" style="width:100%;justify-content:center;margin-bottom:20px;">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-right:8px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Open New Account
-      </button>
-
-      <!-- Hero -->
-      <div class="acct-hero" id="acctHero" style="display:none;">
-        <div class="acct-hero-label">Total Deposits</div>
-        <div class="acct-hero-total" id="acctHeroTotal">$0.00</div>
-        <div class="acct-hero-sub" id="acctHeroSub">Across all active accounts</div>
-        <div class="acct-hero-chips" id="acctHeroChips"></div>
+      <!-- Loading state -->
+      <div id="paLoading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:14px;">
+        <div style="width:36px;height:36px;border-radius:50%;border:2.5px solid rgba(201,168,76,.2);border-top-color:#c9a84c;animation:spin .7s linear infinite;"></div>
+        <div style="font-size:.82rem;color:var(--slate-400);">Loading your accounts…</div>
       </div>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
-      <!-- Stats row -->
-      <div class="acct-stats-row" id="acctStatsRow" style="display:none;">
-        <div class="acct-stat">
-          <div class="acct-stat-label">Active Accounts</div>
-          <div class="acct-stat-value" id="statAcctCount">—</div>
-          <div class="acct-stat-detail" id="statAcctTypes">—</div>
-        </div>
-        <div class="acct-stat">
-          <div class="acct-stat-label">Avg. Interest Rate</div>
-          <div class="acct-stat-value" id="statAvgRate">—</div>
-          <div class="acct-stat-detail">Weighted by balance</div>
-        </div>
-        <div class="acct-stat">
-          <div class="acct-stat-label">Annual Interest Earned</div>
-          <div class="acct-stat-value" id="statAnnualInterest">—</div>
-          <div class="acct-stat-detail">Projected at current rates</div>
-        </div>
-      </div>
+      <!-- Content (shown after load) -->
+      <div id="paContent" style="display:none; max-width:1080px; margin:0 auto;">
 
-      <!-- Pending account requests -->
-      <div class="pending-section" id="pendingSection" style="display:none;">
-        <div class="pending-section-title">
-          <svg width="18" height="18" fill="none" stroke="#eab308" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-          Pending Account Requests
-        </div>
-        <div id="pendingRequestsList"></div>
-      </div>
-
-      <!-- Accounts list (skeleton shown on load) -->
-      <div id="accountsContainer">
-        <div style="padding:48px;text-align:center;color:var(--slate-500);">
-          <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="opacity:.4;margin-bottom:12px;"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><br/>
-          Loading your accounts…
-        </div>
-      </div>
-
-      <!-- Wire & Routing Info -->
-      <div class="wire-card" id="wireCard" style="display:none;">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-          <div>
-            <div style="font-family:var(--font-display);font-size:1.15rem;color:var(--white);margin-bottom:4px;">Wiring &amp; Routing Information</div>
-            <div style="font-size:.78rem;color:var(--slate-400);">For domestic and international transfers</div>
-          </div>
-          <div class="badge badge-gold" style="display:inline-flex;">FDIC Insured up to $250,000</div>
-        </div>
-        <div class="wire-grid" id="wireGrid">
-          <div>
-            <div class="wire-item-label">Routing Number (ABA)</div>
-            <div class="wire-item-value" id="wireRouting">021 000 021</div>
-            <div class="wire-item-sub">ZenithOne Credit Union</div>
-          </div>
-          <div>
-            <div class="wire-item-label">SWIFT / BIC Code</div>
-            <div class="wire-item-value">ZNTH US 33</div>
-            <div class="wire-item-sub">International wire transfers</div>
-          </div>
-          <div>
-            <div class="wire-item-label">Bank Address</div>
-            <div style="font-size:.88rem;color:var(--white);line-height:1.55;">388 Madison Avenue<br/>New York, NY 10017</div>
+        <!-- ── Portfolio Hero ── -->
+        <div class="pa-hero">
+          <div class="pa-hero-shimmer"></div>
+          <div class="pa-hero-inner">
+            <div class="pa-hero-eyebrow">ZenithOne Credit Union — Member Portfolio</div>
+            <div class="pa-hero-balance" id="heroTotal">$0.00</div>
+            <div class="pa-hero-sub" id="heroSub">Loading portfolio…</div>
+            <div class="pa-hero-stats">
+              <div>
+                <div class="pa-stat-lbl">Active Accounts</div>
+                <div class="pa-stat-val" id="heroCount">—</div>
+              </div>
+              <div>
+                <div class="pa-stat-lbl">Interest Earned YTD</div>
+                <div class="pa-stat-val gold" id="heroYTD">—</div>
+              </div>
+              <div>
+                <div class="pa-stat-lbl">Blended APY</div>
+                <div class="pa-stat-val green" id="heroAPY">—</div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
-    </div>
+        <!-- ── Pending Applications ── -->
+        <div id="paAppsSection" style="display:none; margin-bottom:28px;">
+          <div class="pa-apps-card">
+            <div class="pa-apps-hdr">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Your Applications
+            </div>
+            <div id="paAppsList"></div>
+          </div>
+        </div>
+
+        <!-- ── Your Accounts ── -->
+        <div class="pa-section-hdr">
+          <div class="pa-section-title">
+            <span class="pa-title-dot"></span>
+            Your Accounts
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="location.href='open-account.html'" style="display:flex;align-items:center;gap:7px;font-size:.78rem;">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Open New Account
+          </button>
+        </div>
+        <div id="paAccountsList"></div>
+
+        <!-- Wire info -->
+        <div class="pa-wire" id="paWire" style="display:none;">
+          <div class="pa-wire-hdr">
+            <svg width="14" height="14" fill="none" stroke="var(--gold-400)" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Wire Transfer Details
+          </div>
+          <div class="pa-wire-sub">Use the information below to receive wire transfers directly into your ZenithOne accounts.</div>
+          <div class="pa-wire-grid">
+            <div><div class="pa-wire-lbl">Routing Number</div><div class="pa-wire-val">026009593</div><div class="pa-wire-note">ABA / Wire routing</div></div>
+            <div><div class="pa-wire-lbl">Bank Name</div><div class="pa-wire-val">ZenithOne CU</div><div class="pa-wire-note">Credit Union</div></div>
+            <div><div class="pa-wire-lbl">SWIFT Code</div><div class="pa-wire-val">ZOCU US 33</div><div class="pa-wire-note">International wires</div></div>
+          </div>
+        </div>
+
+        <!-- ══ Account Products ══ -->
+        <div class="pa-section-hdr" style="margin-top:52px; margin-bottom:8px;">
+          <div class="pa-section-title">
+            <span class="pa-title-dot"></span>
+            Account Products
+          </div>
+          <span style="font-size:.74rem;color:var(--slate-400);">All accounts FDIC insured up to $250,000</span>
+        </div>
+        <p style="font-size:.82rem;color:var(--slate-400);line-height:1.65;margin-bottom:28px;max-width:620px;">
+          Full suite of personal, youth, business, and retirement accounts — each designed to grow and protect your wealth.
+        </p>
+
+        <div class="pa-products-grid">
+
+          <!-- 1 Essential Checking -->
+          <div class="pa-prod-card" style="--pc-color:rgba(96,165,250,.7);--pc-glow:rgba(96,165,250,.06);--pc-bg:rgba(96,165,250,.08);--pc-border:rgba(96,165,250,.2);--pc-text:#60a5fa;--pc-hover:rgba(96,165,250,.16);--pc-shadow:rgba(96,165,250,.18);">
+            <div class="pa-prod-cat">Personal Checking</div>
+            <div class="pa-prod-icon"><svg width="20" height="20" fill="none" stroke="#60a5fa" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+            <div class="pa-prod-name">Essential Checking</div>
+            <div class="pa-prod-desc">Foundation banking — no minimums, no fees, full access to your money every day.</div>
+            <div class="pa-prod-rate"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>0.01% APY</div>
+            <ul class="pa-prod-features">
+              <li>No minimum balance or monthly fee</li>
+              <li>Free Visa® debit card + contactless</li>
+              <li>Direct deposit up to 2 days early</li>
+              <li>Mobile check deposit</li>
+            </ul>
+            <div class="pa-prod-min">Minimum to open: $0</div>
+            <button class="pa-prod-btn" onclick="location.href='open-account.html?type=essential-checking'">Apply Now <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+
+          <!-- 2 Interest Checking -->
+          <div class="pa-prod-card" style="--pc-color:rgba(52,211,153,.7);--pc-glow:rgba(52,211,153,.06);--pc-bg:rgba(52,211,153,.08);--pc-border:rgba(52,211,153,.2);--pc-text:#34d399;--pc-hover:rgba(52,211,153,.16);--pc-shadow:rgba(52,211,153,.18);">
+            <div class="pa-prod-cat">Personal Checking</div>
+            <div class="pa-prod-icon"><svg width="20" height="20" fill="none" stroke="#34d399" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="pa-prod-name">Interest Checking</div>
+            <div class="pa-prod-desc">Earn interest on every dollar in your checking account with unlimited transactions.</div>
+            <div class="pa-prod-rate"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>0.15% APY</div>
+            <ul class="pa-prod-features">
+              <li>Earns interest on all balances</li>
+              <li>Fee waived with $1,500 average balance</li>
+              <li>No ATM fees at 55,000+ Allpoint® ATMs</li>
+              <li>Unlimited check writing</li>
+            </ul>
+            <div class="pa-prod-min">Minimum to open: $1,500</div>
+            <button class="pa-prod-btn" onclick="location.href='open-account.html?type=interest-checking'">Apply Now <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+
+          <!-- 3 High-Yield Savings -->
+          <div class="pa-prod-card" style="--pc-color:rgba(201,168,76,.85);--pc-glow:rgba(201,168,76,.08);--pc-bg:rgba(201,168,76,.09);--pc-border:rgba(201,168,76,.25);--pc-text:#c9a84c;--pc-hover:rgba(201,168,76,.18);--pc-shadow:rgba(201,168,76,.22);">
+            <div class="pa-prod-cat" style="display:flex;align-items:center;gap:6px;">Personal Savings <span style="background:rgba(201,168,76,.14);border:1px solid rgba(201,168,76,.28);border-radius:99px;padding:1px 8px;font-size:.54rem;font-weight:700;letter-spacing:.1em;color:#c9a84c;">BEST RATE</span></div>
+            <div class="pa-prod-icon"><svg width="20" height="20" fill="none" stroke="#c9a84c" stroke-width="1.8" viewBox="0 0 24 24"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.2.3 2.3.7 3.2C6 17 7 18.3 8 19c1.1.7 1.7 1 2 1v1h3v-1h2v1h3v-2l1-1c1.3-1 2-2.2 2-4 0-1-.5-2.5-1-3.5S16.7 9 16 9"/><circle cx="8.5" cy="13" r="1.5"/><circle cx="15.5" cy="13" r="1.5"/></svg></div>
+            <div class="pa-prod-name">High-Yield Savings</div>
+            <div class="pa-prod-desc">Our best rate — grow your savings 10× faster than the national average with zero fees.</div>
+            <div class="pa-prod-rate"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>4.75% APY</div>
+            <ul class="pa-prod-features">
+              <li>4.75% APY — 10× the national average</li>
+              <li>No monthly maintenance fee</li>
+              <li>Up to 6 withdrawals per month</li>
+              <li>Automatic savings rules &amp; round-ups</li>
+            </ul>
+            <div class="pa-prod-min">Minimum to open: $1</div>
+            <button class="pa-prod-btn" onclick="location.href='open-account.html?type=high-yield-savings'">Apply Now <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+
+          <!-- 4 Money Market -->
+          <div class="pa-prod-card" style="--pc-color:rgba(167,139,250,.7);--pc-glow:rgba(167,139,250,.06);--pc-bg:rgba(167,139,250,.08);--pc-border:rgba(167,139,250,.2);--pc-text:#a78bfa;--pc-hover:rgba(167,139,250,.16);--pc-shadow:rgba(167,139,250,.18);">
+            <div class="pa-prod-cat">Personal Savings</div>
+            <div class="pa-prod-icon"><svg width="20" height="20" fill="none" stroke="#a78bfa" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <div class="pa-prod-name">Money Market</div>
+            <div class="pa-prod-desc">Higher returns with the flexibility of limited check-writing and debit card access.</div>
+            <div class="pa-prod-rate"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>4.25% APY</div>
+            <ul class="pa-prod-features">
+              <li>4.25% APY with tiered rate structure</li>
+              <li>Check-writing privileges included</li>
+              <li>Debit card access</li>
+              <li>Rates increase with higher balances</li>
+            </ul>
+            <div class="pa-prod-min">Minimum to open: $2,500</div>
+            <button class="pa-prod-btn" onclick="location.href='open-account.html?type=money-market'">Apply Now <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+
+          <!-- 5 CD -->
+          <div class="pa-prod-card" style="--pc-color:rgba(245,158,11,.7);--pc-glow:rgba(245,158,11,.06);--pc-bg:rgba(245,158,11,.08);--pc-border:rgba(245,158,11,.2);--pc-text:#f59e0b;--pc-hover:rgba(245,158,11,.16);--pc-shadow:rgba(245,158,11,.18);">
+            <div class="pa-prod-cat">Term Deposit</div>
+            <div class="pa-prod-icon"><svg width="20" height="20" fill="none" stroke="#f59e0b" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+            <div class="pa-prod-name">Certificate of Deposit</div>
+            <div class="pa-prod-desc">Lock in a guaranteed rate for a fixed term. Zero market risk, maximum yield.</div>
+            <div class="pa-prod-rate"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>Up to 5.25% APY</div>
+            <ul class="pa-prod-features">
+              <li>Terms: 3, 6, 12, 18, 24, 36, 60 months</li>
+              <li>Rate locked for full term — no risk</li>
+              <li>Auto-renew or cash out at maturity</li>
+              <li>FDIC insured up to $250,000</li>
+            </ul>
+            <div class="pa-prod-min">Minimum to open: $500</div>
+            <button class="pa-prod-btn" onclick="location.href='open-account.html?type=cd'">Apply Now <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+
+          <!-- 6 Youth Checking -->
+          <div class="pa-prod-card" style="--pc-color:rgba(74,222,128,.7);--pc-glow:rgba(74,222,128,.06);--pc-bg:rgba(74,222,128,.08);--pc-border:rgba(74,222,128,.2);--pc-text:#4ade80;--pc-hover:rgba(74,222,128,.16);--pc-shadow:rgba(74,222,128,.18);">
+            <div class="pa-prod-cat">Youth &amp; Student</div>
+            <div class="pa-prod-icon"><svg width="20" height="20" fill="none" stroke="#4ade80" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+            <div class="pa-prod-name">Youth/Student Checking</div>
+            <div class="pa-prod-desc">Zero fees, budgeting tools, and everything needed to start building financial habits.</div>
+            <div class="pa-prod-rate"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>0.05% APY</div>
+            <ul class="pa-prod-features">
+              <li>Ages 13–25, joint with parent if under 18</li>
+              <li>No monthly fee, no minimum</li>
+              <li>Financial education tools</li>
+              <li>Auto-upgrades at age 26</li>
+            </ul>
+            <div class="pa-prod-min">Minimum to open: $0</div>
+            <button class="pa-prod-btn" onclick="location.href='open-account.html?type=youth-checking'">Apply Now <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+
+          <!-- 7 Business Checking -->
+          <div class="pa-prod-card" style="--pc-color:rgba(251,146,60,.7);--pc-glow:rgba(251,146,60,.06);--pc-bg:rgba(251,146,60,.08);--pc-border:rgba(251,146,60,.2);--pc-text:#fb923c;--pc-hover:rgba(251,146,60,.16);--pc-shadow:rgba(251,146,60,.18);">
+            <div class="pa-prod-cat">Business Banking</div>
+            <div class="pa-prod-icon"><svg width="20" height="20" fill="none" stroke="#fb923c" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+            <div class="pa-prod-name">Business Checking</div>
+            <div class="pa-prod-desc">Power your operations with an account built for the demands of running a business.</div>
+            <div class="pa-prod-rate"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>0.01% APY</div>
+            <ul class="pa-prod-features">
+              <li>Up to 500 free transactions/month</li>
+              <li>ACH &amp; same-day wire transfers</li>
+              <li>Business Visa® debit card</li>
+              <li>Multi-user access &amp; sub-accounts</li>
+            </ul>
+            <div class="pa-prod-min">Minimum to open: $1,000 · EIN required</div>
+            <button class="pa-prod-btn" onclick="location.href='open-account.html?type=business-checking'">Apply Now <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+
+          <!-- 8 Business Savings -->
+          <div class="pa-prod-card" style="--pc-color:rgba(56,189,248,.7);--pc-glow:rgba(56,189,248,.06);--pc-bg:rgba(56,189,248,.08);--pc-border:rgba(56,189,248,.2);--pc-text:#38bdf8;--pc-hover:rgba(56,189,248,.16);--pc-shadow:rgba(56,189,248,.18);">
+            <div class="pa-prod-cat">Business Banking</div>
+            <div class="pa-prod-icon"><svg width="20" height="20" fill="none" stroke="#38bdf8" stroke-width="1.8" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+            <div class="pa-prod-name">Business Savings</div>
+            <div class="pa-prod-desc">Keep business reserves separate and earning, with automatic sweep from checking.</div>
+            <div class="pa-prod-rate"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>3.50% APY</div>
+            <ul class="pa-prod-features">
+              <li>3.50% APY on all reserves</li>
+              <li>Separate from operating account</li>
+              <li>Auto-sweep from Business Checking</li>
+              <li>Quarterly interest statements</li>
+            </ul>
+            <div class="pa-prod-min">Minimum to open: $2,500 · EIN required</div>
+            <button class="pa-prod-btn" onclick="location.href='open-account.html?type=business-savings'">Apply Now <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+
+          <!-- 9 IRA Savings -->
+          <div class="pa-prod-card" style="--pc-color:rgba(244,114,182,.7);--pc-glow:rgba(244,114,182,.06);--pc-bg:rgba(244,114,182,.08);--pc-border:rgba(244,114,182,.2);--pc-text:#f472b6;--pc-hover:rgba(244,114,182,.16);--pc-shadow:rgba(244,114,182,.18);">
+            <div class="pa-prod-cat">Retirement</div>
+            <div class="pa-prod-icon"><svg width="20" height="20" fill="none" stroke="#f472b6" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+            <div class="pa-prod-name">IRA Savings</div>
+            <div class="pa-prod-desc">Tax-advantaged retirement savings — Traditional, Roth &amp; SEP options available.</div>
+            <div class="pa-prod-rate"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>4.00% APY</div>
+            <ul class="pa-prod-features">
+              <li>Traditional, Roth &amp; SEP options</li>
+              <li>$7,000/yr limit ($8,000 if 50+)</li>
+              <li>Tax-free or tax-deferred growth</li>
+              <li>FDIC insured per IRA type</li>
+            </ul>
+            <div class="pa-prod-min">Minimum to open: $500 · Contribution limits apply</div>
+            <button class="pa-prod-btn" onclick="location.href='open-account.html?type=ira-savings'">Apply Now <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          </div>
+
+        </div><!-- /pa-products-grid -->
+
+        <!-- FDIC notice -->
+        <div class="pa-fdic">
+          <svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.45)" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <p><strong style="color:var(--slate-300);">FDIC Insured.</strong> All deposit accounts at ZenithOne Credit Union are insured by the FDIC up to the standard maximum. Rates are variable and subject to change. APY = Annual Percentage Yield. See Member Agreement for full terms and conditions.</p>
+        </div>
+
+      </div><!-- /paContent -->
+    </div><!-- /app-content -->
   </main>
-</div>
+</div><!-- /app-layout -->
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     Account Details Modal
-═══════════════════════════════════════════════════════════════════════════ -->
-<div class="modal-overlay" id="accountDetailsModal">
-  <div class="modal" style="max-width:560px;overflow-y:auto;">
-    <div class="modal-header">
-      <div class="modal-title" id="detailsModalTitle">Account Details</div>
-      <button class="modal-close" onclick="closeModal('accountDetailsModal')">✕</button>
-    </div>
-    <div class="modal-body" id="detailsModalBody">
-    </div>
-    <div class="modal-footer">
-      <a id="detailsTxLink" href="transactions.html" class="btn btn-ghost">View Transactions</a>
-      <a href="transfer.html" class="btn btn-primary">Transfer Funds</a>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     New Account Request Modal
-═══════════════════════════════════════════════════════════════════════════ -->
-<div class="modal-overlay" id="newAccountModal">
-  <div class="modal" style="max-width:520px;overflow-y:auto;">
-    <div class="modal-header">
-      <div>
-        <div class="modal-title">Open a New Account</div>
-        <div style="font-size:.78rem;color:var(--slate-400);margin-top:3px;">Requests reviewed within 1–2 business days</div>
-      </div>
-      <button class="modal-close" onclick="closeModal('newAccountModal')">✕</button>
-    </div>
-    <div class="modal-body">
-      <!-- Step 1: Account type -->
-      <div style="margin-bottom:20px;">
-        <div class="form-label" style="margin-bottom:12px;">Account Type</div>
-        <div class="type-selector" id="typeSelector">
-          <div class="type-option selected" data-type="checking" onclick="selectAcctType(this)">
-            <div class="type-option-name">Checking</div>
-            <div class="type-option-rate">0.50% APY</div>
-            <div class="type-option-min">No minimum</div>
-          </div>
-          <div class="type-option" data-type="savings" onclick="selectAcctType(this)">
-            <div class="type-option-name">High-Yield Savings</div>
-            <div class="type-option-rate">4.85% APY</div>
-            <div class="type-option-min">$500 min</div>
-          </div>
-          <div class="type-option" data-type="money_market" onclick="selectAcctType(this)">
-            <div class="type-option-name">Money Market</div>
-            <div class="type-option-rate">5.10% APY</div>
-            <div class="type-option-min">$2,500 min</div>
-          </div>
-          <div class="type-option" data-type="cd" onclick="selectAcctType(this)">
-            <div class="type-option-name">CD</div>
-            <div class="type-option-rate">5.50% APY</div>
-            <div class="type-option-min">$1,000 min</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 2: Fund from existing account -->
-      <div class="form-group" id="sourcePickerSection">
-        <label class="form-label" style="margin-bottom:10px;">Fund From Account</label>
-        <div id="sourceAccountPicker">
-          <!-- Populated by renderSourcePicker() -->
-        </div>
-      </div>
-
-      <!-- Step 3: Amount -->
-      <div class="form-group" id="depositFieldSection">
-        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between;">
-          <span>Initial Deposit (USD)</span>
-          <span id="depositAvailHint" style="font-size:.72rem;color:var(--slate-400);font-weight:400;"></span>
-        </label>
-        <div class="input-group">
-          <span class="input-icon" style="font-size:1rem;color:var(--slate-400);">$</span>
-          <input type="number" id="initialDeposit" class="form-input" placeholder="0.00" min="0" step="0.01"
-            oninput="onDepositInput()" />
-        </div>
-        <div id="depositWarning" style="font-size:.75rem;color:var(--red-400);margin-top:6px;display:none;"></div>
-      </div>
-
-      <!-- Step 4: Nickname + Note -->
-      <div class="form-group">
-        <label class="form-label">Account Nickname <span style="color:var(--slate-500);font-weight:400;">(optional)</span></label>
-        <input type="text" class="form-input" id="accountNickname" placeholder="e.g., Emergency Fund" maxlength="60" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Note <span style="color:var(--slate-500);font-weight:400;">(optional)</span></label>
-        <textarea class="form-input" id="accountNote" rows="2" placeholder="Anything you'd like us to know…" style="resize:none;" maxlength="400"></textarea>
-      </div>
-      <div class="alert alert-info">
-        <svg class="alert-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-        All ZenithOne accounts are FDIC insured up to $250,000. Funds will be transferred from your selected account upon admin approval.
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('newAccountModal')">Cancel</button>
-      <button class="btn btn-primary" id="openAccountBtn" onclick="submitNewAccount()">Submit Request</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     Close Account — 2-Step Confirmation Modal
-═══════════════════════════════════════════════════════════════════════════ -->
-<div class="za-overlay" id="zaOverlay">
-  <div class="za-modal">
-    <div class="za-handle" aria-hidden="true"></div>
+<!-- ══ Close Account Modal ══ -->
+<div class="za-overlay" id="zaOverlay" onclick="if(event.target===this)_zaClose()">
+  <div class="za-modal" style="position:relative;">
     <div class="za-head">
       <div class="za-steps">
-        <div class="za-step active" id="zaS1"></div>
-        <div class="za-step" id="zaS2"></div>
+        <div class="za-step active" id="zaStep0"></div>
+        <div class="za-step" id="zaStep1"></div>
       </div>
-      <div class="za-eyebrow" id="zaEyebrow">Step 1 of 2 — Review</div>
-      <div class="za-title" id="zaTitle">Close Account?</div>
-      <div class="za-sub" id="zaSub">Please review the information below before proceeding.</div>
+      <div class="za-eyebrow" id="zaEyebrow">Step 1 of 2</div>
+      <div class="za-title" id="zaTitle">Review Account</div>
+      <div class="za-sub" id="zaSub"></div>
     </div>
-
-    <!-- Step 1 body -->
-    <div class="za-body" id="zaBody1">
-      <div class="za-acct-pill">
-        <div class="za-acct-icon" id="zaAcctIcon">🏦</div>
-        <div class="za-acct-info">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.08rem;color:#fff;margin-bottom:2px;line-height:1.2;" id="zaAcctName">Account</div>
-          <div style="font-size:.74rem;color:rgba(255,255,255,.36);letter-spacing:.04em;" id="zaAcctMeta">•••• 0000</div>
-        </div>
-        <div class="za-acct-bal">
-          <div style="font-size:.58rem;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px;">Balance</div>
-          <div style="font-size:1rem;color:#fff;font-weight:500;" id="zaBalance">$0.00</div>
-        </div>
-      </div>
-      <div id="zaBalWarn" style="display:none;padding:11px 14px;border-radius:11px;background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.25);font-size:.8rem;color:rgba(251,146,60,.9);margin-bottom:14px;line-height:1.5;"></div>
-      <div class="za-warn-list">
-        <div class="za-warn-item">
-          <span class="za-warn-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
-          <span>This action is <strong style="color:rgba(255,255,255,.8);">permanent and cannot be undone.</strong> Once closed, this account number is retired.</span>
-        </div>
-        <div class="za-warn-item">
-          <span class="za-warn-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span>
-          <span>You may only close <strong style="color:rgba(255,255,255,.8);">one account every 30 days.</strong> Savings accounts cannot be closed.</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Step 2 body -->
-    <div class="za-body" id="zaBody2" style="display:none;">
-      <div style="padding:16px 18px;border-radius:14px;background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.2);margin-bottom:20px;text-align:center;">
-        <div style="font-size:2rem;margin-bottom:6px;">⚠️</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:#fca5a5;margin-bottom:4px;">Final Warning</div>
-        <div style="font-size:.78rem;color:rgba(255,255,255,.45);line-height:1.6;">This will permanently close your account. All associated data will be retained for 7 years per regulatory requirements.</div>
-      </div>
-      <div class="za-confirm-label">Type the last 4 digits of your account number to confirm</div>
-      <input class="za-confirm-input" id="zaConfirmInput" type="text" maxlength="4" inputmode="numeric" autocomplete="off"
-        placeholder="0000" oninput="zaCheckConfirm()" />
-      <div id="zaConfirmHint" style="font-size:.72rem;color:rgba(248,113,113,.6);margin-top:6px;min-height:18px;"></div>
-    </div>
-
+    <div class="za-body" id="zaBody"></div>
     <div class="za-foot">
-      <button class="za-btn-cancel" id="zaBtnCancel" onclick="zaCancel()">Cancel</button>
-      <button class="za-btn-next" id="zaBtnNext" onclick="zaNext()">
-        I Understand — Continue
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      <button class="za-cancel" onclick="_zaClose()">Cancel</button>
+      <button class="za-next" id="zaNextBtn" onclick="_zaNext()">I Understand — Continue</button>
+      <button class="za-final" id="zaFinalBtn" style="display:none;" onclick="_zaConfirm()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Close Account
       </button>
-      <button class="za-btn-final" id="zaBtnFinal" style="display:none;" onclick="zaConfirmDelete()" disabled>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-        Permanently Close Account
+    </div>
+  </div>
+</div>
+
+<!-- ══ Account Details Modal ══ -->
+<div class="modal-overlay" id="paDetailsModal">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-header">
+      <div class="modal-title" id="detailsTitle">Account Details</div>
+      <button class="modal-close" onclick="document.getElementById('paDetailsModal').classList.remove('open')">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
+    </div>
+    <div class="modal-body" id="detailsBody"></div>
+    <div class="modal-footer">
+      <a id="detailsTxLink" href="transactions.html" class="btn btn-ghost btn-sm">View Transactions</a>
+      <a href="transfer.html" class="btn btn-primary btn-sm">Transfer</a>
     </div>
   </div>
 </div>
 
 <script src="js/supabase-config.js"></script>
-<script src="js/auth.js"></script>
 <script>
-// ── Helpers ──────────────────────────────────────────────────────────────────
-const fmt = n => '$' + (n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const fmtPct = r => (r * 100).toFixed(2) + '% APY';
-const capWords = s => (s || '').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+(function () {
+  'use strict';
 
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-// ── Source account picker state ───────────────────────────────────────────────
-let _selectedSourceId  = null;
-let _selectedSourceBal = 0;
-
-function renderSourcePicker() {
-  const container = document.getElementById('sourceAccountPicker');
-  const depositSection = document.getElementById('depositFieldSection');
-  if (!_accts.length) {
-    container.innerHTML = `
-      <div style="padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.02);font-size:.82rem;color:var(--slate-400);line-height:1.6;">
-        You don't have any existing accounts to fund from. Once approved, a ZenithOne representative will arrange your initial deposit separately.
-      </div>`;
-    _selectedSourceId  = null;
-    _selectedSourceBal = 0;
-    depositSection.style.display = 'none';
-    return;
+  // ── Type styling ──────────────────────────────────────────────────────────────
+  var TYPE_MAP = {
+    checking:     { bg:'rgba(96,165,250,.12)', color:'#60a5fa' },
+    savings:      { bg:'rgba(201,168,76,.12)', color:'#c9a84c' },
+    money_market: { bg:'rgba(167,139,250,.12)', color:'#a78bfa' },
+    cd:           { bg:'rgba(245,158,11,.12)', color:'#f59e0b' },
+    ira:          { bg:'rgba(244,114,182,.12)', color:'#f472b6' },
+    business:     { bg:'rgba(251,146,60,.12)', color:'#fb923c' },
+  };
+  function typeStyle(t) {
+    t = (t || '').toLowerCase();
+    for (var k in TYPE_MAP) if (t.includes(k)) return TYPE_MAP[k];
+    return { bg:'rgba(255,255,255,.08)', color:'var(--slate-300)' };
   }
-  depositSection.style.display = '';
-
-  container.innerHTML = _accts.map((acc, i) => {
-    const m = ACCT_META[acc.account_type] || ACCT_META.checking;
-    const avail = acc.available_balance ?? acc.balance ?? 0;
-    const name  = acc.account_name || m.label;
-    const last4 = (acc.account_number || '????').slice(-4);
-    return `<div class="source-acct-option${i === 0 ? ' sel' : ''}"
-        onclick="selectSourceAcct('${acc.id}', ${avail})"
-        data-id="${acc.id}" data-avail="${avail}">
-      <div style="display:flex;align-items:center;gap:12px;min-width:0;">
-        <div class="source-acct-icon" style="background:${m.iconBg};color:${m.iconColor};">${m.icon.replace('width="26" height="26"','width="18" height="18"')}</div>
-        <div style="min-width:0;">
-          <div class="source-acct-name">${name}</div>
-          <div class="source-acct-num">Account ••${last4}</div>
-        </div>
-      </div>
-      <div class="source-acct-bal">
-        <div class="source-acct-bal-amount">${fmt(avail)}</div>
-        <div class="source-acct-bal-label">Available</div>
-      </div>
-    </div>`;
-  }).join('');
-
-  // Auto-select first
-  if (_accts.length) {
-    const first = _accts[0];
-    _selectedSourceId  = first.id;
-    _selectedSourceBal = first.available_balance ?? first.balance ?? 0;
-    updateDepositHint();
-  }
-}
-
-function selectSourceAcct(id, availBal) {
-  document.querySelectorAll('.source-acct-option').forEach(o => o.classList.remove('sel'));
-  const el = document.querySelector(`.source-acct-option[data-id="${id}"]`);
-  if (el) el.classList.add('sel');
-  _selectedSourceId  = id;
-  _selectedSourceBal = availBal;
-  // Clamp deposit to new available balance
-  const dep = parseFloat(document.getElementById('initialDeposit').value) || 0;
-  if (dep > availBal) document.getElementById('initialDeposit').value = availBal.toFixed(2);
-  updateDepositHint();
-}
-
-function updateDepositHint() {
-  const hint = document.getElementById('depositAvailHint');
-  const warn = document.getElementById('depositWarning');
-  if (!hint) return;
-  if (_selectedSourceBal > 0) {
-    hint.textContent = `Available: ${fmt(_selectedSourceBal)}`;
-  } else {
-    hint.textContent = '';
-  }
-  const dep = parseFloat(document.getElementById('initialDeposit').value) || 0;
-  if (dep > _selectedSourceBal && _selectedSourceBal > 0) {
-    warn.textContent = `Exceeds available balance of ${fmt(_selectedSourceBal)}.`;
-    warn.style.display = '';
-  } else {
-    warn.style.display = 'none';
-  }
-}
-
-function onDepositInput() { updateDepositHint(); }
-
-function openNewAccountModal() {
-  document.getElementById('initialDeposit').value = '';
-  document.getElementById('accountNickname').value = '';
-  document.getElementById('accountNote').value = '';
-  document.getElementById('depositWarning').style.display = 'none';
-  document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
-  document.querySelector('.type-option[data-type="checking"]').classList.add('selected');
-  renderSourcePicker();
-  document.getElementById('newAccountModal').classList.add('open');
-}
-document.getElementById('newAccountModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal('newAccountModal'); });
-document.getElementById('accountDetailsModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal('accountDetailsModal'); });
-
-function selectAcctType(el) {
-  document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
-  el.classList.add('selected');
-}
-
-// ── Account type visual config ────────────────────────────────────────────────
-const ACCT_META = {
-  checking:     { label:'ZenithOne Checking',   iconBg:'rgba(201,168,76,.12)',  iconColor:'var(--gold-400)',  bannerBg:'rgba(201,168,76,.06)',  bannerBorder:'rgba(201,168,76,.18)',  bannerColor:'var(--gold-400)',  icon:'<svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>' },
-  savings:      { label:'High-Yield Savings',   iconBg:'rgba(96,165,250,.1)',   iconColor:'var(--blue-400)', bannerBg:'rgba(96,165,250,.05)',  bannerBorder:'rgba(96,165,250,.18)',  bannerColor:'var(--blue-400)', icon:'<svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>' },
-  money_market: { label:'Money Market',         iconBg:'rgba(167,139,250,.1)',  iconColor:'#a78bfa',          bannerBg:'rgba(167,139,250,.05)', bannerBorder:'rgba(167,139,250,.18)', bannerColor:'#a78bfa',         icon:'<svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>' },
-  cd:           { label:'Certificate of Deposit', iconBg:'rgba(52,211,153,.1)', iconColor:'#34d399',          bannerBg:'rgba(52,211,153,.05)', bannerBorder:'rgba(52,211,153,.2)',  bannerColor:'#34d399',         icon:'<svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' },
-};
-
-// ── State ─────────────────────────────────────────────────────────────────────
-let _accts = [];
-let _profile = {};
-
-// ── Sidebar hydration ─────────────────────────────────────────────────────────
-function hydrateSidebar(name, tier) {
-  const initials = (name || '').split(' ').map(p => p[0]).join('').slice(0,2).toUpperCase() || '?';
-  const tierLabel = { standard:'Standard Member', premium:'Premium Member', private:'Private Banking Client', black:'Black Card Member' }[tier] || 'ZenithOne Member';
-  document.getElementById('sidebarAvatar').textContent = initials;
-  document.getElementById('topbarAvatar').textContent  = initials;
-  document.getElementById('sidebarName').textContent   = name || 'Member';
-  document.getElementById('sidebarTier').textContent   = tierLabel;
-}
-
-// ── Render accounts ───────────────────────────────────────────────────────────
-function renderAccounts(accounts) {
-  const container = document.getElementById('accountsContainer');
-  if (!accounts.length) {
-    container.innerHTML = `
-      <div class="acct-card" style="text-align:center;padding:48px;">
-        <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24" style="opacity:.3;margin-bottom:16px;"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-        <div style="font-family:var(--font-display);font-size:1.1rem;color:var(--slate-300);margin-bottom:8px;">No active accounts</div>
-        <div style="font-size:.83rem;color:var(--slate-500);margin-bottom:20px;">Open your first account to get started with ZenithOne Credit Union.</div>
-        <button class="btn btn-primary btn-sm" onclick="openNewAccountModal()">Open an Account</button>
-      </div>`;
-    return;
+  function fmt(n) {
+    return new Intl.NumberFormat('en-US', { style:'currency', currency:'USD' }).format(n || 0);
   }
 
-  container.innerHTML = accounts.map(acc => {
-    const m = ACCT_META[acc.account_type] || ACCT_META.checking;
-    const last4 = (acc.account_number || '0000').slice(-4);
-    const routing = acc.routing_number || '021000021';
-    const rate = acc.interest_rate || 0;
-    const monthlyInterest = acc.balance * rate / 12;
-    const annualInterest  = acc.balance * rate;
-    const displayName = acc.account_name ? acc.account_name : m.label;
+  var _accounts = [];
 
-    const statusBadge = {
-      active:    '<span class="badge badge-green">Active</span>',
-      frozen:    '<span class="badge badge-gold">Frozen</span>',
-      suspended: '<span class="badge" style="background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.2);">Suspended</span>',
-      closed:    '<span class="badge" style="background:rgba(100,116,139,.1);color:var(--slate-400);border:1px solid rgba(100,116,139,.2);">Closed</span>',
-    }[acc.status] || '<span class="badge">Unknown</span>';
+  // ── Boot ──────────────────────────────────────────────────────────────────────
+  // _ready is a const in supabase-config.js (top-level non-module scope = globally
+  // accessible). We must await it before window._supabase is populated.
+  async function paBoot() {
+    try {
+      // Wait for supabase-config.js bootstrap (fetches credentials + inits client)
+      await _ready;
 
-    const interestBanner = rate > 0 ? `
-      <div class="acct-interest-banner" style="background:${m.bannerBg};border:1px solid ${m.bannerBorder};">
-        <span style="color:${m.bannerColor};font-weight:500;">Interest Projection</span>
-        <span style="color:var(--slate-300);"> — Earning ${fmt(monthlyInterest)}/mo · </span>
-        <span style="color:var(--slate-300);">${fmt(annualInterest)} projected annually at ${fmtPct(rate)}</span>
-      </div>` : '';
+      var sb = window._supabase;
+      if (!sb) {
+        // Demo / offline mode — show empty state rather than error
+        renderHero([]); renderAccounts([]);
+        document.getElementById('paLoading').style.display = 'none';
+        document.getElementById('paContent').style.display = '';
+        return;
+      }
 
-    return `
-      <div class="acct-card">
-        <div class="acct-card-header">
-          <div style="display:flex;align-items:center;gap:16px;min-width:0;">
-            <div class="acct-card-icon" style="background:${m.iconBg};color:${m.iconColor};">${m.icon}</div>
-            <div style="min-width:0;">
-              <div class="acct-card-name">${displayName}</div>
-              <div class="acct-card-num">Account •••• ${last4} &nbsp;·&nbsp; Routing ${routing.replace(/(\d{3})(\d{3})(\d{3})/,'$1 $2 $3')}</div>
-            </div>
-          </div>
-          <div class="acct-card-balance">
-            <div class="acct-card-balance-amount">${fmt(acc.balance)}</div>
-            <div class="acct-card-balance-sub">Available: ${fmt(acc.available_balance ?? acc.balance)}</div>
-          </div>
-        </div>
-        <div class="acct-card-meta">
-          <div class="acct-meta-item">
-            <div class="acct-meta-label">Account Type</div>
-            <div class="acct-meta-value">${capWords(acc.account_type)}</div>
-          </div>
-          <div class="acct-meta-item">
-            <div class="acct-meta-label">Interest Rate</div>
-            <div class="acct-meta-value" style="color:${m.iconColor};">${rate > 0 ? fmtPct(rate) : '—'}</div>
-          </div>
-          <div class="acct-meta-item">
-            <div class="acct-meta-label">Status</div>
-            <div>${statusBadge}</div>
-          </div>
-          <div class="acct-meta-item">
-            <div class="acct-meta-label">Account Number</div>
-            <div class="acct-meta-value" style="font-size:.82rem;font-family:monospace;">•••• ${last4}</div>
-          </div>
-        </div>
-        ${interestBanner}
-        <div class="acct-card-actions">
-          <a href="transactions.html?account=${acc.account_type}" class="btn btn-ghost btn-sm">View Transactions</a>
-          <a href="transfer.html" class="btn btn-ghost btn-sm">Transfer Funds</a>
-          <button class="btn btn-ghost btn-sm" onclick="showAccountDetails('${acc.id}')">Account Details</button>
-          ${acc.status === 'active' && acc.account_type !== 'savings' ? `
-          <button class="btn-close-acct" onclick="openCloseAccountStep1('${acc.id}','${acc.account_type}','${acc.account_name || m.label}','${last4}',${acc.balance||0})">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-            Close Account
-          </button>` : ''}
-        </div>
-      </div>`;
-  }).join('');
-}
+      var authRes = await sb.auth.getUser();
+      var user = authRes && authRes.data && authRes.data.user;
+      if (!user) { location.href = 'login.html'; return; }
 
-// ── Render pending requests ───────────────────────────────────────────────────
-function renderPendingRequests(requests) {
-  const section = document.getElementById('pendingSection');
-  const list    = document.getElementById('pendingRequestsList');
-  if (!requests.length) { section.style.display = 'none'; return; }
-  section.style.display = 'block';
-  list.innerHTML = requests.map(r => `
-    <div class="pending-req-row">
-      <div>
-        <div style="font-size:.88rem;color:var(--white);margin-bottom:2px;">${capWords(r.account_type)} Account</div>
-        <div style="font-size:.75rem;color:var(--slate-400);">
-          Initial deposit: ${fmt(r.initial_deposit || 0)}
-          ${r.account_name ? ' · ' + r.account_name : ''}
-          · Submitted ${new Date(r.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="font-size:.75rem;background:rgba(234,179,8,.1);color:#eab308;border:1px solid rgba(234,179,8,.2);border-radius:100px;padding:3px 10px;">Pending Review</span>
-      </div>
-    </div>`).join('');
-}
+      // User profile for sidebar / avatar
+      try {
+        var { data: prof } = await sb.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
+        var name = (prof && prof.full_name) || user.email || 'Member';
+        var initials = name.split(' ').filter(Boolean).slice(0,2).map(function(n){ return n[0]; }).join('').toUpperCase() || 'ZO';
+        var sa = document.getElementById('sidebarAvatar');
+        var ta = document.getElementById('topbarAvatar');
+        var sn = document.getElementById('sidebarName');
+        if (sa) sa.textContent = initials;
+        if (ta) ta.textContent = initials;
+        if (sn) sn.textContent = name;
+      } catch(_) {}
 
-// ── Hero + stats ──────────────────────────────────────────────────────────────
-function renderHeroStats(accounts) {
-  const total    = accounts.reduce((s,a) => s + (a.balance || 0), 0);
-  const count    = accounts.length;
-  const annual   = accounts.reduce((s,a) => s + (a.balance || 0) * (a.interest_rate || 0), 0);
-  const weightedRate = total > 0 ? annual / total : 0;
+      // Load accounts
+      var result = await sb.from('accounts')
+        .select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+      if (result.error) throw result.error;
+      _accounts = result.data || [];
 
-  document.getElementById('acctHeroTotal').textContent = fmt(total);
-  document.getElementById('acctHeroSub').textContent   = `Across ${count} active account${count !== 1 ? 's' : ''}`;
-  document.getElementById('acctHeroChips').innerHTML = accounts.map(a => {
-    const m = ACCT_META[a.account_type] || ACCT_META.checking;
-    const name = a.account_name || m.label;
-    return `<div class="acct-chip"><div class="acct-chip-dot"></div>${name}: ${fmt(a.balance)}</div>`;
-  }).join('');
+      renderHero(_accounts);
+      renderAccounts(_accounts);
+      document.getElementById('paLoading').style.display = 'none';
+      document.getElementById('paContent').style.display = '';
 
-  document.getElementById('statAcctCount').textContent         = count;
-  document.getElementById('statAcctTypes').textContent         = accounts.map(a => capWords(a.account_type)).join(' · ') || '—';
-  document.getElementById('statAvgRate').textContent           = total > 0 ? fmtPct(weightedRate) : '—';
-  document.getElementById('statAnnualInterest').textContent    = fmt(annual);
-
-  document.getElementById('acctHero').style.display      = 'block';
-  document.getElementById('acctStatsRow').style.display  = 'grid';
-  document.getElementById('wireCard').style.display      = 'block';
-
-  // Show routing from first account
-  if (accounts.length) {
-    const routing = accounts[0].routing_number || '021000021';
-    document.getElementById('wireRouting').textContent = routing.replace(/(\d{3})(\d{3})(\d{3})/,'$1 $2 $3');
-  }
-}
-
-// ── Show account details modal ────────────────────────────────────────────────
-function showAccountDetails(acctId) {
-  const acc = _accts.find(a => a.id === acctId);
-  if (!acc) { zenithToast('Account details unavailable.', 'error'); return; }
-
-  const m = ACCT_META[acc.account_type] || ACCT_META.checking;
-  const rate = acc.interest_rate || 0;
-  const displayName = acc.account_name || m.label;
-
-  document.getElementById('detailsModalTitle').textContent = displayName;
-  document.getElementById('detailsTxLink').href = `transactions.html?account=${acc.account_type}`;
-
-  document.getElementById('detailsModalBody').innerHTML = `
-    <div class="details-section">
-      <div class="details-section-title">Account Information</div>
-      <div class="details-row"><span class="details-row-label">Account Name</span><span class="details-row-value">${displayName}</span></div>
-      <div class="details-row"><span class="details-row-label">Account Type</span><span class="details-row-value">${capWords(acc.account_type)}</span></div>
-      <div class="details-row"><span class="details-row-label">Account Number</span><span class="details-row-value">•••• ${(acc.account_number||'????').slice(-4)}</span></div>
-      <div class="details-row"><span class="details-row-label">Routing Number</span><span class="details-row-value">${(acc.routing_number||'021000021').replace(/(\d{3})(\d{3})(\d{3})/,'$1 $2 $3')}</span></div>
-      <div class="details-row"><span class="details-row-label">Status</span><span class="details-row-value">${acc.status ? capWords(acc.status) : '—'}</span></div>
-      <div class="details-row"><span class="details-row-label">Opened</span><span class="details-row-value">${acc.created_at ? new Date(acc.created_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : '—'}</span></div>
-    </div>
-    <div class="details-section">
-      <div class="details-section-title">Balance &amp; Earnings</div>
-      <div class="details-row"><span class="details-row-label">Current Balance</span><span class="details-row-value" style="color:var(--white);font-size:1rem;">${fmt(acc.balance)}</span></div>
-      <div class="details-row"><span class="details-row-label">Available Balance</span><span class="details-row-value">${fmt(acc.available_balance ?? acc.balance)}</span></div>
-      <div class="details-row"><span class="details-row-label">Interest Rate</span><span class="details-row-value" style="color:${m.iconColor};">${rate > 0 ? fmtPct(rate) : 'N/A'}</span></div>
-      ${rate > 0 ? `
-      <div class="details-row"><span class="details-row-label">Monthly Interest</span><span class="details-row-value">${fmt(acc.balance * rate / 12)}</span></div>
-      <div class="details-row"><span class="details-row-label">Annual Interest</span><span class="details-row-value">${fmt(acc.balance * rate)}</span></div>` : ''}
-    </div>
-    <div class="details-section">
-      <div class="details-section-title">Wire Transfer Details</div>
-      <div class="details-row"><span class="details-row-label">Bank Name</span><span class="details-row-value">ZenithOne Credit Union</span></div>
-      <div class="details-row"><span class="details-row-label">ABA Routing</span><span class="details-row-value">${(acc.routing_number||'021000021').replace(/(\d{3})(\d{3})(\d{3})/,'$1 $2 $3')}</span></div>
-      <div class="details-row"><span class="details-row-label">SWIFT / BIC</span><span class="details-row-value">ZNTH US 33</span></div>
-      <div class="details-row"><span class="details-row-label">Bank Address</span><span class="details-row-value" style="font-family:inherit;">388 Madison Ave, New York, NY 10017</span></div>
-    </div>`;
-
-  document.getElementById('accountDetailsModal').classList.add('open');
-}
-
-// ── Submit new account request ────────────────────────────────────────────────
-async function submitNewAccount() {
-  const sb = window._supabase;
-  if (!sb) { zenithToast('Not connected.', 'error'); return; }
-
-  const selectedType = document.querySelector('.type-option.selected')?.dataset.type || 'checking';
-  const deposit  = parseFloat(document.getElementById('initialDeposit').value) || 0;
-  const nickname = document.getElementById('accountNickname').value.trim();
-  const note     = document.getElementById('accountNote').value.trim();
-
-  // Minimum deposit validation
-  const minDeposits = { checking: 0, savings: 500, money_market: 2500, cd: 1000 };
-  const minDep = minDeposits[selectedType] || 0;
-  if (minDep > 0 && deposit < minDep) {
-    zenithToast(`Minimum initial deposit for ${capWords(selectedType)} is ${fmt(minDep)}.`, 'warning');
-    return;
-  }
-
-  // Source account validation (only when accounts exist)
-  if (_accts.length > 0) {
-    if (!_selectedSourceId) {
-      zenithToast('Please select an account to fund from.', 'warning');
-      return;
-    }
-    if (deposit > 0 && deposit > _selectedSourceBal) {
-      zenithToast(`Insufficient funds in the selected account. Available: ${fmt(_selectedSourceBal)}.`, 'error', 6000);
-      return;
+      // Load applications async (non-blocking)
+      loadApps();
+    } catch (e) {
+      console.error('paBoot error:', e);
+      document.getElementById('paLoading').innerHTML =
+        '<div style="text-align:center;padding:48px;color:var(--red-400);">'
+        + '<svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="display:block;margin:0 auto 14px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+        + 'Failed to load accounts.<br><span style="font-size:.78rem;color:var(--slate-400);">' + (e.message || '') + '</span><br>'
+        + '<button onclick="paBoot()" style="margin-top:16px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);color:var(--gold-400);border-radius:8px;padding:9px 20px;cursor:pointer;font-size:.82rem;">Try Again</button></div>';
     }
   }
 
-  const btn = document.getElementById('openAccountBtn');
-  btn.disabled = true;
-  btn.textContent = 'Submitting…';
-
-  try {
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) throw new Error('Not authenticated');
-
-    const { error } = await sb.from('account_requests').insert({
-      user_id:           session.user.id,
-      account_type:      selectedType,
-      account_name:      nickname || null,
-      initial_deposit:   deposit,
-      source_account_id: _selectedSourceId || null,
-      note:              note || null,
-    });
-    if (error) throw error;
-
-    closeModal('newAccountModal');
-    zenithToast(`Account request submitted. ${deposit > 0 ? fmt(deposit) + ' will be transferred upon approval.' : 'We\'ll review it within 1–2 business days.'}`, 'success', 7000);
-    loadAccountsPage();
-  } catch(e) {
-    zenithToast(e.message || 'Failed to submit request.', 'error');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Submit Request';
+  // ── Hero ──────────────────────────────────────────────────────────────────────
+  function renderHero(accts) {
+    var total = accts.reduce(function(s,a){ return s + (a.balance || 0); }, 0);
+    var ytd   = accts.reduce(function(s,a){ return s + (a.interest_earned_ytd || 0); }, 0);
+    var savA  = accts.filter(function(a){ return (a.interest_rate||0) > 0; });
+    var apy   = savA.length ? (savA.reduce(function(s,a){ return s+(a.interest_rate||0); },0)/savA.length).toFixed(2)+'%' : '—';
+    document.getElementById('heroTotal').textContent = fmt(total);
+    document.getElementById('heroSub').textContent   = 'Total portfolio across ' + accts.length + ' account' + (accts.length!==1?'s':'');
+    document.getElementById('heroCount').textContent = accts.length;
+    document.getElementById('heroYTD').textContent   = fmt(ytd);
+    document.getElementById('heroAPY').textContent   = apy;
   }
-}
 
-// ── Main load ─────────────────────────────────────────────────────────────────
-async function loadAccountsPage() {
-  try {
-    // callEdgeFunction awaits Supabase bootstrap internally — safe to call immediately
-    const summaryRes = await callEdgeFunction('account-summary', {});
+  // ── Accounts ─────────────────────────────────────────────────────────────────
+  function renderAccounts(accts) {
+    var el = document.getElementById('paAccountsList');
+    if (!accts.length) {
+      el.innerHTML = '<div style="text-align:center;padding:40px 24px;color:var(--slate-400);background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:16px;margin-bottom:28px;">'
+        + '<svg width="32" height="32" fill="none" stroke="rgba(201,168,76,.35)" stroke-width="1.5" viewBox="0 0 24 24" style="display:block;margin:0 auto 14px;"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>'
+        + '<div style="font-size:.95rem;color:var(--slate-300);margin-bottom:6px;">No accounts yet</div>'
+        + '<div style="font-size:.8rem;margin-bottom:20px;">Open your first ZenithOne account to get started.</div>'
+        + '<button class="btn btn-primary btn-sm" onclick="location.href=\'open-account.html\'">Open an Account</button>'
+        + '</div>';
+      return;
+    }
 
-    // _supabase is guaranteed ready after callEdgeFunction resolves
-    const sb = window._supabase;
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session) { location.href = 'index.html'; return; }
+    document.getElementById('paWire').style.display = '';
+    el.innerHTML = accts.map(function(a) {
+      var st  = typeStyle(a.type || a.account_type || '');
+      var bal = fmt(a.balance || 0);
+      var avl = fmt(a.available_balance != null ? a.available_balance : (a.balance || 0));
+      var apy = a.interest_rate ? a.interest_rate.toFixed(2)+'%' : '—';
+      var num = a.account_number ? '••••' + String(a.account_number).slice(-4) : '••••' + (a.id||'').slice(-4).toUpperCase();
+      var opened = a.created_at ? new Date(a.created_at).toLocaleDateString('en-US',{month:'short',year:'numeric'}) : '—';
+      var statusDot = a.status === 'active'
+        ? '<span style="display:inline-flex;align-items:center;gap:4px;color:var(--green-400);"><span style="width:5px;height:5px;border-radius:50%;background:var(--green-400);display:inline-block;"></span>Active</span>'
+        : '<span style="color:var(--slate-400);">' + (a.status||'Active') + '</span>';
 
-    const uid = session.user.id;
-
-    // Fetch pending requests now that sb is ready
-    const { data: pendingReqs } = await sb
-      .from('account_requests')
-      .select('id, account_type, account_name, initial_deposit, status, created_at')
-      .eq('user_id', uid)
-      .eq('status', 'pending')
-      .order('created_at', { ascending: false });
-
-    // Hydrate sidebar (initial pass with name from summary)
-    hydrateSidebar(summaryRes.full_name, null);
-
-    // Fetch profile tier and re-hydrate
-    sb.from('profiles').select('full_name, banking_tier').eq('id', uid).single()
-      .then(({ data }) => {
-        if (data) { _profile = data; hydrateSidebar(data.full_name, data.banking_tier); }
-      });
-
-    _accts = summaryRes.accounts || [];
-
-    renderHeroStats(_accts);
-    renderAccounts(_accts);
-    renderPendingRequests(pendingReqs || []);
-
-  } catch(e) {
-    console.error('loadAccountsPage:', e);
-    document.getElementById('accountsContainer').innerHTML = `
-      <div class="acct-card" style="text-align:center;padding:40px;">
-        <div style="color:var(--red-400);font-size:.9rem;margin-bottom:12px;">Failed to load account data.</div>
-        <button class="btn btn-ghost btn-sm" onclick="loadAccountsPage()">Retry</button>
-      </div>`;
+      return '<div class="pa-acct-card">'
+        + '<div class="pa-acct-top">'
+        + '<div class="pa-acct-left">'
+        + '<div class="pa-acct-icon" style="background:'+st.bg+';border:1px solid '+st.color+'33;">'
+        + '<svg width="20" height="20" fill="none" stroke="'+st.color+'" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>'
+        + '</div>'
+        + '<div>'
+        + '<div class="pa-acct-name">' + esc(a.nickname || a.type || 'Account') + '</div>'
+        + '<div class="pa-acct-num" style="display:flex;align-items:center;gap:8px;">' + num + ' &bull; <span style="font-size:.72rem;">' + statusDot + '</span></div>'
+        + '</div>'
+        + '</div>'
+        + '<div class="pa-acct-bal-wrap">'
+        + '<div class="pa-acct-bal">' + bal + '</div>'
+        + '<div class="pa-acct-bal-lbl">Current Balance</div>'
+        + '</div>'
+        + '</div>'
+        + '<div class="pa-acct-meta">'
+        + '<div class="pa-meta-item"><div class="pa-meta-lbl">Available</div><div class="pa-meta-val">' + avl + '</div></div>'
+        + '<div class="pa-meta-item"><div class="pa-meta-lbl">APY</div><div class="pa-meta-val" style="color:var(--gold-400);">' + apy + '</div></div>'
+        + '<div class="pa-meta-item"><div class="pa-meta-lbl">Type</div><div class="pa-meta-val">' + esc(a.type || '—') + '</div></div>'
+        + '<div class="pa-meta-item"><div class="pa-meta-lbl">Opened</div><div class="pa-meta-val">' + opened + '</div></div>'
+        + '</div>'
+        + '<div class="pa-acct-actions">'
+        + '<a href="transactions.html?account=' + a.id + '" class="btn btn-ghost btn-sm">Transactions</a>'
+        + '<a href="transfer.html" class="btn btn-primary btn-sm">Transfer</a>'
+        + '<button class="btn btn-ghost btn-sm" onclick="openDetails(\'' + a.id + '\')">Details</button>'
+        + '<button class="pa-btn-close" onclick="openCloseFlow(\'' + a.id + '\')">'
+        + '<svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+        + 'Close Account'
+        + '</button>'
+        + '</div>'
+        + '</div>';
+    }).join('');
   }
-}
 
-// ── Mobile sidebar ────────────────────────────────────────────────────────────
-(function(){
-  const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
-  const t=document.getElementById('sidebarToggle'),c=document.getElementById('sidebarClose');
-  function openNav()  { s.classList.add('open');    o.classList.add('open');    t.classList.add('is-open');    document.body.style.overflow='hidden'; }
-  function closeNav() { s.classList.remove('open'); o.classList.remove('open'); t.classList.remove('is-open'); document.body.style.overflow=''; }
-  t.addEventListener('click', () => s.classList.contains('open') ? closeNav() : openNav());
-  c.addEventListener('click', closeNav);
-  o.addEventListener('click', closeNav);
-  s.querySelectorAll('.sidebar-item').forEach(a => a.addEventListener('click', () => { if (window.innerWidth < 1025) closeNav(); }));
-  let _tx=0;
-  s.addEventListener('touchstart', e => { _tx=e.touches[0].clientX; }, { passive:true });
-  s.addEventListener('touchend',   e => { if (_tx - e.changedTouches[0].clientX > 60) closeNav(); }, { passive:true });
+  // ── Applications ──────────────────────────────────────────────────────────────
+  async function loadApps() {
+    try {
+      var res = await callEdgeFunction('open-account', { action:'list_user' });
+      var apps = (res && res.applications) || [];
+      if (!apps.length) return;
+      var sMap = { pending:'pa-status-pending', approved:'pa-status-approved', declined:'pa-status-declined', under_review:'pa-status-under_review' };
+      var lMap = { pending:'Pending Review', approved:'Approved', declined:'Not Approved', under_review:'Under Review' };
+      document.getElementById('paAppsList').innerHTML = apps.map(function(a){
+        var d = new Date(a.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+        return '<div class="pa-app-row">'
+          + '<div><div class="pa-app-name">' + esc(a.account_type_label||a.account_type) + '</div>'
+          + '<div class="pa-app-date">Applied ' + d + ' &bull; Ref: ' + (a.id||'').slice(0,8).toUpperCase() + '</div></div>'
+          + '<span class="pa-status ' + (sMap[a.status]||'pa-status-pending') + '">' + (lMap[a.status]||a.status) + '</span>'
+          + '</div>';
+      }).join('');
+      document.getElementById('paAppsSection').style.display = '';
+    } catch(_) {}
+  }
+
+  // ── Account Details ───────────────────────────────────────────────────────────
+  window.openDetails = function(id) {
+    var a = _accounts.find(function(x){ return x.id===id; });
+    if (!a) return;
+    document.getElementById('detailsTitle').textContent = a.nickname || a.type || 'Account Details';
+    document.getElementById('detailsTxLink').href = 'transactions.html?account=' + id;
+    var rows = [
+      ['Account Number', a.account_number || '••••' + (a.id||'').slice(-4).toUpperCase()],
+      ['Account Type', a.type || '—'],
+      ['Status', a.status || 'Active'],
+      ['Current Balance', fmt(a.balance)],
+      ['Available Balance', fmt(a.available_balance != null ? a.available_balance : a.balance)],
+      ['Interest Rate', a.interest_rate ? a.interest_rate.toFixed(2)+'% APY' : '—'],
+      ['Routing Number', '026009593'],
+      ['Opened', a.created_at ? new Date(a.created_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}) : '—'],
+    ];
+    document.getElementById('detailsBody').innerHTML =
+      rows.map(function(r){
+        return '<div class="pa-details-row"><span class="pa-details-key">'+r[0]+'</span><span class="pa-details-val">'+esc(r[1])+'</span></div>';
+      }).join('');
+    document.getElementById('paDetailsModal').classList.add('open');
+  };
+
+  // ── Close Account modal ───────────────────────────────────────────────────────
+  var _zaAcct = null, _zaStep = 0;
+
+  window.openCloseFlow = function(id) {
+    _zaAcct = _accounts.find(function(x){ return x.id===id; });
+    if (!_zaAcct) return;
+    _zaStep = 0; _zaRender();
+    document.getElementById('zaOverlay').classList.add('open');
+  };
+
+  function _zaRender() {
+    var a = _zaAcct;
+    var st = typeStyle(a.type || '');
+    var s = [document.getElementById('zaStep0'), document.getElementById('zaStep1')];
+    s.forEach(function(el,i){ el.className='za-step'+(i<_zaStep?' done':i===_zaStep?' active':''); });
+
+    var nb = document.getElementById('zaNextBtn');
+    var fb = document.getElementById('zaFinalBtn');
+
+    if (_zaStep === 0) {
+      document.getElementById('zaEyebrow').textContent = 'Step 1 of 2';
+      document.getElementById('zaTitle').textContent   = 'Review Account';
+      document.getElementById('zaSub').textContent     = 'You are requesting to permanently close this account.';
+      nb.style.display=''; fb.style.display='none';
+      document.getElementById('zaBody').innerHTML =
+        '<div class="za-pill">'
+        + '<div class="za-pill-icon" style="background:'+st.bg+';border:1px solid '+st.color+'33;">'
+        + '<svg width="18" height="18" fill="none" stroke="'+st.color+'" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>'
+        + '</div>'
+        + '<div style="flex:1;min-width:0;">'
+        + '<div style="font-size:.88rem;font-weight:600;color:#fff;">' + esc(a.nickname||a.type||'Account') + '</div>'
+        + '<div style="font-size:.72rem;color:rgba(255,255,255,.35);font-family:monospace;">••••' + (a.id||'').slice(-4).toUpperCase() + '</div>'
+        + '</div>'
+        + '<div class="za-pill-bal">'
+        + '<div style="font-size:1.1rem;font-weight:600;color:#fff;">' + fmt(a.balance) + '</div>'
+        + '<div style="font-size:.65rem;color:rgba(255,255,255,.3);">Balance</div>'
+        + '</div>'
+        + '</div>'
+        + ['Closing this account is permanent and cannot be undone.',
+           'Remaining balance will be transferred to your primary account or issued by check.',
+           'Pending transactions must be rerouted before closing.',
+           'All scheduled payments linked to this account will be cancelled.'].map(function(w){
+          return '<div class="za-warn-item"><div class="za-warn-icon"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>' + w + '</div>';
+        }).join('');
+    } else {
+      document.getElementById('zaEyebrow').textContent = 'Step 2 of 2';
+      document.getElementById('zaTitle').textContent   = 'Confirm Closure';
+      document.getElementById('zaSub').textContent     = 'Type CLOSE to permanently close this account.';
+      nb.style.display='none'; fb.style.display=''; fb.disabled=true;
+      document.getElementById('zaBody').innerHTML =
+        '<div style="font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:8px;">Type CLOSE to confirm</div>'
+        + '<input class="za-confirm-input" id="zaConfirmInput" placeholder="CLOSE" autocomplete="off" oninput="_zaCheckConfirm()" />';
+      setTimeout(function(){ var i=document.getElementById('zaConfirmInput'); if(i) i.focus(); }, 80);
+    }
+  }
+
+  window._zaNext    = function() { _zaStep=1; _zaRender(); };
+  window._zaClose   = function() { document.getElementById('zaOverlay').classList.remove('open'); _zaAcct=null; _zaStep=0; };
+  window._zaCheckConfirm = function() {
+    var v = (document.getElementById('zaConfirmInput')||{}).value || '';
+    var ok = v.trim().toUpperCase() === 'CLOSE';
+    var inp = document.getElementById('zaConfirmInput');
+    if (inp) inp.classList.toggle('valid', ok);
+    var b = document.getElementById('zaFinalBtn'); if (b) b.disabled = !ok;
+  };
+  window._zaConfirm = async function() {
+    var b = document.getElementById('zaFinalBtn');
+    b.disabled = true; b.innerHTML = '<svg style="animation:spin .7s linear infinite" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Closing…';
+    try {
+      await window._supabase.from('accounts').update({ status:'closed', updated_at:new Date().toISOString() }).eq('id', _zaAcct.id);
+      _zaClose(); await paBoot();
+    } catch(e) {
+      b.disabled=false; b.innerHTML='Close Account';
+      alert('Error: ' + (e.message||'Failed'));
+    }
+  };
+
+  // ── Helpers ───────────────────────────────────────────────────────────────────
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  // ── Logout ────────────────────────────────────────────────────────────────────
+  var lb = document.getElementById('logoutBtn');
+  if (lb) lb.addEventListener('click', async function() {
+    try { await window._supabase.auth.signOut(); } finally { location.href = 'login.html'; }
+  });
+
+  // ── Mobile sidebar ────────────────────────────────────────────────────────────
+  (function(){
+    var s=document.getElementById('sidebar'), o=document.getElementById('sidebarOverlay');
+    var t=document.getElementById('sidebarToggle'), c=document.getElementById('sidebarClose');
+    function openNav(){ s.classList.add('open'); o.classList.add('open'); t.classList.add('is-open'); document.body.style.overflow='hidden'; }
+    function closeNav(){ s.classList.remove('open'); o.classList.remove('open'); t.classList.remove('is-open'); document.body.style.overflow=''; }
+    if(t) t.addEventListener('click', function(){ s.classList.contains('open')?closeNav():openNav(); });
+    if(c) c.addEventListener('click', closeNav);
+    if(o) o.addEventListener('click', closeNav);
+    s.querySelectorAll('.sidebar-item').forEach(function(a){ a.addEventListener('click', function(){ if(window.innerWidth<1025) closeNav(); }); });
+    var _tx=0;
+    s.addEventListener('touchstart', function(e){ _tx=e.touches[0].clientX; },{passive:true});
+    s.addEventListener('touchend',   function(e){ if(_tx-e.changedTouches[0].clientX>60) closeNav(); },{passive:true});
+  })();
+
+  // ── Boot ─────────────────────────────────────────────────────────────────────
+  window.addEventListener('load', paBoot);
+
 })();
-
-// ── Boot ──────────────────────────────────────────────────────────────────────
-// supabase-config.js bootstrap is async; _supabase won't be set at DOMContentLoaded.
-// We always listen for supabaseReady and also call directly if already set.
-document.addEventListener('DOMContentLoaded', () => {
-  if (window._supabase) loadAccountsPage();
-  else document.addEventListener('supabaseReady', loadAccountsPage, { once: true });
-});
-
-// ── Close Account — 2-Step Flow ───────────────────────────────────────────────
-let _zaId = null, _zaLast4 = null, _zaStep = 1, _zaBalance = 0;
-
-const ACCT_ICONS = {
-  checking:'🏦', savings:'💎', money_market:'📈',
-  investment:'📊', cd:'🔒', business:'🏢',
-};
-
-function openCloseAccountStep1(id, type, name, last4, balance) {
-  _zaId = id; _zaLast4 = last4; _zaStep = 1; _zaBalance = parseFloat(balance) || 0;
-
-  // Populate step 1
-  document.getElementById('zaAcctIcon').textContent = ACCT_ICONS[type] || '🏦';
-  document.getElementById('zaAcctName').textContent = name;
-  document.getElementById('zaAcctMeta').textContent = `${(type||'').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())} · •••• ${last4}`;
-  document.getElementById('zaBalance').textContent = '$' + _zaBalance.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-
-  // Balance warning
-  const bWarn = document.getElementById('zaBalWarn');
-  if (_zaBalance > 0.01) {
-    bWarn.style.display = 'block';
-    bWarn.textContent = `⚠ Your account has a balance of $${_zaBalance.toFixed(2)}. Please transfer all funds to another account before closing. You cannot close an account with a positive balance.`;
-    document.getElementById('zaBtnNext').disabled = true;
-    document.getElementById('zaBtnNext').style.opacity = '.38';
-  } else {
-    bWarn.style.display = 'none';
-    document.getElementById('zaBtnNext').disabled = false;
-    document.getElementById('zaBtnNext').style.opacity = '';
-  }
-
-  zaShowStep(1);
-  document.getElementById('zaOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function zaShowStep(n) {
-  _zaStep = n;
-  document.getElementById('zaBody1').style.display = n === 1 ? 'block' : 'none';
-  document.getElementById('zaBody2').style.display = n === 2 ? 'block' : 'none';
-  document.getElementById('zaBtnNext').style.display  = n === 1 ? 'flex' : 'none';
-  document.getElementById('zaBtnFinal').style.display = n === 2 ? 'flex' : 'none';
-
-  document.getElementById('zaS1').className = 'za-step ' + (n >= 1 ? (n > 1 ? 'done' : 'active') : '');
-  document.getElementById('zaS2').className = 'za-step ' + (n >= 2 ? 'active' : '');
-
-  if (n === 1) {
-    document.getElementById('zaEyebrow').textContent = 'Step 1 of 2 — Review';
-    document.getElementById('zaTitle').textContent   = 'Close Account?';
-    document.getElementById('zaSub').textContent     = 'Please review the information below before proceeding.';
-    document.getElementById('zaBtnCancel').textContent = 'Cancel';
-  } else {
-    document.getElementById('zaEyebrow').textContent = 'Step 2 of 2 — Confirm';
-    document.getElementById('zaTitle').textContent   = 'Final Confirmation';
-    document.getElementById('zaSub').textContent     = 'This cannot be reversed. Type your account digits to confirm.';
-    document.getElementById('zaBtnCancel').textContent = '← Go Back';
-    document.getElementById('zaConfirmInput').value = '';
-    document.getElementById('zaConfirmHint').textContent = '';
-    document.getElementById('zaBtnFinal').disabled = true;
-    setTimeout(() => document.getElementById('zaConfirmInput').focus(), 80);
-  }
-}
-
-function zaNext() {
-  if (_zaStep === 1) zaShowStep(2);
-}
-
-function zaCancel() {
-  if (_zaStep === 2) { zaShowStep(1); return; }
-  zaClose();
-}
-
-function zaClose() {
-  document.getElementById('zaOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-  _zaId = null; _zaLast4 = null; _zaStep = 1;
-}
-
-function zaCheckConfirm() {
-  const val  = document.getElementById('zaConfirmInput').value.trim();
-  const hint = document.getElementById('zaConfirmHint');
-  const btn  = document.getElementById('zaBtnFinal');
-  const input = document.getElementById('zaConfirmInput');
-  if (val === _zaLast4) {
-    input.classList.add('valid');
-    hint.textContent = '✓ Account digits confirmed';
-    hint.style.color = 'rgba(74,222,128,.7)';
-    btn.disabled = false;
-  } else {
-    input.classList.remove('valid');
-    hint.textContent = val.length === 4 ? `✗ Incorrect. Expected the last 4 digits of your account.` : '';
-    hint.style.color = 'rgba(248,113,113,.6)';
-    btn.disabled = true;
-  }
-}
-
-async function zaConfirmDelete() {
-  const btn = document.getElementById('zaBtnFinal');
-  if (btn.disabled) return;
-  btn.disabled = true;
-  btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="animation:spin 1s linear infinite"><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"/><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg> Closing…`;
-  try {
-    const res = await callEdgeFunction('admin-data', { action: 'delete_account', account_id: _zaId });
-    if (!res.success) throw new Error(res.error || 'Failed');
-    zaClose();
-    zenithToast(res.message || 'Account closed.', 'success');
-    await loadAccountsPage();
-  } catch(e) {
-    let msg = 'Could not close account.';
-    try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
-    zenithToast(msg, 'error');
-    btn.disabled = false;
-    btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg> Permanently Close Account`;
-  }
-}
-
-// Close on overlay click
-document.getElementById('zaOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) zaCancel(); });
 </script>
 <script src="js/notifications.js"></script>
 </body>

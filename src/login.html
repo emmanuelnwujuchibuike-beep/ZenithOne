@@ -110,8 +110,8 @@
     <div class="divider-text" id="biometricDivider" style="display:none;">or sign in with</div>
 
     <button class="btn btn-outline w-full" id="biometricBtn" style="padding:14px;gap:12px;display:none;">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10h.01M15 10h.01"/><path d="M9.5 15a3.5 3.5 0 0 0 5 0"/></svg>
-      Sign in with Face ID
+      <svg id="biometricBtnIcon" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10h.01M15 10h.01"/><path d="M9.5 15a3.5 3.5 0 0 0 5 0"/></svg>
+      <span id="biometricBtnLabel">Sign in with Face ID</span>
     </button>
 
     <p style="text-align:center;margin-top:28px;font-size:.875rem;color:var(--slate-400);">
@@ -181,25 +181,50 @@ document.getElementById('togglePwd').addEventListener('click', function() {
     : '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
 });
 
-// ── Face ID sign-in — only shown when enrolled on this device ──────────────────
+// ── Biometric sign-in ─────────────────────────────────────────────────────────
 (async function () {
+  const FID = window.ZenithFaceID;
   const btn = document.getElementById('biometricBtn');
   const div = document.getElementById('biometricDivider');
-  if (!btn) return;
+  const lbl = document.getElementById('biometricBtnLabel');
+  if (!btn || !FID) return;
 
-  const available = await window.ZenithFaceID.isAvailable();
-  if (!available || !window.ZenithFaceID.loginEnabled()) return;
+  const available = await FID.isAvailable();
+  if (!available) return; // device/browser doesn't support platform biometrics
+
+  const enrolled = FID.isEnrolled();
+  const label    = FID.getBiometricLabel ? FID.getBiometricLabel() : 'Biometrics';
 
   btn.style.display = 'flex';
   div.style.display = 'flex';
 
-  btn.addEventListener('click', async () => {
-    try {
-      await window.ZenithFaceID.loginWithFaceId(); // redirects on success
-    } catch (e) {
-      window.showLoginError && window.showLoginError(e.message || 'Face ID sign-in failed.');
-    }
-  });
+  if (enrolled && FID.loginEnabled()) {
+    // ── Enrolled: fast biometric login ──────────────────────────────────────
+    if (lbl) lbl.textContent = 'Sign in with ' + label;
+    btn.addEventListener('click', async () => {
+      btn.disabled = true;
+      if (lbl) lbl.textContent = 'Verifying…';
+      try {
+        await FID.loginWithFaceId(); // redirects on success
+      } catch (e) {
+        btn.disabled = false;
+        if (lbl) lbl.textContent = 'Sign in with ' + label;
+        window.showLoginError && window.showLoginError(
+          e.message || label + ' sign-in failed. Please use your password.'
+        );
+      }
+    });
+  } else {
+    // ── Not enrolled: offer setup path ──────────────────────────────────────
+    if (lbl) lbl.textContent = 'Set up ' + label + ' for faster sign-in';
+    btn.style.borderColor = 'rgba(201,168,76,.22)';
+    btn.style.color       = 'rgba(201,168,76,.8)';
+    btn.addEventListener('click', () => {
+      // Store target so settings can redirect back after enrollment
+      localStorage.setItem('zo_reauth_target', window.location.pathname);
+      window.location.href = 'settings.html';
+    });
+  }
 })();
 </script>
 </body>

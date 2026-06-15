@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Open Account — ZenithOne Credit Union</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="responsive.css" />
+  <style>
+    /* ── Layout ── */
+    .oa-wrap {
+      min-height: 100dvh; display: flex; flex-direction: column;
+      background: var(--navy-900, #061225);
+    }
+    .oa-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 32px; border-bottom: 1px solid rgba(255,255,255,.07);
+      flex-shrink: 0; position: sticky; top: 0; z-index: 100;
+      background: rgba(6,18,37,.96); backdrop-filter: blur(20px);
+    }
+    .oa-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .oa-logo-mark {
+      width: 34px; height: 34px; border-radius: 9px; flex-shrink: 0;
+      background: linear-gradient(135deg, #c9a84c, #e8d07a 52%, #c9a84c);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .oa-logo-name { font-family: var(--font-display); font-size: 1.05rem; font-weight: 400; color: var(--white); }
+    .oa-logo-sub { font-size: .6rem; letter-spacing: .14em; text-transform: uppercase; color: var(--slate-500); }
+    .oa-back {
+      display: flex; align-items: center; gap: 7px; font-size: .8rem;
+      color: var(--slate-400); cursor: pointer; text-decoration: none;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 9px; padding: 8px 14px; transition: all .18s;
+    }
+    .oa-back:hover { color: var(--white); border-color: rgba(255,255,255,.18); }
+
+    /* ── Main ── */
+    .oa-main {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; padding: 40px 20px 72px;
+    }
+
+    /* ── Progress ── */
+    .oa-progress { width: 100%; max-width: 640px; margin-bottom: 36px; }
+    .oa-progress-steps { display: flex; align-items: center; gap: 0; margin-bottom: 12px; }
+    .oa-prog-step {
+      flex: 1; height: 3px; background: rgba(255,255,255,.1);
+      border-radius: 99px; transition: background .4s;
+    }
+    .oa-prog-step + .oa-prog-step { margin-left: 3px; }
+    .oa-prog-step.done { background: rgba(201,168,76,.55); }
+    .oa-prog-step.active { background: #c9a84c; box-shadow: 0 0 8px rgba(201,168,76,.5); }
+    .oa-progress-labels { display: flex; justify-content: space-between; }
+    .oa-prog-label { font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; color: var(--slate-500); transition: color .3s; }
+    .oa-prog-label.active { color: var(--gold-400); }
+    .oa-prog-label.done { color: var(--slate-400); }
+
+    /* ── Card ── */
+    .oa-card {
+      width: 100%; max-width: 640px;
+      background: linear-gradient(160deg, #0b1829 0%, #060f1d 100%);
+      border: 1px solid rgba(255,255,255,.1); border-radius: 24px;
+      overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,.6);
+      position: relative;
+    }
+    .oa-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,.6), transparent);
+    }
+
+    .oa-card-head {
+      padding: 36px 40px 28px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+    .oa-eyebrow { font-size: .62rem; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-500); margin-bottom: 10px; }
+    .oa-card-title { font-family: var(--font-display); font-size: 1.9rem; font-weight: 300; color: var(--white); line-height: 1.15; margin-bottom: 6px; }
+    .oa-card-sub { font-size: .82rem; color: var(--slate-400); line-height: 1.6; }
+
+    /* Product snippet */
+    .oa-product-pill {
+      display: flex; align-items: center; gap: 16px;
+      padding: 16px 20px; border-radius: 14px;
+      background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08);
+      margin-top: 22px;
+    }
+    .oa-product-icon { width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .oa-product-name { font-size: 1rem; font-weight: 600; color: var(--white); margin-bottom: 3px; }
+    .oa-product-rate { font-size: .76rem; color: var(--gold-400); display: flex; align-items: center; gap: 5px; }
+
+    .oa-card-body { padding: 32px 40px; }
+    .oa-card-foot {
+      padding: 22px 40px 30px;
+      border-top: 1px solid rgba(255,255,255,.06);
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    /* ── Form ── */
+    .oa-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+    .oa-form-row.single { grid-template-columns: 1fr; }
+    .oa-form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+    .oa-field { display: flex; flex-direction: column; gap: 7px; }
+    .oa-label {
+      font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--slate-400); font-weight: 500;
+    }
+    .oa-required { color: rgba(248,113,113,.7); margin-left: 3px; }
+    .oa-input {
+      width: 100%; padding: 14px 16px; box-sizing: border-box;
+      background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1);
+      border-radius: 12px; color: var(--white); font-size: .9rem;
+      font-family: inherit; outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    .oa-input:focus { border-color: rgba(201,168,76,.5); box-shadow: 0 0 0 3px rgba(201,168,76,.08); }
+    .oa-input.valid { border-color: rgba(74,222,128,.35); }
+    .oa-input.error { border-color: rgba(248,113,113,.45); }
+    .oa-input::placeholder { color: rgba(255,255,255,.2); }
+    select.oa-input { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: calc(100% - 14px) center; padding-right: 38px; cursor: pointer; }
+    select.oa-input option { background: #0b1829; color: #fff; }
+    .oa-error-msg { font-size: .72rem; color: #f87171; margin-top: 4px; min-height: 16px; }
+
+    /* Term cards (CD) */
+    .term-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 18px; }
+    .term-card {
+      padding: 14px 10px; border: 1px solid rgba(255,255,255,.1); border-radius: 12px;
+      text-align: center; cursor: pointer; transition: all .2s;
+      background: rgba(255,255,255,.03);
+    }
+    .term-card:hover { border-color: rgba(201,168,76,.3); }
+    .term-card.selected { border-color: rgba(201,168,76,.6); background: rgba(201,168,76,.08); }
+    .term-months { font-size: 1.1rem; font-weight: 700; color: var(--white); margin-bottom: 3px; }
+    .term-label { font-size: .62rem; letter-spacing: .08em; text-transform: uppercase; color: var(--slate-400); }
+    .term-rate { font-size: .72rem; color: var(--gold-400); margin-top: 5px; font-weight: 600; }
+
+    /* IRA type cards */
+    .ira-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+    .ira-card {
+      padding: 18px 14px; border: 1px solid rgba(255,255,255,.1); border-radius: 14px;
+      cursor: pointer; transition: all .2s; background: rgba(255,255,255,.03);
+    }
+    .ira-card:hover { border-color: rgba(244,114,182,.3); }
+    .ira-card.selected { border-color: rgba(244,114,182,.55); background: rgba(244,114,182,.07); }
+    .ira-card-name { font-size: .95rem; font-weight: 700; color: var(--white); margin-bottom: 6px; }
+    .ira-card-desc { font-size: .72rem; color: var(--slate-400); line-height: 1.55; }
+
+    /* ── Review section ── */
+    .oa-review-section { margin-bottom: 24px; }
+    .oa-review-title {
+      font-size: .65rem; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--gold-500); margin-bottom: 12px; padding-bottom: 8px;
+      border-bottom: 1px solid rgba(201,168,76,.15);
+    }
+    .oa-review-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.05);
+      font-size: .84rem; gap: 20px;
+    }
+    .oa-review-row:last-child { border-bottom: none; }
+    .oa-review-key { color: var(--slate-400); flex-shrink: 0; }
+    .oa-review-val { color: var(--white); text-align: right; word-break: break-word; }
+
+    /* ── Disclosure ── */
+    .oa-disclosure {
+      background: rgba(255,255,255,.02); border: 1px solid rgba(255,255,255,.08);
+      border-radius: 12px; padding: 18px; max-height: 160px; overflow-y: auto;
+      font-size: .76rem; color: var(--slate-400); line-height: 1.7; margin-bottom: 18px;
+    }
+    .oa-disclosure::-webkit-scrollbar { width: 5px; }
+    .oa-disclosure::-webkit-scrollbar-track { background: rgba(255,255,255,.03); }
+    .oa-disclosure::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 3px; }
+    .oa-check-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; cursor: pointer; }
+    .oa-check {
+      width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0;
+      border: 1.5px solid rgba(255,255,255,.2); background: rgba(255,255,255,.04);
+      display: flex; align-items: center; justify-content: center;
+      transition: all .18s; margin-top: 1px; cursor: pointer;
+    }
+    .oa-check.checked { background: rgba(201,168,76,.2); border-color: rgba(201,168,76,.6); }
+    .oa-check-text { font-size: .8rem; color: var(--slate-300); line-height: 1.55; }
+    .oa-esign-field {
+      padding: 16px; border: 1px solid rgba(255,255,255,.12); border-radius: 12px;
+      background: rgba(255,255,255,.02); margin-top: 16px;
+    }
+    .oa-esign-label { font-size: .65rem; letter-spacing: .12em; text-transform: uppercase; color: var(--slate-500); margin-bottom: 8px; }
+    .oa-esign-name { font-family: 'Georgia', serif; font-size: 1.5rem; color: var(--white); font-style: italic; min-height: 40px; }
+
+    /* ── Success screen ── */
+    .oa-success {
+      display: flex; flex-direction: column; align-items: center;
+      text-align: center; padding: 24px 40px 40px;
+    }
+    .oa-success-ring {
+      width: 88px; height: 88px; border-radius: 50%;
+      background: rgba(74,222,128,.1); border: 2px solid rgba(74,222,128,.35);
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 28px; animation: pulse-ring 2.5s ease infinite;
+    }
+    @keyframes pulse-ring {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,.2); }
+      50% { box-shadow: 0 0 0 14px rgba(74,222,128,.0); }
+    }
+    .oa-success-title { font-family: var(--font-display); font-size: 2.1rem; font-weight: 300; color: var(--white); margin-bottom: 10px; }
+    .oa-success-sub { font-size: .88rem; color: var(--slate-400); line-height: 1.65; max-width: 440px; margin-bottom: 32px; }
+    .oa-success-ref { font-family: monospace; font-size: .92rem; letter-spacing: .1em; color: var(--gold-400); background: rgba(201,168,76,.08); border: 1px solid rgba(201,168,76,.2); border-radius: 10px; padding: 10px 20px; margin-bottom: 28px; }
+    .oa-success-steps { text-align: left; width: 100%; max-width: 360px; margin-bottom: 36px; }
+    .oa-success-step { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+    .oa-success-step-num { width: 26px; height: 26px; border-radius: 50%; background: rgba(201,168,76,.15); border: 1px solid rgba(201,168,76,.3); display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 700; color: var(--gold-400); flex-shrink: 0; }
+    .oa-success-step-text { font-size: .82rem; color: var(--slate-300); line-height: 1.55; padding-top: 3px; }
+
+    /* ── Buttons ── */
+    .oa-btn-back {
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09);
+      color: rgba(255,255,255,.55); padding: 14px 22px; border-radius: 13px;
+      font-size: .84rem; cursor: pointer; transition: all .16s;
+    }
+    .oa-btn-back:hover { background: rgba(255,255,255,.09); color: var(--white); }
+    .oa-btn-next {
+      flex: 1; padding: 15px 22px; border-radius: 13px;
+      background: linear-gradient(135deg, rgba(201,168,76,.2), rgba(201,168,76,.1));
+      border: 1px solid rgba(201,168,76,.4); color: #c9a84c;
+      font-size: .88rem; font-weight: 700; letter-spacing: .04em;
+      text-transform: uppercase; cursor: pointer; transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+    }
+    .oa-btn-next:hover:not(:disabled) {
+      background: linear-gradient(135deg, rgba(201,168,76,.3), rgba(201,168,76,.18));
+      box-shadow: 0 0 28px rgba(201,168,76,.2);
+    }
+    .oa-btn-next:disabled { opacity: .35; cursor: not-allowed; }
+    .oa-btn-submit {
+      flex: 1; padding: 15px 22px; border-radius: 13px;
+      background: linear-gradient(135deg, #92730e, #c9a84c 50%, #e8d07a);
+      border: none; color: #04090f;
+      font-size: .88rem; font-weight: 800; letter-spacing: .04em;
+      text-transform: uppercase; cursor: pointer; transition: all .2s;
+      display: flex; align-items: center; justify-content: center; gap: 9px;
+    }
+    .oa-btn-submit:hover:not(:disabled) { filter: brightness(1.08); box-shadow: 0 8px 32px rgba(201,168,76,.35); }
+    .oa-btn-submit:disabled { opacity: .35; cursor: not-allowed; }
+
+    /* Info callout */
+    .oa-info-box {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 16px; border-radius: 12px;
+      background: rgba(96,165,250,.06); border: 1px solid rgba(96,165,250,.18);
+      font-size: .78rem; color: var(--slate-300); line-height: 1.6; margin-bottom: 20px;
+    }
+    .oa-warn-box {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 16px; border-radius: 12px;
+      background: rgba(251,191,36,.06); border: 1px solid rgba(251,191,36,.18);
+      font-size: .78rem; color: var(--slate-300); line-height: 1.6; margin-bottom: 20px;
+    }
+    .oa-section-divider {
+      height: 1px; background: rgba(255,255,255,.07); margin: 22px 0;
+    }
+    .oa-section-label {
+      font-size: .65rem; letter-spacing: .16em; text-transform: uppercase;
+      color: var(--slate-500); margin-bottom: 14px; margin-top: 4px;
+    }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .oa-spinner { animation: spin .8s linear infinite; }
+
+    /* Responsive */
+    @media (max-width: 680px) {
+      .oa-topbar { padding: 14px 18px; }
+      .oa-main { padding: 28px 14px 56px; }
+      .oa-card { border-radius: 18px; }
+      .oa-card-head { padding: 24px 20px 18px; }
+      .oa-card-body { padding: 20px 20px 16px; }
+      .oa-card-foot { padding: 14px 20px 20px; }
+      .oa-form-row { grid-template-columns: 1fr; gap: 14px; }
+      .oa-form-row.triple { grid-template-columns: 1fr; gap: 14px; }
+      .oa-progress { margin-bottom: 24px; }
+      .oa-prog-label { font-size: .52rem; }
+      .term-grid { grid-template-columns: repeat(2,1fr); }
+      .ira-grid { grid-template-columns: 1fr 1fr; }
+      .oa-card-title { font-size: 1.55rem; }
+      .oa-product-pill { padding: 12px 14px; gap: 12px; }
+      .oa-btn-next, .oa-btn-back, .oa-btn-submit { padding: 13px 16px; font-size: .82rem; }
+    }
+    @media (max-width: 400px) {
+      .ira-grid { grid-template-columns: 1fr; }
+      .oa-card-foot { flex-direction: column; }
+      .oa-btn-back { order: 2; }
+      .oa-btn-next, .oa-btn-submit { order: 1; }
+    }
+  </style>
+</head>
+<body>
+<div class="oa-wrap">
+
+  <!-- Top bar -->
+  <div class="oa-topbar">
+    <a href="dashboard.html" class="oa-logo" style="text-decoration:none;">
+      <div class="oa-logo-mark">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div>
+        <div class="oa-logo-name">ZENITHONE</div>
+        <div class="oa-logo-sub">Credit Union</div>
+      </div>
+    </a>
+    <a href="accounts.html" class="oa-back">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Back to Accounts
+    </a>
+  </div>
+
+  <!-- Main -->
+  <div class="oa-main">
+
+    <!-- Progress bar -->
+    <div class="oa-progress" id="progressBar">
+      <div class="oa-progress-steps" id="progressSteps"></div>
+      <div class="oa-progress-labels" id="progressLabels"></div>
+    </div>
+
+    <!-- Card -->
+    <div class="oa-card" id="oa-card">
+      <div class="oa-card-head" id="oa-head">
+        <!-- filled by JS -->
+      </div>
+      <div class="oa-card-body" id="oa-body">
+        <!-- filled by JS -->
+      </div>
+      <div class="oa-card-foot" id="oa-foot">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <!-- Security note -->
+    <div style="margin-top:24px;display:flex;align-items:center;gap:8px;font-size:.72rem;color:var(--slate-500);" id="securityNote">
+      <svg width="12" height="12" fill="none" stroke="rgba(201,168,76,.5)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      256-bit SSL encrypted &bull; FDIC Insured &bull; NCUA Member
+    </div>
+
+  </div>
+</div>
+
+<script src="js/supabase-config.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ── Parse URL params ──────────────────────────────────────────────────────────
+  var params = new URLSearchParams(location.search);
+  var ACCOUNT_TYPE  = params.get('type')  || 'essential-checking';
+  var ACCOUNT_LABEL = params.get('label') || 'Essential Checking';
+
+  var ACCOUNT_META = {
+    'essential-checking':  { label:'Essential Checking',     rate:'0.01% APY', color:'#60a5fa', bg:'rgba(96,165,250,.12)',  border:'rgba(96,165,250,.25)',  icon:'<rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/>' },
+    'interest-checking':   { label:'Interest Checking',      rate:'0.15% APY', color:'#34d399', bg:'rgba(52,211,153,.12)',  border:'rgba(52,211,153,.25)',  icon:'<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' },
+    'high-yield-savings':  { label:'High-Yield Savings',     rate:'4.75% APY', color:'#c9a84c', bg:'rgba(201,168,76,.12)', border:'rgba(201,168,76,.3)',   icon:'<path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' },
+    'money-market':        { label:'Money Market Savings',   rate:'4.25% APY', color:'#a78bfa', bg:'rgba(167,139,250,.12)',border:'rgba(167,139,250,.25)', icon:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' },
+    'cd':                  { label:'Certificate of Deposit', rate:'Up to 5.25% APY', color:'#f59e0b', bg:'rgba(245,158,11,.12)', border:'rgba(245,158,11,.25)', icon:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' },
+    'youth-checking':      { label:'Youth/Student Checking', rate:'0.05% APY', color:'#4ade80', bg:'rgba(74,222,128,.12)', border:'rgba(74,222,128,.25)', icon:'<path d="M22 10v6M2 10l10-5 10 5-10 5-10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>' },
+    'business-checking':   { label:'Business Checking',      rate:'0.01% APY', color:'#fb923c', bg:'rgba(251,146,60,.12)', border:'rgba(251,146,60,.25)', icon:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' },
+    'business-savings':    { label:'Business Savings',       rate:'3.50% APY', color:'#38bdf8', bg:'rgba(56,189,248,.12)', border:'rgba(56,189,248,.25)', icon:'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>' },
+    'ira-savings':         { label:'IRA Savings',            rate:'4.00% APY', color:'#f472b6', bg:'rgba(244,114,182,.12)',border:'rgba(244,114,182,.25)',icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
+  };
+
+  var meta = ACCOUNT_META[ACCOUNT_TYPE] || { label:ACCOUNT_LABEL, rate:'Variable APY', color:'#c9a84c', bg:'rgba(201,168,76,.12)', border:'rgba(201,168,76,.25)', icon:'<rect x="2" y="5" width="20" height="14" rx="2"/>' };
+  meta.label = meta.label || ACCOUNT_LABEL;
+  ACCOUNT_LABEL = meta.label;
+
+  var isBusiness = ACCOUNT_TYPE.startsWith('business');
+  var isCD       = ACCOUNT_TYPE === 'cd';
+  var isIRA      = ACCOUNT_TYPE === 'ira-savings';
+  var isYouth    = ACCOUNT_TYPE === 'youth-checking';
+
+  // ── Form data store ───────────────────────────────────────────────────────────
+  var D = {
+    first_name:'', last_name:'', date_of_birth:'', ssn_last4:'', phone:'',
+    address_line1:'', address_line2:'', city:'', state:'', zip_code:'',
+    employment_status:'', employer_name:'', annual_income:'',
+    account_purpose:'', initial_deposit:'', funding_source:'',
+    cd_term_months:'', cd_amount:'',
+    ira_type:'',
+    business_name:'', business_type:'', ein:'',
+    agree_terms: false, agree_privacy: false, esign_name: '',
+    joint_holder: '',
+  };
+
+  // ── Steps definition ──────────────────────────────────────────────────────────
+  // Step 0: Account confirm
+  // Step 1: Personal info
+  // Step 2: Address
+  // Step 3: Employment & Income
+  // Step 4: Account Details (type-specific fields)
+  // Step 5: Purpose & Funding
+  // Step 6: Review & E-Sign
+  // Step 7: Success
+
+  var STEP_LABELS = ['Account', 'Personal', 'Address', 'Employment', 'Details', 'Funding', 'Review'];
+  var currentStep = 0;
+  var totalFormSteps = STEP_LABELS.length; // 0-6
+
+  // ── Progress render ───────────────────────────────────────────────────────────
+  function renderProgress() {
+    var steps = document.getElementById('progressSteps');
+    var labels = document.getElementById('progressLabels');
+    if (currentStep >= totalFormSteps) { // success
+      document.getElementById('progressBar').style.display = 'none';
+      document.getElementById('securityNote').style.display = 'none';
+      return;
+    }
+    steps.innerHTML = STEP_LABELS.map(function(_,i){
+      var cls = i < currentStep ? 'done' : i === currentStep ? 'active' : '';
+      return '<div class="oa-prog-step ' + cls + '"></div>';
+    }).join('');
+    labels.innerHTML = STEP_LABELS.map(function(l,i){
+      var cls = i < currentStep ? 'done' : i === currentStep ? 'active' : '';
+      return '<span class="oa-prog-label ' + cls + '">' + l + '</span>';
+    }).join('');
+  }
+
+  // ── Navigation ────────────────────────────────────────────────────────────────
+  function goTo(n) {
+    currentStep = n;
+    renderProgress();
+    renderStep();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  // Exposed globally so inline onclick="next()" / onclick="back()" work
+  window.next = function next() {
+    if (!validateStep()) return;
+    collectStep();
+    goTo(currentStep + 1);
+  };
+  window.back = function back() {
+    if (currentStep > 0) goTo(currentStep - 1);
+  };
+
+  // ── US States ─────────────────────────────────────────────────────────────────
+  var US_STATES = [
+    'Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut',
+    'Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa',
+    'Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan',
+    'Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada',
+    'New Hampshire','New Jersey','New Mexico','New York','North Carolina',
+    'North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island',
+    'South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont',
+    'Virginia','Washington','West Virginia','Wisconsin','Wyoming',
+    'District of Columbia',
+  ];
+  function stateOptions() {
+    return '<option value="">Select state…</option>'
+      + US_STATES.map(function(s){ return '<option value="'+s+'"'+(D.state===s?' selected':'')+'>'+s+'</option>'; }).join('');
+  }
+
+  // ── Step renderers ────────────────────────────────────────────────────────────
+  function renderStep() {
+    var head = document.getElementById('oa-head');
+    var body = document.getElementById('oa-body');
+    var foot = document.getElementById('oa-foot');
+
+    switch (currentStep) {
+      case 0: renderStep0(head,body,foot); break;
+      case 1: renderStep1(head,body,foot); break;
+      case 2: renderStep2(head,body,foot); break;
+      case 3: renderStep3(head,body,foot); break;
+      case 4: renderStep4(head,body,foot); break;
+      case 5: renderStep5(head,body,foot); break;
+      case 6: renderStep6(head,body,foot); break;
+      case 7: renderSuccess(head,body,foot); break;
+    }
+  }
+
+  function prodPill() {
+    return '<div class="oa-product-pill">'
+      + '<div class="oa-product-icon" style="background:'+meta.bg+';border:1px solid '+meta.border+';">'
+      + '<svg width="20" height="20" fill="none" stroke="'+meta.color+'" stroke-width="1.8" viewBox="0 0 24 24">'+meta.icon+'</svg>'
+      + '</div>'
+      + '<div>'
+      + '<div class="oa-product-name">'+meta.label+'</div>'
+      + '<div class="oa-product-rate"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>'+meta.rate+'</div>'
+      + '</div>'
+      + '</div>';
+  }
+
+  function renderStep0(head,body,foot) {
+    head.innerHTML = '<div class="oa-eyebrow">Step 1 of '+totalFormSteps+'</div>'
+      + '<div class="oa-card-title">You\'re opening a<br><em style="font-style:italic;color:'+meta.color+';">'+meta.label+'</em></div>'
+      + '<div class="oa-card-sub">Review the account details below, then continue with your application. The process takes about 5 minutes.</div>'
+      + prodPill();
+
+    var features = {
+      'essential-checking': ['No minimum balance or monthly fee','Free Visa® debit card','Direct deposit up to 2 days early'],
+      'interest-checking':  ['Earns 0.15% APY on all balances','Monthly fee waived at $1,500 balance','Free ATMs at 55,000+ Allpoint® locations'],
+      'high-yield-savings': ['4.75% APY — 10× national average','No monthly maintenance fee','Up to 6 withdrawals per month'],
+      'money-market':       ['4.25% APY with tiered rates','Limited check-writing privileges','Debit card access included'],
+      'cd':                 ['Rates up to 5.25% APY','Terms 3–60 months','Guaranteed fixed rate for full term'],
+      'youth-checking':     ['For ages 13–25, no fees','Financial education tools','Automatically upgrades at 26'],
+      'business-checking':  ['500 free transactions/month','ACH & wire transfers included','Multi-user access & sub-accounts'],
+      'business-savings':   ['3.50% APY on reserves','Auto-sweep from business checking','Quarterly interest statements'],
+      'ira-savings':        ['Traditional, Roth & SEP options','4.00% APY tax-advantaged','$7,000/yr limit ($8,000 if 50+)'],
+    };
+    var feats = (features[ACCOUNT_TYPE] || []);
+    var featHtml = feats.length ? '<ul style="margin:0 0 0 0;padding:0;display:flex;flex-direction:column;gap:9px;">'
+      + feats.map(function(f){ return '<li style="display:flex;align-items:flex-start;gap:9px;font-size:.82rem;color:var(--slate-300);list-style:none;">'
+        + '<span style="color:'+meta.color+';flex-shrink:0;font-size:1rem;margin-top:-1px;">✓</span>'+f+'</li>'; }).join('')
+      + '</ul>' : '';
+
+    body.innerHTML = featHtml
+      + '<div class="oa-section-divider"></div>'
+      + '<div class="oa-info-box">'
+      + '<svg width="15" height="15" fill="none" stroke="#60a5fa" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+      + '<span>Application is FDIC insured and subject to credit review. You\'ll need your Social Security Number (last 4 digits), a valid US address, and proof of employment or income source.</span>'
+      + '</div>';
+
+    foot.innerHTML = '<button class="oa-btn-back" onclick="history.back()">Cancel</button>'
+      + '<button class="oa-btn-next" onclick="next()">Start Application <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
+  }
+
+  function renderStep1(head,body,foot) {
+    head.innerHTML = '<div class="oa-eyebrow">Step 2 of '+totalFormSteps+' — Personal Information</div>'
+      + '<div class="oa-card-title">Tell us about yourself</div>'
+      + '<div class="oa-card-sub">We\'re required by federal law to collect this information to verify your identity.</div>';
+
+    body.innerHTML = '<div class="oa-form-row">'
+      + field('first_name','First Name',D.first_name,'text','John',true)
+      + field('last_name','Last Name',D.last_name,'text','Smith',true)
+      + '</div>'
+      + '<div class="oa-form-row">'
+      + field('date_of_birth','Date of Birth',D.date_of_birth,'date','',true)
+      + field('phone','Phone Number',D.phone,'tel','(555) 000-0000',false)
+      + '</div>'
+      + '<div class="oa-form-row">'
+      + '<div class="oa-field"><label class="oa-label">SSN Last 4 Digits<span class="oa-required">*</span></label><input class="oa-input" id="ssn_last4" type="password" maxlength="4" pattern="\\d{4}" placeholder="••••" value="'+esc(D.ssn_last4)+'" autocomplete="off" /><div class="oa-error-msg" id="err_ssn_last4"></div></div>'
+      + '<div class="oa-field"><label class="oa-label">Confirm SSN Last 4<span class="oa-required">*</span></label><input class="oa-input" id="ssn_last4_confirm" type="password" maxlength="4" pattern="\\d{4}" placeholder="••••" value="" autocomplete="off" /><div class="oa-error-msg" id="err_ssn_last4_confirm"></div></div>'
+      + '</div>'
+      + (isYouth ? '<div class="oa-form-row single">'
+        + field('joint_holder','Parent / Joint Account Holder Name (if under 18)',D.joint_holder,'text','Full legal name',false)
+        + '</div>' : '')
+      + '<div class="oa-info-box" style="margin-top:8px;">'
+      + '<svg width="14" height="14" fill="none" stroke="#60a5fa" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'
+      + '<span>Your SSN is encrypted in transit and used only for identity verification as required by the USA PATRIOT Act.</span>'
+      + '</div>';
+
+    foot.innerHTML = '<button class="oa-btn-back" onclick="back()">Back</button>'
+      + '<button class="oa-btn-next" onclick="next()">Continue <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
+  }
+
+  function renderStep2(head,body,foot) {
+    head.innerHTML = '<div class="oa-eyebrow">Step 3 of '+totalFormSteps+' — Address</div>'
+      + '<div class="oa-card-title">Residential address</div>'
+      + '<div class="oa-card-sub">Provide your current US residential address. PO Boxes are not accepted.</div>';
+
+    body.innerHTML = '<div class="oa-form-row single">'
+      + field('address_line1','Street Address',D.address_line1,'text','123 Main Street',true)
+      + '</div>'
+      + '<div class="oa-form-row single">'
+      + field('address_line2','Apt, Suite, Unit (optional)',D.address_line2,'text','Apt 2B',false)
+      + '</div>'
+      + '<div class="oa-form-row triple">'
+      + field('city','City',D.city,'text','New York',true)
+      + '<div class="oa-field"><label class="oa-label">State<span class="oa-required">*</span></label><select class="oa-input" id="state">'+stateOptions()+'</select><div class="oa-error-msg" id="err_state"></div></div>'
+      + field('zip_code','ZIP Code',D.zip_code,'text','10001',true,'5')
+      + '</div>';
+
+    foot.innerHTML = '<button class="oa-btn-back" onclick="back()">Back</button>'
+      + '<button class="oa-btn-next" onclick="next()">Continue <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
+  }
+
+  function renderStep3(head,body,foot) {
+    head.innerHTML = '<div class="oa-eyebrow">Step 4 of '+totalFormSteps+' — Employment</div>'
+      + '<div class="oa-card-title">Employment & income</div>'
+      + '<div class="oa-card-sub">This helps us verify your ability to maintain the account.</div>';
+
+    body.innerHTML = '<div class="oa-form-row single">'
+      + '<div class="oa-field"><label class="oa-label">Employment Status<span class="oa-required">*</span></label>'
+      + '<select class="oa-input" id="employment_status" onchange="toggleEmployer()">'
+      + '<option value="">Select status…</option>'
+      + [['employed','Employed — Full-Time or Part-Time'],['self_employed','Self-Employed / Freelance'],['retired','Retired'],['student','Student'],['unemployed','Unemployed / Not Currently Working'],['other','Other']].map(function(o){ return '<option value="'+o[0]+'"'+(D.employment_status===o[0]?' selected':'')+'>'+o[1]+'</option>'; }).join('')
+      + '</select><div class="oa-error-msg" id="err_employment_status"></div></div>'
+      + '</div>'
+      + '<div id="employerFields">'
+      + '<div class="oa-form-row">'
+      + field('employer_name','Employer Name',D.employer_name,'text','Acme Corporation',false)
+      + '<div class="oa-field"><label class="oa-label">Annual Household Income</label>'
+      + '<select class="oa-input" id="annual_income">'
+      + '<option value="">Select range…</option>'
+      + ['Under $25,000','$25,000 – $49,999','$50,000 – $74,999','$75,000 – $99,999','$100,000 – $149,999','$150,000 – $249,999','$250,000 – $499,999','$500,000 or more'].map(function(r){ return '<option value="'+r+'"'+(D.annual_income===r?' selected':'')+'>'+r+'</option>'; }).join('')
+      + '</select></div>'
+      + '</div>'
+      + '</div>';
+
+    foot.innerHTML = '<button class="oa-btn-back" onclick="back()">Back</button>'
+      + '<button class="oa-btn-next" onclick="next()">Continue <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
+
+    toggleEmployer();
+  }
+
+  window.toggleEmployer = function() {
+    var el = document.getElementById('employment_status');
+    var ef = document.getElementById('employerFields');
+    if (!el || !ef) return;
+    var hide = el.value === 'student' || el.value === 'unemployed';
+    ef.style.display = hide ? 'none' : 'block';
+  };
+
+  function renderStep4(head,body,foot) {
+    head.innerHTML = '<div class="oa-eyebrow">Step 5 of '+totalFormSteps+' — Account Details</div>'
+      + '<div class="oa-card-title">Account preferences</div>'
+      + '<div class="oa-card-sub">Provide additional details specific to your '+meta.label+' account.</div>';
+
+    var specific = '';
+
+    if (isCD) {
+      var cdRates = { 3:'4.50', 6:'4.75', 12:'5.00', 18:'5.10', 24:'5.15', 36:'5.20', 60:'5.25' };
+      specific += '<div class="oa-section-label">Select CD Term</div>'
+        + '<div class="term-grid" id="termGrid">'
+        + Object.keys(cdRates).map(function(m){ return '<div class="term-card'+(D.cd_term_months==m?' selected':'')+'" onclick="selectTerm('+m+')">'
+          + '<div class="term-months">'+m+'</div>'
+          + '<div class="term-label">Month'+( m!=1?'s':'' )+'</div>'
+          + '<div class="term-rate">'+cdRates[m]+'% APY</div>'
+          + '</div>'; }).join('')
+        + '</div>'
+        + '<div id="err_cd_term" class="oa-error-msg"></div>'
+        + '<div class="oa-form-row single">'
+        + field('cd_amount','CD Deposit Amount (min. $500)',D.cd_amount,'number','2500.00',true)
+        + '</div>';
+    } else if (isIRA) {
+      specific += '<div class="oa-section-label">IRA Type</div>'
+        + '<div class="ira-grid" id="iraGrid">'
+        + [['traditional','Traditional IRA','Pre-tax contributions. Pay taxes on withdrawal.'],
+           ['roth','Roth IRA','After-tax contributions. Tax-free withdrawals in retirement.'],
+           ['sep','SEP IRA','For self-employed & small businesses. Higher contribution limits.']].map(function(t){
+          return '<div class="ira-card'+(D.ira_type===t[0]?' selected':'')+'" onclick="selectIRA(\''+t[0]+'\')">'
+            + '<div class="ira-card-name">'+t[1]+'</div>'
+            + '<div class="ira-card-desc">'+t[2]+'</div>'
+            + '</div>';
+        }).join('')
+        + '</div>'
+        + '<div id="err_ira_type" class="oa-error-msg"></div>';
+    } else if (isBusiness) {
+      specific += '<div class="oa-form-row single">'
+        + field('business_name','Legal Business Name',D.business_name,'text','Acme Corp LLC',true)
+        + '</div>'
+        + '<div class="oa-form-row">'
+        + '<div class="oa-field"><label class="oa-label">Business Type<span class="oa-required">*</span></label>'
+        + '<select class="oa-input" id="business_type">'
+        + '<option value="">Select type…</option>'
+        + ['Sole Proprietorship','Limited Liability Company (LLC)','S-Corporation','C-Corporation','Partnership','Nonprofit Organization','Other'].map(function(b){ return '<option value="'+b+'"'+(D.business_type===b?' selected':'')+'>'+b+'</option>'; }).join('')
+        + '</select><div class="oa-error-msg" id="err_business_type"></div></div>'
+        + field('ein','Employer ID Number (EIN)',D.ein,'text','XX-XXXXXXX',true,'10')
+        + '</div>';
+    } else {
+      specific += '<div class="oa-info-box">'
+        + '<svg width="14" height="14" fill="none" stroke="#60a5fa" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+        + '<span>No additional account-specific information is required for your '+meta.label+'. Continue to the next step.</span>'
+        + '</div>';
+    }
+
+    body.innerHTML = specific || '<div class="oa-info-box"><svg width="14" height="14" fill="none" stroke="#60a5fa" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/></svg><span>Nothing else needed here. Click Continue.</span></div>';
+
+    foot.innerHTML = '<button class="oa-btn-back" onclick="back()">Back</button>'
+      + '<button class="oa-btn-next" onclick="next()">Continue <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
+  }
+
+  window.selectTerm = function(m) {
+    D.cd_term_months = m;
+    document.querySelectorAll('.term-card').forEach(function(c){ c.classList.remove('selected'); });
+    var t = document.querySelectorAll('.term-card');
+    var keys = [3,6,12,18,24,36,60];
+    var idx = keys.indexOf(parseInt(m));
+    if (t[idx]) t[idx].classList.add('selected');
+    var e = document.getElementById('err_cd_term'); if (e) e.textContent = '';
+  };
+  window.selectIRA = function(t) {
+    D.ira_type = t;
+    document.querySelectorAll('.ira-card').forEach(function(c){ c.classList.remove('selected'); });
+    document.querySelectorAll('.ira-card').forEach(function(c){
+      if (c.querySelector('.ira-card-name').textContent.toLowerCase().includes(t.toLowerCase().replace('sep','sep'))) c.classList.add('selected');
+    });
+    var names = { traditional:'Traditional IRA', roth:'Roth IRA', sep:'SEP IRA' };
+    document.querySelectorAll('.ira-card').forEach(function(c){ if (c.querySelector('.ira-card-name').textContent === names[t]) c.classList.add('selected'); });
+    var e = document.getElementById('err_ira_type'); if(e) e.textContent='';
+  };
+
+  function renderStep5(head,body,foot) {
+    head.innerHTML = '<div class="oa-eyebrow">Step 6 of '+totalFormSteps+' — Funding</div>'
+      + '<div class="oa-card-title">Purpose & initial funding</div>'
+      + '<div class="oa-card-sub">Tell us how you plan to use this account and how you\'ll fund it.</div>';
+
+    body.innerHTML = '<div class="oa-form-row single">'
+      + '<div class="oa-field"><label class="oa-label">Primary Account Purpose</label>'
+      + '<select class="oa-input" id="account_purpose">'
+      + '<option value="">Select purpose…</option>'
+      + ['Daily transactions & bill pay','Emergency fund','Short-term savings goal','Long-term savings','Retirement savings','Business operations','Investment funding','Travel fund','Education savings','Other'].map(function(p){ return '<option value="'+p+'"'+(D.account_purpose===p?' selected':'')+'>'+p+'</option>'; }).join('')
+      + '</select></div>'
+      + '</div>'
+      + '<div class="oa-form-row">'
+      + field('initial_deposit','Initial Deposit Amount (USD)',D.initial_deposit,'number','500.00',false)
+      + '<div class="oa-field"><label class="oa-label">Funding Source</label>'
+      + '<select class="oa-input" id="funding_source">'
+      + '<option value="">Select source…</option>'
+      + ['Personal checking or savings account','Transfer from another bank','Direct deposit','Cash deposit at branch','Check','Wire transfer'].map(function(s){ return '<option value="'+s+'"'+(D.funding_source===s?' selected':'')+'>'+s+'</option>'; }).join('')
+      + '</select></div>'
+      + '</div>'
+      + '<div class="oa-warn-box" style="margin-top:4px;">'
+      + '<svg width="14" height="14" fill="none" stroke="#fbbf24" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;margin-top:1px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+      + '<span>Under the Bank Secrecy Act, we are required to report certain transactions to federal regulators. All funds must be from legal sources.</span>'
+      + '</div>';
+
+    foot.innerHTML = '<button class="oa-btn-back" onclick="back()">Back</button>'
+      + '<button class="oa-btn-next" onclick="next()">Continue <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>';
+  }
+
+  function renderStep6(head,body,foot) {
+    head.innerHTML = '<div class="oa-eyebrow">Step 7 of '+totalFormSteps+' — Review & Sign</div>'
+      + '<div class="oa-card-title">Review your application</div>'
+      + '<div class="oa-card-sub">Please review all information carefully. By signing, you certify the information is accurate.</div>';
+
+    var fmt = function(v) { return v || '<span style="color:rgba(255,255,255,.25);">—</span>'; };
+    body.innerHTML = '<div class="oa-review-section">'
+      + '<div class="oa-review-title">Account</div>'
+      + reviewRow('Type', ACCOUNT_LABEL)
+      + reviewRow('Rate', meta.rate)
+      + (isIRA ? reviewRow('IRA Type', D.ira_type ? D.ira_type.charAt(0).toUpperCase()+D.ira_type.slice(1) : '—') : '')
+      + (isCD  ? reviewRow('CD Term', D.cd_term_months ? D.cd_term_months+' months' : '—') : '')
+      + (isBusiness ? reviewRow('Business', D.business_name) : '')
+      + '</div>'
+      + '<div class="oa-review-section">'
+      + '<div class="oa-review-title">Personal</div>'
+      + reviewRow('Name', D.first_name + ' ' + D.last_name)
+      + reviewRow('Date of Birth', D.date_of_birth)
+      + reviewRow('SSN Last 4', '••••')
+      + reviewRow('Phone', D.phone || '—')
+      + '</div>'
+      + '<div class="oa-review-section">'
+      + '<div class="oa-review-title">Address</div>'
+      + reviewRow('Street', D.address_line1 + (D.address_line2 ? ', '+D.address_line2 : ''))
+      + reviewRow('City / State / ZIP', D.city + ', ' + D.state + ' ' + D.zip_code)
+      + '</div>'
+      + '<div class="oa-review-section">'
+      + '<div class="oa-review-title">Employment & Funding</div>'
+      + reviewRow('Employment', D.employment_status.replace('_',' ') || '—')
+      + reviewRow('Income', D.annual_income || '—')
+      + reviewRow('Initial Deposit', D.initial_deposit ? '$'+parseFloat(D.initial_deposit).toFixed(2) : '—')
+      + reviewRow('Funding Source', D.funding_source || '—')
+      + '</div>'
+
+      + '<div class="oa-section-divider"></div>'
+
+      + '<div class="oa-disclosure">'
+      + '<strong style="color:var(--slate-300);">Account Agreement &amp; Membership Disclosure</strong><br><br>'
+      + 'By signing this application, you certify that (1) you are a US person as defined by federal law; (2) all information provided is accurate and complete; (3) you have received and agree to ZenithOne Credit Union\'s Account Agreement, Fee Schedule, Privacy Notice, and Electronic Fund Transfers Agreement; (4) you authorize ZenithOne to verify your identity, including through consumer reporting agencies; (5) you consent to receive account communications and disclosures electronically; (6) you understand that membership eligibility requirements apply and your application is subject to review and approval.<br><br>'
+      + 'Your deposits are insured by the Federal Deposit Insurance Corporation (FDIC) up to the standard maximum deposit insurance amount. Interest rates and APY are subject to change at any time without notice except as required by law. Please review the full Rate and Fee Schedule for current rates, fees, and terms applicable to your account.<br><br>'
+      + 'Under federal law, you have certain rights. For information about FDIC insurance, visit fdic.gov. For information about your privacy rights, request our Privacy Notice or visit our website.'
+      + '</div>'
+
+      + '<div class="oa-check-row" onclick="toggleCheck(\'agree_terms\')" id="row_agree_terms">'
+      + '<div class="oa-check'+(D.agree_terms?' checked':'')+'" id="chk_agree_terms"><svg width="11" height="11" fill="none" stroke="#c9a84c" stroke-width="3" viewBox="0 0 24 24" style="display:'+(D.agree_terms?'block':'none')+'"><polyline points="20 6 9 17 4 12"/></svg></div>'
+      + '<div class="oa-check-text">I have read and agree to the ZenithOne Account Agreement, Fee Schedule, and Privacy Notice.</div>'
+      + '</div>'
+      + '<div class="oa-check-row" onclick="toggleCheck(\'agree_privacy\')" id="row_agree_privacy">'
+      + '<div class="oa-check'+(D.agree_privacy?' checked':'')+'" id="chk_agree_privacy"><svg width="11" height="11" fill="none" stroke="#c9a84c" stroke-width="3" viewBox="0 0 24 24" style="display:'+(D.agree_privacy?'block':'none')+'"><polyline points="20 6 9 17 4 12"/></svg></div>'
+      + '<div class="oa-check-text">I certify that I am a US person and all information provided is accurate. I authorize identity verification.</div>'
+      + '</div>'
+      + '<div id="err_agree" class="oa-error-msg"></div>'
+
+      + '<div class="oa-esign-field">'
+      + '<div class="oa-esign-label">Electronic Signature — Type your full legal name</div>'
+      + '<input class="oa-input" id="esign_name" type="text" placeholder="Your full legal name" value="'+esc(D.esign_name)+'" autocomplete="name" oninput="this.style.fontStyle=\'italic\';renderEsignPreview(this.value);" style="font-size:1.1rem;" />'
+      + '<div id="err_esign_name" class="oa-error-msg"></div>'
+      + '<div style="margin-top:10px;font-size:.72rem;color:var(--slate-500);">By typing your name above, you agree this constitutes your legal electronic signature.</div>'
+      + '</div>';
+
+    foot.innerHTML = '<button class="oa-btn-back" onclick="back()">Back</button>'
+      + '<button class="oa-btn-submit" id="submitBtn" onclick="submitApplication()">'
+      + '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>'
+      + 'Submit Application'
+      + '</button>';
+  }
+
+  function reviewRow(k, v) {
+    return '<div class="oa-review-row"><span class="oa-review-key">'+k+'</span><span class="oa-review-val">'+(v||'<span style="opacity:.3;">—</span>')+'</span></div>';
+  }
+
+  window.toggleCheck = function(key) {
+    D[key] = !D[key];
+    var chk = document.getElementById('chk_'+key);
+    if (!chk) return;
+    chk.classList.toggle('checked', D[key]);
+    var svg = chk.querySelector('svg');
+    if (svg) svg.style.display = D[key] ? 'block' : 'none';
+    var e = document.getElementById('err_agree'); if(e) e.textContent = '';
+  };
+  window.renderEsignPreview = function(v) {
+    D.esign_name = v;
+    var e = document.getElementById('err_esign_name'); if(e) e.textContent='';
+  };
+
+  // ── Success ───────────────────────────────────────────────────────────────────
+  var _refId = '';
+  function renderSuccess(head,body,foot) {
+    head.innerHTML = '';
+    body.innerHTML = '';
+    foot.innerHTML = '';
+    document.getElementById('oa-card').innerHTML =
+      '<div class="oa-success">'
+      + '<div class="oa-success-ring"><svg width="38" height="38" fill="none" stroke="#4ade80" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>'
+      + '<div class="oa-success-title">Application Submitted</div>'
+      + '<div class="oa-success-sub">Your application for a <strong style="color:var(--white);">'+meta.label+'</strong> has been received and is under review. You\'ll receive a confirmation email within minutes.</div>'
+      + '<div class="oa-success-ref">Reference: ' + _refId.slice(0,8).toUpperCase() + '</div>'
+      + '<div class="oa-success-steps">'
+      + '<div class="oa-success-step"><div class="oa-success-step-num">1</div><div class="oa-success-step-text"><strong style="color:var(--white);">Email Confirmation</strong><br>Check your inbox for a confirmation email with your application details.</div></div>'
+      + '<div class="oa-success-step"><div class="oa-success-step-num">2</div><div class="oa-success-step-text"><strong style="color:var(--white);">Review (1–3 business days)</strong><br>Our team verifies your identity and reviews your application.</div></div>'
+      + '<div class="oa-success-step"><div class="oa-success-step-num">3</div><div class="oa-success-step-text"><strong style="color:var(--white);">Account Opening</strong><br>Upon approval you\'ll receive your account number and can begin using your account.</div></div>'
+      + '</div>'
+      + '<a href="accounts.html" class="oa-btn-next" style="text-decoration:none;max-width:300px;">Go to Accounts</a>'
+      + '</div>';
+  }
+
+  // ── Validation ────────────────────────────────────────────────────────────────
+  function validateStep() {
+    clearErrors();
+    var ok = true;
+    if (currentStep === 1) {
+      ok = require('first_name','Required') && require('last_name','Required') && require('date_of_birth','Required') && ok;
+      var ssn = val('ssn_last4'), ssnc = (document.getElementById('ssn_last4_confirm')||{}).value || '';
+      if (!ssn || !/^\d{4}$/.test(ssn)) { setErr('ssn_last4','Enter exactly 4 digits'); ok=false; }
+      else if (ssn !== ssnc) { setErr('ssn_last4_confirm','SSN digits do not match'); ok=false; }
+      if (!ok) return false;
+      // Age check
+      var dob = new Date(val('date_of_birth'));
+      var age = (new Date() - dob) / (365.25*24*3600*1000);
+      if (age < 13) { setErr('date_of_birth','Must be at least 13 years old'); ok=false; }
+      if (!isYouth && age < 18) { setErr('date_of_birth','Must be at least 18 years old (or choose Youth Checking)'); ok=false; }
+    }
+    if (currentStep === 2) {
+      ok = require('address_line1','Required') && require('city','Required') && require('zip_code','Required') && ok;
+      if (!val('state')) { setErr('state','Select your state'); ok=false; }
+      var z = val('zip_code'); if (z && !/^\d{5}(-\d{4})?$/.test(z)) { setErr('zip_code','Enter a valid 5-digit ZIP'); ok=false; }
+    }
+    if (currentStep === 3) {
+      if (!val('employment_status')) { setErr('employment_status','Select employment status'); ok=false; }
+    }
+    if (currentStep === 4) {
+      if (isCD) {
+        if (!D.cd_term_months) { var e=document.getElementById('err_cd_term'); if(e) e.textContent='Please select a term'; ok=false; }
+        if (!val('cd_amount') || parseFloat(val('cd_amount'))<500) { setErr('cd_amount','Minimum CD amount is $500'); ok=false; }
+      }
+      if (isIRA) {
+        if (!D.ira_type) { var e2=document.getElementById('err_ira_type'); if(e2) e2.textContent='Please select an IRA type'; ok=false; }
+      }
+      if (isBusiness) {
+        ok = require('business_name','Required') && ok;
+        if (!val('business_type')) { setErr('business_type','Select business type'); ok=false; }
+        var ein = val('ein'); if (!ein) { setErr('ein','EIN is required for business accounts'); ok=false; }
+      }
+    }
+    if (currentStep === 6) {
+      if (!D.agree_terms || !D.agree_privacy) { var ea=document.getElementById('err_agree'); if(ea) ea.textContent='You must agree to both disclosures to continue'; ok=false; }
+      if (!D.esign_name || D.esign_name.trim().length < 4) { setErr('esign_name','Enter your full legal name as your signature'); ok=false; }
+    }
+    return ok;
+  }
+
+  function collectStep() {
+    if (currentStep === 1) {
+      D.first_name = val('first_name'); D.last_name = val('last_name');
+      D.date_of_birth = val('date_of_birth'); D.phone = val('phone');
+      D.ssn_last4 = val('ssn_last4'); D.joint_holder = val('joint_holder') || '';
+    }
+    if (currentStep === 2) {
+      D.address_line1 = val('address_line1'); D.address_line2 = val('address_line2') || '';
+      D.city = val('city'); D.state = val('state'); D.zip_code = val('zip_code');
+    }
+    if (currentStep === 3) {
+      D.employment_status = val('employment_status');
+      D.employer_name = val('employer_name') || ''; D.annual_income = val('annual_income') || '';
+    }
+    if (currentStep === 4) {
+      if (isCD) { D.cd_amount = val('cd_amount') || ''; }
+      if (isBusiness) { D.business_name = val('business_name'); D.business_type = val('business_type'); D.ein = val('ein'); }
+    }
+    if (currentStep === 5) {
+      D.account_purpose = val('account_purpose') || '';
+      D.initial_deposit = val('initial_deposit') || '';
+      D.funding_source = val('funding_source') || '';
+    }
+    if (currentStep === 6) {
+      D.esign_name = val('esign_name') || '';
+    }
+  }
+
+  // ── Submit ────────────────────────────────────────────────────────────────────
+  window.submitApplication = async function() {
+    if (!validateStep()) return;
+    collectStep();
+    var btn = document.getElementById('submitBtn');
+    if (btn) { btn.disabled=true; btn.innerHTML='<svg class="oa-spinner" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg> Submitting…'; }
+    try {
+      var payload = {
+        action: 'apply',
+        account_type: ACCOUNT_TYPE,
+        account_type_label: ACCOUNT_LABEL,
+        first_name: D.first_name, last_name: D.last_name,
+        date_of_birth: D.date_of_birth, ssn_last4: D.ssn_last4, phone: D.phone,
+        address_line1: D.address_line1, address_line2: D.address_line2,
+        city: D.city, state: D.state, zip_code: D.zip_code,
+        employment_status: D.employment_status, employer_name: D.employer_name,
+        annual_income: D.annual_income, account_purpose: D.account_purpose,
+        initial_deposit: D.initial_deposit ? parseFloat(D.initial_deposit) : null,
+        funding_source: D.funding_source,
+        cd_term_months: isCD ? parseInt(D.cd_term_months)||null : null,
+        cd_amount: isCD ? parseFloat(D.cd_amount)||null : null,
+        ira_type: isIRA ? D.ira_type||null : null,
+        business_name: isBusiness ? D.business_name||null : null,
+        business_type: isBusiness ? D.business_type||null : null,
+        ein: isBusiness ? D.ein||null : null,
+      };
+      var res = await callEdgeFunction('open-account', payload);
+      _refId = (res && res.id) ? res.id : ('ZO' + Date.now().toString(36).toUpperCase());
+      goTo(7);
+    } catch (e) {
+      if (btn) { btn.disabled=false; btn.innerHTML='<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Submit Application'; }
+      var ea = document.getElementById('err_agree');
+      if (ea) { ea.textContent = 'Submission error: ' + (e.message || 'Please try again.'); ea.style.color='#f87171'; }
+    }
+  };
+
+  // ── Form helpers ──────────────────────────────────────────────────────────────
+  function field(id, label, value, type, ph, req, maxlen) {
+    return '<div class="oa-field"><label class="oa-label">'+label+(req?'<span class="oa-required">*</span>':'')+'</label>'
+      + '<input class="oa-input" id="'+id+'" type="'+(type||'text')+'" placeholder="'+(ph||'')+'" value="'+esc(value||'')+'"'+(maxlen?' maxlength="'+maxlen+'"':'')+' autocomplete="'+id+'" />'
+      + '<div class="oa-error-msg" id="err_'+id+'"></div></div>';
+  }
+  function esc(s) { return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function val(id) { var el=document.getElementById(id); return el ? el.value.trim() : ''; }
+  function require(id, msg) { if (!val(id)) { setErr(id,msg); return false; } return true; }
+  function setErr(id, msg) { var e=document.getElementById('err_'+id); if(e) e.textContent=msg; var inp=document.getElementById(id); if(inp) inp.classList.add('error'); }
+  function clearErrors() {
+    document.querySelectorAll('.oa-error-msg').forEach(function(e){ e.textContent=''; });
+    document.querySelectorAll('.oa-input.error').forEach(function(i){ i.classList.remove('error'); });
+  }
+
+  // ── Boot ──────────────────────────────────────────────────────────────────────
+  renderProgress();
+  renderStep();
+
+})();
+</script>
+</body>
+</html>

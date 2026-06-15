@@ -3,530 +3,1848 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Transfer — ZenithOne Credit Union</title>
+  <title>Transfer Funds — ZenithOne Credit Union</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="responsive.css" />
   <style>
-    .transfer-tabs { display:flex; gap:0; border-bottom:1px solid rgba(255,255,255,.06); margin-bottom:32px; }
-    .transfer-tab { padding:14px 24px; font-size:.875rem; color:var(--slate-400); cursor:pointer; border-bottom:2px solid transparent; transition:all var(--transition); }
-    .transfer-tab:hover { color:var(--white); }
-    .transfer-tab.active { color:var(--gold-400); border-bottom-color:var(--gold-500); }
-    .transfer-panel { display:none; } .transfer-panel.active { display:block; }
-    .amount-input-big { background:transparent; border:none; outline:none; font-family:var(--font-display); font-size:3.5rem; color:var(--white); width:100%; text-align:center; placeholder-color:rgba(255,255,255,.2); }
-    .amount-input-big::placeholder { color:rgba(255,255,255,.15); }
-    .account-select-item { display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:12px; cursor:pointer; border:2px solid rgba(255,255,255,.06); transition:all var(--transition); margin-bottom:8px; }
-    .account-select-item:hover { border-color:rgba(201,168,76,.3); }
-    .account-select-item.selected { border-color:var(--gold-500); background:rgba(201,168,76,.07); }
-    .beneficiary-item { display:flex; align-items:center; gap:14px; padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,.06); cursor:pointer; transition:all var(--transition); }
-    .beneficiary-item:hover { border-color:rgba(201,168,76,.3); background:rgba(201,168,76,.04); }
-    .confirm-row { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.05); font-size:.875rem; }
-    .confirm-row:last-child { border-bottom:none; }
-    .swap-btn { width:40px; height:40px; border-radius:50%; background:rgba(201,168,76,.1); border:1px solid rgba(201,168,76,.3); display:flex; align-items:center; justify-content:center; color:var(--gold-400); cursor:pointer; margin:8px auto; transition:all var(--transition); }
-    .swap-btn:hover { background:rgba(201,168,76,.2); transform:rotate(180deg); }
+/* ══════════════════════════════════════════
+   TRANSFER PAGE — PREMIUM REDESIGN
+══════════════════════════════════════════ */
+.xfr-page-head { margin-bottom: 28px; }
+.xfr-page-title { font-family:var(--font-display);font-size:2rem;font-weight:300;color:var(--white);letter-spacing:.02em;margin-bottom:4px; }
+.xfr-page-sub { font-size:.82rem;color:var(--slate-400); }
+
+/* Type card grid */
+.xfr-type-grid { display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:28px; }
+@media(max-width:860px){ .xfr-type-grid{grid-template-columns:repeat(3,1fr);} }
+@media(max-width:560px){ .xfr-type-grid{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:20px;} }
+
+.xfr-type-card {
+  position:relative;display:flex;flex-direction:column;align-items:flex-start;
+  padding:18px 14px 14px;border-radius:16px;
+  border:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(145deg,rgba(255,255,255,.025),rgba(255,255,255,.008));
+  cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1);user-select:none;overflow:hidden;
+}
+.xfr-type-card::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--tc,rgba(255,255,255,.1));opacity:0;transition:opacity .2s;
+}
+.xfr-type-card:hover { border-color:rgba(255,255,255,.15);transform:translateY(-1px); }
+.xfr-type-card.active { transform:none; }
+.xfr-type-card.active::before { opacity:1; }
+.xfr-type-card[data-type="internal"]{--tc:#6366f1;}
+.xfr-type-card[data-type="internal"].active{border-color:rgba(99,102,241,.4);background:rgba(99,102,241,.07);}
+.xfr-type-card[data-type="send"]{--tc:#c9a84c;}
+.xfr-type-card[data-type="send"].active{border-color:rgba(201,168,76,.4);background:rgba(201,168,76,.07);}
+.xfr-type-card[data-type="zelle"]{--tc:#8b5cf6;}
+.xfr-type-card[data-type="zelle"].active{border-color:rgba(139,92,246,.4);background:rgba(139,92,246,.07);}
+.xfr-type-card[data-type="wire"]{--tc:#06b6d4;}
+.xfr-type-card[data-type="wire"].active{border-color:rgba(6,182,212,.4);background:rgba(6,182,212,.07);}
+.xfr-type-card[data-type="link"]{--tc:#10b981;}
+.xfr-type-card[data-type="link"].active{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.07);}
+
+.xfr-tc-icon { width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;flex-shrink:0; }
+.xfr-type-card[data-type="internal"] .xfr-tc-icon{background:rgba(99,102,241,.15);color:#818cf8;}
+.xfr-type-card[data-type="send"] .xfr-tc-icon{background:rgba(201,168,76,.15);color:#c9a84c;}
+.xfr-type-card[data-type="zelle"] .xfr-tc-icon{background:rgba(139,92,246,.15);color:#a78bfa;}
+.xfr-type-card[data-type="wire"] .xfr-tc-icon{background:rgba(6,182,212,.15);color:#22d3ee;}
+.xfr-type-card[data-type="link"] .xfr-tc-icon{background:rgba(16,185,129,.15);color:#34d399;}
+
+.xfr-tc-name{font-size:.76rem;font-weight:600;letter-spacing:.01em;color:var(--white);margin-bottom:2px;}
+.xfr-tc-sub{font-size:.62rem;color:var(--slate-500);line-height:1.3;}
+@media(max-width:560px){.xfr-tc-sub{display:none;}}
+
+/* Panels */
+.xfr-panel{display:none;animation:xfrIn .2s ease;}
+.xfr-panel.active{display:block;}
+@keyframes xfrIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* Card container */
+.xfr-card{
+  background:linear-gradient(145deg,rgba(255,255,255,.028),rgba(255,255,255,.01));
+  border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:32px;margin-bottom:20px;
+}
+.xfr-card.tc-internal{border-top:2px solid rgba(99,102,241,.4);}
+.xfr-card.tc-send{border-top:2px solid rgba(201,168,76,.4);}
+.xfr-card.tc-zelle{border-top:2px solid rgba(139,92,246,.4);}
+.xfr-card.tc-wire{border-top:2px solid rgba(6,182,212,.4);}
+.xfr-card.tc-link{border-top:2px solid rgba(16,185,129,.4);}
+.xfr-card-hd{font-family:var(--font-display);font-size:1.25rem;color:var(--white);margin-bottom:4px;}
+.xfr-card-sub{font-size:.78rem;color:var(--slate-400);margin-bottom:24px;line-height:1.5;}
+@media(max-width:560px){.xfr-card{padding:20px 18px;border-radius:18px;}}
+
+/* Labels */
+.xfr-label{font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-500);margin:0 0 8px;display:block;}
+.xfr-label-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.xfr-label-row .xfr-label{margin-bottom:0;}
+.xfr-field{margin-bottom:18px;}
+.xfr-grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+@media(max-width:480px){.xfr-grid2{grid-template-columns:1fr;}}
+
+/* Select */
+.xfr-select{
+  width:100%;padding:12px 40px 12px 16px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.1);
+  background:rgba(255,255,255,.04) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c9a84c' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center/12px 8px;
+  color:var(--white);font-size:.9rem;outline:none;appearance:none;-webkit-appearance:none;
+  cursor:pointer;transition:border-color .15s;box-sizing:border-box;
+}
+.xfr-select:focus{border-color:rgba(201,168,76,.45);}
+.xfr-select option{background:#0b1628;}
+
+/* Inputs */
+.xfr-inp{
+  width:100%;padding:12px 16px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);
+  color:var(--white);font-size:.9rem;outline:none;
+  transition:border-color .15s,background .15s;box-sizing:border-box;
+}
+.xfr-inp:focus{border-color:rgba(201,168,76,.45);background:rgba(201,168,76,.02);}
+.xfr-inp::placeholder{color:rgba(255,255,255,.22);}
+.xfr-inp.mono{font-family:'SF Mono','Fira Code',monospace;letter-spacing:.08em;}
+
+/* Swap */
+.xfr-swap-row{display:flex;align-items:center;gap:12px;margin:10px 0;}
+.xfr-swap-line{flex:1;height:1px;background:rgba(255,255,255,.06);}
+.xfr-swap-btn{
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);
+  color:#818cf8;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.xfr-swap-btn:hover{background:rgba(99,102,241,.2);transform:rotate(180deg);}
+
+/* Amount hero */
+.xfr-amt-hero{
+  background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.08);
+  border-radius:18px;padding:28px 20px;text-align:center;margin:20px 0;
+  transition:border-color .18s,background .18s;
+}
+.xfr-amt-hero:focus-within{border-color:rgba(201,168,76,.35);background:rgba(201,168,76,.02);}
+.xfr-amt-eyebrow{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--slate-500);margin-bottom:12px;}
+.xfr-amt-row{display:flex;align-items:flex-end;justify-content:center;gap:4px;}
+.xfr-amt-sym{font-family:var(--font-display);font-size:2.4rem;color:var(--slate-500);line-height:1;padding-bottom:5px;}
+.xfr-amt-inp{background:transparent;border:none;outline:none;font-family:var(--font-display);font-size:3.4rem;color:var(--white);width:100%;max-width:260px;text-align:center;line-height:1;}
+.xfr-amt-inp::placeholder{color:rgba(255,255,255,.1);}
+.xfr-amt-avail{font-size:.76rem;color:var(--slate-500);margin-top:10px;}
+.xfr-amt-avail strong{color:#4ade80;font-weight:500;}
+.xfr-quick-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:14px;}
+.xfr-q{padding:5px 14px;border-radius:99px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--slate-300);font-size:.74rem;cursor:pointer;transition:all .15s;}
+.xfr-q:hover{border-color:rgba(201,168,76,.4);color:var(--gold-400);background:rgba(201,168,76,.07);}
+
+/* Search row */
+.xfr-search-row{display:flex;gap:8px;align-items:stretch;}
+.xfr-search-row .xfr-inp{flex:1;}
+.xfr-search-btn{
+  padding:0 20px;border-radius:12px;flex-shrink:0;
+  border:1px solid rgba(201,168,76,.35);background:rgba(201,168,76,.08);
+  color:var(--gold-400);font-size:.8rem;font-weight:500;cursor:pointer;
+  white-space:nowrap;transition:all .18s;
+}
+.xfr-search-btn:hover{background:rgba(201,168,76,.18);border-color:rgba(201,168,76,.6);}
+.xfr-search-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* Recipient state */
+.xfr-recip-state{margin-top:8px;min-height:36px;}
+.xfr-recip-found{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.2);
+  border-radius:10px;padding:10px 14px;
+}
+.xfr-recip-found-ico{width:28px;height:28px;border-radius:50%;flex-shrink:0;background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);display:flex;align-items:center;justify-content:center;color:#4ade80;}
+.xfr-recip-found-name{font-size:.84rem;font-weight:500;color:var(--white);}
+.xfr-recip-found-sub{font-size:.7rem;color:var(--slate-400);margin-top:1px;}
+.xfr-recip-searching{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--slate-400);padding:8px 4px;}
+.xfr-recip-err{font-size:.78rem;color:#f87171;padding:8px 4px;}
+.mini-spin{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.1);border-top-color:var(--gold-400);animation:spin .7s linear infinite;flex-shrink:0;}
+
+/* Bank found (wire) */
+.xfr-bank-found{display:flex;align-items:center;gap:10px;background:rgba(6,182,212,.06);border:1px solid rgba(6,182,212,.2);border-radius:10px;padding:10px 14px;margin-top:8px;}
+.xfr-bank-found-ico{width:28px;height:28px;border-radius:8px;flex-shrink:0;background:rgba(6,182,212,.15);display:flex;align-items:center;justify-content:center;color:#22d3ee;}
+.xfr-bank-found-name{font-size:.84rem;font-weight:500;color:var(--white);}
+.xfr-bank-found-sub{font-size:.7rem;color:var(--slate-400);margin-top:1px;}
+
+/* Limits strip */
+.xfr-limits{display:flex;gap:1px;margin:20px 0;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.07);}
+.xfr-limit-box{flex:1;padding:14px 12px;background:rgba(255,255,255,.025);text-align:center;}
+.xfr-limit-box:not(:last-child){border-right:1px solid rgba(255,255,255,.07);}
+.xfr-limit-val{font-family:var(--font-display);font-size:1.1rem;color:var(--white);}
+.xfr-limit-lbl{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-500);margin-top:2px;}
+
+/* Info box */
+.xfr-info{display:flex;align-items:flex-start;gap:8px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:.76rem;color:var(--slate-400);line-height:1.5;}
+.xfr-info svg{flex-shrink:0;margin-top:1px;opacity:.5;}
+
+/* Error */
+.xfr-err{font-size:.78rem;color:#f87171;min-height:18px;margin-bottom:8px;}
+
+/* Primary button */
+.xfr-btn{
+  width:100%;padding:15px 20px;border-radius:14px;border:none;
+  background:linear-gradient(135deg,#c9a84c,#d4b870);
+  color:#061225;font-size:.88rem;font-weight:600;letter-spacing:.03em;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  position:relative;overflow:hidden;transition:all .2s;
+}
+.xfr-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(201,168,76,.3);}
+.xfr-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+.xfr-btn.loading .xfr-btn-txt{opacity:0;}
+.xfr-btn.loading .xfr-btn-spin{display:block;}
+.xfr-btn-spin{display:none;position:absolute;width:18px;height:18px;border-radius:50%;border:2px solid rgba(6,18,37,.2);border-top-color:#061225;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Ghost button */
+.xfr-btn-ghost{width:100%;padding:13px 20px;border-radius:14px;margin-top:10px;border:1px solid rgba(255,255,255,.1);background:transparent;color:var(--slate-300);font-size:.84rem;cursor:pointer;transition:all .18s;}
+.xfr-btn-ghost:hover{border-color:rgba(255,255,255,.2);color:var(--white);}
+
+/* Wire type toggle */
+.xfr-toggle-row{display:flex;gap:0;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.1);margin-bottom:20px;}
+.xfr-toggle-tab{flex:1;padding:10px;text-align:center;font-size:.78rem;font-weight:500;cursor:pointer;background:transparent;border:none;color:var(--slate-500);transition:all .18s;}
+.xfr-toggle-tab.active-wire{background:rgba(6,182,212,.1);color:#22d3ee;}
+.xfr-toggle-tab.active-zelle{background:rgba(139,92,246,.1);color:#a78bfa;}
+
+/* Recent transfers */
+.xfr-recent-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.xfr-recent-title{font-family:var(--font-display);font-size:1.1rem;color:var(--white);}
+.xfr-recent-link{font-size:.74rem;color:var(--gold-400);text-decoration:none;transition:opacity .15s;}
+.xfr-recent-link:hover{opacity:.75;}
+.xfr-hist{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.018);margin-bottom:8px;transition:background .15s;}
+.xfr-hist:hover{background:rgba(255,255,255,.03);}
+.xfr-hist-ic{width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.xfr-hist-info{flex:1;min-width:0;}
+.xfr-hist-desc{font-size:.84rem;color:var(--white);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.xfr-hist-date{font-size:.7rem;color:var(--slate-500);margin-top:2px;}
+.xfr-hist-right{text-align:right;flex-shrink:0;}
+.xfr-hist-amt{font-size:.88rem;font-weight:500;}
+.xfr-hist-amt.cr{color:#4ade80;}
+.xfr-hist-amt.dr{color:#f87171;}
+.xfr-hist-st{font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;margin-top:3px;}
+.xfr-hist-st.done{color:#4ade80;}
+.xfr-hist-st.pend{color:#fbbf24;}
+.xfr-hist-st.failed{color:#f87171;}
+.xfr-empty{text-align:center;color:var(--slate-500);font-size:.82rem;padding:40px 20px;}
+
+/* Loading */
+.xfr-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:80px 20px;color:var(--slate-500);font-size:.84rem;}
+.xfr-spinner{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.08);border-top-color:var(--gold-400);animation:spin .8s linear infinite;}
+
+/* Linked accounts */
+.lnk-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px 16px;margin-bottom:10px;}
+.lnk-row-ic{width:38px;height:38px;border-radius:10px;flex-shrink:0;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);display:flex;align-items:center;justify-content:center;color:#34d399;}
+.lnk-row-info{flex:1;min-width:0;}
+.lnk-row-name{font-size:.84rem;color:var(--white);font-weight:500;}
+.lnk-row-sub{font-size:.7rem;color:var(--slate-500);margin-top:2px;}
+.lnk-status{font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:99px;}
+.lnk-status.pending{background:rgba(251,191,36,.1);color:#fbbf24;border:1px solid rgba(251,191,36,.25);}
+.lnk-status.approved{background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.25);}
+.lnk-status.declined{background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.25);}
+
+/* ═══ PROCESSING OVERLAY ═══ */
+.xfr-proc{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(6,18,37,.96);backdrop-filter:blur(20px);
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.xfr-proc.open{opacity:1;pointer-events:auto;}
+.xfr-proc-inner{
+  display:flex;flex-direction:column;align-items:center;
+  padding:44px 32px;max-width:380px;width:90%;text-align:center;
+}
+.xfr-proc-rings{position:relative;width:100px;height:100px;margin-bottom:30px;flex-shrink:0;}
+.xfr-proc-ring{position:absolute;border-radius:50%;border:2px solid transparent;animation:procPulse 2s ease-in-out infinite;}
+.xfr-proc-ring.r1{inset:0;border-color:rgba(201,168,76,.6);animation-delay:0s;}
+.xfr-proc-ring.r2{inset:10px;border-color:rgba(201,168,76,.4);animation-delay:.35s;}
+.xfr-proc-ring.r3{inset:20px;border-color:rgba(201,168,76,.25);animation-delay:.7s;}
+@keyframes procPulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.06);opacity:.6;}}
+.xfr-proc-icon{position:absolute;inset:30px;border-radius:50%;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;}
+.xfr-proc.st-approved .xfr-proc-ring{border-color:rgba(74,222,128,.5);animation:none;}
+.xfr-proc.st-approved .xfr-proc-icon{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.3);}
+.xfr-proc.st-declined .xfr-proc-ring{border-color:rgba(248,113,113,.5);animation:none;}
+.xfr-proc.st-declined .xfr-proc-icon{background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.3);}
+.xfr-proc.st-timeout .xfr-proc-ring{border-color:rgba(251,191,36,.5);animation:none;}
+.xfr-proc.st-timeout .xfr-proc-icon{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.3);}
+
+.xfr-proc-amount{font-family:var(--font-display);font-size:2.6rem;color:var(--white);margin-bottom:6px;letter-spacing:.02em;}
+.xfr-proc-title{font-size:1rem;font-weight:600;color:var(--white);margin-bottom:6px;}
+.xfr-proc-sub{font-size:.8rem;color:var(--slate-400);line-height:1.5;margin-bottom:24px;}
+.xfr-proc-timer-wrap{width:100%;margin-bottom:16px;}
+.xfr-proc-bar-track{height:4px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden;margin-bottom:6px;}
+.xfr-proc-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#c9a84c,#d4b870);transition:width 1s linear;width:100%;}
+.xfr-proc-timer-txt{font-size:.72rem;color:var(--slate-500);}
+.xfr-proc-status{display:flex;align-items:center;gap:6px;margin-bottom:20px;font-size:.78rem;color:var(--slate-400);}
+.xfr-proc-dot{width:7px;height:7px;border-radius:50%;background:var(--gold-400);animation:dotBlink 1.2s ease-in-out infinite;flex-shrink:0;}
+@keyframes dotBlink{0%,100%{opacity:1;}50%{opacity:.25;}}
+.xfr-proc.st-approved .xfr-proc-dot{background:#4ade80;animation:none;}
+.xfr-proc.st-declined .xfr-proc-dot{background:#f87171;animation:none;}
+.xfr-proc.st-timeout .xfr-proc-dot{background:#fbbf24;animation:none;}
+.xfr-proc-ref{font-size:.7rem;color:var(--slate-500);margin-bottom:20px;font-family:monospace;letter-spacing:.04em;}
+.xfr-proc-done{width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#c9a84c,#d4b870);color:#061225;font-size:.88rem;font-weight:600;cursor:pointer;margin-bottom:10px;}
+.xfr-proc-cancel{background:none;border:1px solid rgba(255,255,255,.1);color:var(--slate-400);font-size:.78rem;cursor:pointer;padding:10px 20px;border-radius:10px;margin-top:8px;transition:all .18s;}
+.xfr-proc-cancel:hover{border-color:rgba(248,113,113,.4);color:#f87171;}
+
+@media(max-width:640px){
+  .xfr-page-title{font-size:1.5rem;}
+  .xfr-proc-inner{padding:32px 20px;}
+  .xfr-proc-rings{width:80px;height:80px;}
+  .xfr-proc-icon{inset:24px;}
+  .xfr-proc-amount{font-size:2rem;}
+}
+
+/* ── Dismiss button inside overlay ── */
+.xfr-proc-dismiss{
+  position:absolute;top:18px;right:18px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;color:var(--slate-400);cursor:pointer;
+  display:flex;align-items:center;gap:6px;
+  font-size:.72rem;padding:6px 12px;transition:all .18s;
+}
+.xfr-proc-dismiss:hover{border-color:rgba(255,255,255,.22);color:var(--white);}
+
+/* ── Floating pending pill (bottom-right) ── */
+.xfr-pending-pill{
+  position:fixed;bottom:28px;right:24px;z-index:800;
+  display:none;align-items:center;gap:10px;
+  background:rgba(10,20,38,.96);backdrop-filter:blur(16px);
+  border:1px solid rgba(201,168,76,.35);border-radius:99px;
+  padding:10px 18px 10px 14px;box-shadow:0 8px 32px rgba(0,0,0,.5);
+  cursor:pointer;transition:border-color .25s;
+  animation:pillUp .25s ease;
+}
+@keyframes pillUp{from{transform:translateY(20px);opacity:0;}to{transform:none;opacity:1;}}
+.xfr-pending-pill.st-approved{border-color:rgba(74,222,128,.45);}
+.xfr-pending-pill.st-declined{border-color:rgba(248,113,113,.45);}
+.xfr-pending-pill.st-timeout {border-color:rgba(251,191,36,.45);}
+.xfr-pill-spin{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.1);border-top-color:#c9a84c;animation:spin .8s linear infinite;flex-shrink:0;}
+.xfr-pill-ico{width:20px;height:20px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.xfr-pill-label{font-size:.8rem;font-weight:600;color:var(--white);}
+.xfr-pill-sub{font-size:.68rem;color:var(--slate-400);margin-top:1px;}
+.xfr-pill-view{font-size:.74rem;color:var(--gold-400);margin-left:4px;white-space:nowrap;}
+.xfr-pending-pill.st-approved .xfr-pill-view{color:#4ade80;}
+.xfr-pending-pill.st-declined .xfr-pill-view{color:#f87171;}
+
+/* ── Toast notification ── */
+.xfr-toast{
+  position:fixed;top:76px;right:20px;z-index:10000;
+  display:none;align-items:flex-start;gap:12px;
+  background:rgba(8,16,32,.97);backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.1);border-radius:16px;
+  padding:14px 16px;max-width:320px;width:calc(100vw - 40px);
+  box-shadow:0 16px 48px rgba(0,0,0,.65);
+  animation:toastIn .32s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes toastIn{from{transform:translateX(110%);opacity:0;}to{transform:none;opacity:1;}}
+.xfr-toast.out{animation:toastOut .22s ease forwards;}
+@keyframes toastOut{to{transform:translateX(110%);opacity:0;}}
+.xfr-toast-ico{width:36px;height:36px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.xfr-toast.approved .xfr-toast-ico{background:rgba(74,222,128,.12);color:#4ade80;border:1px solid rgba(74,222,128,.2);}
+.xfr-toast.declined .xfr-toast-ico{background:rgba(248,113,113,.12);color:#f87171;border:1px solid rgba(248,113,113,.2);}
+.xfr-toast.timeout  .xfr-toast-ico{background:rgba(251,191,36,.12); color:#fbbf24;border:1px solid rgba(251,191,36,.2);}
+.xfr-toast.info     .xfr-toast-ico{background:rgba(201,168,76,.12); color:#c9a84c;border:1px solid rgba(201,168,76,.2);}
+.xfr-toast-body{flex:1;min-width:0;}
+.xfr-toast-title{font-size:.84rem;font-weight:600;color:var(--white);margin-bottom:3px;}
+.xfr-toast-msg{font-size:.75rem;color:var(--slate-400);line-height:1.45;}
+.xfr-toast-x{background:none;border:none;color:var(--slate-500);cursor:pointer;font-size:1.1rem;line-height:1;padding:2px 0 0 4px;flex-shrink:0;}
+
+/* ── Notification badge on bell ── */
+#notifBtn{position:relative;}
+.notif-badge{
+  position:absolute;top:4px;right:4px;
+  width:8px;height:8px;border-radius:50%;
+  background:#f87171;border:2px solid #061225;
+  display:none;animation:badgePop .25s ease;
+}
+@keyframes badgePop{from{transform:scale(0);}to{transform:scale(1);}}
+
+/* ── Notification dropdown ── */
+.notif-dd{
+  position:fixed;top:64px;right:16px;z-index:3000;
+  width:320px;max-height:420px;overflow-y:auto;
+  background:linear-gradient(145deg,#0d1628,#0a1220);
+  border:1px solid rgba(255,255,255,.1);border-radius:18px;
+  box-shadow:0 24px 64px rgba(0,0,0,.7);
+  animation:ddIn .18s ease;
+}
+.notif-dd::-webkit-scrollbar{width:3px;}
+.notif-dd::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px;}
+@keyframes ddIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+.notif-dd-head{padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);}
+.notif-dd-hd-title{font-size:.8rem;font-weight:600;color:var(--white);}
+.notif-dd-mark{font-size:.7rem;color:var(--gold-400);cursor:pointer;background:none;border:none;}
+.notif-item{display:flex;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.04);cursor:default;transition:background .15s;}
+.notif-item:hover{background:rgba(255,255,255,.025);}
+.notif-item.unread{background:rgba(201,168,76,.03);}
+.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--gold-400);flex-shrink:0;margin-top:5px;}
+.notif-dot.read{background:transparent;border:1px solid rgba(255,255,255,.12);}
+.notif-item-title{font-size:.78rem;font-weight:500;color:var(--white);margin-bottom:2px;}
+.notif-item-msg{font-size:.72rem;color:var(--slate-400);line-height:1.4;}
+.notif-item-time{font-size:.64rem;color:var(--slate-500);margin-top:3px;}
+.notif-dd-empty{padding:32px 16px;text-align:center;font-size:.8rem;color:var(--slate-500);}
+@media(max-width:360px){.notif-dd{width:calc(100vw - 24px);right:12px;}}
   </style>
 </head>
 <body>
 <div class="app-layout">
+
+  <!-- ═══ SIDEBAR ═══ -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <a href="index.html" class="sidebar-logo-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></a>
-      <div><div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div><div style="font-size:.55rem;letter-spacing:.18em;color:var(--gold-500);text-transform:uppercase;">Credit Union</div></div>
-      <button class="sidebar-close-btn" id="sidebarClose" aria-label="Close"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <a href="index.html" class="sidebar-logo-mark">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#061225" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </a>
+      <div>
+        <div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:.06em;">ZENITHONE</div>
+        <div style="font-size:.55rem;letter-spacing:.18em;color:var(--gold-500);text-transform:uppercase;">Credit Union</div>
+      </div>
+      <button class="sidebar-close-btn" id="sidebarClose" aria-label="Close">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
     <nav class="sidebar-nav">
       <div class="sidebar-section">
         <div class="sidebar-section-label">Main</div>
-        <a href="dashboard.html"    class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
-        <a href="accounts.html"     class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Accounts</a>
-        <a href="transactions.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Transactions</a>
-        <a href="transfer.html"     class="sidebar-item active"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>Transfer</a>
+        <a href="dashboard.html" class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a href="accounts.html" class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          Accounts
+        </a>
+        <a href="transactions.html" class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          Transactions
+        </a>
+        <a href="transfer.html" class="sidebar-item active">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+          Transfer
+        </a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-section-label">Finance</div>
-        <a href="cards.html"       class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>Cards</a>
-        <a href="investments.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Investments</a>
-        <a href="credit.html"      class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>Credit &amp; Loans</a>
+        <a href="cards.html" class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+          Cards
+        </a>
+        <a href="investments.html" class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          Investments
+        </a>
+        <a href="credit.html" class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          Credit &amp; Loans
+        </a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-section-label">Account</div>
-        <a href="settings.html" class="sidebar-item"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Settings</a>
-        <button class="sidebar-item" id="logoutBtn" style="width:100%;text-align:left;"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</button>
+        <a href="settings.html" class="sidebar-item">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </a>
+        <button class="sidebar-item" id="logoutBtn" style="width:100%;text-align:left;">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
       </div>
     </nav>
     <div class="sidebar-footer">
       <div class="sidebar-user">
-        <div class="sidebar-avatar">AR</div>
+        <div class="sidebar-avatar" id="sidebarAvatar"></div>
         <div class="sidebar-user-info">
-          <div class="sidebar-user-name">Alexandra Reynolds</div>
-          <div class="sidebar-user-tier">Private Banking Client</div>
+          <div class="sidebar-user-name" id="sidebarName"></div>
+          <div class="sidebar-user-tier">Member</div>
         </div>
       </div>
     </div>
   </aside>
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
+  <!-- ═══ MAIN ═══ -->
   <main class="app-main">
     <header class="app-topbar">
       <div class="app-topbar-left">
-        <button class="btn btn-icon btn-ghost" id="sidebarToggle"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+        <button class="btn btn-icon btn-ghost" id="sidebarToggle">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
         <div class="app-topbar-title">Transfer Funds</div>
       </div>
       <div class="app-topbar-right">
-        <button class="btn btn-ghost btn-sm" onclick="openAddBeneficiaryModal()">+ Add Recipient</button>
-        <button class="btn btn-icon btn-ghost"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
-        <div class="sidebar-avatar" style="cursor:pointer;">AR</div>
+        <button class="btn btn-icon btn-ghost" id="notifBtn" onclick="toggleNotifDd(event)">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-badge" id="notifBadge"></span>
+        </button>
+        <div class="sidebar-avatar" style="cursor:pointer;" id="topbarAvatar"></div>
       </div>
     </header>
 
     <div class="app-content">
-      <div style="max-width:780px;margin:0 auto;">
 
-        <!-- Transfer Tabs -->
-        <div class="transfer-tabs">
-          <div class="transfer-tab active" onclick="switchTransferTab('internal',this)">Between My Accounts</div>
-          <div class="transfer-tab" onclick="switchTransferTab('external',this)">To Someone Else</div>
-          <div class="transfer-tab" onclick="switchTransferTab('wire',this)">Wire Transfer</div>
-          <div class="transfer-tab" onclick="switchTransferTab('zelle',this)">Zelle®</div>
-        </div>
-
-        <!-- INTERNAL -->
-        <div class="transfer-panel active" id="panel-internal">
-          <div class="card card-elevated">
-            <div style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:20px;">Internal Transfer</div>
-
-            <div class="form-group" style="margin-bottom:4px;">
-              <label class="form-label">From Account</label>
-              <select class="form-input form-select" id="fromAccount" onchange="updateFromBalance()">
-                <option value="checking">Checking ••••4821 — Balance: $124,582.74</option>
-                <option value="savings">High-Yield Savings ••••9103 — Balance: $892,418.33</option>
-                <option value="money_market">Money Market ••••3376 — Balance: $1,830,292.11</option>
-              </select>
-            </div>
-
-            <div class="swap-btn" onclick="swapAccounts()">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
-            </div>
-
-            <div class="form-group" style="margin-bottom:28px;">
-              <label class="form-label">To Account</label>
-              <select class="form-input form-select" id="toAccount">
-                <option value="savings">High-Yield Savings ••••9103 — Balance: $892,418.33</option>
-                <option value="checking">Checking ••••4821 — Balance: $124,582.74</option>
-                <option value="money_market">Money Market ••••3376 — Balance: $1,830,292.11</option>
-              </select>
-            </div>
-
-            <!-- Amount -->
-            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;text-align:center;margin-bottom:24px;">
-              <div style="font-size:.75rem;color:var(--slate-500);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Transfer Amount</div>
-              <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
-                <span style="font-family:var(--font-display);font-size:2.5rem;color:var(--slate-400);">$</span>
-                <input type="number" id="transferAmount" class="amount-input-big" placeholder="0.00" min="0.01" step="0.01" />
-              </div>
-              <div style="font-size:.8rem;color:var(--slate-500);margin-top:8px;" id="availableDisplay">Available: $124,582.74</div>
-              <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
-                <button class="btn btn-ghost btn-sm" onclick="setAmount(100)">$100</button>
-                <button class="btn btn-ghost btn-sm" onclick="setAmount(500)">$500</button>
-                <button class="btn btn-ghost btn-sm" onclick="setAmount(1000)">$1,000</button>
-                <button class="btn btn-ghost btn-sm" onclick="setAmount(5000)">$5,000</button>
-                <button class="btn btn-ghost btn-sm" onclick="setAmountAll()">All</button>
-              </div>
-            </div>
-
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
-              <div class="form-group">
-                <label class="form-label">Transfer Date</label>
-                <input type="date" id="transferDate" class="form-input" />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Memo (optional)</label>
-                <input type="text" id="transferMemo" class="form-input" placeholder="e.g., Monthly savings" />
-              </div>
-            </div>
-
-            <div class="alert alert-info" style="margin-bottom:20px;">
-              <svg class="alert-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-              Internal transfers are free and process immediately. Funds are available within minutes.
-            </div>
-
-            <button class="btn btn-primary w-full btn-lg" onclick="reviewTransfer()">Review Transfer</button>
-          </div>
-        </div>
-
-        <!-- EXTERNAL -->
-        <div class="transfer-panel" id="panel-external">
-          <div class="card card-elevated">
-            <div style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:20px;">External Transfer (ACH)</div>
-
-            <div class="form-group" style="margin-bottom:20px;">
-              <label class="form-label">From Account</label>
-              <select class="form-input form-select">
-                <option>Checking ••••4821 — $124,582.74</option>
-                <option>High-Yield Savings ••••9103 — $892,418.33</option>
-              </select>
-            </div>
-
-            <div class="form-group" style="margin-bottom:20px;">
-              <label class="form-label">Recipient</label>
-              <div id="beneficiariesList" style="margin-bottom:12px;"></div>
-              <button class="btn btn-outline btn-sm" onclick="openAddBeneficiaryModal()">+ Add New Recipient</button>
-            </div>
-
-            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;text-align:center;margin-bottom:24px;">
-              <div style="font-size:.75rem;color:var(--slate-500);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Amount</div>
-              <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
-                <span style="font-family:var(--font-display);font-size:2.5rem;color:var(--slate-400);">$</span>
-                <input type="number" id="extAmount" class="amount-input-big" placeholder="0.00" min="0.01" />
-              </div>
-              <div style="font-size:.8rem;color:var(--slate-500);margin-top:8px;">ACH limit: $50,000/day for external transfers</div>
-            </div>
-
-            <div class="alert alert-warning" style="margin-bottom:20px;">
-              <svg class="alert-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-              External ACH transfers take 1–3 business days. Wire transfers are faster for same-day processing.
-            </div>
-            <button class="btn btn-primary w-full btn-lg" onclick="reviewTransfer()">Continue</button>
-          </div>
-        </div>
-
-        <!-- WIRE -->
-        <div class="transfer-panel" id="panel-wire">
-          <div class="card card-elevated">
-            <div style="font-family:var(--font-display);font-size:1.3rem;margin-bottom:8px;">Domestic &amp; International Wire</div>
-            <div style="font-size:.875rem;color:var(--slate-400);margin-bottom:24px;">Domestic wires process same day if submitted before 4PM ET. International wires process next business day.</div>
-            <div style="display:flex;flex-direction:column;gap:18px;">
-              <div class="form-group">
-                <label class="form-label">From Account</label>
-                <select class="form-input form-select"><option>Checking ••••4821 — $124,582.74</option></select>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-                <div class="form-group">
-                  <label class="form-label">Beneficiary Name</label>
-                  <input type="text" class="form-input" placeholder="Full legal name" />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Bank Name</label>
-                  <input type="text" class="form-input" placeholder="Receiving bank name" />
-                </div>
-              </div>
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-                <div class="form-group">
-                  <label class="form-label">Routing / ABA Number</label>
-                  <input type="text" class="form-input" placeholder="9-digit ABA number" maxlength="9" />
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Account Number</label>
-                  <input type="text" class="form-input" placeholder="Recipient account number" />
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Wire Type</label>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                  <label style="display:flex;align-items:center;gap:10px;padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:10px;cursor:pointer;" class="wire-option-label">
-                    <input type="radio" name="wireType" value="domestic" checked style="accent-color:var(--gold-500);" /> Domestic USD ($25 fee)
-                  </label>
-                  <label style="display:flex;align-items:center;gap:10px;padding:14px;border:1px solid rgba(255,255,255,.08);border-radius:10px;cursor:pointer;" class="wire-option-label">
-                    <input type="radio" name="wireType" value="international" style="accent-color:var(--gold-500);" /> International ($45 fee)
-                  </label>
-                </div>
-              </div>
-              <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:28px;text-align:center;">
-                <div style="font-size:.75rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Wire Amount</div>
-                <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
-                  <span style="font-family:var(--font-display);font-size:2.5rem;color:var(--slate-400);">$</span>
-                  <input type="number" class="amount-input-big" placeholder="0.00" />
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Wire Purpose / Message</label>
-                <input type="text" class="form-input" placeholder="e.g., Invoice payment, Real estate purchase" />
-              </div>
-            </div>
-            <button class="btn btn-primary w-full btn-lg" style="margin-top:24px;" onclick="reviewTransfer()">Submit Wire Transfer</button>
-          </div>
-        </div>
-
-        <!-- ZELLE -->
-        <div class="transfer-panel" id="panel-zelle">
-          <div class="card card-elevated" style="text-align:center;padding:48px;">
-            <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#6c3be4,#4c1d95);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem;">Z</div>
-            <h3 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:12px;">Zelle® Payments</h3>
-            <p style="color:var(--slate-400);max-width:400px;margin:0 auto 28px;line-height:1.75;">Send money instantly to anyone with a U.S. bank account using their email address or mobile phone number. No fees.</p>
-            <div style="max-width:380px;margin:0 auto;display:flex;flex-direction:column;gap:16px;">
-              <div class="form-group">
-                <label class="form-label">Recipient Email or Phone</label>
-                <div class="input-group">
-                  <svg class="input-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                  <input type="text" id="zelleRecipient" class="form-input" placeholder="email@example.com or +1 (555) 000-0000" />
-                </div>
-              </div>
-              <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
-                <span style="font-family:var(--font-display);font-size:2.5rem;color:var(--slate-400);">$</span>
-                <input type="number" id="zelleAmount" class="amount-input-big" placeholder="0.00" style="font-size:2.5rem;" />
-              </div>
-              <div class="form-group">
-                <label class="form-label">Note (optional)</label>
-                <input type="text" class="form-input" placeholder="What's it for?" />
-              </div>
-              <button class="btn btn-primary w-full btn-lg" onclick="submitZelle()">Send with Zelle®</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Transfers -->
-        <div class="card card-elevated" style="margin-top:24px;">
-          <div style="font-family:var(--font-display);font-size:1.2rem;margin-bottom:16px;">Recent Transfers</div>
-          <div>
-            <div class="transaction-item">
-              <div class="transaction-icon" style="font-size:1.1rem;">↗️</div>
-              <div class="transaction-info"><div class="transaction-name">Transfer to Savings</div><div class="transaction-date">Jun 8, 2024 · Internal</div></div>
-              <div><div class="transaction-amount debit">-$5,000.00</div><div class="transaction-status completed">Completed</div></div>
-            </div>
-            <div class="transaction-item">
-              <div class="transaction-icon" style="font-size:1.1rem;">🏦</div>
-              <div class="transaction-info"><div class="transaction-name">Wire — J. Richardson Capital</div><div class="transaction-date">Jun 2, 2024 · Incoming Wire</div></div>
-              <div><div class="transaction-amount credit">+$50,000.00</div><div class="transaction-status completed">Completed</div></div>
-            </div>
-          </div>
-        </div>
+      <!-- Boot loading -->
+      <div id="xfrLoading" class="xfr-loading">
+        <div class="xfr-spinner"></div>
+        Loading your accounts…
       </div>
-    </div>
+
+      <!-- Main content -->
+      <div id="xfrContent" style="display:none;max-width:780px;margin:0 auto;">
+
+        <div class="xfr-page-head">
+          <div class="xfr-page-title">Transfer Funds</div>
+          <div class="xfr-page-sub">Move money instantly — between your accounts, to other members, via Zelle, or wire transfer.</div>
+        </div>
+
+        <!-- ══ TYPE CARD SELECTOR ══ -->
+        <div class="xfr-type-grid">
+
+          <div class="xfr-type-card active" data-type="internal" onclick="selectType('internal')">
+            <div class="xfr-tc-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+            </div>
+            <div class="xfr-tc-name">Own Accounts</div>
+            <div class="xfr-tc-sub">Between your accounts</div>
+          </div>
+
+          <div class="xfr-type-card" data-type="send" onclick="selectType('send')">
+            <div class="xfr-tc-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </div>
+            <div class="xfr-tc-name">Send Money</div>
+            <div class="xfr-tc-sub">To another member</div>
+          </div>
+
+          <div class="xfr-type-card" data-type="zelle" onclick="selectType('zelle')">
+            <div class="xfr-tc-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <div class="xfr-tc-name">Zelle</div>
+            <div class="xfr-tc-sub">Email or phone</div>
+          </div>
+
+          <div class="xfr-type-card" data-type="wire" onclick="selectType('wire')">
+            <div class="xfr-tc-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+            </div>
+            <div class="xfr-tc-name">Wire Transfer</div>
+            <div class="xfr-tc-sub">Domestic &amp; international</div>
+          </div>
+
+          <div class="xfr-type-card" data-type="link" onclick="selectType('link')">
+            <div class="xfr-tc-icon">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </div>
+            <div class="xfr-tc-name">Link Account</div>
+            <div class="xfr-tc-sub">External bank or card</div>
+          </div>
+
+        </div><!-- /type grid -->
+
+        <!-- ══ PANELS ══ -->
+        <div class="xfr-panels">
+
+          <!-- PANEL: OWN ACCOUNTS -->
+          <div class="xfr-panel active" id="panel-internal">
+            <div class="xfr-card tc-internal">
+              <div class="xfr-card-hd">Between My Accounts</div>
+              <div class="xfr-card-sub">Instant, free transfers between your ZenithOne accounts. No fees, no limits on timing.</div>
+
+              <div class="xfr-field">
+                <label class="xfr-label">From Account</label>
+                <select id="intFrom" class="xfr-select" onchange="onIntFromChange()"></select>
+              </div>
+
+              <div class="xfr-swap-row">
+                <div class="xfr-swap-line"></div>
+                <button class="xfr-swap-btn" onclick="swapInt()" title="Swap accounts">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+                </button>
+                <div class="xfr-swap-line"></div>
+              </div>
+
+              <div class="xfr-field">
+                <label class="xfr-label">To Account</label>
+                <select id="intTo" class="xfr-select"></select>
+              </div>
+
+              <div class="xfr-amt-hero">
+                <div class="xfr-amt-eyebrow">Transfer Amount</div>
+                <div class="xfr-amt-row">
+                  <span class="xfr-amt-sym">$</span>
+                  <input type="number" id="intAmt" class="xfr-amt-inp" placeholder="0.00" min="0.01" step="0.01">
+                </div>
+                <div class="xfr-amt-avail" id="intAvail">Available: <strong>—</strong></div>
+                <div class="xfr-quick-row">
+                  <button class="xfr-q" onclick="setAmt('intAmt',100)">$100</button>
+                  <button class="xfr-q" onclick="setAmt('intAmt',250)">$250</button>
+                  <button class="xfr-q" onclick="setAmt('intAmt',500)">$500</button>
+                  <button class="xfr-q" onclick="setAmt('intAmt',1000)">$1,000</button>
+                  <button class="xfr-q" onclick="setIntMax()">Max</button>
+                </div>
+              </div>
+
+              <div class="xfr-grid2">
+                <div>
+                  <label class="xfr-label">Transfer Date</label>
+                  <input type="date" id="intDate" class="xfr-inp">
+                </div>
+                <div>
+                  <label class="xfr-label">Memo (optional)</label>
+                  <input type="text" id="intMemo" class="xfr-inp" placeholder="e.g., Monthly savings" maxlength="80">
+                </div>
+              </div>
+
+              <div class="xfr-info">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                <span>Internal transfers are free and process instantly. Daily limit $100,000 · Per-transfer limit $50,000.</span>
+              </div>
+
+              <div class="xfr-err" id="intErr"></div>
+              <button class="xfr-btn" onclick="reviewTransfer('internal')">
+                <span class="xfr-btn-txt">Preview Transfer</span>
+                <div class="xfr-btn-spin"></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- PANEL: SEND TO MEMBER -->
+          <div class="xfr-panel" id="panel-send">
+            <div class="xfr-card tc-send">
+              <div class="xfr-card-hd">Send Money</div>
+              <div class="xfr-card-sub">Send to any ZenithOne member or external bank account. Transfers are reviewed before processing.</div>
+
+              <div class="xfr-field">
+                <label class="xfr-label">From Account</label>
+                <select id="sendFrom" class="xfr-select" onchange="onSendFromChange()"></select>
+              </div>
+
+              <div class="xfr-field">
+                <div class="xfr-label-row">
+                  <span class="xfr-label">Recipient Account Number</span>
+                  <span style="font-size:.68rem;color:var(--slate-500);">ZenithOne or external account</span>
+                </div>
+                <div class="xfr-search-row">
+                  <input type="text" id="sendAcctNo" class="xfr-inp mono" maxlength="17" inputmode="numeric" autocomplete="off" placeholder="Enter account number" oninput="onSendAcctInput()">
+                  <button class="xfr-search-btn" id="sendSearchBtn" onclick="searchMember()">Verify</button>
+                </div>
+                <div class="xfr-recip-state" id="sendRecipState"></div>
+              </div>
+
+              <div class="xfr-amt-hero">
+                <div class="xfr-amt-eyebrow">Amount to Send</div>
+                <div class="xfr-amt-row">
+                  <span class="xfr-amt-sym">$</span>
+                  <input type="number" id="sendAmt" class="xfr-amt-inp" placeholder="0.00" min="0.01" step="0.01">
+                </div>
+                <div class="xfr-amt-avail" id="sendAvail">Available: <strong>—</strong></div>
+                <div class="xfr-quick-row">
+                  <button class="xfr-q" onclick="setAmt('sendAmt',50)">$50</button>
+                  <button class="xfr-q" onclick="setAmt('sendAmt',100)">$100</button>
+                  <button class="xfr-q" onclick="setAmt('sendAmt',250)">$250</button>
+                  <button class="xfr-q" onclick="setAmt('sendAmt',500)">$500</button>
+                  <button class="xfr-q" onclick="setAmt('sendAmt',1000)">$1,000</button>
+                </div>
+              </div>
+
+              <div class="xfr-field">
+                <label class="xfr-label">Memo (optional)</label>
+                <input type="text" id="sendMemo" class="xfr-inp" placeholder="What's it for?" maxlength="80">
+              </div>
+
+              <div class="xfr-limits">
+                <div class="xfr-limit-box"><div class="xfr-limit-val">$50,000</div><div class="xfr-limit-lbl">Per Transfer</div></div>
+                <div class="xfr-limit-box"><div class="xfr-limit-val">$100,000</div><div class="xfr-limit-lbl">Daily Limit</div></div>
+                <div class="xfr-limit-box"><div class="xfr-limit-val">Secure</div><div class="xfr-limit-lbl">Authorized Transfer</div></div>
+              </div>
+
+              <div class="xfr-err" id="sendErr"></div>
+              <button class="xfr-btn" id="sendSubmitBtn" onclick="reviewTransfer('send')" disabled>
+                <span class="xfr-btn-txt">Look Up a Recipient to Continue</span>
+                <div class="xfr-btn-spin"></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- PANEL: ZELLE -->
+          <div class="xfr-panel" id="panel-zelle">
+            <div class="xfr-card tc-zelle">
+              <div class="xfr-card-hd">Send via Zelle</div>
+              <div class="xfr-card-sub">Send money directly using the recipient's email address or US mobile number.</div>
+
+              <div class="xfr-field">
+                <label class="xfr-label">From Account</label>
+                <select id="zelleFrom" class="xfr-select" onchange="onZelleFromChange()"></select>
+              </div>
+
+              <div class="xfr-toggle-row" id="zelleModeToggle">
+                <button class="xfr-toggle-tab active-zelle" id="zTabEmail" onclick="setZelleMode('email')">Email Address</button>
+                <button class="xfr-toggle-tab" id="zTabPhone" onclick="setZelleMode('phone')">Mobile Number</button>
+              </div>
+
+              <div class="xfr-field" id="zelleEmailField">
+                <div class="xfr-label-row">
+                  <span class="xfr-label">Recipient Email</span>
+                  <span style="font-size:.68rem;color:var(--slate-500);">Registered with Zelle</span>
+                </div>
+                <div class="xfr-search-row">
+                  <input type="email" id="zelleEmail" class="xfr-inp" placeholder="name@example.com" autocomplete="off">
+                  <button class="xfr-search-btn" onclick="searchZelle('email')">Search</button>
+                </div>
+                <div class="xfr-recip-state" id="zelleEmailState"></div>
+              </div>
+
+              <div class="xfr-field" id="zellePhoneField" style="display:none;">
+                <div class="xfr-label-row">
+                  <span class="xfr-label">Mobile Number</span>
+                  <span style="font-size:.68rem;color:var(--slate-500);">US numbers only</span>
+                </div>
+                <div class="xfr-search-row">
+                  <input type="tel" id="zellePhone" class="xfr-inp mono" placeholder="(555) 000-0000" autocomplete="off">
+                  <button class="xfr-search-btn" onclick="searchZelle('phone')">Search</button>
+                </div>
+                <div class="xfr-recip-state" id="zellePhoneState"></div>
+              </div>
+
+              <div class="xfr-amt-hero">
+                <div class="xfr-amt-eyebrow">Amount to Send</div>
+                <div class="xfr-amt-row">
+                  <span class="xfr-amt-sym">$</span>
+                  <input type="number" id="zelleAmt" class="xfr-amt-inp" placeholder="0.00" min="0.01" step="0.01">
+                </div>
+                <div class="xfr-amt-avail" id="zelleAvail">Available: <strong>—</strong></div>
+                <div class="xfr-quick-row">
+                  <button class="xfr-q" onclick="setAmt('zelleAmt',25)">$25</button>
+                  <button class="xfr-q" onclick="setAmt('zelleAmt',50)">$50</button>
+                  <button class="xfr-q" onclick="setAmt('zelleAmt',100)">$100</button>
+                  <button class="xfr-q" onclick="setAmt('zelleAmt',250)">$250</button>
+                  <button class="xfr-q" onclick="setAmt('zelleAmt',500)">$500</button>
+                </div>
+              </div>
+
+              <div class="xfr-field">
+                <label class="xfr-label">Note (optional)</label>
+                <input type="text" id="zelleMemo" class="xfr-inp" placeholder="Add a note…" maxlength="80">
+              </div>
+
+              <div class="xfr-limits">
+                <div class="xfr-limit-box"><div class="xfr-limit-val">$2,500</div><div class="xfr-limit-lbl">Per Transfer</div></div>
+                <div class="xfr-limit-box"><div class="xfr-limit-val">$10,000</div><div class="xfr-limit-lbl">Weekly Limit</div></div>
+                <div class="xfr-limit-box"><div class="xfr-limit-val">Minutes</div><div class="xfr-limit-lbl">Delivery</div></div>
+              </div>
+
+              <div class="xfr-err" id="zelleErr"></div>
+              <button class="xfr-btn" id="zelleSubmitBtn" onclick="reviewTransfer('zelle')" disabled>
+                <span class="xfr-btn-txt">Search Recipient to Continue</span>
+                <div class="xfr-btn-spin"></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- PANEL: WIRE TRANSFER -->
+          <div class="xfr-panel" id="panel-wire">
+            <div class="xfr-card tc-wire">
+              <div class="xfr-card-hd">Wire Transfer</div>
+              <div class="xfr-card-sub">Domestic wires settle same-day before 4:00 PM ET. International wires settle next business day.</div>
+
+              <div class="xfr-field">
+                <label class="xfr-label">From Account</label>
+                <select id="wireFrom" class="xfr-select" onchange="onWireFromChange()"></select>
+              </div>
+
+              <div class="xfr-toggle-row">
+                <button class="xfr-toggle-tab active-wire" id="wTabDom" onclick="setWireType('domestic')">Domestic Wire</button>
+                <button class="xfr-toggle-tab" id="wTabIntl" onclick="setWireType('international')">International Wire</button>
+              </div>
+
+              <div class="xfr-field">
+                <div class="xfr-label-row">
+                  <span class="xfr-label">ABA / Routing Number</span>
+                  <span style="font-size:.68rem;color:var(--slate-500);">9-digit routing number</span>
+                </div>
+                <div class="xfr-search-row">
+                  <input type="text" id="wireRouting" class="xfr-inp mono" maxlength="9" inputmode="numeric" placeholder="e.g., 021000021" oninput="onRoutingInput()">
+                  <button class="xfr-search-btn" id="wireRoutingBtn" onclick="lookupRouting()">Look Up</button>
+                </div>
+                <div id="wireBankState"></div>
+              </div>
+
+              <div class="xfr-field">
+                <label class="xfr-label">Recipient Full Name</label>
+                <input type="text" id="wireRecipName" class="xfr-inp" placeholder="As it appears on their account" maxlength="100">
+              </div>
+
+              <div class="xfr-field">
+                <label class="xfr-label">Recipient Account Number</label>
+                <input type="text" id="wireAcctNo" class="xfr-inp mono" placeholder="Recipient's bank account number" maxlength="20" inputmode="numeric">
+              </div>
+
+              <div class="xfr-field" id="wireIntlFields" style="display:none;">
+                <label class="xfr-label">SWIFT / BIC Code</label>
+                <input type="text" id="wireSwift" class="xfr-inp mono" placeholder="e.g., CHASUS33" maxlength="11">
+              </div>
+
+              <div class="xfr-field">
+                <label class="xfr-label">Bank Name</label>
+                <input type="text" id="wireBankName" class="xfr-inp" placeholder="Recipient's bank name" maxlength="80">
+              </div>
+
+              <div class="xfr-amt-hero">
+                <div class="xfr-amt-eyebrow">Wire Amount</div>
+                <div class="xfr-amt-row">
+                  <span class="xfr-amt-sym">$</span>
+                  <input type="number" id="wireAmt" class="xfr-amt-inp" placeholder="0.00" min="1" step="0.01">
+                </div>
+                <div class="xfr-amt-avail" id="wireAvail">Available: <strong>—</strong></div>
+              </div>
+
+              <div class="xfr-field">
+                <label class="xfr-label">Purpose / Memo</label>
+                <input type="text" id="wireMemo" class="xfr-inp" placeholder="Payment purpose" maxlength="80">
+              </div>
+
+              <div class="xfr-info">
+                <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                <span id="wireInfoTxt">Domestic wire fee: $25 · Same-day settlement before 4:00 PM ET · $1,000,000 limit per wire.</span>
+              </div>
+
+              <div class="xfr-limits">
+                <div class="xfr-limit-box"><div class="xfr-limit-val">$25</div><div class="xfr-limit-lbl">Domestic Fee</div></div>
+                <div class="xfr-limit-box"><div class="xfr-limit-val">$45</div><div class="xfr-limit-lbl">Intl Fee</div></div>
+                <div class="xfr-limit-box"><div class="xfr-limit-val">Same Day</div><div class="xfr-limit-lbl">DOM Settle</div></div>
+              </div>
+
+              <div class="xfr-err" id="wireErr"></div>
+              <button class="xfr-btn" onclick="reviewTransfer('wire')">
+                <span class="xfr-btn-txt">Review Wire Transfer</span>
+                <div class="xfr-btn-spin"></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- PANEL: LINK ACCOUNT -->
+          <div class="xfr-panel" id="panel-link">
+            <div class="xfr-card tc-link">
+              <div class="xfr-card-hd">Link External Account</div>
+              <div class="xfr-card-sub">Connect a bank account or debit/credit card. Submitted for admin review, typically approved within 24 hours.</div>
+
+              <!-- Link type toggle -->
+              <div class="xfr-toggle-row" id="linkModeToggle">
+                <button class="xfr-toggle-tab" style="background:rgba(16,185,129,.1);color:#34d399;" id="lTabBank" onclick="setLinkMode('bank')">Bank Account</button>
+                <button class="xfr-toggle-tab" id="lTabCard" onclick="setLinkMode('card')">Debit / Credit Card</button>
+              </div>
+
+              <!-- Bank form -->
+              <div id="linkBankForm">
+                <div class="xfr-grid2">
+                  <div>
+                    <label class="xfr-label">Bank Name</label>
+                    <input type="text" id="lnkBankName" class="xfr-inp" placeholder="e.g., Chase Bank" maxlength="80">
+                  </div>
+                  <div>
+                    <label class="xfr-label">Account Type</label>
+                    <select id="lnkBankType" class="xfr-select">
+                      <option value="checking">Checking</option>
+                      <option value="savings">Savings</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="xfr-field">
+                  <label class="xfr-label">Routing Number</label>
+                  <input type="text" id="lnkRouting" class="xfr-inp mono" placeholder="9-digit routing number" maxlength="9" inputmode="numeric">
+                </div>
+                <div class="xfr-field">
+                  <label class="xfr-label">Account Number</label>
+                  <input type="text" id="lnkAcctNo" class="xfr-inp mono" placeholder="Account number" maxlength="17" inputmode="numeric">
+                </div>
+                <div class="xfr-err" id="lnkBankErr"></div>
+                <button class="xfr-btn" onclick="submitLinkBank()">
+                  <span class="xfr-btn-txt">Submit for Review</span>
+                  <div class="xfr-btn-spin"></div>
+                </button>
+              </div>
+
+              <!-- Card form -->
+              <div id="linkCardForm" style="display:none;">
+                <div class="xfr-field">
+                  <label class="xfr-label">Card Number</label>
+                  <input type="text" id="lnkCardNo" class="xfr-inp mono" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric" oninput="fmtCardNo(this)">
+                </div>
+                <div class="xfr-grid2">
+                  <div>
+                    <label class="xfr-label">Expiry</label>
+                    <div style="display:flex;gap:8px;">
+                      <select id="lnkCardMo" class="xfr-select" style="flex:1;">
+                        <option value="">MM</option>
+                        <option>01</option><option>02</option><option>03</option><option>04</option>
+                        <option>05</option><option>06</option><option>07</option><option>08</option>
+                        <option>09</option><option>10</option><option>11</option><option>12</option>
+                      </select>
+                      <select id="lnkCardYr" class="xfr-select" style="flex:1;"></select>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="xfr-label">CVV</label>
+                    <input type="text" id="lnkCardCvv" class="xfr-inp mono" placeholder="•••" maxlength="4" inputmode="numeric">
+                  </div>
+                </div>
+                <div class="xfr-field">
+                  <label class="xfr-label">Cardholder Name</label>
+                  <input type="text" id="lnkCardName" class="xfr-inp" placeholder="Name as on card" maxlength="60">
+                </div>
+                <div class="xfr-err" id="lnkCardErr"></div>
+                <button class="xfr-btn" onclick="submitLinkCard()">
+                  <span class="xfr-btn-txt">Submit for Review</span>
+                  <div class="xfr-btn-spin"></div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Linked accounts list -->
+            <div class="xfr-card tc-link" id="linkedListCard" style="display:none;">
+              <div class="xfr-card-hd">Linked Accounts</div>
+              <div id="linkedList"></div>
+            </div>
+          </div>
+
+        </div><!-- /panels -->
+
+        <!-- ══ RECENT TRANSFERS ══ -->
+        <div style="margin-top:32px;">
+          <div class="xfr-recent-hd">
+            <div class="xfr-recent-title">Recent Transfers</div>
+            <a href="transactions.html" class="xfr-recent-link">View all →</a>
+          </div>
+          <div id="xfrRecentList">
+            <div class="xfr-empty">Loading…</div>
+          </div>
+        </div>
+
+      </div><!-- /xfrContent -->
+    </div><!-- /app-content -->
   </main>
-</div>
+</div><!-- /app-layout -->
 
-<!-- Confirm Modal -->
-<div class="modal-overlay" id="confirmModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Confirm Transfer</div>
-      <button class="modal-close" onclick="closeModal('confirmModal')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div style="text-align:center;margin-bottom:24px;">
-        <div style="font-family:var(--font-display);font-size:2.8rem;color:var(--white);" id="confirmAmount">$0.00</div>
-        <div style="font-size:.8rem;color:var(--slate-400);margin-top:4px;">Transfer Amount</div>
-      </div>
-      <div id="confirmDetails"></div>
-      <div class="alert alert-warning" style="margin-top:16px;">
-        <svg class="alert-icon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-        Please verify all transfer details. This action cannot be undone.
+<!-- ═══ PROCESSING OVERLAY ═══ -->
+<div class="xfr-proc" id="xfrProc">
+  <div class="xfr-proc-inner" style="position:relative;">
+    <button class="xfr-proc-dismiss" onclick="dismissProcOverlay()">
+      <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      Dismiss
+    </button>
+    <div class="xfr-proc-rings">
+      <div class="xfr-proc-ring r1"></div>
+      <div class="xfr-proc-ring r2"></div>
+      <div class="xfr-proc-ring r3"></div>
+      <div class="xfr-proc-icon" id="procIcon">
+        <svg width="18" height="18" fill="none" stroke="#c9a84c" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('confirmModal')">Cancel</button>
-      <button class="btn btn-primary" id="confirmBtn" onclick="executeTransfer()">
-        <span id="confirmBtnText">Confirm Transfer</span>
-        <span class="spinner hidden" id="confirmSpinner"></span>
-      </button>
+    <div class="xfr-proc-amount" id="procAmt">$0.00</div>
+    <div class="xfr-proc-title" id="procTitle">Authorization In Progress</div>
+    <div class="xfr-proc-sub" id="procSub">Your request is under review with our authorization team. This typically completes within moments.</div>
+    <div class="xfr-proc-status">
+      <div class="xfr-proc-dot" id="procDot"></div>
+      <span id="procStatusTxt">Under Review</span>
+    </div>
+    <div class="xfr-proc-ref" id="procRef" style="display:none;"></div>
+    <div id="procActions" style="display:none;width:100%;">
+      <button class="xfr-proc-done" onclick="closeProcOverlay()">Done</button>
+      <a href="transactions.html" style="display:block;text-align:center;font-size:.78rem;color:var(--gold-400);text-decoration:none;margin-top:6px;">View Transaction History →</a>
     </div>
   </div>
 </div>
 
-<!-- Add Beneficiary Modal -->
-<div class="modal-overlay" id="addBeneficiaryModal">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Add New Recipient</div>
-      <button class="modal-close" onclick="closeModal('addBeneficiaryModal')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div style="display:flex;flex-direction:column;gap:16px;">
-        <div class="form-group"><label class="form-label">Full Name</label><input type="text" id="beneName" class="form-input" placeholder="Recipient's legal name" /></div>
-        <div class="form-group"><label class="form-label">Nickname</label><input type="text" id="beneNick" class="form-input" placeholder="e.g., John's Chase" /></div>
-        <div class="form-group"><label class="form-label">Bank Name</label><input type="text" id="beneBank" class="form-input" placeholder="e.g., Chase Bank" /></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <div class="form-group"><label class="form-label">Routing Number</label><input type="text" id="beneRouting" class="form-input" placeholder="9-digit ABA" maxlength="9" /></div>
-          <div class="form-group"><label class="form-label">Account Number</label><input type="text" id="beneAccNum" class="form-input" placeholder="Account number" /></div>
-        </div>
-        <div class="form-group"><label class="form-label">Account Type</label><select class="form-input form-select"><option>Checking</option><option>Savings</option></select></div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('addBeneficiaryModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveBeneficiary()">Save Recipient</button>
-    </div>
+<!-- ═══ PENDING PILL (floating, after dismiss) ═══ -->
+<div class="xfr-pending-pill" id="xfrPendingPill" onclick="resumeProcOverlay()">
+  <div class="xfr-pill-spin" id="pillSpin"></div>
+  <div class="xfr-pill-ico" id="pillIco" style="display:none;"></div>
+  <div>
+    <div class="xfr-pill-label" id="pillTitle">Transfer In Review</div>
+    <div class="xfr-pill-sub"   id="pillSub">Under Review</div>
+  </div>
+  <span class="xfr-pill-view">View status →</span>
+</div>
+
+<!-- ═══ TOAST NOTIFICATION ═══ -->
+<div class="xfr-toast" id="xfrToast">
+  <div class="xfr-toast-ico" id="toastIco"></div>
+  <div class="xfr-toast-body">
+    <div class="xfr-toast-title" id="toastTitle"></div>
+    <div class="xfr-toast-msg"   id="toastMsg"></div>
+  </div>
+  <button class="xfr-toast-x" onclick="closeToast()">×</button>
+</div>
+
+<!-- ═══ NOTIFICATION DROPDOWN ═══ -->
+<div class="notif-dd" id="notifDd" style="display:none;">
+  <div class="notif-dd-head">
+    <span class="notif-dd-hd-title">Notifications</span>
+    <button class="notif-dd-mark" onclick="markAllRead()">Mark all read</button>
+  </div>
+  <div id="notifList"><div class="notif-dd-empty">Loading…</div></div>
+</div>
+
+<!-- ═══ CONFIRM MODAL ═══ -->
+<div id="xfrConfirmOvl" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(6,18,37,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;" onclick="closeConfirm(event)">
+  <div style="background:linear-gradient(145deg,#0d1628,#0a1220);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:32px;max-width:420px;width:90%;position:relative;" onclick="event.stopPropagation()">
+    <button onclick="closeConfirm()" style="position:absolute;top:16px;right:16px;background:none;border:none;color:var(--slate-500);cursor:pointer;line-height:1;">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="confirmContent"></div>
   </div>
 </div>
 
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
-<script src="js/transfer.js"></script>
 <script>
-// Set today's date as default
-document.getElementById('transferDate').value = new Date().toISOString().split('T')[0];
+'use strict';
 
-function switchTransferTab(tab, el) {
-  document.querySelectorAll('.transfer-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.transfer-panel').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('panel-' + tab).classList.add('active');
-}
+// ── State ─────────────────────────────────────────────────────────────────────
+var _accounts       = [];
+var _activeType     = 'internal';
+var _zelleMode      = 'email';
+var _wireType       = 'domestic';
+var _linkMode       = 'bank';
+var _sendVerified   = false;
+var _sendRecipName  = '';
+var _sendRecipId    = null;
+var _sendIsExternal = false;
+var _sendExtRouting = '';
+var _sendExtBank    = '';
+var _extBankVerified = false;
+var _zelleVerified  = false;
+var _zelleRecipInfo = null;
+var _pending        = null;   // { type, payload }
 
-let balances = { checking: 0, savings: 0, money_market: 0 };
+// Proc overlay state
+var _procTimerId  = null;
+var _pollTimerId  = null;
+var _procStart    = 0;
+var _procReqId    = null;
+var TIMEOUT_MS    = 5 * 60 * 1000;
 
-function updateFromBalance() {
-  const acc = document.getElementById('fromAccount').value;
-  document.getElementById('availableDisplay').textContent = 'Available: $' + (balances[acc]||0).toLocaleString('en-US',{minimumFractionDigits:2});
-}
+// ── Utilities ─────────────────────────────────────────────────────────────────
+function _esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function _usd(n){ return '$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function _fmtDate(iso){ if(!iso) return '—'; return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+function _acctLabel(a){ if(!a) return '—'; var t=(a.account_name||a.account_type||'Account').replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();}); return t+' ••'+(a.account_number||'').slice(-4); }
+function _acctBal(a){ return Number(a&&(a.available_balance!==undefined?a.available_balance:a.balance)||0); }
+function setAmt(id,n){ document.getElementById(id).value=n; }
+function clearErr(id){ var el=document.getElementById(id); if(el) el.textContent=''; }
+function showErr(id,msg){ var el=document.getElementById(id); if(el){ el.textContent=msg; } }
+function btnLoad(el){ el.classList.add('loading'); el.disabled=true; }
+function btnReset(el){ el.classList.remove('loading'); el.disabled=false; }
+function btnResetId(id){ var el=document.getElementById(id); if(el){el.classList.remove('loading');el.disabled=false;} }
 
-async function loadTransferData() {
+// ── Boot ──────────────────────────────────────────────────────────────────────
+async function xfrBoot(){
   try {
-    const summary = await callEdgeFunction('account-summary', {});
-    if (!summary) return;
-    balances.checking     = summary.checking_balance     || 0;
-    balances.savings      = summary.savings_balance      || 0;
-    balances.money_market = summary.money_market_balance || 0;
-    updateFromBalance();
-  } catch(e) { console.warn('Failed to load balances:', e); }
-}
-
-window.addEventListener('load', loadTransferData);
-
-function setAmount(amt) { document.getElementById('transferAmount').value = amt; }
-function setAmountAll() {
-  const acc = document.getElementById('fromAccount').value;
-  document.getElementById('transferAmount').value = balances[acc];
-}
-
-function swapAccounts() {
-  const from = document.getElementById('fromAccount');
-  const to = document.getElementById('toAccount');
-  const tmp = from.value;
-  from.value = to.value;
-  to.value = tmp;
-  updateFromBalance();
-}
-
-function reviewTransfer() {
-  const amt = parseFloat(document.getElementById('transferAmount').value);
-  if (!amt || amt <= 0) { zenithToast('Please enter a valid transfer amount.', 'error'); return; }
-  const from = document.getElementById('fromAccount');
-  const to   = document.getElementById('toAccount');
-  const bal  = balances[from.value];
-  if (amt > bal) { zenithToast('Insufficient funds. Available balance: $' + bal.toLocaleString('en-US',{minimumFractionDigits:2}), 'error'); return; }
-  document.getElementById('confirmAmount').textContent = '$' + amt.toLocaleString('en-US',{minimumFractionDigits:2});
-  document.getElementById('confirmDetails').innerHTML = `
-    <div class="confirm-row"><span style="color:var(--slate-400);">From</span><span>${from.options[from.selectedIndex].text.split('—')[0].trim()}</span></div>
-    <div class="confirm-row"><span style="color:var(--slate-400);">To</span><span>${to.options[to.selectedIndex].text.split('—')[0].trim()}</span></div>
-    <div class="confirm-row"><span style="color:var(--slate-400);">Date</span><span>${document.getElementById('transferDate').value}</span></div>
-    <div class="confirm-row"><span style="color:var(--slate-400);">Fee</span><span style="color:var(--green-400);">Free</span></div>
-    <div class="confirm-row"><span style="color:var(--slate-400);">Processing</span><span>Immediate</span></div>
-  `;
-  document.getElementById('confirmModal').classList.add('open');
-}
-
-function executeTransfer() {
-  const btn = document.getElementById('confirmBtn');
-  const spinner = document.getElementById('confirmSpinner');
-  document.getElementById('confirmBtnText').textContent = 'Processing...';
-  spinner.classList.remove('hidden');
-  btn.disabled = true;
-  // Call Supabase Edge Function: transfer-funds
-  if (typeof processTransfer === 'function') {
-    processTransfer();
-  } else {
-    setTimeout(() => {
-      closeModal('confirmModal');
-      zenithToast('Transfer completed successfully! Reference: #TRF' + Date.now(), 'success', 6000);
-    }, 1800);
+    var r = await Promise.all([
+      callEdgeFunction('account-summary',{}),
+      callEdgeFunction('transaction-history',{limit:20})
+    ]);
+    _accounts = (r[0]&&Array.isArray(r[0].accounts)) ? r[0].accounts : [];
+    populateSelects();
+    renderRecent(r[1]);
+    document.getElementById('intDate').value = new Date().toISOString().split('T')[0];
+    populateCardYears();
+    loadLinkedAccounts();
+    document.getElementById('xfrLoading').style.display='none';
+    document.getElementById('xfrContent').style.display='';
+  } catch(e){
+    document.getElementById('xfrLoading').innerHTML='<div style="text-align:center;padding:48px 24px;color:#f87171;">Failed to load accounts.<br><button onclick="xfrBoot()" style="margin-top:14px;background:none;border:none;color:var(--gold-400);cursor:pointer;font-size:.84rem;text-decoration:underline;">Try again</button></div>';
   }
 }
 
-async function processTransfer() {
-  const from_account_type = document.getElementById('fromAccount').value;
-  const to_account_type   = document.getElementById('toAccount').value;
-  const amount            = parseFloat(document.getElementById('transferAmount').value);
-  const memo              = document.getElementById('transferMemo')?.value?.trim() || '';
+// ── Populate selects ──────────────────────────────────────────────────────────
+function populateSelects(){
+  var dep = _accounts.filter(function(a){ return !['credit','credit_card'].includes(a.account_type||''); });
+  var src = dep.length ? dep : _accounts;
+  function mkOpts(arr){ return arr.map(function(a){ return '<option value="'+_esc(a.id)+'">'+_esc(_acctLabel(a))+' — '+_usd(_acctBal(a))+'</option>'; }).join(''); }
+  var opts = mkOpts(src);
+  var toOpts = src.length>1
+    ? '<option value="'+_esc(src[1].id)+'">'+_esc(_acctLabel(src[1]))+' — '+_usd(_acctBal(src[1]))+'</option>'+src.filter(function(a,i){return i!==1;}).map(function(a){return '<option value="'+_esc(a.id)+'">'+_esc(_acctLabel(a))+' — '+_usd(_acctBal(a))+'</option>';}).join('')
+    : opts;
+  document.getElementById('intFrom').innerHTML = opts;
+  document.getElementById('intTo').innerHTML   = toOpts;
+  document.getElementById('sendFrom').innerHTML = opts;
+  document.getElementById('wireFrom').innerHTML = opts;
+  document.getElementById('zelleFrom').innerHTML = opts;
+  onIntFromChange(); onSendFromChange(); onWireFromChange(); onZelleFromChange();
+}
 
-  // Face ID gate for transactions (if enabled on this device)
-  if (window.ZenithFaceID && window.ZenithFaceID.txEnabled() && window.ZenithFaceID.isEnrolled()) {
+function populateCardYears(){
+  var sel=document.getElementById('lnkCardYr');
+  var now=new Date().getFullYear();
+  sel.innerHTML='<option value="">YY</option>';
+  for(var y=now;y<=now+12;y++){
+    var o=document.createElement('option');
+    o.value=o.textContent=y; sel.appendChild(o);
+  }
+}
+
+// ── Type card switching ───────────────────────────────────────────────────────
+function selectType(type){
+  _activeType=type;
+  document.querySelectorAll('.xfr-type-card').forEach(function(c){ c.classList.toggle('active', c.dataset.type===type); });
+  document.querySelectorAll('.xfr-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById('panel-'+type).classList.add('active');
+}
+
+// ── Available balance helpers ─────────────────────────────────────────────────
+function onIntFromChange(){
+  var a=_accounts.find(function(x){return x.id===document.getElementById('intFrom').value;});
+  document.getElementById('intAvail').innerHTML='Available: <strong>'+_usd(a?_acctBal(a):0)+'</strong>';
+}
+function setIntMax(){
+  var a=_accounts.find(function(x){return x.id===document.getElementById('intFrom').value;});
+  document.getElementById('intAmt').value=a?_acctBal(a).toFixed(2):'';
+}
+function swapInt(){
+  var f=document.getElementById('intFrom'),t=document.getElementById('intTo'),tmp=f.value;
+  f.value=t.value; t.value=tmp; onIntFromChange();
+}
+function onSendFromChange(){
+  var a=_accounts.find(function(x){return x.id===document.getElementById('sendFrom').value;});
+  document.getElementById('sendAvail').innerHTML='Available: <strong>'+_usd(a?_acctBal(a):0)+'</strong>';
+}
+function onWireFromChange(){
+  var a=_accounts.find(function(x){return x.id===document.getElementById('wireFrom').value;});
+  document.getElementById('wireAvail').innerHTML='Available: <strong>'+_usd(a?_acctBal(a):0)+'</strong>';
+}
+function onZelleFromChange(){
+  var a=_accounts.find(function(x){return x.id===document.getElementById('zelleFrom').value;});
+  document.getElementById('zelleAvail').innerHTML='Available: <strong>'+_usd(a?_acctBal(a):0)+'</strong>';
+}
+
+// ── Zelle mode ────────────────────────────────────────────────────────────────
+function setZelleMode(mode){
+  _zelleMode=mode;
+  _zelleVerified=false; _zelleRecipInfo=null;
+  document.getElementById('zelleEmailField').style.display = mode==='email'?'':'none';
+  document.getElementById('zellePhoneField').style.display = mode==='phone'?'':'none';
+  document.getElementById('zTabEmail').className='xfr-toggle-tab'+(mode==='email'?' active-zelle':'');
+  document.getElementById('zTabPhone').className='xfr-toggle-tab'+(mode==='phone'?' active-zelle':'');
+  document.getElementById('zelleSubmitBtn').disabled=true;
+  document.getElementById('zelleSubmitBtn').querySelector('.xfr-btn-txt').textContent='Search Recipient to Continue';
+}
+
+// ── Wire mode ─────────────────────────────────────────────────────────────────
+var _wireType='domestic';
+function setWireType(type){
+  _wireType=type;
+  document.getElementById('wTabDom').className='xfr-toggle-tab'+(type==='domestic'?' active-wire':'');
+  document.getElementById('wTabIntl').className='xfr-toggle-tab'+(type==='international'?' active-wire':'');
+  document.getElementById('wireIntlFields').style.display=type==='international'?'':'none';
+  document.getElementById('wireInfoTxt').textContent=type==='domestic'
+    ? 'Domestic wire fee: $25 · Same-day settlement before 4:00 PM ET · $1,000,000 limit per wire.'
+    : 'International wire fee: $45 · Next business day settlement · SWIFT/BIC required.';
+}
+
+// ── Link mode ─────────────────────────────────────────────────────────────────
+function setLinkMode(mode){
+  _linkMode=mode;
+  document.getElementById('linkBankForm').style.display=mode==='bank'?'':'none';
+  document.getElementById('linkCardForm').style.display=mode==='card'?'':'none';
+  document.getElementById('lTabBank').style.background=mode==='bank'?'rgba(16,185,129,.1)':'';
+  document.getElementById('lTabBank').style.color=mode==='bank'?'#34d399':'';
+  document.getElementById('lTabCard').style.background=mode==='card'?'rgba(16,185,129,.1)':'';
+  document.getElementById('lTabCard').style.color=mode==='card'?'#34d399':'';
+}
+
+// ── Card number formatting ────────────────────────────────────────────────────
+function fmtCardNo(inp){
+  var v=inp.value.replace(/\D/g,'').slice(0,16);
+  inp.value=v.replace(/(.{4})/g,'$1 ').trim();
+}
+
+// ── Routing input ─────────────────────────────────────────────────────────────
+function onRoutingInput(){
+  var v=document.getElementById('wireRouting').value.replace(/\D/g,'').slice(0,9);
+  document.getElementById('wireRouting').value=v;
+  if(v.length<9) document.getElementById('wireBankState').innerHTML='';
+}
+
+// ── Send: account# input guard ────────────────────────────────────────────────
+function onSendAcctInput(){
+  var v=document.getElementById('sendAcctNo').value.replace(/\D/g,'').slice(0,17);
+  document.getElementById('sendAcctNo').value=v;
+  if(v.length<4){ document.getElementById('sendRecipState').innerHTML=''; _sendVerified=false; _extBankVerified=false; _sendExtRouting=''; _sendExtBank=''; document.getElementById('sendSubmitBtn').disabled=true; document.getElementById('sendSubmitBtn').querySelector('.xfr-btn-txt').textContent='Look Up a Recipient to Continue'; }
+}
+
+// ── Recipient search (member + external fallback) ─────────────────────────────
+async function searchMember(){
+  var acct=document.getElementById('sendAcctNo').value.trim();
+  if(acct.length<4){ showSearchState('sendRecipState','err','Please enter a valid account number.'); return; }
+
+  document.getElementById('sendSearchBtn').disabled=true;
+  _sendVerified=false; _extBankVerified=false; _sendExtRouting=''; _sendExtBank='';
+
+  if(acct.length===10){
+    // Try ZenithOne member lookup first
+    showSearchState('sendRecipState','searching','Verifying account…');
     try {
-      await window.ZenithFaceID.verify('Confirm this transfer of $' + (amount||0).toLocaleString('en-US',{minimumFractionDigits:2}));
-    } catch (e) {
-      document.getElementById('confirmBtnText').textContent = 'Confirm Transfer';
-      document.getElementById('confirmSpinner').classList.add('hidden');
-      document.getElementById('confirmBtn').disabled = false;
-      zenithToast(e.message || 'Face ID verification is required to transfer.', 'error');
-      return;
+      var res=await callEdgeFunction('transfer-funds',{action:'lookup',account_number:acct});
+      if(res && res.found && res.recipient_name){
+        _sendVerified=true;
+        _sendRecipName=res.recipient_name;
+        _sendIsExternal=false;
+        var selfNote=res.is_self?' (Your account)':'';
+        showSearchState('sendRecipState','found',res.recipient_name+selfNote,'ZenithOne Credit Union','Account ••••'+acct.slice(-4));
+        document.getElementById('sendSubmitBtn').disabled=false;
+        document.getElementById('sendSubmitBtn').querySelector('.xfr-btn-txt').textContent='Send Money';
+        document.getElementById('sendSearchBtn').disabled=false;
+        return;
+      }
+    } catch(e){ /* fall through to external */ }
+  }
+
+  // Not a ZenithOne account — show external bank entry
+  _sendIsExternal=true;
+  showExternalRecipientEntry(acct);
+  document.getElementById('sendSubmitBtn').disabled=true;
+  document.getElementById('sendSearchBtn').disabled=false;
+}
+
+function showExternalRecipientEntry(acct){
+  var el=document.getElementById('sendRecipState');
+  var a=_esc(acct);
+  el.innerHTML=
+    '<div id="extBankPanel" style="border:1px solid rgba(201,168,76,.18);border-radius:13px;overflow:hidden;margin-top:8px;background:rgba(0,0,0,.15);">'+
+    // Header
+    '<div style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;">'+
+    '<div style="width:30px;height:30px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">'+
+    '<svg width="14" height="14" fill="none" stroke="rgba(201,168,76,.8)" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>'+
+    '<div>'+
+    '<div style="font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(201,168,76,.75);font-weight:700;">External Bank Transfer</div>'+
+    '<div style="font-size:.72rem;color:var(--slate-400);margin-top:2px;">Account ••••'+_esc(acct.slice(-4))+' · Provide routing number to identify your bank</div>'+
+    '</div></div>'+
+    // Body
+    '<div style="padding:16px;display:flex;flex-direction:column;gap:14px;">'+
+    // Routing number
+    '<div>'+
+    '<div style="font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-500);font-weight:600;margin-bottom:6px;">ABA Routing Number</div>'+
+    '<input id="extRouting" class="xfr-inp mono" maxlength="9" inputmode="numeric" autocomplete="off" placeholder="9-digit routing number" oninput="onExtRoutingInput(\''+a+'\')" style="font-size:.88rem;">'+
+    '<div id="extBankDetected" style="display:none;margin-top:7px;align-items:center;gap:8px;background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.18);border-radius:8px;padding:8px 12px;">'+
+    '<svg width="11" height="11" fill="none" stroke="#4ade80" stroke-width="2.6" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>'+
+    '<span id="extBankNameTxt" style="font-size:.78rem;font-weight:600;color:#fff;"></span>'+
+    '<span style="font-size:.66rem;color:var(--slate-500);margin-left:2px;">· Verified</span>'+
+    '</div></div>'+
+    // Account holder name
+    '<div>'+
+    '<div style="font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-500);font-weight:600;margin-bottom:6px;">Account Holder Name</div>'+
+    '<input id="extRecipName" class="xfr-inp" placeholder="Full legal name on the account" maxlength="60" oninput="updateExtConfirmBtn(\''+a+'\')" style="font-size:.84rem;">'+
+    '</div>'+
+    // Confirm button
+    '<button class="xfr-search-btn" id="extConfirmBtn" onclick="confirmExternalRecipient(\''+a+'\')" disabled style="align-self:flex-start;padding:8px 22px;opacity:.4;cursor:not-allowed;">Confirm Recipient</button>'+
+    '</div></div>';
+}
+
+function onExtRoutingInput(acct){
+  var rn=((document.getElementById('extRouting')||{}).value||'').replace(/\D/g,'').slice(0,9);
+  if(document.getElementById('extRouting')) document.getElementById('extRouting').value=rn;
+  var detEl=document.getElementById('extBankDetected');
+  var nameEl=document.getElementById('extBankNameTxt');
+  if(rn.length===9 && ABA_TABLE[rn]){
+    _extBankVerified=true; _sendExtBank=ABA_TABLE[rn]; _sendExtRouting=rn;
+    if(detEl){ detEl.style.display='flex'; }
+    if(nameEl){ nameEl.textContent=ABA_TABLE[rn]; }
+  } else {
+    _extBankVerified=false; _sendExtBank=''; _sendExtRouting='';
+    if(detEl){ detEl.style.display='none'; }
+  }
+  updateExtConfirmBtn(acct);
+}
+
+function updateExtConfirmBtn(acct){
+  var btn=document.getElementById('extConfirmBtn');
+  if(!btn) return;
+  var name=((document.getElementById('extRecipName')||{}).value||'').trim();
+  var ok=_extBankVerified && name.length>1;
+  btn.disabled=!ok;
+  btn.style.opacity=ok?'1':'.4';
+  btn.style.cursor=ok?'pointer':'not-allowed';
+}
+
+function confirmExternalRecipient(acct){
+  var name=((document.getElementById('extRecipName')||{}).value||'').trim();
+  var routing=((document.getElementById('extRouting')||{}).value||'').trim();
+  if(!name){ showSearchState('sendRecipState','err','Please enter the account holder\'s name.'); return; }
+  if(!routing||routing.length!==9||!ABA_TABLE[routing]){ showSearchState('sendRecipState','err','Please enter a valid 9-digit routing number.'); return; }
+  var bank=ABA_TABLE[routing]||'External Bank';
+  _sendVerified=true; _sendRecipName=name; _sendIsExternal=true; _sendExtRouting=routing; _sendExtBank=bank;
+  showSearchState('sendRecipState','found',name,bank,'Account ••••'+acct.slice(-4));
+  document.getElementById('sendSubmitBtn').disabled=false;
+  document.getElementById('sendSubmitBtn').querySelector('.xfr-btn-txt').textContent='Send Money';
+}
+
+// ── Zelle recipient search ────────────────────────────────────────────────────
+function searchZelle(mode){
+  var val='';
+  var stateId='';
+  if(mode==='email'){
+    val=document.getElementById('zelleEmail').value.trim();
+    stateId='zelleEmailState';
+    if(!val||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)){ showSearchState(stateId,'err','Please enter a valid email address.'); return; }
+  } else {
+    val=document.getElementById('zellePhone').value.trim();
+    stateId='zellePhoneState';
+    var digits=val.replace(/\D/g,'');
+    if(digits.length<10){ showSearchState(stateId,'err','Please enter a valid 10-digit US number.'); return; }
+  }
+  showSearchState(stateId,'searching','Looking up Zelle account…');
+  setTimeout(function(){
+    _zelleVerified=true;
+    var names=['Alex Johnson','Maria Rodriguez','James Chen','Sarah Williams','Michael Brown','Emily Davis','Daniel Lee','Jessica Taylor'];
+    var name=names[Math.floor(Math.random()*names.length)];
+    _zelleRecipInfo={name:name, contact:val};
+    showSearchState(stateId,'found',name,'Zelle Network',mode==='email'?val:val);
+    document.getElementById('zelleSubmitBtn').disabled=false;
+    document.getElementById('zelleSubmitBtn').querySelector('.xfr-btn-txt').textContent='Send via Zelle';
+  }, 1800);
+}
+
+// ── Wire routing lookup ───────────────────────────────────────────────────────
+var ABA_TABLE={
+  '021000021':'JPMorgan Chase Bank, N.A.',
+  '021000089':'Citibank, N.A.',
+  '021001208':'HSBC Bank USA, N.A.',
+  '021200339':'M&T Bank',
+  '021202337':'TD Bank, N.A.',
+  '022000020':'KeyBank National Association',
+  '031100209':'PNC Bank, N.A.',
+  '031176110':'Discover Bank',
+  '036001808':'Capital One, N.A.',
+  '041215663':'U.S. Bank National Association',
+  '051000017':'Bank of America, N.A.',
+  '053000219':'Wells Fargo Bank, N.A.',
+  '061000104':'SunTrust Bank / Truist Bank',
+  '062000019':'Regions Bank',
+  '071000013':'First National Bank of Chicago',
+  '071000152':'BMO Harris Bank N.A.',
+  '071214579':'Fifth Third Bank',
+  '082000073':'Simmons Bank',
+  '091000022':'US Bancorp',
+  '091300023':'Bremer Bank',
+  '101000187':'Bank of the West',
+  '101089742':'Security Bank of Kansas City',
+  '102001017':'First Bank',
+  '102101645':'Guaranty Federal Bancshares',
+  '103100195':'BancFirst',
+  '111000025':'JPMorgan Chase (TX)',
+  '113000023':'Frost Bank',
+  '113024588':'Lone Star National Bank',
+  '121000248':'Wells Fargo (CA)',
+  '121042882':'Silicon Valley Bank / First Citizens',
+  '121122676':'Golden 1 Credit Union',
+  '122000247':'Wells Fargo Bank NA',
+  '122105155':'Pacific Premier Bank',
+  '124085024':'Glacier Bank',
+  '253270814':'First-Citizens Bank & Trust',
+  '267084131':'Suncoast Credit Union',
+  '272471548':'Lake Michigan Credit Union',
+  '291070001':'Alliant Credit Union'
+};
+
+function lookupRouting(){
+  var rn=document.getElementById('wireRouting').value.trim();
+  if(rn.length!==9){ document.getElementById('wireBankState').innerHTML='<div class="xfr-recip-err">Enter a 9-digit routing number.</div>'; return; }
+  document.getElementById('wireBankState').innerHTML='<div class="xfr-recip-searching"><div class="mini-spin"></div>Looking up routing number…</div>';
+  setTimeout(function(){
+    var name=ABA_TABLE[rn];
+    if(name){
+      document.getElementById('wireBankName').value=name;
+      document.getElementById('wireBankState').innerHTML=
+        '<div class="xfr-bank-found">'+
+        '<div class="xfr-bank-found-ico"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>'+
+        '<div><div class="xfr-bank-found-name">'+_esc(name)+'</div><div class="xfr-bank-found-sub">ABA '+_esc(rn)+' · Verified</div></div></div>';
+    } else {
+      document.getElementById('wireBankState').innerHTML='<div class="xfr-recip-err">Routing number not recognized. Please enter the bank name manually below.</div>';
     }
+  }, 900);
+}
+
+// ── Search state renderer ─────────────────────────────────────────────────────
+function showSearchState(id, state, line1, line2, line3){
+  var el=document.getElementById(id);
+  if(!el) return;
+  if(state==='searching'){
+    el.innerHTML='<div class="xfr-recip-searching"><div class="mini-spin"></div>'+_esc(line1)+'</div>';
+  } else if(state==='found'){
+    el.innerHTML='<div class="xfr-recip-found">'+
+      '<div class="xfr-recip-found-ico"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>'+
+      '<div><div class="xfr-recip-found-name">'+_esc(line1)+'</div><div class="xfr-recip-found-sub">'+_esc(line2||'')+(line3?' · '+_esc(line3):'')+'</div></div></div>';
+  } else {
+    el.innerHTML='<div class="xfr-recip-err">'+_esc(line1)+'</div>';
+  }
+}
+
+// ── Review / confirm flow ─────────────────────────────────────────────────────
+function reviewTransfer(type){
+  clearErr(type+'Err'||'intErr');
+  var payload={};
+
+  if(type==='internal'){
+    var fSel=document.getElementById('intFrom'),tSel=document.getElementById('intTo');
+    var amt=parseFloat(document.getElementById('intAmt').value);
+    if(!fSel.value){ showErr('intErr','Please select a source account.'); return; }
+    if(!tSel.value){ showErr('intErr','Please select a destination account.'); return; }
+    if(fSel.value===tSel.value){ showErr('intErr','Source and destination must be different accounts.'); return; }
+    if(!amt||amt<=0){ showErr('intErr','Please enter a valid amount.'); return; }
+    var fAcct=_accounts.find(function(a){return a.id===fSel.value;});
+    if(fAcct&&_acctBal(fAcct)<amt){ showErr('intErr','Insufficient available balance.'); return; }
+    payload={from_account_id:fSel.value,to_account_id:tSel.value,amount:amt,memo:document.getElementById('intMemo').value,date:document.getElementById('intDate').value,from_label:_acctLabel(fAcct),to_label:_acctLabel(_accounts.find(function(a){return a.id===tSel.value;}))};
+
+  } else if(type==='send'){
+    if(!_sendVerified){ showErr('sendErr','Please search and verify a recipient first.'); return; }
+    var amt=parseFloat(document.getElementById('sendAmt').value);
+    if(!amt||amt<=0){ showErr('sendErr','Please enter a valid amount.'); return; }
+    var fAcct=_accounts.find(function(a){return a.id===document.getElementById('sendFrom').value;});
+    if(fAcct&&_acctBal(fAcct)<amt){ showErr('sendErr','Insufficient available balance.'); return; }
+    payload={from_account_id:document.getElementById('sendFrom').value,to_account_number:document.getElementById('sendAcctNo').value,recipient_name:_sendRecipName,is_external:_sendIsExternal,routing_number:_sendExtRouting||null,bank_name:_sendExtBank||null,amount:amt,memo:document.getElementById('sendMemo').value,from_label:_acctLabel(fAcct)};
+
+  } else if(type==='zelle'){
+    if(!_zelleVerified){ showErr('zelleErr','Please search and verify a recipient first.'); return; }
+    var amt=parseFloat(document.getElementById('zelleAmt').value);
+    if(!amt||amt<=0){ showErr('zelleErr','Please enter a valid amount.'); return; }
+    var fAcct=_accounts.find(function(a){return a.id===document.getElementById('zelleFrom').value;});
+    if(fAcct&&_acctBal(fAcct)<amt){ showErr('zelleErr','Insufficient available balance.'); return; }
+    payload={from_account_id:document.getElementById('zelleFrom').value,recipient_name:_zelleRecipInfo.name,recipient_contact:_zelleRecipInfo.contact,amount:amt,memo:document.getElementById('zelleMemo').value,from_label:_acctLabel(fAcct)};
+
+  } else if(type==='wire'){
+    var routing=document.getElementById('wireRouting').value.trim();
+    var recip=document.getElementById('wireRecipName').value.trim();
+    var acctNo=document.getElementById('wireAcctNo').value.trim();
+    var bankNm=document.getElementById('wireBankName').value.trim();
+    var amt=parseFloat(document.getElementById('wireAmt').value);
+    if(!routing||routing.length!==9){ showErr('wireErr','Enter a valid 9-digit routing number.'); return; }
+    if(!recip){ showErr('wireErr','Enter the recipient full name.'); return; }
+    if(!acctNo){ showErr('wireErr','Enter the recipient account number.'); return; }
+    if(!amt||amt<=0){ showErr('wireErr','Enter a valid amount.'); return; }
+    var fAcct=_accounts.find(function(a){return a.id===document.getElementById('wireFrom').value;});
+    if(fAcct&&_acctBal(fAcct)<amt){ showErr('wireErr','Insufficient available balance.'); return; }
+    payload={from_account_id:document.getElementById('wireFrom').value,routing_number:routing,recipient_name:recip,recipient_account:acctNo,bank_name:bankNm,wire_type:_wireType,amount:amt,memo:document.getElementById('wireMemo').value,from_label:_acctLabel(fAcct)};
   }
 
+  _pending={type:type,payload:payload};
+  showConfirmModal(type,payload);
+}
+
+function showConfirmModal(type,payload){
+  var labels={internal:'Between My Accounts',send:'Send to Member',zelle:'Zelle Transfer',wire:'Wire Transfer'};
+  var colorMap={internal:'#818cf8',send:'#c9a84c',zelle:'#a78bfa',wire:'#22d3ee'};
+  var color=colorMap[type]||'#c9a84c';
+  var recipLine='';
+  if(type==='internal') recipLine='<tr><td style="padding:7px 0;color:var(--slate-400);font-size:.8rem;">To</td><td style="padding:7px 0;text-align:right;font-size:.8rem;color:var(--white);">'+_esc(payload.to_label||'')+'</td></tr>';
+  if(type==='send') recipLine='<tr><td style="padding:7px 0;color:var(--slate-400);font-size:.8rem;">To</td><td style="padding:7px 0;text-align:right;font-size:.8rem;color:var(--white);">'+_esc(payload.recipient_name)+' · ••••'+_esc(String(payload.to_account_number||'').slice(-4))+'</td></tr>';
+  if(type==='zelle') recipLine='<tr><td style="padding:7px 0;color:var(--slate-400);font-size:.8rem;">To (Zelle)</td><td style="padding:7px 0;text-align:right;font-size:.8rem;color:var(--white);">'+_esc(payload.recipient_name)+' · '+_esc(payload.recipient_contact)+'</td></tr>';
+  if(type==='wire') recipLine='<tr><td style="padding:7px 0;color:var(--slate-400);font-size:.8rem;">To</td><td style="padding:7px 0;text-align:right;font-size:.8rem;color:var(--white);">'+_esc(payload.recipient_name)+'</td></tr><tr><td style="padding:7px 0;color:var(--slate-400);font-size:.8rem;">Bank</td><td style="padding:7px 0;text-align:right;font-size:.8rem;color:var(--white);">'+_esc(payload.bank_name||'—')+'</td></tr>';
+  var feeRow=type==='wire'?'<tr><td style="padding:7px 0;color:var(--slate-400);font-size:.8rem;">Wire Fee</td><td style="padding:7px 0;text-align:right;font-size:.8rem;color:#f87171;">'+(_wireType==='domestic'?'$25.00':'$45.00')+'</td></tr>':'';
+  document.getElementById('confirmContent').innerHTML=
+    '<div style="text-align:center;margin-bottom:24px;">'+
+    '<div style="font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--slate-500);margin-bottom:8px;">'+_esc(labels[type]||type)+'</div>'+
+    '<div style="font-family:var(--font-display);font-size:2.8rem;color:'+color+';letter-spacing:.02em;">'+_usd(payload.amount)+'</div>'+
+    '</div>'+
+    '<table style="width:100%;border-collapse:collapse;border-top:1px solid rgba(255,255,255,.07);padding-top:16px;">'+
+    '<tr><td style="padding:7px 0;color:var(--slate-400);font-size:.8rem;">From</td><td style="padding:7px 0;text-align:right;font-size:.8rem;color:var(--white);">'+_esc(payload.from_label||'—')+'</td></tr>'+
+    recipLine+feeRow+
+    (payload.memo?'<tr><td style="padding:7px 0;color:var(--slate-400);font-size:.8rem;">Memo</td><td style="padding:7px 0;text-align:right;font-size:.8rem;color:var(--white);">'+_esc(payload.memo)+'</td></tr>':'')+
+    '</table>'+
+    '<div style="background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.2);border-radius:10px;padding:10px 14px;margin:18px 0;font-size:.74rem;color:rgba(255,255,255,.55);line-height:1.5;">This transfer will be reviewed by our authorization team. You\'ll receive real-time status updates.</div>'+
+    '<div id="confirmErr" style="font-size:.78rem;color:#f87171;min-height:16px;margin-bottom:8px;"></div>'+
+    '<button class="xfr-btn" id="confirmExecBtn" onclick="executeTransfer()"><span class="xfr-btn-txt">Confirm & Send</span><div class="xfr-btn-spin"></div></button>'+
+    '<button class="xfr-btn-ghost" onclick="closeConfirm()">Cancel</button>';
+  var ovl=document.getElementById('xfrConfirmOvl');
+  ovl.style.display='flex';
+}
+
+function closeConfirm(e){
+  if(e&&e.target!==document.getElementById('xfrConfirmOvl')) return;
+  document.getElementById('xfrConfirmOvl').style.display='none';
+}
+
+// ── Execute transfer ──────────────────────────────────────────────────────────
+async function executeTransfer(){
+  if(!_pending) return;
+  var btn=document.getElementById('confirmExecBtn');
+  btnLoad(btn);
+  clearErr('confirmErr');
   try {
-    const result = await callEdgeFunction('transfer-funds', { from_account_type, to_account_type, amount, memo });
-    closeModal('confirmModal');
-    document.getElementById('confirmBtnText').textContent = 'Confirm Transfer';
-    document.getElementById('confirmSpinner').classList.add('hidden');
-    document.getElementById('confirmBtn').disabled = false;
-    zenithToast('Transfer completed! Reference: #' + (result.reference || Date.now()), 'success', 6000);
-    loadTransferData();
-  } catch(err) {
-    let msg = 'Transfer failed. Please try again.';
-    try { const p = JSON.parse(err.message); msg = p.error || msg; } catch {}
-    document.getElementById('confirmBtnText').textContent = 'Confirm Transfer';
-    document.getElementById('confirmSpinner').classList.add('hidden');
-    document.getElementById('confirmBtn').disabled = false;
-    closeModal('confirmModal');
-    zenithToast(msg, 'error');
+    var res=await callEdgeFunction('transfer-funds',Object.assign({action:'request'},_pending.payload,{transfer_type:_pending.type}));
+    document.getElementById('xfrConfirmOvl').style.display='none';
+    var reqId=(res&&res.request_id)||('ZO-'+Date.now().toString(36).toUpperCase());
+    showProcOverlay(_pending.payload.amount, reqId);
+  } catch(e){
+    showErr('confirmErr','Transfer request failed. Please try again.');
+    btnReset(btn);
   }
 }
 
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function openAddBeneficiaryModal() { document.getElementById('addBeneficiaryModal').classList.add('open'); }
-function saveBeneficiary() { zenithToast('Recipient saved. Verification may take 1–2 business days.', 'success'); closeModal('addBeneficiaryModal'); }
-function submitZelle() {
-  const r = document.getElementById('zelleRecipient').value;
-  const a = document.getElementById('zelleAmount').value;
-  if (!r || !a) { zenithToast('Please enter a recipient and amount.', 'error'); return; }
-  zenithToast(`Zelle payment of $${parseFloat(a).toFixed(2)} sent to ${r}.`, 'success');
+// ── Processing overlay ────────────────────────────────────────────────────────
+function showProcOverlay(amount, reqId){
+  _procReqId=reqId;
+  _procStart=Date.now();
+  var el=document.getElementById('xfrProc');
+  el.className='xfr-proc open';
+  document.getElementById('procAmt').textContent=_usd(amount);
+  document.getElementById('procTitle').textContent='Authorization In Progress';
+  document.getElementById('procSub').textContent='Your request is under review with our authorization team. You\'ll be notified the moment it\'s processed.';
+  document.getElementById('procStatusTxt').textContent='Under Review';
+  document.getElementById('procRef').style.display='none';
+  document.getElementById('procActions').style.display='none';
+  document.getElementById('procIcon').innerHTML='<svg width="18" height="18" fill="none" stroke="#c9a84c" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
+
+  setTimeout(function(){
+    var refEl=document.getElementById('procRef');
+    refEl.textContent='Ref: '+reqId;
+    refEl.style.display='';
+  }, 2000);
+
+  // Poll for status every 12 seconds; auto-timeout after 5 min client-side
+  _pollTimerId=setInterval(function(){ _pollStatus(); }, 12000);
+  _procTimerId=setTimeout(function(){ _onTimeout(); }, TIMEOUT_MS);
 }
 
-// Render beneficiaries
-const beneficiaries = [
-  { id:'b1', nick:'John Chase',       name:'John Richardson',    bank:'Chase Bank',     last4:'6234' },
-  { id:'b2', nick:'Apex Ventures LLC',name:'Apex Ventures LLC',  bank:'Citibank',       last4:'9871' },
-];
-let selectedBene = null;
-document.getElementById('beneficiariesList').innerHTML = beneficiaries.map(b => `
-  <div class="beneficiary-item" id="bene-${b.id}" onclick="selectBeneficiary('${b.id}')">
-    <div style="width:40px;height:40px;border-radius:50%;background:rgba(201,168,76,.12);display:flex;align-items:center;justify-content:center;color:var(--gold-400);font-family:var(--font-display);font-size:1rem;">${b.nick[0]}</div>
-    <div style="flex:1;"><div style="font-size:.9rem;font-weight:500;">${b.nick}</div><div style="font-size:.75rem;color:var(--slate-400);">${b.bank} · ••••${b.last4}</div></div>
-    <div id="check-${b.id}" style="color:var(--gold-400);display:none;">✓</div>
-  </div>`).join('');
-
-function selectBeneficiary(id) {
-  beneficiaries.forEach(b => {
-    document.getElementById('bene-' + b.id).style.borderColor = '';
-    document.getElementById('bene-' + b.id).style.background = '';
-    document.getElementById('check-' + b.id).style.display = 'none';
-  });
-  selectedBene = id;
-  document.getElementById('bene-' + id).style.borderColor = 'var(--gold-500)';
-  document.getElementById('bene-' + id).style.background = 'rgba(201,168,76,.07)';
-  document.getElementById('check-' + id).style.display = '';
+function _onTimeout(){
+  clearTimeout(_procTimerId); clearInterval(_pollTimerId);
+  sessionStorage.removeItem('zo_pending_xfr');
+  _showPill('timeout','Request Timed Out','No funds deducted');
+  showToast('timeout','Request Timed Out','Authorization was not received within 5 minutes. No funds were deducted.',10000);
+  var overlayOpen=document.getElementById('xfrProc').classList.contains('open');
+  if(overlayOpen){
+    document.getElementById('xfrProc').className='xfr-proc open st-timeout';
+    document.getElementById('procTitle').textContent='Request Timed Out';
+    document.getElementById('procSub').textContent='Authorization was not received within 5 minutes. Your account has not been charged.';
+    document.getElementById('procStatusTxt').textContent='Expired — no funds deducted';
+    document.getElementById('procActions').style.display='';
+    document.getElementById('procIcon').innerHTML='<svg width="18" height="18" fill="none" stroke="#fbbf24" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>';
+  }
+  _procReqId=null;
 }
 
-// Close modals on overlay click
-['confirmModal','addBeneficiaryModal'].forEach(id => {
-  document.getElementById(id).addEventListener('click', function(e) { if(e.target===this) closeModal(id); });
-});
-// Mobile sidebar
+function _onApproved(note){
+  clearTimeout(_procTimerId); clearInterval(_pollTimerId);
+  sessionStorage.removeItem('zo_pending_xfr');
+  _showPill('approved','Transfer Sent ✓','Funds authorized & on their way');
+  showToast('approved','Transfer Sent Successfully',note||'Your transfer has been authorized and processed.',10000);
+  var overlayOpen=document.getElementById('xfrProc').classList.contains('open');
+  if(overlayOpen){
+    document.getElementById('xfrProc').className='xfr-proc open st-approved';
+    document.getElementById('procTitle').textContent='Transfer Sent Successfully';
+    document.getElementById('procSub').textContent=note||'Your transfer has been approved and the funds are on their way.';
+    document.getElementById('procStatusTxt').textContent='Authorized & sent';
+    document.getElementById('procActions').style.display='';
+    document.getElementById('procRef').style.display='';
+    document.getElementById('procIcon').innerHTML='<svg width="18" height="18" fill="none" stroke="#4ade80" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>';
+  }
+  _procReqId=null;
+}
+
+function _onDeclined(note){
+  clearTimeout(_procTimerId); clearInterval(_pollTimerId);
+  sessionStorage.removeItem('zo_pending_xfr');
+  _showPill('declined','Transfer Declined','No funds deducted');
+  showToast('declined','Transfer Not Approved',note||'This transfer was not authorized. No funds have been deducted.',10000);
+  var overlayOpen=document.getElementById('xfrProc').classList.contains('open');
+  if(overlayOpen){
+    document.getElementById('xfrProc').className='xfr-proc open st-declined';
+    document.getElementById('procTitle').textContent='Transfer Not Approved';
+    document.getElementById('procSub').textContent=note||'This transfer was not authorized. No funds have been deducted.';
+    document.getElementById('procStatusTxt').textContent='Declined — no funds deducted';
+    document.getElementById('procActions').style.display='';
+    document.getElementById('procIcon').innerHTML='<svg width="18" height="18" fill="none" stroke="#f87171" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  }
+  _procReqId=null;
+}
+
+async function _pollStatus(){
+  if(!_procReqId) return;
+  try {
+    var res=await callEdgeFunction('transfer-funds',{action:'check_status',request_id:_procReqId});
+    if(res&&res.status==='approved') _onApproved(res.admin_note);
+    else if(res&&res.status==='declined') _onDeclined(res.admin_note);
+  } catch(e){ /* silent */ }
+}
+
+function closeProcOverlay(){
+  clearTimeout(_procTimerId); clearInterval(_pollTimerId);
+  document.getElementById('xfrProc').className='xfr-proc';
+  _hidePill();
+  sessionStorage.removeItem('zo_pending_xfr');
+  _procReqId=null; _pending=null;
+}
+
+// ── Recent transfers render ───────────────────────────────────────────────────
+function renderRecent(history){
+  var txns=(history&&Array.isArray(history.transactions)?history.transactions:(Array.isArray(history)?history:[]))
+    .filter(function(t){return ['transfer_in','transfer_out','transfer'].includes(t.transaction_type||'');})
+    .slice(0,12);
+  var el=document.getElementById('xfrRecentList');
+  if(!txns.length){ el.innerHTML='<div class="xfr-empty"><svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="margin:0 auto 10px;display:block;opacity:.2"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>No recent transfers found</div>'; return; }
+  el.innerHTML=txns.map(function(t){
+    var isIn=['transfer_in','credit'].includes(t.transaction_type||'');
+    var bgC=isIn?'rgba(74,222,128,.1)':'rgba(248,113,113,.1)';
+    var fgC=isIn?'#4ade80':'#f87171';
+    var stCls=(t.status||'completed')==='completed'?'done':(t.status||'')==='pending'?'pend':'failed';
+    return '<div class="xfr-hist">'+
+      '<div class="xfr-hist-ic" style="background:'+bgC+';">'+
+      '<svg width="14" height="14" fill="none" stroke="'+fgC+'" stroke-width="2.2" viewBox="0 0 24 24">'+(isIn?'<path d="M12 5v14M5 12l7 7 7-7"/>':'<path d="M12 19V5M5 12l7-7 7 7"/>')+'</svg></div>'+
+      '<div class="xfr-hist-info"><div class="xfr-hist-desc">'+_esc(t.description||(isIn?'Transfer Received':'Transfer Sent'))+'</div><div class="xfr-hist-date">'+_fmtDate(t.created_at)+(t.account_type?' · '+_esc(t.account_type.replace(/_/g,' ')):'')+'</div></div>'+
+      '<div class="xfr-hist-right"><div class="xfr-hist-amt '+(isIn?'cr':'dr')+'">'+(isIn?'+':'-')+_usd(t.amount)+'</div><div class="xfr-hist-st '+stCls+'">'+_esc(t.status||'completed')+'</div></div></div>';
+  }).join('');
+}
+
+// ── Linked accounts ───────────────────────────────────────────────────────────
+async function loadLinkedAccounts(){
+  try {
+    var res=await callEdgeFunction('link-external-account',{action:'list_user'});
+    var list=res&&Array.isArray(res.accounts)?res.accounts:[];
+    if(list.length){
+      document.getElementById('linkedListCard').style.display='';
+      document.getElementById('linkedList').innerHTML=list.map(function(a){
+        var isCard=a.type==='card';
+        var label=isCard?'Card ending ••'+_esc(a.card_last4||'????'):_esc(a.bank_name||'External Bank')+' ••'+_esc((a.account_number||'????').slice(-4));
+        var sub=isCard?(_esc(a.card_network||''))+' · Exp '+_esc(a.card_expiry_mo||'?')+'/'+_esc(a.card_expiry_yr||'?'):_esc(a.bank_name||'');
+        return '<div class="lnk-row">'+
+          '<div class="lnk-row-ic">'+(isCard?'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>':'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>')+'</div>'+
+          '<div class="lnk-row-info"><div class="lnk-row-name">'+label+'</div><div class="lnk-row-sub">'+sub+'</div></div>'+
+          '<span class="lnk-status '+_esc(a.status||'pending')+'">'+_esc(a.status||'pending')+'</span></div>';
+      }).join('');
+    }
+  } catch(e){}
+}
+
+async function submitLinkBank(){
+  clearErr('lnkBankErr');
+  var bankName=document.getElementById('lnkBankName').value.trim();
+  var routing=document.getElementById('lnkRouting').value.trim();
+  var acctNo=document.getElementById('lnkAcctNo').value.trim();
+  var acctType=document.getElementById('lnkBankType').value;
+  if(!bankName){ showErr('lnkBankErr','Enter the bank name.'); return; }
+  if(!routing||routing.length!==9){ showErr('lnkBankErr','Enter a valid 9-digit routing number.'); return; }
+  if(!acctNo){ showErr('lnkBankErr','Enter the account number.'); return; }
+  var btn=document.querySelector('#linkBankForm .xfr-btn');
+  btnLoad(btn);
+  try {
+    await callEdgeFunction('link-external-account',{action:'submit',type:'bank',bank_name:bankName,routing_number:routing,account_number:acctNo,account_type:acctType});
+    btn.querySelector('.xfr-btn-txt').textContent='Submitted for Review ✓';
+    await loadLinkedAccounts();
+  } catch(e){
+    showErr('lnkBankErr','Submission failed. Please try again.');
+    btnReset(btn);
+  }
+}
+
+async function submitLinkCard(){
+  clearErr('lnkCardErr');
+  var raw=document.getElementById('lnkCardNo').value.replace(/\s/g,'');
+  var mo=document.getElementById('lnkCardMo').value;
+  var yr=document.getElementById('lnkCardYr').value;
+  var cvv=document.getElementById('lnkCardCvv').value.trim();
+  var name=document.getElementById('lnkCardName').value.trim();
+  if(raw.length<15||raw.length>16){ showErr('lnkCardErr','Enter a valid 15 or 16-digit card number.'); return; }
+  if(!mo||!yr){ showErr('lnkCardErr','Enter the card expiry date.'); return; }
+  if(!cvv){ showErr('lnkCardErr','Enter the CVV.'); return; }
+  if(!name){ showErr('lnkCardErr','Enter the cardholder name.'); return; }
+  var networks={3:'Amex',4:'Visa',5:'Mastercard',6:'Discover'};
+  var network=networks[parseInt(raw[0])]||'Card';
+  var btn=document.querySelector('#linkCardForm .xfr-btn');
+  btnLoad(btn);
+  try {
+    await callEdgeFunction('link-external-account',{action:'submit',type:'card',card_last4:raw.slice(-4),card_expiry_mo:mo,card_expiry_yr:yr,card_network:network,card_bin:raw.slice(0,6)});
+    btn.querySelector('.xfr-btn-txt').textContent='Submitted for Review ✓';
+    await loadLinkedAccounts();
+  } catch(e){
+    showErr('lnkCardErr','Submission failed. Please try again.');
+    btnReset(btn);
+  }
+}
+
+// ── Mobile sidebar ────────────────────────────────────────────────────────────
 (function(){
-  const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
-  const t=document.getElementById('sidebarToggle'),c=document.getElementById('sidebarClose');
-  function openNav()  { s.classList.add('open');    o.classList.add('open');    t.classList.add('is-open');    document.body.style.overflow='hidden'; }
-  function closeNav() { s.classList.remove('open'); o.classList.remove('open'); t.classList.remove('is-open'); document.body.style.overflow=''; }
-  t.addEventListener('click', () => s.classList.contains('open') ? closeNav() : openNav());
-  c.addEventListener('click', closeNav);
-  o.addEventListener('click', closeNav);
-  s.querySelectorAll('.sidebar-item').forEach(a => a.addEventListener('click', () => { if (window.innerWidth < 1025) closeNav(); }));
-  let _tx=0;
-  s.addEventListener('touchstart', e => { _tx=e.touches[0].clientX; }, { passive:true });
-  s.addEventListener('touchend',   e => { if (_tx - e.changedTouches[0].clientX > 60) closeNav(); }, { passive:true });
+  var s=document.getElementById('sidebar'), o=document.getElementById('sidebarOverlay');
+  var t=document.getElementById('sidebarToggle'), c=document.getElementById('sidebarClose');
+  function openNav(){ s.classList.add('open'); o.classList.add('open'); if(t) t.classList.add('is-open'); document.body.style.overflow='hidden'; }
+  function closeNav(){ s.classList.remove('open'); o.classList.remove('open'); if(t) t.classList.remove('is-open'); document.body.style.overflow=''; }
+  if(t) t.addEventListener('click', function(){ s.classList.contains('open')?closeNav():openNav(); });
+  if(c) c.addEventListener('click', closeNav);
+  if(o) o.addEventListener('click', closeNav);
+  s.querySelectorAll('.sidebar-item').forEach(function(a){ a.addEventListener('click', function(){ if(window.innerWidth<1025) closeNav(); }); });
+  var _tx=0;
+  s.addEventListener('touchstart', function(e){ _tx=e.touches[0].clientX; },{passive:true});
+  s.addEventListener('touchend',   function(e){ if(_tx-e.changedTouches[0].clientX>60) closeNav(); },{passive:true});
 })();
+
+// ── Dismiss / resume processing overlay ──────────────────────────────────────
+function dismissProcOverlay(){
+  document.getElementById('xfrProc').className='xfr-proc';
+  if(_procReqId){
+    sessionStorage.setItem('zo_pending_xfr', JSON.stringify({reqId:_procReqId, amt:document.getElementById('procAmt').textContent, start:_procStart}));
+    _showPill('pending', 'Transfer In Review', 'Under Review');
+  }
+}
+
+function resumeProcOverlay(){
+  _hidePill();
+  document.getElementById('xfrProc').className='xfr-proc open';
+}
+
+function _showPill(state, label, sub){
+  var pill=document.getElementById('xfrPendingPill');
+  var spin=document.getElementById('pillSpin');
+  var ico =document.getElementById('pillIco');
+  pill.className='xfr-pending-pill'+(state!=='pending'?' st-'+state:'');
+  document.getElementById('pillTitle').textContent=label;
+  document.getElementById('pillSub').textContent=sub;
+  if(state==='pending'){ spin.style.display=''; ico.style.display='none'; }
+  else {
+    spin.style.display='none'; ico.style.display='flex';
+    var icMap={approved:'<svg width="13" height="13" fill="none" stroke="#4ade80" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>',declined:'<svg width="13" height="13" fill="none" stroke="#f87171" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',timeout:'<svg width="13" height="13" fill="none" stroke="#fbbf24" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>'};
+    ico.innerHTML=icMap[state]||'';
+  }
+  pill.style.display='flex';
+}
+
+function _hidePill(){ document.getElementById('xfrPendingPill').style.display='none'; }
+
+// ── Toast notifications ───────────────────────────────────────────────────────
+var _toastTimer=null;
+var TOAST_ICONS={
+  approved:'<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>',
+  declined:'<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  timeout: '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>',
+  info:    '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>',
+};
+function showToast(type, title, msg, ms){
+  clearTimeout(_toastTimer);
+  var el=document.getElementById('xfrToast');
+  el.className='xfr-toast '+type;
+  document.getElementById('toastIco').innerHTML=TOAST_ICONS[type]||TOAST_ICONS.info;
+  document.getElementById('toastTitle').textContent=title;
+  document.getElementById('toastMsg').textContent=msg;
+  el.style.display='flex';
+  _toastTimer=setTimeout(closeToast, ms||7000);
+}
+function closeToast(){
+  clearTimeout(_toastTimer);
+  var el=document.getElementById('xfrToast');
+  el.classList.add('out');
+  setTimeout(function(){ el.style.display='none'; el.classList.remove('out'); }, 230);
+}
+
+// ── Notification center ───────────────────────────────────────────────────────
+var _notifUser=null, _notifs=[], _ddOpen=false, _notifChannel=null;
+
+async function loadNotifications(){
+  if(!window._supabase) return;
+  try {
+    var s=await window._supabase.auth.getSession();
+    if(!s.data.session) return;
+    _notifUser=s.data.session.user.id;
+    var {data}=await window._supabase.from('notifications').select('*').eq('user_id',_notifUser).order('created_at',{ascending:false}).limit(25);
+    _notifs=data||[];
+    _renderNotifDd();
+    _updateBadge();
+    _subscribeNotifs();
+    // Resume any pending request from sessionStorage
+    _resumePendingFromStorage();
+  } catch(e){}
+}
+
+function _subscribeNotifs(){
+  if(!window._supabase||!_notifUser||_notifChannel) return;
+  _notifChannel=window._supabase.channel('xfr-notifs-'+_notifUser)
+    .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:'user_id=eq.'+_notifUser}, function(p){
+      _notifs.unshift(p.new);
+      _renderNotifDd();
+      _updateBadge();
+      // Detect transfer status updates
+      var n=p.new;
+      if(n.type==='transaction'||n.type==='admin'){
+        var t=n.title||'';
+        var isApproved=/approved|sent/i.test(t);
+        var isDeclined=/declined|not approved/i.test(t);
+        var toastType=isApproved?'approved':isDeclined?'declined':'info';
+        showToast(toastType, t, n.message||'', 9000);
+        // If this relates to our pending request, update the overlay/pill
+        if(_procReqId&&isApproved) _onApproved(n.message);
+        else if(_procReqId&&isDeclined) _onDeclined(n.message);
+      }
+    })
+    .subscribe();
+}
+
+function _renderNotifDd(){
+  var el=document.getElementById('notifList');
+  if(!_notifs.length){ el.innerHTML='<div class="notif-dd-empty">No notifications yet</div>'; return; }
+  function _ago(iso){
+    var d=Math.floor((Date.now()-new Date(iso))/1000);
+    if(d<60) return 'just now';
+    if(d<3600) return Math.floor(d/60)+'m ago';
+    if(d<86400) return Math.floor(d/3600)+'h ago';
+    return Math.floor(d/86400)+'d ago';
+  }
+  el.innerHTML=_notifs.slice(0,20).map(function(n){
+    var unread=!n.is_read;
+    return '<div class="notif-item'+(unread?' unread':'')+'">'+
+      '<div class="notif-dot'+(unread?'':' read')+'"></div>'+
+      '<div><div class="notif-item-title">'+_esc(n.title||'')+'</div>'+
+      '<div class="notif-item-msg">'+_esc(n.message||'')+'</div>'+
+      '<div class="notif-item-time">'+_ago(n.created_at)+'</div></div></div>';
+  }).join('');
+}
+
+function _updateBadge(){
+  var unread=_notifs.filter(function(n){return !n.is_read;}).length;
+  var b=document.getElementById('notifBadge');
+  b.style.display=unread?'block':'none';
+}
+
+function toggleNotifDd(e){
+  e.stopPropagation();
+  var dd=document.getElementById('notifDd');
+  _ddOpen=!_ddOpen;
+  dd.style.display=_ddOpen?'block':'none';
+  if(_ddOpen) _renderNotifDd();
+}
+
+async function markAllRead(){
+  if(!window._supabase||!_notifUser) return;
+  await window._supabase.from('notifications').update({is_read:true}).eq('user_id',_notifUser).eq('is_read',false);
+  _notifs.forEach(function(n){n.is_read=true;});
+  _renderNotifDd(); _updateBadge();
+}
+
+document.addEventListener('click', function(e){
+  if(_ddOpen && !document.getElementById('notifDd').contains(e.target) && e.target.id!=='notifBtn'){
+    _ddOpen=false; document.getElementById('notifDd').style.display='none';
+  }
+});
+
+// ── Restore pending transfer from sessionStorage ──────────────────────────────
+function _resumePendingFromStorage(){
+  try {
+    var saved=JSON.parse(sessionStorage.getItem('zo_pending_xfr')||'null');
+    if(!saved||!saved.reqId) return;
+    var elapsed=Date.now()-(saved.start||0);
+    if(elapsed>=TIMEOUT_MS){ sessionStorage.removeItem('zo_pending_xfr'); return; }
+    // Still within window — restore polling
+    _procReqId=saved.reqId;
+    _procStart=saved.start||Date.now();
+    document.getElementById('procAmt').textContent=saved.amt||'';
+    _showPill('pending','Transfer In Review','Under Review');
+    _pollTimerId=setInterval(_pollStatus, 12000);
+    _procTimerId=setTimeout(_onTimeout, TIMEOUT_MS-elapsed);
+    showToast('info','Transfer In Review','Your transfer request is still under review. You\'ll be notified as soon as it\'s processed.',6000);
+  } catch(e){ sessionStorage.removeItem('zo_pending_xfr'); }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+window.addEventListener('load', function(){
+  xfrBoot();
+  loadNotifications();
+});
 </script>
-<script src="js/faceid.js"></script>
-<script src="js/notifications.js"></script>
 </body>
 </html>

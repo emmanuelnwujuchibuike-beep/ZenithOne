@@ -113,10 +113,21 @@
       .acct-act-btn { flex:1; justify-content:center; }
     }
 
-    /* ═══════ SEND / RECEIVE MODALS ═══════ */
+    /* ═══════ RECEIVE MODAL (centered) ═══════ */
     .zmodal { display:none; position:fixed; inset:0; z-index:650; background:rgba(0,0,0,.72); backdrop-filter:blur(8px); align-items:center; justify-content:center; padding:16px; }
     .zmodal.open { display:flex; }
     .zsheet { background:linear-gradient(160deg,#0b1628,#0e2040); border:1px solid rgba(201,168,76,.2); border-radius:20px; width:100%; max-width:440px; max-height:92dvh; overflow-y:auto; }
+
+    /* ═══════ SEND MONEY DRAWER (slides from right) ═══════ */
+    .zsend-ovl { position:fixed;inset:0;z-index:650;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity .28s ease; }
+    .zsend-ovl.open { opacity:1;pointer-events:all; }
+    .zsend-drw { position:fixed;top:0;right:0;bottom:0;z-index:651;width:100%;max-width:480px;background:linear-gradient(165deg,#071423,#0b1c38,#081428);border-left:1px solid rgba(201,168,76,.2);transform:translateX(100%);transition:transform .32s cubic-bezier(.25,.46,.45,.94);overflow-y:auto;display:flex;flex-direction:column;box-shadow:-24px 0 80px rgba(0,0,0,.5); }
+    .zsend-drw.open { transform:translateX(0); }
+    .zsend-drw-head { padding:24px 26px;display:flex;align-items:flex-start;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0; }
+    .zsend-drw-x { width:32px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--slate-400);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;margin-left:12px;flex-shrink:0; }
+    .zsend-drw-x:hover { color:var(--white);border-color:rgba(255,255,255,.22); }
+    .zsend-drw-body { padding:20px 26px 32px;flex:1; }
+    @media(max-width:560px){ .zsend-drw { max-width:100%;border-left:none; } }
     .zsheet-head { padding:24px 26px 0; }
     .zsheet-title { font-family:var(--font-display); font-size:1.35rem; color:#fff; }
     .zsheet-sub { font-size:.8rem; color:var(--slate-400); margin-top:4px; }
@@ -252,6 +263,65 @@
       .a-btn-text { display:none; }
       .a-panel { padding:12px; }
     }
+
+    /* ── Account Application Review Modal ── */
+    .aa-status-banner {
+      display:flex; align-items:center; gap:12px;
+      padding:14px 16px; border-radius:12px; margin-bottom:22px;
+      border:1px solid transparent;
+    }
+    .aa-status-dot {
+      width:10px; height:10px; border-radius:50%; flex-shrink:0;
+      animation:aaPulse 2.5s ease infinite;
+    }
+    @keyframes aaPulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+    .aa-review-two { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+    .aa-review-two .aa-row { display:flex; flex-direction:column; gap:3px; padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.05); }
+    .aa-review-two .aa-row:nth-child(2n) { border-left:1px solid rgba(255,255,255,.04); }
+    .aa-row-key { font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; color:var(--slate-500); }
+    .aa-row-val { font-size:.86rem; color:var(--white); word-break:break-word; }
+    .aa-section-hdr {
+      font-size:.62rem; letter-spacing:.18em; text-transform:uppercase;
+      color:var(--gold-500); margin:18px 0 2px;
+      padding-bottom:8px; border-bottom:1px solid rgba(201,168,76,.14);
+      display:flex; align-items:center; gap:8px;
+    }
+    .aa-section-hdr:first-child { margin-top:0; }
+
+    /* Modal footer — stacks on small screens */
+    #aAcctAppModalFooter {
+      padding:16px 28px 22px;
+      border-top:1px solid rgba(255,255,255,.07);
+      display:flex; gap:8px; flex-wrap:wrap; align-items:center;
+    }
+    #aAcctAppModalFooter .aa-right {
+      margin-left:auto; display:flex; gap:8px; align-items:center;
+    }
+    @media(max-width:560px) {
+      #aAcctAppModalFooter { flex-direction:column; padding:14px 20px 20px; }
+      #aAcctAppModalFooter .aa-right { margin-left:0; width:100%; }
+      #aAcctAppModalFooter .aa-right input { flex:1; min-width:0; }
+      #aAcctAppModalFooter .btn { width:100%; justify-content:center; }
+    }
+
+    @media(max-width:440px) {
+      .aa-review-two { grid-template-columns:1fr; }
+      .aa-review-two .aa-row:nth-child(2n) { border-left:none; }
+    }
+
+    /* Applications table — card list on mobile */
+    .aa-app-cards { display:none; }
+    @media(max-width:640px) {
+      .aa-app-table { display:none; }
+      .aa-app-cards { display:flex; flex-direction:column; gap:10px; }
+    }
+    .aa-app-card {
+      background:rgba(255,255,255,.025); border:1px solid rgba(255,255,255,.07);
+      border-radius:14px; padding:16px 18px; cursor:pointer; transition:border-color .2s;
+    }
+    .aa-app-card:hover { border-color:rgba(201,168,76,.25); }
+    .aa-app-card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:10px; }
+    .aa-app-card-bot { display:flex; align-items:center; justify-content:space-between; gap:8px; }
   </style>
 </head>
 <body>
@@ -354,14 +424,23 @@
 
       <!-- Welcome Banner -->
       <div class="welcome-banner" id="welcomeBanner">
-        <div>
-          <div style="font-family:var(--font-display);font-size:1.5rem;margin-bottom:4px;">Good <span id="timeGreeting">morning</span>, <span id="welcomeName"></span> 👋</div>
-          <div style="font-size:.875rem;color:var(--slate-400);">Here's your financial overview for <span id="bannerDate">today</span>.</div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div id="greetingIcon" style="width:44px;height:44px;border-radius:12px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.18);display:flex;align-items:center;justify-content:center;color:var(--gold-400);flex-shrink:0;">
+            <!-- Sun icon (day) — replaced with moon at night by JS -->
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          </div>
+          <div>
+            <div style="font-family:var(--font-display);font-size:1.5rem;margin-bottom:4px;">Good <span id="timeGreeting">morning</span>, <span id="welcomeName"></span></div>
+            <div style="font-size:.875rem;color:var(--slate-400);">Your financial overview for <span id="bannerDate">today</span>.</div>
+          </div>
         </div>
-        <div style="text-align:right;">
-          <div style="font-size:.75rem;color:var(--slate-500);margin-bottom:4px;">Last login</div>
-          <div style="font-size:.85rem;color:var(--slate-300)" id="lastLogin">Today, 9:24 AM</div>
-          <div class="badge badge-green" style="margin-top:6px;">Secure Session</div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--slate-500);margin-bottom:5px;">Last Login</div>
+          <div style="font-size:.84rem;color:var(--slate-300);font-weight:500;" id="lastLogin">—</div>
+          <div style="display:inline-flex;align-items:center;gap:5px;margin-top:7px;background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.2);border-radius:99px;padding:3px 10px 3px 8px;">
+            <svg width="9" height="9" viewBox="0 0 9 9"><circle cx="4.5" cy="4.5" r="4.5" fill="#4ade80"/></svg>
+            <span style="font-size:.65rem;font-weight:600;letter-spacing:.08em;color:#4ade80;text-transform:uppercase;">Secure Session</span>
+          </div>
         </div>
       </div>
 
@@ -1000,6 +1079,21 @@
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 4S15 8 8 8H4a2 2 0 0 0 0 4h.5l1 8h3l1-4c1 .07 2 .2 3 .4"/><path d="M22 4c0 4-2 7-3 8"/></svg>
           Broadcast
         </button>
+        <button class="a-tab-btn" data-tab="linked" onclick="aSelectTab('linked')" id="aTabLinked">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+          Linked Accts
+          <span id="aLinkedBadge" style="display:none;background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3);border-radius:99px;font-size:.58rem;font-weight:700;letter-spacing:.08em;padding:2px 7px;margin-left:4px;"></span>
+        </button>
+        <button class="a-tab-btn" data-tab="acctapps" onclick="aSelectTab('acctapps')" id="aTabAcctApps">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Acct Applications
+          <span id="aAcctAppsBadge" style="display:none;background:rgba(201,168,76,.15);color:#c9a84c;border:1px solid rgba(201,168,76,.3);border-radius:99px;font-size:.58rem;font-weight:700;letter-spacing:.08em;padding:2px 7px;margin-left:4px;"></span>
+        </button>
+        <button class="a-tab-btn" data-tab="transfers" onclick="aSelectTab('transfers')" id="aTabTransfers">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>
+          Transfers
+          <span id="aTransfersBadge" style="display:none;background:rgba(251,113,133,.15);color:#fb7185;border:1px solid rgba(251,113,133,.3);border-radius:99px;font-size:.58rem;font-weight:700;letter-spacing:.08em;padding:2px 7px;margin-left:4px;"></span>
+        </button>
       </nav>
 
       <!-- Actions -->
@@ -1024,6 +1118,9 @@
       <button class="a-mtab" data-tab="credit" onclick="aSelectTab('credit')">Credit &amp; Loans</button>
       <button class="a-mtab" data-tab="loanapps" onclick="aSelectTab('loanapps')">Loan Apps</button>
       <button class="a-mtab" data-tab="broadcast" onclick="aSelectTab('broadcast')">Broadcast</button>
+      <button class="a-mtab" data-tab="linked" onclick="aSelectTab('linked')">Linked Accts</button>
+      <button class="a-mtab" data-tab="acctapps" onclick="aSelectTab('acctapps')">Acct Apps</button>
+      <button class="a-mtab" data-tab="transfers" onclick="aSelectTab('transfers')">Transfers</button>
     </div>
   </header>
 
@@ -1537,8 +1634,132 @@
       </div><!-- /aBroadcastPanel -->
     </div><!-- /aTab_broadcast -->
 
+    <!-- ─────────────────────────────────────────────────────
+         TAB: LINKED ACCOUNTS & CARDS
+    ───────────────────────────────────────────────────── -->
+    <div id="aTab_linked" class="a-tab-panel a-panel" style="display:none;">
+      <div class="a-card">
+        <div class="a-section-header" style="margin-bottom:20px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="a-section-title">Linked Account & Card Requests</div>
+              <div id="aLinkedPendingBadge" style="display:none;font-size:.68rem;letter-spacing:.08em;color:#f59e0b;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);padding:3px 10px;border-radius:99px;"></div>
+            </div>
+            <div class="a-section-sub">Review and approve or decline member bank account and card linking requests</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <select id="aLinkedFilter" class="form-input form-select" style="width:160px;padding:7px 12px;font-size:.8rem;" onchange="aRenderLinked()">
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="declined">Declined</option>
+              <option value="all">All Requests</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="aLoadLinked()" style="font-size:.78rem;">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+        <div id="aLinkedTable"><div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading…</div></div>
+      </div>
+    </div><!-- /aTab_linked -->
+
+    <!-- ─────────────────────────────────────────────────────
+         TAB: ACCOUNT APPLICATIONS
+    ───────────────────────────────────────────────────── -->
+    <div id="aTab_acctapps" class="a-tab-panel a-panel" style="display:none;">
+      <div class="a-card">
+        <div class="a-section-header" style="margin-bottom:20px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="a-section-title">Account Opening Applications</div>
+              <div id="aAcctAppsPendingBadge" style="display:none;font-size:.68rem;letter-spacing:.08em;color:#c9a84c;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);padding:3px 10px;border-radius:99px;"></div>
+            </div>
+            <div class="a-section-sub">Review, approve, or decline member applications to open new accounts</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <select id="aAcctAppsFilter" class="form-input form-select" style="width:160px;padding:7px 12px;font-size:.8rem;" onchange="aRenderAcctApps()">
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="declined">Declined</option>
+              <option value="under_review">Under Review</option>
+              <option value="all">All Applications</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="aLoadAcctApps()" style="font-size:.78rem;">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+        <div id="aAcctAppsTable"><div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading…</div></div>
+      </div>
+    </div><!-- /aTab_acctapps -->
+
+    <!-- ─────────────────────────────────────────────────────
+         TAB: TRANSFER REQUESTS
+    ───────────────────────────────────────────────────── -->
+    <div id="aTab_transfers" class="a-tab-panel a-panel" style="display:none;">
+      <div class="a-card">
+        <div class="a-section-header" style="margin-bottom:20px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="a-section-title">Transfer Requests</div>
+              <span id="aXfrPendingCount" style="display:none;background:rgba(251,113,133,.12);color:#fb7185;border:1px solid rgba(251,113,133,.25);border-radius:99px;font-size:.62rem;font-weight:700;letter-spacing:.08em;padding:3px 10px;"></span>
+            </div>
+            <div class="a-section-sub">Pending member transfer requests — approve or decline within the 5-minute window</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <select id="aXfrFilter" class="zinput" style="font-size:.75rem;padding:6px 10px;min-width:120px;" onchange="aLoadTransfers()">
+              <option value="pending">Pending</option>
+              <option value="all">All Requests</option>
+              <option value="approved">Approved</option>
+              <option value="declined">Declined</option>
+              <option value="expired">Expired</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="aLoadTransfers()" style="font-size:.75rem;">Refresh</button>
+          </div>
+        </div>
+        <div id="aXfrTable"><div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading…</div></div>
+      </div>
+    </div><!-- /aTab_transfers -->
+
   </div><!-- /adminPanelContent -->
 </div><!-- /adminOverlay -->
+
+<!-- Admin: Account Application Review Modal -->
+<div id="aAcctAppReviewModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 20px;" onclick="if(event.target===this)aCloseAcctAppReview()">
+  <div class="card card-elevated" style="width:580px;max-width:96vw;padding:0;position:relative;border-radius:20px;overflow:hidden;border:1px solid rgba(201,168,76,.2);box-shadow:0 32px 80px rgba(0,0,0,.65);" onclick="event.stopPropagation()">
+    <div style="background:linear-gradient(135deg,#08141f,#0d1e30);padding:24px 28px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(201,168,76,.65);margin-bottom:6px;">Account Application</div>
+        <div style="font-family:var(--font-display);font-size:1.35rem;color:#fff;" id="aAcctAppModalTitle">Review Application</div>
+        <div style="font-size:.78rem;color:var(--slate-400);margin-top:4px;" id="aAcctAppModalSub"></div>
+      </div>
+      <button onclick="aCloseAcctAppReview()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;color:var(--slate-400);cursor:pointer;padding:8px;line-height:0;">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div style="padding:24px 28px;max-height:70vh;overflow-y:auto;" id="aAcctAppModalBody"></div>
+    <div id="aAcctAppModalFooter">
+      <button class="btn btn-ghost" onclick="aAcctAppDecide('under_review')" id="aBtnUnderReview" style="background:rgba(96,165,250,.08);border-color:rgba(96,165,250,.25);color:#60a5fa;">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Under Review
+      </button>
+      <button class="btn btn-ghost" onclick="aAcctAppDecide('declined')" id="aBtnDecline" style="background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.25);color:#f87171;">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Decline
+      </button>
+      <div class="aa-right">
+        <input type="text" id="aAcctAppNote" placeholder="Admin note (optional)…" style="padding:9px 12px;border-radius:9px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#fff;font-size:.82rem;outline:none;width:180px;" />
+        <button class="btn btn-primary" onclick="aAcctAppDecide('approved')" id="aBtnApproveAcct" style="background:linear-gradient(135deg,#92730e,#c9a84c);border:none;color:#04090f;font-weight:800;">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Approve
+        </button>
+      </div>
+    </div>
+    <div id="aAcctAppModalStatus" style="text-align:center;padding:0 28px 16px;font-size:.8rem;color:var(--slate-400);min-height:20px;"></div>
+  </div>
+</div>
 
 <!-- Admin: Approve Loan Modal -->
 <div id="aApproveLoanModal" style="display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;" onclick="if(event.target===this)aCloseApproveModal()">
@@ -1765,50 +1986,83 @@
   </div>
 </div>
 
-<!-- ═══════ SEND MONEY MODAL ═══════ -->
-<div id="sendModal" class="zmodal" onclick="if(event.target===this)closeSendModal()">
-  <div class="zsheet">
-    <div class="zsheet-head">
-      <div class="zsheet-title">Send Money</div>
-      <div class="zsheet-sub">Transfer to any ZenithOne account by number</div>
+<!-- ═══════ SEND MONEY DRAWER (slides from right) ═══════ -->
+<div class="zsend-ovl" id="sendDrawerOvl" onclick="closeSendModal()"></div>
+<div class="zsend-drw" id="sendModal" role="dialog" aria-modal="true" aria-label="Send Money">
+  <div class="zsend-drw-head">
+    <div>
+      <div style="font-family:var(--font-display);font-size:1.35rem;color:#fff;">Send Money</div>
+      <div style="font-size:.76rem;color:var(--slate-400);margin-top:3px;">Transfer to any ZenithOne member · reviewed before processing</div>
     </div>
-    <div class="zsheet-body">
-      <div class="zfield-label">From Account</div>
-      <select id="sendFromAccount" class="zinput"></select>
+    <button class="zsend-drw-x" onclick="closeSendModal()" aria-label="Close">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="zsend-drw-body">
+    <div class="zfield-label">From Account</div>
+    <select id="sendFromAccount" class="zinput"></select>
 
-      <div class="zfield-label">Recipient Account Number</div>
-      <div style="display:flex;gap:8px;">
-        <input id="sendToNumber" class="zinput mono" maxlength="10" inputmode="numeric" autocomplete="off" placeholder="10-digit number" oninput="onSendNumberInput()">
-        <button class="acct-copy-btn" id="sendVerifyBtn" onclick="verifyRecipient()" style="white-space:nowrap;">Verify</button>
-      </div>
-      <div id="sendRecipBox"></div>
-
-      <div class="zfield-label">Amount (USD)</div>
-      <input id="sendAmount" class="zinput" type="number" min="0" step="0.01" placeholder="0.00">
-
-      <div class="zfield-label">Memo (optional)</div>
-      <input id="sendMemo" class="zinput" maxlength="80" placeholder="What's it for?">
-
-      <!-- Auth: biometric (primary) or PIN (fallback) -->
-      <div id="sendBioRow" style="display:none;">
-        <div class="zfield-label" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-          Transaction Authorization
-          <button type="button" style="background:none;border:none;font-size:.72rem;color:rgba(201,168,76,.75);cursor:pointer;padding:0;letter-spacing:.02em;" onclick="switchSendToPIN()">Use PIN instead →</button>
-        </div>
-        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:11px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.18);">
-          <svg width="16" height="16" fill="none" stroke="#c9a84c" stroke-width="1.7" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10h.01M15 10h.01"/><path d="M9.5 15a3.5 3.5 0 0 0 5 0"/></svg>
-          <span style="font-size:.82rem;color:rgba(255,255,255,.55);" id="sendBioHint">Tap Send to authorize with Face ID</span>
-        </div>
-      </div>
-      <div id="sendPinRow">
-        <div class="zfield-label">Transaction PIN</div>
-        <input id="sendPin" class="zinput mono" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="••••" style="text-align:center;letter-spacing:.5em;font-size:1.3rem;">
-      </div>
-
-      <div class="zerr" id="sendErr"></div>
-      <button class="zbtn-primary" id="sendSubmitBtn" onclick="submitSend()" disabled>Verify recipient to continue</button>
-      <button class="zbtn-ghost" onclick="closeSendModal()">Cancel</button>
+    <div class="zfield-label" style="margin-top:16px;">Recipient Account Number</div>
+    <div style="font-size:.7rem;color:var(--slate-500);margin-bottom:6px;">ZenithOne member or external bank account</div>
+    <div style="display:flex;gap:8px;align-items:stretch;">
+      <input id="sendToNumber" class="zinput mono" style="flex:1;" maxlength="17" inputmode="numeric" autocomplete="off" placeholder="Account number" oninput="onSendNumberInput()">
+      <button class="acct-copy-btn" id="sendVerifyBtn" onclick="verifyRecipient()" style="white-space:nowrap;padding:0 16px;">Verify</button>
     </div>
+    <div id="sendRecipBox"></div>
+
+    <!-- Amount hero -->
+    <div style="background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:22px 18px;text-align:center;margin:18px 0;transition:border-color .18s;" id="sendAmtHero">
+      <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--slate-500);margin-bottom:10px;">Amount (USD)</div>
+      <div style="display:flex;align-items:flex-end;justify-content:center;gap:4px;">
+        <span style="font-family:var(--font-display);font-size:2rem;color:var(--slate-500);line-height:1;padding-bottom:4px;">$</span>
+        <input id="sendAmount" style="background:transparent;border:none;outline:none;font-family:var(--font-display);font-size:2.6rem;color:#fff;width:100%;max-width:200px;text-align:center;line-height:1;" type="number" min="0" step="0.01" placeholder="0.00">
+      </div>
+      <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px;">
+        <button style="padding:4px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--slate-300);font-size:.72rem;cursor:pointer;" onclick="document.getElementById('sendAmount').value=50">$50</button>
+        <button style="padding:4px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--slate-300);font-size:.72rem;cursor:pointer;" onclick="document.getElementById('sendAmount').value=100">$100</button>
+        <button style="padding:4px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--slate-300);font-size:.72rem;cursor:pointer;" onclick="document.getElementById('sendAmount').value=250">$250</button>
+        <button style="padding:4px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--slate-300);font-size:.72rem;cursor:pointer;" onclick="document.getElementById('sendAmount').value=500">$500</button>
+      </div>
+    </div>
+
+    <div class="zfield-label">Memo (optional)</div>
+    <input id="sendMemo" class="zinput" maxlength="80" placeholder="What's it for?">
+
+    <!-- Auth: biometric (primary) or PIN (fallback) -->
+    <div id="sendBioRow" style="display:none;margin-top:16px;">
+      <div class="zfield-label" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        Transaction Authorization
+        <button type="button" style="background:none;border:none;font-size:.7rem;color:rgba(201,168,76,.75);cursor:pointer;padding:0;" onclick="switchSendToPIN()">Use PIN instead →</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:11px;background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.18);">
+        <svg width="15" height="15" fill="none" stroke="#c9a84c" stroke-width="1.7" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10h.01M15 10h.01"/><path d="M9.5 15a3.5 3.5 0 0 0 5 0"/></svg>
+        <span style="font-size:.8rem;color:rgba(255,255,255,.55);" id="sendBioHint">Tap Send to authorize with Face ID</span>
+      </div>
+    </div>
+    <div id="sendPinRow" style="display:none;margin-top:16px;">
+      <div class="zfield-label">Transaction PIN</div>
+      <input id="sendPin" class="zinput mono" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="••••" style="text-align:center;letter-spacing:.5em;font-size:1.4rem;padding:14px;">
+    </div>
+
+    <!-- Limits -->
+    <div style="display:flex;gap:8px;margin-top:18px;">
+      <div style="flex:1;text-align:center;padding:10px;border-radius:10px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);">
+        <div style="font-family:var(--font-display);font-size:.9rem;color:#fff;">$50,000</div>
+        <div style="font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-500);margin-top:2px;">Per Transfer</div>
+      </div>
+      <div style="flex:1;text-align:center;padding:10px;border-radius:10px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);">
+        <div style="font-family:var(--font-display);font-size:.9rem;color:#fff;">5 Min</div>
+        <div style="font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-500);margin-top:2px;">Approval Window</div>
+      </div>
+      <div style="flex:1;text-align:center;padding:10px;border-radius:10px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);">
+        <div style="font-family:var(--font-display);font-size:.9rem;color:#fff;">Free</div>
+        <div style="font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-500);margin-top:2px;">No Fee</div>
+      </div>
+    </div>
+
+    <div class="zerr" id="sendErr"></div>
+    <button class="zbtn-primary" id="sendSubmitBtn" onclick="submitSend()" disabled>Verify recipient to continue</button>
+    <button class="zbtn-ghost" onclick="closeSendModal()">Cancel</button>
   </div>
 </div>
 
@@ -1829,14 +2083,20 @@
 <script src="js/auth.js"></script>
 <script src="js/dashboard.js"></script>
 <script>
-// Date/time greeting
+// Date/time greeting + icon
 (function() {
   const hour = new Date().getHours();
-  document.getElementById('timeGreeting').textContent = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+  const greeting = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+  document.getElementById('timeGreeting').textContent = greeting;
   const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
   const date = new Date().toLocaleDateString('en-US', opts);
   document.getElementById('topbarDate').textContent = date;
   document.getElementById('bannerDate').textContent = date;
+  // Swap greeting icon to moon for evening/night
+  if (hour >= 18 || hour < 6) {
+    var gi = document.getElementById('greetingIcon');
+    if (gi) gi.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  }
 })();
 
 // Mobile sidebar
@@ -1963,6 +2223,12 @@ window.addEventListener('load', () => {
   loadDashboardData();
 });
 
+document.addEventListener('keydown', function(e) {
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('sendModal').classList.contains('open')) { closeSendModal(); return; }
+  if (document.getElementById('receiveModal') && document.getElementById('receiveModal').classList.contains('open')) { closeReceiveModal(); }
+});
+
 function openPayBillModal() { zenithToast('Bill Pay is coming soon. Contact ZenithOne Private Banking to arrange a payment.', 'info'); }
 
 // ═══ SECRET ADMIN PANEL ════════════════════════════════════════
@@ -2035,7 +2301,7 @@ async function openAdminPanel() {
     // Background-load all other tab data without blocking the UI
     Promise.all([
       aLoadUsers(), aLoadCardRequests(), aLoadCardPricing(),
-      aLoadRewards(), aLoadPins(), aLoadAccountRequests(), aLoadLoanApplications(),
+      aLoadRewards(), aLoadPins(), aLoadAccountRequests(), aLoadLoanApplications(), aLoadLinked(), aLoadAcctApps(), aLoadTransfers(),
     ]).then(() => aPopulateCreditMemberSelect()).catch(() => {});
   } catch(e) {
     let msg = e.message || '';
@@ -2060,7 +2326,6 @@ async function aLoadStats() {
   document.getElementById('aStatTxns').textContent     = (data.transaction_count || 0).toLocaleString();
   document.getElementById('aStatUpdated').textContent  = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
-  const ICONS = { Shopping:'🛍️', Income:'💵', Dining:'🍽️', Travel:'✈️', Interest:'💰', Groceries:'🛒', Transfer:'↙️', Investment:'📈', Utilities:'⚡', Entertainment:'🎬' };
   const txns = data.recent_transactions || [];
   document.getElementById('aRecentTxns').innerHTML = txns.length === 0
     ? '<div style="color:var(--slate-500);font-size:.85rem;">No transactions yet.</div>'
@@ -2068,7 +2333,7 @@ async function aLoadStats() {
         const isCredit = ['credit','transfer_in','interest'].includes(t.transaction_type);
         const amt = (isCredit ? '+' : '-') + '$' + Math.abs(t.amount).toLocaleString('en-US', { minimumFractionDigits: 2 });
         const d   = new Date(t.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        return `<div class="transaction-item"><div class="transaction-icon" style="font-size:1rem;">${ICONS[t.category]||'💳'}</div><div class="transaction-info"><div class="transaction-name" style="font-size:.85rem;">${t.description}</div><div class="transaction-date">${d}</div></div><div class="transaction-amount ${isCredit?'credit':'debit'}" style="font-size:.9rem;">${amt}</div></div>`;
+        return `<div class="transaction-item"><div class="transaction-icon">${_txCatIcon(t.category)}</div><div class="transaction-info"><div class="transaction-name" style="font-size:.85rem;">${t.description}</div><div class="transaction-date">${d}</div></div><div class="transaction-amount ${isCredit?'credit':'debit'}" style="font-size:.9rem;">${amt}</div></div>`;
       }).join('');
 
   const newUsers = data.recent_users || [];
@@ -2230,8 +2495,381 @@ async function aRejectAcctRequest(requestId, memberName) {
 }
 
 async function refreshAdminAll() {
-  await Promise.all([aLoadStats(), aLoadUsers(), aLoadCardRequests(), aLoadCardPricing(), aLoadRewards(), aLoadPins(), aLoadAccountRequests(), aLoadLoanApplications()]);
+  await Promise.all([aLoadStats(), aLoadUsers(), aLoadCardRequests(), aLoadCardPricing(), aLoadRewards(), aLoadPins(), aLoadAccountRequests(), aLoadLoanApplications(), aLoadLinked(), aLoadAcctApps(), aLoadTransfers()]);
   aPopulateCreditMemberSelect();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+//  ADMIN — LINKED ACCOUNTS & CARDS
+// ═══════════════════════════════════════════════════════════════════════════
+var _aLinkedData = [];
+
+async function aLoadLinked() {
+  const container = document.getElementById('aLinkedTable');
+  if (container) container.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading…</div>';
+  try {
+    const filter = document.getElementById('aLinkedFilter')?.value || 'pending';
+    const res = await callEdgeFunction('link-external-account', { action: 'list_pending', status: filter });
+    _aLinkedData = res.linked_accounts || [];
+    const pendingCount = _aLinkedData.filter(r => r.status === 'pending').length;
+    const badge = document.getElementById('aLinkedBadge');
+    const panelBadge = document.getElementById('aLinkedPendingBadge');
+    if (badge) {
+      badge.textContent = pendingCount ? pendingCount + ' pending' : '';
+      badge.style.display = pendingCount ? '' : 'none';
+    }
+    if (panelBadge) {
+      panelBadge.textContent = pendingCount + ' pending';
+      panelBadge.style.display = pendingCount ? '' : 'none';
+    }
+    aRenderLinked();
+  } catch(e) {
+    let msg = e.message || 'Failed to load.';
+    try { msg = JSON.parse(e.message).error || msg; } catch {}
+    if (container) container.innerHTML =
+      '<div style="color:var(--slate-500);font-size:.84rem;padding:20px 0;text-align:center;">' +
+      '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="display:block;margin:0 auto 10px;opacity:.35"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>' +
+      msg + '<br><button onclick="aLoadLinked()" style="margin-top:10px;background:none;border:none;color:var(--gold-400);cursor:pointer;font-size:.8rem;text-decoration:underline;">Try again</button></div>';
+  }
+}
+
+function aRenderLinked() {
+  const container = document.getElementById('aLinkedTable');
+  if (!container) return;
+  const filter = document.getElementById('aLinkedFilter')?.value || 'pending';
+  const items = filter === 'all' ? _aLinkedData : _aLinkedData.filter(r => r.status === filter);
+
+  if (!items.length) {
+    container.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;padding:28px 0;text-align:center;">No ' + (filter === 'all' ? '' : filter + ' ') + 'requests found.</div>';
+    return;
+  }
+
+  const NET_COLORS = { visa:'#1a56db', mc:'#e65c00', amex:'#2e77bc', discover:'#e86c00', unknown:'#94a3b8' };
+  const NET_LABELS = { visa:'Visa', mc:'Mastercard', amex:'Amex', discover:'Discover', unknown:'Unknown' };
+
+  container.innerHTML = items.map(function(r) {
+    const isCard = r.type === 'card';
+    const net = r.card_network || 'unknown';
+    const netColor = NET_COLORS[net] || '#94a3b8';
+    const netLabel = NET_LABELS[net] || 'Card';
+
+    const statusBadge = r.status === 'pending'
+      ? '<span style="background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.28);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:99px;">Pending</span>'
+      : r.status === 'approved'
+        ? '<span style="background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.25);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:99px;">Approved</span>'
+        : '<span style="background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.25);font-size:.62rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:99px;">Declined</span>';
+
+    const iconBg = isCard ? netColor + '22' : 'rgba(201,168,76,.1)';
+    const iconColor = isCard ? netColor : '#c9a84c';
+    const icon = isCard
+      ? '<svg width="15" height="15" fill="none" stroke="'+iconColor+'" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>'
+      : '<svg width="15" height="15" fill="none" stroke="'+iconColor+'" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>';
+
+    const title = isCard
+      ? netLabel + ' •••• ' + (r.card_last4 || '????')
+      : (r.bank_name || 'Bank') + ' •••••••' + (r.account_number_last4 || '??');
+    const subtitle = isCard
+      ? (r.card_expiry_mo && r.card_expiry_yr ? 'Exp ' + r.card_expiry_mo + '/' + r.card_expiry_yr.slice(-2) : '') + (r.card_name ? ' · ' + r.card_name : '')
+      : (r.account_type ? r.account_type.charAt(0).toUpperCase() + r.account_type.slice(1) : '') + (r.nickname ? ' · ' + r.nickname : '');
+
+    const submittedDate = r.created_at ? new Date(r.created_at).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}) : '—';
+
+    const actionBtns = r.status === 'pending' ? `
+      <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
+        <button onclick="aApproveLinked('${r.id}')" style="padding:6px 14px;border-radius:8px;border:1px solid rgba(74,222,128,.3);background:rgba(74,222,128,.08);color:#4ade80;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='rgba(74,222,128,.18)'" onmouseout="this.style.background='rgba(74,222,128,.08)'">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="margin-right:4px;vertical-align:middle;"><path d="M20 6L9 17l-5-5"/></svg>Approve
+        </button>
+        <button onclick="aDeclineLinked('${r.id}')" style="padding:6px 14px;border-radius:8px;border:1px solid rgba(248,113,113,.3);background:rgba(248,113,113,.08);color:#f87171;font-size:.75rem;font-weight:600;cursor:pointer;transition:all .15s;" onmouseover="this.style.background='rgba(248,113,113,.18)'" onmouseout="this.style.background='rgba(248,113,113,.08)'">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="margin-right:4px;vertical-align:middle;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Decline
+        </button>
+      </div>` : '<div style="font-size:.75rem;color:var(--slate-500);">' + (r.reviewed_at ? new Date(r.reviewed_at).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '') + '</div>';
+
+    return '<div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.05);">' +
+      '<div style="width:36px;height:36px;border-radius:9px;background:'+iconBg+';display:flex;align-items:center;justify-content:center;flex-shrink:0;">' + icon + '</div>' +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;flex-wrap:wrap;">' +
+          '<span style="font-size:.84rem;font-weight:600;color:var(--white);">' + title + '</span>' +
+          statusBadge +
+        '</div>' +
+        '<div style="font-size:.72rem;color:var(--slate-400);">' + subtitle + ' &nbsp;·&nbsp; ' + (r.user_name||'') + ' &nbsp;&bull;&nbsp; ' + submittedDate + '</div>' +
+        (r.admin_note ? '<div style="font-size:.7rem;color:var(--slate-500);margin-top:3px;">Note: ' + r.admin_note + '</div>' : '') +
+      '</div>' +
+      actionBtns +
+    '</div>';
+  }).join('');
+}
+
+async function aApproveLinked(id) {
+  const note = prompt('Optional note to member (leave blank to skip):') || undefined;
+  if (!await zenithConfirm('Approve this linking request? An approval email will be sent to the member.', { title:'Approve Request', confirmLabel:'Yes, Approve', type:'success' })) return;
+  try {
+    await callEdgeFunction('link-external-account', { action:'verify', request_id:id, decision:'approved', admin_note:note });
+    zenithToast('Request approved. Member notified by email.', 'success');
+    await aLoadLinked();
+  } catch(e) {
+    zenithToast(e.message||'Failed to approve.', 'error');
+  }
+}
+
+async function aDeclineLinked(id) {
+  const note = prompt('Reason for declining (shown to member):') || 'Unable to verify at this time.';
+  if (!await zenithConfirm('Decline this linking request? A decline email will be sent to the member.', { title:'Decline Request', confirmLabel:'Decline', type:'warning' })) return;
+  try {
+    await callEdgeFunction('link-external-account', { action:'verify', request_id:id, decision:'declined', admin_note:note });
+    zenithToast('Request declined. Member notified.', 'info');
+    await aLoadLinked();
+  } catch(e) {
+    zenithToast(e.message||'Failed to decline.', 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ACCOUNT APPLICATIONS — Admin Tab
+// ═══════════════════════════════════════════════════════════════
+let _aAcctApps = [];
+let _aCurrentAcctApp = null;
+
+async function aLoadAcctApps() {
+  try {
+    const res = await callEdgeFunction('open-account', { action: 'list_pending' });
+    _aAcctApps = res.applications || [];
+    // Update badge
+    const pending = _aAcctApps.filter(a => a.status === 'pending').length;
+    const badge = document.getElementById('aAcctAppsBadge');
+    const topBadge = document.getElementById('aAcctAppsPendingBadge');
+    if (badge) { badge.style.display = pending ? 'inline' : 'none'; badge.textContent = pending; }
+    if (topBadge) { topBadge.style.display = pending ? 'inline' : 'none'; topBadge.textContent = pending + ' Pending'; }
+    aRenderAcctApps();
+  } catch(e) {
+    const t = document.getElementById('aAcctAppsTable');
+    if (t) t.innerHTML = '<div style="color:#f87171;font-size:.82rem;padding:12px 0;">Failed to load: ' + (e.message||'error') + '</div>';
+  }
+}
+
+function aRenderAcctApps() {
+  const filter = (document.getElementById('aAcctAppsFilter')||{}).value || 'pending';
+  const apps = filter === 'all' ? _aAcctApps : _aAcctApps.filter(a => a.status === filter);
+  const t = document.getElementById('aAcctAppsTable');
+  if (!t) return;
+
+  if (!apps.length) {
+    t.innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--slate-500);font-size:.85rem;">No '+(filter==='all'?'':filter+' ')+'applications found.</div>';
+    return;
+  }
+
+  const statusColors = { pending:'#fbbf24', approved:'#4ade80', declined:'#f87171', under_review:'#60a5fa' };
+  const statusBgs = { pending:'rgba(251,191,36,.12)', approved:'rgba(74,222,128,.1)', declined:'rgba(248,113,113,.1)', under_review:'rgba(96,165,250,.1)' };
+  const statusBorders = { pending:'rgba(251,191,36,.3)', approved:'rgba(74,222,128,.3)', declined:'rgba(248,113,113,.3)', under_review:'rgba(96,165,250,.3)' };
+
+  const rows = apps.map(a => {
+    const sc = statusColors[a.status] || '#888';
+    const sb = statusBgs[a.status] || 'rgba(255,255,255,.05)';
+    const sbd = statusBorders[a.status] || 'rgba(255,255,255,.1)';
+    const d = new Date(a.created_at);
+    const dateStr = d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    const label = a.status === 'under_review' ? 'Under Review' : (a.status||'pending').charAt(0).toUpperCase()+(a.status||'').slice(1);
+    return `<tr style="border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer;" onclick="aOpenAcctAppReview('${a.id}')" onmouseover="this.style.background='rgba(255,255,255,.03)'" onmouseout="this.style.background=''">
+      <td style="padding:14px 12px;">
+        <div style="font-size:.88rem;font-weight:600;color:var(--white);margin-bottom:2px;">${a.account_type_label||a.account_type}</div>
+        <div style="font-size:.72rem;color:var(--slate-400);">Ref: ${(a.id||'').slice(0,8).toUpperCase()}</div>
+      </td>
+      <td style="padding:14px 12px;">
+        <div style="font-size:.85rem;color:var(--white);">${a.first_name||''} ${a.last_name||''}</div>
+        <div style="font-size:.72rem;color:var(--slate-400);">${dateStr}</div>
+      </td>
+      <td style="padding:14px 12px;font-size:.82rem;color:var(--slate-300);">${a.city||'—'}, ${a.state||''}</td>
+      <td style="padding:14px 12px;">
+        <span style="display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:4px 11px;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:${sb};border:1px solid ${sbd};color:${sc};">${label}</span>
+      </td>
+      <td style="padding:14px 12px;text-align:right;">
+        <button onclick="event.stopPropagation();aOpenAcctAppReview('${a.id}')" style="background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);color:#c9a84c;border-radius:8px;padding:6px 12px;font-size:.75rem;cursor:pointer;">Review</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Mobile card list
+  const cards = apps.map(a => {
+    const sc = statusColors[a.status] || '#888';
+    const sb = statusBgs[a.status] || 'rgba(255,255,255,.05)';
+    const sbd = statusBorders[a.status] || 'rgba(255,255,255,.1)';
+    const d = new Date(a.created_at);
+    const dateStr = d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    const label = a.status === 'under_review' ? 'Under Review' : (a.status||'pending').charAt(0).toUpperCase()+(a.status||'').slice(1);
+    return `<div class="aa-app-card" onclick="aOpenAcctAppReview('${a.id}')">
+      <div class="aa-app-card-top">
+        <div>
+          <div style="font-size:.9rem;font-weight:600;color:var(--white);margin-bottom:3px;">${a.account_type_label||a.account_type}</div>
+          <div style="font-size:.76rem;color:var(--slate-300);">${a.first_name||''} ${a.last_name||''}</div>
+          <div style="font-size:.7rem;color:var(--slate-400);margin-top:2px;">${dateStr} · ${a.city||'—'}, ${a.state||''}</div>
+        </div>
+        <span style="display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:4px 11px;font-size:.67rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;background:${sb};border:1px solid ${sbd};color:${sc};flex-shrink:0;">${label}</span>
+      </div>
+      <div class="aa-app-card-bot">
+        <div style="font-size:.68rem;color:var(--slate-500);font-family:monospace;">Ref: ${(a.id||'').slice(0,8).toUpperCase()}</div>
+        <button onclick="event.stopPropagation();aOpenAcctAppReview('${a.id}')" style="background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);color:#c9a84c;border-radius:8px;padding:5px 12px;font-size:.74rem;cursor:pointer;">Review →</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  t.innerHTML = `<div class="aa-app-table"><table style="width:100%;border-collapse:collapse;">
+    <thead><tr style="border-bottom:1px solid rgba(255,255,255,.08);">
+      <th style="padding:10px 12px;text-align:left;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-500);font-weight:500;">Account Type</th>
+      <th style="padding:10px 12px;text-align:left;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-500);font-weight:500;">Applicant</th>
+      <th style="padding:10px 12px;text-align:left;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-500);font-weight:500;">Location</th>
+      <th style="padding:10px 12px;text-align:left;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-500);font-weight:500;">Status</th>
+      <th style="padding:10px 12px;text-align:right;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-500);font-weight:500;">Action</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div><div class="aa-app-cards">${cards}</div>`;
+}
+
+function aOpenAcctAppReview(id) {
+  _aCurrentAcctApp = _aAcctApps.find(a => a.id === id);
+  if (!_aCurrentAcctApp) return;
+  const a = _aCurrentAcctApp;
+
+  document.getElementById('aAcctAppModalTitle').textContent = a.account_type_label || a.account_type;
+  document.getElementById('aAcctAppModalSub').textContent = (a.first_name||'') + ' ' + (a.last_name||'') + ' · Applied ' + new Date(a.created_at).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('aAcctAppNote').value = a.admin_note || '';
+  document.getElementById('aAcctAppModalStatus').textContent = '';
+
+  const escV = v => String(v||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const blank = '<span style="opacity:.3;">—</span>';
+  const fv = v => (v != null && v !== '') ? escV(v) : blank;
+
+  // Status banner
+  const statusMeta = {
+    pending:      { color:'#fbbf24', bg:'rgba(251,191,36,.06)',  border:'rgba(251,191,36,.2)',  label:'Pending Review' },
+    approved:     { color:'#4ade80', bg:'rgba(74,222,128,.05)',  border:'rgba(74,222,128,.2)',  label:'Approved' },
+    declined:     { color:'#f87171', bg:'rgba(248,113,113,.05)', border:'rgba(248,113,113,.2)', label:'Declined' },
+    under_review: { color:'#60a5fa', bg:'rgba(96,165,250,.05)',  border:'rgba(96,165,250,.2)',  label:'Under Review' },
+  };
+  const sm = statusMeta[a.status] || { color:'#94a3b8', bg:'rgba(255,255,255,.03)', border:'rgba(255,255,255,.1)', label: a.status||'Pending' };
+
+  const banner = `<div class="aa-status-banner" style="background:${sm.bg};border-color:${sm.border};">
+    <div class="aa-status-dot" style="background:${sm.color};box-shadow:0 0 8px ${sm.color}88;"></div>
+    <div style="flex:1;">
+      <div style="font-size:.8rem;font-weight:700;color:${sm.color};letter-spacing:.04em;">${sm.label}</div>
+      <div style="font-size:.71rem;color:var(--slate-400);margin-top:2px;">Ref: ${(a.id||'').slice(0,8).toUpperCase()}</div>
+    </div>
+    ${a.reviewed_at ? `<div style="text-align:right;"><div style="font-size:.68rem;color:var(--slate-500);">Reviewed</div><div style="font-size:.72rem;color:var(--slate-300);">${new Date(a.reviewed_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div></div>` : ''}
+  </div>`;
+
+  // Section + two-col grid helpers
+  const sec = (title, icon, content) =>
+    `<div class="aa-section-hdr">${icon}<span>${title}</span></div>${content}`;
+  const grid = rows =>
+    `<div class="aa-review-two">${rows}</div>`;
+  const cell = (k, v) =>
+    `<div class="aa-row"><div class="aa-row-key">${k}</div><div class="aa-row-val">${fv(v)}</div></div>`;
+  const fullrow = (k, v) =>
+    `<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.05);font-size:.84rem;gap:20px;"><span style="color:var(--slate-400);flex-shrink:0;">${k}</span><span style="color:var(--white);text-align:right;word-break:break-word;">${fv(v)}</span></div>`;
+
+  const icoAccount = `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`;
+  const icoPerson  = `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
+  const icoPin     = `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+  const icoBiz     = `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>`;
+  const icoWork    = `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`;
+  const icoInfo    = `<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+
+  // Account section
+  let acctRows = cell('Account Type', a.account_type_label||a.account_type);
+  if (a.ira_type) acctRows += cell('IRA Type', a.ira_type.charAt(0).toUpperCase()+a.ira_type.slice(1));
+  if (a.cd_term_months) acctRows += cell('CD Term', a.cd_term_months+' months');
+  if (a.cd_amount) acctRows += cell('CD Amount', '$'+parseFloat(a.cd_amount).toFixed(2));
+
+  // Personal section
+  const personalRows = grid(
+    cell('First Name', a.first_name) +
+    cell('Last Name', a.last_name) +
+    cell('Date of Birth', a.date_of_birth) +
+    cell('SSN Last 4', a.ssn_last4 ? '•••• ' + a.ssn_last4 : null) +
+    cell('Phone', a.phone) +
+    cell('User ID', (a.user_id||'').slice(0,8).toUpperCase()+'…')
+  );
+
+  // Address section
+  const addrRows = grid(
+    cell('Street Address', (a.address_line1||'')+(a.address_line2?', '+a.address_line2:'')) +
+    cell('City', a.city) +
+    cell('State', a.state) +
+    cell('ZIP Code', a.zip_code)
+  );
+
+  // Business section
+  let bizSection = '';
+  if (a.business_name) {
+    bizSection = sec('Business Details', icoBiz,
+      grid(cell('Business Name', a.business_name) + cell('Business Type', a.business_type) + cell('EIN', a.ein))
+    );
+  }
+
+  // Employment & Funding section
+  const empRows = grid(
+    cell('Employment Status', (a.employment_status||'').replace(/_/g,' ')) +
+    cell('Employer', a.employer_name) +
+    cell('Annual Income', a.annual_income) +
+    cell('Initial Deposit', a.initial_deposit ? '$'+parseFloat(a.initial_deposit).toFixed(2) : null) +
+    cell('Funding Source', a.funding_source) +
+    cell('Account Purpose', a.account_purpose)
+  );
+
+  // Application metadata
+  let metaRows = fullrow('Submitted', new Date(a.created_at).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}));
+  metaRows += fullrow('Application ID', a.id);
+  if (a.reviewed_at) metaRows += fullrow('Reviewed At', new Date(a.reviewed_at).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}));
+  if (a.admin_note) metaRows += fullrow('Admin Note', a.admin_note);
+
+  let body = banner;
+  body += sec('Account', icoAccount, grid(acctRows));
+  body += sec('Personal Information', icoPerson, personalRows);
+  body += sec('Address', icoPin, addrRows);
+  body += bizSection;
+  body += sec('Employment & Funding', icoWork, empRows);
+  body += sec('Application Metadata', icoInfo, `<div>${metaRows}</div>`);
+
+  document.getElementById('aAcctAppModalBody').innerHTML = body;
+
+  const modal = document.getElementById('aAcctAppReviewModal');
+  modal.style.display = 'flex';
+  setTimeout(() => { const b = modal.querySelector('.card.card-elevated'); if(b) b.scrollTop = 0; }, 10);
+}
+
+function aCloseAcctAppReview() {
+  document.getElementById('aAcctAppReviewModal').style.display = 'none';
+  _aCurrentAcctApp = null;
+}
+
+async function aAcctAppDecide(decision) {
+  if (!_aCurrentAcctApp) return;
+  const note = document.getElementById('aAcctAppNote').value.trim();
+  const status = document.getElementById('aAcctAppModalStatus');
+
+  const labels = { approved:'Approve', declined:'Decline', under_review:'Mark Under Review' };
+  const warned = decision === 'declined';
+  if (warned) {
+    if (!await zenithConfirm('Decline this application? The member will receive an email notifying them.', { title:'Decline Application', confirmLabel:'Decline', type:'warning' })) return;
+  }
+
+  ['aBtnUnderReview','aBtnDecline','aBtnApproveAcct'].forEach(id => { const b=document.getElementById(id); if(b) b.disabled=true; });
+  status.textContent = 'Processing…';
+
+  try {
+    await callEdgeFunction('open-account', {
+      action: 'verify',
+      application_id: _aCurrentAcctApp.id,
+      decision,
+      admin_note: note,
+    });
+    const dLabel = { approved:'approved', declined:'declined', under_review:'marked under review' }[decision];
+    zenithToast('Application ' + dLabel + '. Member notified.', decision==='approved'?'success':'info');
+    aCloseAcctAppReview();
+    await aLoadAcctApps();
+  } catch(e) {
+    status.textContent = 'Error: ' + (e.message||'Failed');
+    status.style.color = '#f87171';
+    ['aBtnUnderReview','aBtnDecline','aBtnApproveAcct'].forEach(id => { const b=document.getElementById(id); if(b) b.disabled=false; });
+  }
 }
 
 async function aSendAnnouncement() {
@@ -3257,10 +3895,9 @@ function openAddFunds(userId, userName) {
   } else {
     const fmt = n => '$' + (n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const typeLabel = t => ({ checking:'Checking', savings:'Savings', money_market:'Money Market' })[t] || t;
-    const typeIcon  = t => ({ checking:'🏦', savings:'💰', money_market:'📈' })[t] || '💳';
     container.innerHTML = accounts.map((a, i) => `
       <div id="afAccCard_${a.id}" onclick="selectAddFundsAccount('${a.id}')" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;border:2px solid ${i===0?'rgba(201,168,76,.5)':'rgba(255,255,255,.07)'};background:${i===0?'rgba(201,168,76,.06)':'rgba(255,255,255,.02)'};cursor:pointer;transition:all .2s;">
-        <div style="font-size:1.4rem;line-height:1;">${typeIcon(a.type)}</div>
+        <div style="width:36px;height:36px;border-radius:9px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.14);display:flex;align-items:center;justify-content:center;color:var(--gold-400);flex-shrink:0;">${_acctTypeIcon(a.type)}</div>
         <div style="flex:1;min-width:0;">
           <div style="font-size:.88rem;font-weight:600;color:var(--white);">${typeLabel(a.type)}</div>
           <div style="font-size:.75rem;color:var(--slate-500);font-family:monospace;">••••${(a.number||'').slice(-4)||'????'}</div>
@@ -3322,6 +3959,37 @@ async function submitAddFunds() {
   } finally {
     btn.disabled = false; btn.textContent = 'Add Funds';
   }
+}
+
+// ═══ SVG ICON HELPERS ═════════════════════════════════════════════════════════
+var _CAT_CFG = {
+  Shopping:      { bg:'rgba(251,191,36,.12)',  c:'#fbbf24', p:'<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>' },
+  Income:        { bg:'rgba(74,222,128,.12)',   c:'#4ade80', p:'<path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>' },
+  Dining:        { bg:'rgba(251,113,133,.12)',  c:'#fb7185', p:'<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2M7 2v20M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/>' },
+  Travel:        { bg:'rgba(96,165,250,.12)',   c:'#60a5fa', p:'<path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 21 4s-2 0-3.5 1.5L14 9 5.8 7.2C5.2 7 4.6 7.2 4.2 7.6L3 9l6.2 3.4L7 15H4l-1 2 3 1 1 3 2-1 2.5-3.5L15 21z"/>' },
+  Interest:      { bg:'rgba(201,168,76,.12)',   c:'#c9a84c', p:'<line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>' },
+  Groceries:     { bg:'rgba(52,211,153,.12)',   c:'#34d399', p:'<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>' },
+  Transfer:      { bg:'rgba(167,139,250,.12)',  c:'#a78bfa', p:'<path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/>' },
+  Investment:    { bg:'rgba(74,222,128,.12)',   c:'#4ade80', p:'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>' },
+  Utilities:     { bg:'rgba(251,191,36,.12)',   c:'#fbbf24', p:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>' },
+  Entertainment: { bg:'rgba(249,115,22,.12)',   c:'#f97316', p:'<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>' },
+  Health:        { bg:'rgba(248,113,113,.12)',  c:'#f87171', p:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>' },
+  Fee:           { bg:'rgba(248,113,113,.10)',  c:'#f87171', p:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>' },
+};
+var _CAT_DEFAULT = { bg:'rgba(100,116,139,.12)', c:'#94a3b8', p:'<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>' };
+
+function _txCatIcon(cat) {
+  var cfg = _CAT_CFG[cat] || _CAT_DEFAULT;
+  return '<div style="width:100%;height:100%;border-radius:inherit;background:'+cfg.bg+';display:flex;align-items:center;justify-content:center;">'
+    + '<svg width="16" height="16" fill="none" stroke="'+cfg.c+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">'+cfg.p+'</svg></div>';
+}
+function _acctTypeIcon(t) {
+  var m = {
+    checking:     '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+    savings:      '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>',
+    money_market: '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+  };
+  return m[t] || '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>';
 }
 
 // ═══ ACCOUNT STATE (premium hero + switcher + send/receive) ═══
@@ -3511,20 +4179,19 @@ async function loadDashboardData() {
     // Recent transactions + spending
     {
       const txns = allTxns;
-      const ICONS = { Shopping:'🛍️', Income:'💵', Dining:'🍽️', Travel:'✈️', Interest:'💰', Groceries:'🛒', Transfer:'↔️', Investment:'📈', Utilities:'⚡', Entertainment:'🎬', Health:'🏋️' };
 
       document.getElementById('recentTransactions').innerHTML = txns.length === 0
         ? '<div style="padding:24px;text-align:center;color:var(--slate-500);">No transactions yet.</div>'
         : txns.slice(0, 5).map(t => {
             const isCredit = ['credit','transfer_in','interest','refund'].includes(t.transaction_type);
             const amt = (isCredit ? '+' : '-') + '$' + Math.abs(t.amount).toLocaleString('en-US', { minimumFractionDigits: 2 });
-            const icon = ICONS[t.category] || '💳';
+            const icon = _txCatIcon(t.category);
             const d = new Date(t.created_at), now = new Date();
             const dateStr = d.toDateString() === now.toDateString() ? 'Today'
               : d.toDateString() === new Date(now - 864e5).toDateString() ? 'Yesterday'
               : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
             return `<div class="transaction-item">
-              <div class="transaction-icon" style="font-size:1.1rem;">${icon}</div>
+              <div class="transaction-icon">${icon}</div>
               <div class="transaction-info">
                 <div class="transaction-name">${t.description}</div>
                 <div class="transaction-date">${dateStr} · ${t.category}</div>
@@ -3740,9 +4407,175 @@ async function submitLoanApplication() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  SEND MONEY  (lookup → name confirm → PIN)
+//  ADMIN — TRANSFER REQUESTS
 // ═══════════════════════════════════════════════════════════════
+let _aXfrCountdownTimers = [];
+
+function _aXfrClearTimers() {
+  _aXfrCountdownTimers.forEach(clearInterval);
+  _aXfrCountdownTimers = [];
+}
+
+async function aLoadTransfers() {
+  _aXfrClearTimers();
+  const filter = document.getElementById('aXfrFilter')?.value || 'pending';
+  const tableEl = document.getElementById('aXfrTable');
+  if (tableEl) tableEl.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading…</div>';
+  try {
+    const res = await callEdgeFunction('transfer-funds', { action: 'admin_list', filter });
+    const requests = res.requests || [];
+
+    // Update badge
+    const pending = requests.filter(r => r.status === 'pending').length;
+    const badge = document.getElementById('aTransfersBadge');
+    const countEl = document.getElementById('aXfrPendingCount');
+    if (badge) { badge.textContent = pending || ''; badge.style.display = pending ? '' : 'none'; }
+    if (countEl) { countEl.textContent = pending + ' pending'; countEl.style.display = pending ? '' : 'none'; }
+
+    if (!requests.length) {
+      if (tableEl) tableEl.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;padding:24px 0;text-align:center;">No transfer requests found.</div>';
+      return;
+    }
+
+    if (tableEl) tableEl.innerHTML = requests.map(r => {
+      const memberName = r.profiles?.full_name || r.profiles?.email || 'Unknown member';
+      const amt = '$' + Number(r.amount).toLocaleString('en-US', { minimumFractionDigits: 2 });
+      const typeLabel = String(r.transfer_type || 'send').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      const recipient = r.recipient_name || r.to_account_number || r.bank_name || r.recipient_contact || '—';
+      const created = new Date(r.created_at);
+      const expires = new Date(r.expires_at);
+      const now = Date.now();
+      const secsLeft = Math.max(0, Math.floor((expires - now) / 1000));
+      const isPending = r.status === 'pending';
+      const isExpired = r.status === 'expired';
+      const isApproved = r.status === 'approved';
+      const isDeclined = r.status === 'declined';
+      const statusColor = isApproved ? '#4ade80' : isDeclined ? '#f87171' : isExpired ? '#94a3b8' : '#fbbf24';
+      const statusBg = isApproved ? 'rgba(74,222,128,.1)' : isDeclined ? 'rgba(248,113,113,.1)' : isExpired ? 'rgba(148,163,184,.08)' : 'rgba(251,191,36,.1)';
+      const typeColors = { own_accounts: '#6366f1', send: '#c9a84c', zelle: '#8b5cf6', wire: '#06b6d4', link: '#10b981' };
+      const typeColor = typeColors[r.transfer_type] || '#94a3b8';
+
+      return `<div style="border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px 20px;margin-bottom:12px;background:rgba(255,255,255,.025);transition:border-color .15s;" id="xfr_row_${r.id}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:200px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${typeColor};background:${typeColor}22;border:1px solid ${typeColor}44;border-radius:99px;padding:2px 8px;">${typeLabel}</div>
+              <div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${statusColor};background:${statusBg};border:1px solid ${statusColor}44;border-radius:99px;padding:2px 8px;">${r.status.toUpperCase()}</div>
+            </div>
+            <div style="font-family:var(--font-display);font-size:1.18rem;color:#fff;margin-bottom:2px;">${amt}</div>
+            <div style="font-size:.78rem;color:var(--slate-300);">
+              <span style="color:var(--slate-500);">From</span> ${memberName}
+              <span style="color:var(--slate-600);margin:0 6px;">→</span>
+              <span style="color:var(--slate-300);">${recipient}</span>
+            </div>
+            ${r.memo ? `<div style="font-size:.72rem;color:var(--slate-500);margin-top:4px;font-style:italic;">"${r.memo}"</div>` : ''}
+            ${r.admin_note ? `<div style="font-size:.72rem;color:var(--slate-400);margin-top:4px;">Admin note: ${r.admin_note}</div>` : ''}
+            <div style="font-size:.68rem;color:var(--slate-600);margin-top:6px;">${created.toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:140px;">
+            ${isPending ? `<div style="display:flex;align-items:center;gap:6px;font-size:.75rem;font-weight:600;color:#fbbf24;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:8px;padding:6px 12px;" id="xfr_timer_${r.id}">
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span id="xfr_countdown_${r.id}">${Math.floor(secsLeft/60)}:${String(secsLeft%60).padStart(2,'0')}</span>
+            </div>` : ''}
+            ${isPending ? `<div style="display:flex;gap:6px;">
+              <button onclick="aApproveTransfer('${r.id}')" style="background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);color:#4ade80;border-radius:8px;padding:7px 14px;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;" onmouseover="this.style.background='rgba(74,222,128,.22)'" onmouseout="this.style.background='rgba(74,222,128,.12)'">Approve</button>
+              <button onclick="aDeclineTransfer('${r.id}')" style="background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:#f87171;border-radius:8px;padding:7px 14px;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;" onmouseover="this.style.background='rgba(248,113,113,.2)'" onmouseout="this.style.background='rgba(248,113,113,.1)'">Decline</button>
+            </div>` : ''}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    // Start countdown timers for pending requests
+    requests.filter(r => r.status === 'pending').forEach(r => {
+      const expires = new Date(r.expires_at);
+      const tid = setInterval(function() {
+        const el = document.getElementById('xfr_countdown_' + r.id);
+        const timerEl = document.getElementById('xfr_timer_' + r.id);
+        if (!el) { clearInterval(tid); return; }
+        const secs = Math.max(0, Math.floor((expires - Date.now()) / 1000));
+        el.textContent = Math.floor(secs / 60) + ':' + String(secs % 60).padStart(2, '0');
+        if (secs === 0) {
+          clearInterval(tid);
+          if (timerEl) timerEl.style.color = '#f87171';
+          el.textContent = 'Expired';
+          const row = document.getElementById('xfr_row_' + r.id);
+          if (row) {
+            const btns = row.querySelectorAll('button');
+            btns.forEach(b => { b.disabled = true; b.style.opacity = '.4'; b.style.cursor = 'not-allowed'; });
+          }
+        }
+      }, 1000);
+      _aXfrCountdownTimers.push(tid);
+    });
+
+  } catch(e) {
+    let msg = 'Failed to load transfers.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    if (tableEl) tableEl.innerHTML = `<div style="color:#f87171;font-size:.85rem;padding:20px 0;">${msg}</div>`;
+  }
+}
+
+async function aApproveTransfer(requestId) {
+  const note = window.prompt('Optional note to member (leave blank to skip):') || '';
+  const row = document.getElementById('xfr_row_' + requestId);
+  if (row) { const btns = row.querySelectorAll('button'); btns.forEach(b => { b.disabled = true; b.textContent = '…'; }); }
+  try {
+    await callEdgeFunction('transfer-funds', { action: 'admin_approve', request_id: requestId, admin_note: note || null });
+    zenithToast('Transfer approved and processed.', 'success');
+    await aLoadTransfers();
+  } catch(e) {
+    let msg = 'Approval failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    zenithToast(msg, 'error');
+    await aLoadTransfers();
+  }
+}
+
+async function aDeclineTransfer(requestId) {
+  const reason = window.prompt('Reason for declining (optional, sent to member):') || '';
+  const row = document.getElementById('xfr_row_' + requestId);
+  if (row) { const btns = row.querySelectorAll('button'); btns.forEach(b => { b.disabled = true; b.textContent = '…'; }); }
+  try {
+    await callEdgeFunction('transfer-funds', { action: 'admin_decline', request_id: requestId, admin_note: reason || null });
+    zenithToast('Transfer request declined.', 'success');
+    await aLoadTransfers();
+  } catch(e) {
+    let msg = 'Failed to decline.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    zenithToast(msg, 'error');
+    await aLoadTransfers();
+  }
+}
+
+// Auto-refresh transfers every 30s when admin panel is open
+setInterval(function() {
+  if (document.getElementById('aTab_transfers')?.style.display !== 'none') aLoadTransfers();
+}, 30000);
+
+// ═══════════════════════════════════════════════════════════════
+//  SEND MONEY  (lookup → name confirm → request flow)
+// ═══════════════════════════════════════════════════════════════
+const _DASH_ABA = {
+  '021000021':'JPMorgan Chase Bank, N.A.','021000089':'Citibank, N.A.','021001208':'HSBC Bank USA, N.A.',
+  '021200339':'M&T Bank','021202337':'TD Bank, N.A.','022000020':'KeyBank National Association',
+  '031100209':'PNC Bank, N.A.','031176110':'Discover Bank','036001808':'Capital One, N.A.',
+  '041215663':'U.S. Bank National Association','051000017':'Bank of America, N.A.',
+  '053000219':'Wells Fargo Bank, N.A.','061000104':'SunTrust Bank / Truist Bank',
+  '062000019':'Regions Bank','071000013':'First National Bank of Chicago',
+  '071000152':'BMO Harris Bank N.A.','071214579':'Fifth Third Bank','082000073':'Simmons Bank',
+  '091000022':'US Bancorp','091300023':'Bremer Bank','101000187':'Bank of the West',
+  '101089742':'Security Bank of Kansas City','102001017':'First Bank','111000025':'JPMorgan Chase (TX)',
+  '113000023':'Frost Bank','121000248':'Wells Fargo (CA)','121042882':'First Citizens BancShares',
+  '121122676':'Golden 1 Credit Union','122000247':'Wells Fargo Bank NA',
+  '122105155':'Pacific Premier Bank','124085024':'Glacier Bank',
+  '253270814':'First-Citizens Bank & Trust','267084131':'Suncoast Credit Union',
+  '272471548':'Lake Michigan Credit Union','291070001':'Alliant Credit Union',
+};
+
 let _sendVerified = false;
+let _sendRecipientName = '';
+let _sendIsExternal = false;
+let _sendExtRouting = '';
+let _sendExtBank = '';
+let _dashExtBankVerified = false;
 
 function openSendModal() {
   if (!_accounts.length) { zenithToast('No active account found.', 'error'); return; }
@@ -3760,6 +4593,11 @@ function openSendModal() {
   document.getElementById('sendRecipBox').innerHTML = '';
   document.getElementById('sendErr').textContent = '';
   _sendVerified = false;
+  _sendRecipientName = '';
+  _sendIsExternal = false;
+  _sendExtRouting = '';
+  _sendExtBank = '';
+  _dashExtBankVerified = false;
 
   // Show biometric auth option if enrolled + txEnabled; otherwise show PIN
   const _bioOn = window.ZenithFaceID && window.ZenithFaceID.isEnrolled() && window.ZenithFaceID.txEnabled();
@@ -3771,9 +4609,15 @@ function openSendModal() {
   }
 
   updateSendBtn();
+  document.getElementById('sendDrawerOvl').classList.add('open');
   document.getElementById('sendModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
-function closeSendModal() { document.getElementById('sendModal').classList.remove('open'); }
+function closeSendModal() {
+  document.getElementById('sendDrawerOvl').classList.remove('open');
+  document.getElementById('sendModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
 
 function switchSendToPIN() {
   document.getElementById('sendBioRow').style.display = 'none';
@@ -3783,16 +4627,19 @@ function switchSendToPIN() {
 
 function onSendNumberInput() {
   const el = document.getElementById('sendToNumber');
-  el.value = el.value.replace(/\D/g, '').slice(0, 10);
-  // Any change invalidates a prior verification
+  el.value = el.value.replace(/\D/g, '').slice(0, 17);
   _sendVerified = false;
-  document.getElementById('sendRecipBox').innerHTML = '';
+  _sendIsExternal = false;
+  _sendExtRouting = '';
+  _sendExtBank = '';
+  _dashExtBankVerified = false;
+  if (el.value.length < 4) document.getElementById('sendRecipBox').innerHTML = '';
   updateSendBtn();
 }
 
 function updateSendBtn() {
   const btn = document.getElementById('sendSubmitBtn');
-  if (_sendVerified) { btn.disabled = false; btn.textContent = 'Send Money'; }
+  if (_sendVerified) { btn.disabled = false; btn.textContent = 'Submit Transfer Request'; }
   else { btn.disabled = true; btn.textContent = 'Verify recipient to continue'; }
 }
 
@@ -3800,30 +4647,110 @@ async function verifyRecipient() {
   const num = document.getElementById('sendToNumber').value.trim();
   const errEl = document.getElementById('sendErr');
   errEl.textContent = '';
-  if (!/^\d{10}$/.test(num)) { errEl.textContent = 'Enter a valid 10-digit account number.'; return; }
+  if (num.length < 4) { errEl.textContent = 'Enter a valid account number.'; return; }
   const vbtn = document.getElementById('sendVerifyBtn');
   vbtn.textContent = '…'; vbtn.style.pointerEvents = 'none';
-  try {
-    const res = await callEdgeFunction('transfer-funds', { action: 'lookup', account_number: num });
-    if (res && res.found) {
-      _sendVerified = true;
-      const selfTag = res.is_self ? ' <span style="color:var(--slate-500);">(your account)</span>' : '';
-      document.getElementById('sendRecipBox').innerHTML =
-        `<div class="zrecip-chip"><svg width="16" height="16" fill="none" stroke="#4ade80" stroke-width="2.4" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
-          <div><div style="font-size:.82rem;color:#fff;font-weight:600;">${res.recipient_name}${selfTag}</div>
-          <div style="font-size:.68rem;color:var(--slate-400);text-transform:capitalize;">${(res.account_type||'account').replace('_',' ')} account · ••${num.slice(-4)}</div></div></div>`;
-    } else {
-      _sendVerified = false;
-      errEl.textContent = 'No active account found with that number.';
-    }
-  } catch (e) {
-    _sendVerified = false;
-    let msg = 'Could not verify account.'; try { msg = JSON.parse(e.message).error || msg; } catch {}
-    errEl.textContent = msg;
-  } finally {
-    vbtn.textContent = 'Verify'; vbtn.style.pointerEvents = '';
-    updateSendBtn();
+  _sendVerified = false; _sendIsExternal = false; _sendExtRouting = ''; _sendExtBank = ''; _dashExtBankVerified = false;
+
+  if (num.length === 10) {
+    // Try ZenithOne member lookup first
+    try {
+      const res = await callEdgeFunction('transfer-funds', { action: 'lookup', account_number: num });
+      if (res && res.found) {
+        _sendVerified = true;
+        _sendRecipientName = res.recipient_name || '';
+        const selfTag = res.is_self ? ' <span style="color:var(--slate-500);">(your account)</span>' : '';
+        document.getElementById('sendRecipBox').innerHTML =
+          `<div class="zrecip-chip"><svg width="16" height="16" fill="none" stroke="#4ade80" stroke-width="2.4" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+            <div><div style="font-size:.82rem;color:#fff;font-weight:600;">${res.recipient_name}${selfTag}</div>
+            <div style="font-size:.68rem;color:var(--slate-400);text-transform:capitalize;">${(res.account_type||'account').replace('_',' ')} account · ••${num.slice(-4)}</div></div></div>`;
+        vbtn.textContent = 'Verify'; vbtn.style.pointerEvents = '';
+        updateSendBtn();
+        return;
+      }
+    } catch (e) { /* fall through to external */ }
   }
+
+  // Not a ZenithOne account — show external bank entry panel
+  _sendIsExternal = true;
+  _showDashExternalEntry(num);
+  vbtn.textContent = 'Verify'; vbtn.style.pointerEvents = '';
+  updateSendBtn();
+}
+
+function _showDashExternalEntry(num) {
+  const last4 = num.slice(-4);
+  document.getElementById('sendRecipBox').innerHTML = `
+    <div id="dashExtPanel" style="border:1px solid rgba(201,168,76,.18);border-radius:12px;overflow:hidden;margin-top:10px;background:rgba(0,0,0,.15);">
+      <div style="padding:11px 15px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px;">
+        <div style="width:28px;height:28px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.2);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="13" height="13" fill="none" stroke="rgba(201,168,76,.8)" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div>
+          <div style="font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(201,168,76,.75);font-weight:700;">External Bank Transfer</div>
+          <div style="font-size:.7rem;color:var(--slate-400);margin-top:2px;">Account ••••${last4} · Enter routing number to identify your bank</div>
+        </div>
+      </div>
+      <div style="padding:14px 16px;display:flex;flex-direction:column;gap:12px;">
+        <div>
+          <div style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-500);font-weight:600;margin-bottom:6px;">ABA Routing Number</div>
+          <input id="dashExtRouting" class="zinput" style="font-family:monospace;letter-spacing:.08em;" maxlength="9" inputmode="numeric" autocomplete="off" placeholder="9-digit routing number" oninput="onDashExtRoutingInput('${num}')">
+          <div id="dashExtBankFound" style="display:none;margin-top:7px;align-items:center;gap:8px;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.18);border-radius:8px;padding:8px 12px;">
+            <svg width="11" height="11" fill="none" stroke="#4ade80" stroke-width="2.6" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+            <span id="dashExtBankName" style="font-size:.78rem;font-weight:600;color:#fff;"></span>
+            <span style="font-size:.66rem;color:var(--slate-500);margin-left:2px;">· Verified</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-500);font-weight:600;margin-bottom:6px;">Account Holder Name</div>
+          <input id="dashExtName" class="zinput" placeholder="Full legal name on the account" maxlength="60" oninput="updateDashExtBtn('${num}')">
+        </div>
+        <button id="dashExtConfirmBtn" onclick="confirmDashExternal('${num}')" disabled style="background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);color:#c9a84c;border-radius:8px;padding:8px 18px;font-size:.78rem;font-weight:600;cursor:not-allowed;opacity:.4;align-self:flex-start;transition:all .15s;">Confirm Recipient</button>
+      </div>
+    </div>`;
+}
+
+function onDashExtRoutingInput(num) {
+  const el = document.getElementById('dashExtRouting');
+  if (!el) return;
+  el.value = el.value.replace(/\D/g, '').slice(0, 9);
+  const rn = el.value;
+  const bankFoundEl = document.getElementById('dashExtBankFound');
+  const bankNameEl = document.getElementById('dashExtBankName');
+  if (rn.length === 9 && _DASH_ABA[rn]) {
+    _dashExtBankVerified = true; _sendExtRouting = rn; _sendExtBank = _DASH_ABA[rn];
+    if (bankFoundEl) { bankFoundEl.style.display = 'flex'; }
+    if (bankNameEl) bankNameEl.textContent = _DASH_ABA[rn];
+  } else {
+    _dashExtBankVerified = false; _sendExtRouting = ''; _sendExtBank = '';
+    if (bankFoundEl) bankFoundEl.style.display = 'none';
+  }
+  updateDashExtBtn(num);
+}
+
+function updateDashExtBtn(num) {
+  const btn = document.getElementById('dashExtConfirmBtn');
+  if (!btn) return;
+  const name = (document.getElementById('dashExtName')?.value || '').trim();
+  const ok = _dashExtBankVerified && name.length > 1;
+  btn.disabled = !ok;
+  btn.style.opacity = ok ? '1' : '.4';
+  btn.style.cursor = ok ? 'pointer' : 'not-allowed';
+}
+
+function confirmDashExternal(num) {
+  const name = (document.getElementById('dashExtName')?.value || '').trim();
+  if (!name) { return; }
+  if (!_dashExtBankVerified) { return; }
+  _sendVerified = true;
+  _sendRecipientName = name;
+  _sendIsExternal = true;
+  const bank = _sendExtBank || 'External Bank';
+  document.getElementById('sendRecipBox').innerHTML =
+    `<div class="zrecip-chip"><svg width="16" height="16" fill="none" stroke="#4ade80" stroke-width="2.4" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+      <div><div style="font-size:.82rem;color:#fff;font-weight:600;">${name}</div>
+      <div style="font-size:.68rem;color:var(--slate-400);">${bank} · ••••${num.slice(-4)}</div></div></div>`;
+  updateSendBtn();
 }
 
 async function submitSend() {
@@ -3834,43 +4761,42 @@ async function submitSend() {
   const to_account_number = document.getElementById('sendToNumber').value.trim();
   const amount = parseFloat(document.getElementById('sendAmount').value);
   const memo   = document.getElementById('sendMemo').value.trim();
-  const pin    = document.getElementById('sendPin').value.trim();
 
   if (!from_account_id)       { errEl.textContent = 'Select a source account.'; return; }
   if (!amount || amount <= 0) { errEl.textContent = 'Enter a valid amount.'; return; }
 
-  // Determine auth path: biometric (primary) or PIN (fallback)
+  // Optional biometric confirmation of intent
   const _useBio = window.ZenithFaceID && window.ZenithFaceID.isEnrolled() && window.ZenithFaceID.txEnabled()
     && document.getElementById('sendBioRow').style.display !== 'none';
 
   if (_useBio) {
-    // Biometric path — verify replaces PIN entry
     const _bioLabel = (window.ZenithFaceID.getBiometricLabel ? window.ZenithFaceID.getBiometricLabel() : 'Face ID');
     try {
-      await window.ZenithFaceID.verify('Confirm transfer of ' + fmtUSD(amount));
+      await window.ZenithFaceID.verify('Confirm transfer request of ' + fmtUSD(amount));
     } catch (e) {
-      errEl.textContent = e.message || (_bioLabel + ' authorization failed. Try again or use PIN.');
+      errEl.textContent = e.message || (_bioLabel + ' authorization failed. Try again.');
       return;
     }
-  } else {
-    // PIN path
-    if (!/^\d{4}$/.test(pin)) { errEl.textContent = 'Enter your 4-digit transaction PIN.'; return; }
   }
 
   const btn = document.getElementById('sendSubmitBtn');
-  btn.disabled = true; btn.textContent = 'Sending…';
+  btn.disabled = true; btn.textContent = 'Submitting…';
   try {
-    const res = await callEdgeFunction('transfer-funds', {
-      action: 'send', from_account_id, to_account_number, amount, memo,
-      ...(_useBio ? {} : { pin }),
+    await callEdgeFunction('transfer-funds', {
+      action: 'request', transfer_type: 'send',
+      from_account_id, to_account_number, amount, memo,
+      recipient_name: _sendRecipientName || null,
+      is_external: _sendIsExternal || false,
+      routing_number: _sendExtRouting || null,
+      bank_name: _sendExtBank || null,
     });
     closeSendModal();
-    zenithToast(`$${amount.toLocaleString('en-US',{minimumFractionDigits:2})} sent to ${res.recipient_name}. Ref: ${res.reference}`, 'success', 6000);
+    zenithToast('Transfer request submitted. Our team will review and process it shortly.', 'info', 7000);
     await loadDashboardData();
   } catch (e) {
     let msg = 'Transfer failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
     errEl.textContent = msg;
-    btn.disabled = false; btn.textContent = 'Send Money';
+    btn.disabled = false; btn.textContent = 'Submit Transfer Request';
   }
 }
 

@@ -455,8 +455,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
     // LEGACY SEND — user-to-user with PIN (kept for backward compatibility)
     // ─────────────────────────────────────────────────────────────────────────
     // ─────────────────────────────────────────────────────────────────────────
-    // PAY_BILL — pay a biller/payee from a deposit account
-    // Debits the chosen account (trigger lowers balance), categorised as Bills.
+    // PAY_BILL — submit a bill payment for ADMIN APPROVAL
+    // Creates a `pending` bill_payments row (shown to the member as
+    // "Processing"). No funds move until an admin approves it.
     // ─────────────────────────────────────────────────────────────────────────
     if (action === 'pay_bill') {
       const fromId   = body.from_account_id as string;
@@ -480,48 +481,166 @@ Deno.serve(async (req: Request): Promise<Response> => {
         throw new Error(`Insufficient funds. Available: $${avail.toLocaleString('en-US', { minimumFractionDigits: 2 })}.`);
       }
 
-      // Daily out-flow limit shared with transfers
-      const today = new Date().toISOString().split('T')[0];
-      const { data: todayTxns } = await supabase.from('transactions').select('amount')
-        .eq('user_id', user.id).in('transaction_type', ['transfer_out', 'debit'])
-        .gte('created_at', today + 'T00:00:00Z');
-      const todayTotal = (todayTxns || []).reduce((s: number, t: { amount: number }) => s + t.amount, 0);
-      if (todayTotal + amount > DAILY_LIMIT) throw new Error(`Daily payment limit of $${DAILY_LIMIT.toLocaleString()} exceeded.`);
-
       const reference = 'BILL' + Date.now() + Math.floor(Math.random() * 1000);
-      const acctTail  = acctRef ? ` (acct ••${acctRef.slice(-4)})` : '';
-      const desc      = `Bill payment to ${payee}${acctTail}${memo ? ' — ' + memo : ''}`;
 
-      const { error: debitErr } = await supabase.from('transactions').insert({
-        account_id:       fromAcc.id,
-        user_id:          user.id,
-        transaction_type: 'debit',
-        category:         category || 'Bills',
-        description:      desc,
+      const { data: bill, error: insErr } = await supabase.from('bill_payments').insert({
+        user_id:         user.id,
+        account_id:      fromAcc.id,
+        payee_name:      payee,
+        biller_category: category || 'Bills',
+        account_ref:     acctRef || null,
         amount,
-        status:           'completed',
-        reference_number: reference,
-      });
-      if (debitErr) throw debitErr;
+        memo:            memo || null,
+        status:          'pending',
+        reference,
+      }).select('id').single();
+      if (insErr) throw insErr;
 
-      const newBalance = Math.round((avail - amount) * 100) / 100;
-
+      // Notify the member it's processing
       await supabase.from('notifications').insert({
         user_id:  user.id,
-        title:    'Bill Payment Sent',
-        message:  `$${amount.toFixed(2)} paid to ${payee}. New balance $${newBalance.toFixed(2)}. Ref: ${reference}`,
+        title:    'Bill Payment Processing',
+        message:  `Your $${amount.toFixed(2)} payment to ${payee} is being processed and is awaiting approval. Ref: ${reference}`,
         type:     'transaction',
-        priority: amount >= 10000 ? 'high' : 'normal',
+        priority: 'normal',
       });
 
+      // Notify admins
+      const { data: admins } = await supabase.from('profiles').select('id').eq('is_admin', true);
+      const { data: meProf } = await supabase.from('profiles').select('full_name').eq('id', user.id).single();
+      if (admins && admins.length) {
+        await supabase.from('notifications').insert(
+          admins.map((a: { id: string }) => ({
+            user_id:  a.id,
+            title:    'New Bill Payment to Review',
+            message:  `${meProf?.full_name || 'A member'} requested a $${amount.toFixed(2)} bill payment to ${payee}. Ref: ${reference}`,
+            type:     'system',
+            priority: 'high',
+          }))
+        );
+      }
+
       return json({
-        success:     true,
+        success:   true,
+        status:    'processing',
+        bill_id:   bill.id,
         reference,
         amount,
         payee,
-        new_balance: newBalance,
-        processed:   new Date().toISOString(),
+        processed: new Date().toISOString(),
       });
+    }
+
+    // ── USER: list own bill payments (for the "Processing/Paid" status view) ──
+    if (action === 'get_my_bill_payments') {
+      const { data, error: selErr } = await supabase
+        .from('bill_payments').select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(40);
+      if (selErr) throw selErr;
+      return json({ bills: data ?? [] });
+    }
+
+    // ── ADMIN: list bill payments ────────────────────────────────────────────
+    if (action === 'admin_list_bills') {
+      const { data: me } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
+      if (!me?.is_admin) throw new Error('Admin access required.');
+      const filter = (body.filter as string) || 'pending';
+      let q = supabase.from('bill_payments').select('*').order('created_at', { ascending: false }).limit(200);
+      if (filter !== 'all') q = q.eq('status', filter);
+      const { data: bills, error: bErr } = await q;
+      if (bErr) throw bErr;
+
+      // Attach member name/email
+      const ids = [...new Set((bills || []).map((b: { user_id: string }) => b.user_id))];
+      const nameMap: Record<string, string> = {};
+      if (ids.length) {
+        const { data: profs } = await supabase.from('profiles').select('id, full_name').in('id', ids);
+        for (const p of profs ?? []) nameMap[p.id] = p.full_name || '';
+      }
+      const enriched = (bills || []).map((b: Record<string, unknown>) => ({
+        ...b, member_name: nameMap[b.user_id as string] || 'Member',
+      }));
+      return json({ bills: enriched });
+    }
+
+    // ── ADMIN: approve a bill payment → debit the account now ────────────────
+    if (action === 'admin_approve_bill') {
+      const { data: me } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
+      if (!me?.is_admin) throw new Error('Admin access required.');
+      const billId = body.bill_id as string;
+      const adminNote = ((body.admin_note as string) || '').trim();
+      if (!billId) throw new Error('bill_id required.');
+
+      const { data: bill, error: bErr } = await supabase.from('bill_payments').select('*').eq('id', billId).single();
+      if (bErr || !bill) throw new Error('Bill payment not found.');
+      if (bill.status !== 'pending') throw new Error(`This payment is already ${bill.status}.`);
+
+      const { data: acct } = await supabase.from('accounts')
+        .select('id, balance, available_balance, status').eq('id', bill.account_id).maybeSingle();
+      if (!acct || acct.status !== 'active') throw new Error('Member account is no longer active.');
+      const avail = Number(acct.available_balance ?? acct.balance ?? 0);
+      if (avail < Number(bill.amount)) throw new Error(`Member has insufficient funds (available $${avail.toFixed(2)}).`);
+
+      const acctTail = bill.account_ref ? ` (acct ••${String(bill.account_ref).slice(-4)})` : '';
+      const desc = `Bill payment to ${bill.payee_name}${acctTail}${bill.memo ? ' — ' + bill.memo : ''}`;
+
+      // Debit (trg_update_balance lowers the balance)
+      const { data: txn, error: debitErr } = await supabase.from('transactions').insert({
+        account_id:       bill.account_id,
+        user_id:          bill.user_id,
+        transaction_type: 'debit',
+        category:         bill.biller_category || 'Bills',
+        description:      desc,
+        amount:           bill.amount,
+        status:           'completed',
+        reference_number: bill.reference,
+      }).select('id').single();
+      if (debitErr) throw debitErr;
+
+      await supabase.from('bill_payments').update({
+        status: 'approved', admin_note: adminNote || null,
+        transaction_id: txn?.id ?? null, updated_at: new Date().toISOString(),
+      }).eq('id', billId);
+
+      const newBalance = Math.round((avail - Number(bill.amount)) * 100) / 100;
+      await supabase.from('notifications').insert({
+        user_id:  bill.user_id,
+        title:    'Bill Payment Completed',
+        message:  `Your $${Number(bill.amount).toFixed(2)} payment to ${bill.payee_name} was approved and sent. New balance $${newBalance.toFixed(2)}. Ref: ${bill.reference}`,
+        type:     'transaction',
+        priority: 'normal',
+      });
+
+      return json({ success: true, new_balance: newBalance });
+    }
+
+    // ── ADMIN: decline a bill payment (no funds move) ────────────────────────
+    if (action === 'admin_decline_bill') {
+      const { data: me } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
+      if (!me?.is_admin) throw new Error('Admin access required.');
+      const billId = body.bill_id as string;
+      const adminNote = ((body.admin_note as string) || '').trim();
+      if (!billId) throw new Error('bill_id required.');
+
+      const { data: bill, error: bErr } = await supabase.from('bill_payments').select('*').eq('id', billId).single();
+      if (bErr || !bill) throw new Error('Bill payment not found.');
+      if (bill.status !== 'pending') throw new Error(`This payment is already ${bill.status}.`);
+
+      await supabase.from('bill_payments').update({
+        status: 'declined', admin_note: adminNote || null, updated_at: new Date().toISOString(),
+      }).eq('id', billId);
+
+      await supabase.from('notifications').insert({
+        user_id:  bill.user_id,
+        title:    'Bill Payment Declined',
+        message:  `Your $${Number(bill.amount).toFixed(2)} payment to ${bill.payee_name} could not be completed${adminNote ? ': ' + adminNote : '.'} No funds were deducted. Ref: ${bill.reference}`,
+        type:     'warning',
+        priority: 'high',
+      });
+
+      return json({ success: true });
     }
 
     if (action === 'send') {

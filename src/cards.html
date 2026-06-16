@@ -589,21 +589,27 @@ const LUXURY_CARD_DATA = {
   },
 };
 
-// Map any card (catalog entry with .key, or an issued card row with card_tier /
-// card_name) to one of the 8 tier designs above.
+// Map any card to one of the 8 tier designs. For catalog entries we have the
+// exact .key. For issued cards the `cards` row only stores a coarse card_tier
+// (standard|gold|platinum|black), so we match primarily on card_name — which
+// always contains the real tier word (e.g. "ZenithOne Titanium Visa") — to
+// guarantee the member sees the exact card they applied for, never a random one.
 function _luxData(card) {
   if (card && card.key && LUXURY_CARD_DATA[card.key]) return LUXURY_CARD_DATA[card.key];
-  const t = (card.card_type_key || card.card_tier || card.card_name || card.key || '')
+  const t = `${card.card_type_key || ''} ${card.card_name || ''} ${card.card_tier || ''} ${card.key || ''}`
     .toLowerCase().replace(/[\s-]/g, '_');
-  if (t.includes('black_gold') || t.includes('black gold')) return LUXURY_CARD_DATA.black_gold;
-  if (t.includes('black'))    return LUXURY_CARD_DATA.black;
-  if (t.includes('titanium')) return LUXURY_CARD_DATA.titanium;
-  if (t.includes('platinum')) return LUXURY_CARD_DATA.platinum;
-  if (t.includes('gold'))     return LUXURY_CARD_DATA.gold;
-  if (t.includes('business')) return LUXURY_CARD_DATA.business;
-  if (t.includes('virtual'))  return LUXURY_CARD_DATA.virtual;
-  if (t.includes('classic') || t.includes('debit')) return LUXURY_CARD_DATA.classic_debit;
-  return LUXURY_CARD_DATA.platinum;
+  // Order matters: more specific names first (black_gold before black, titanium
+  // & business before platinum/gold since their names contain those words).
+  if (t.includes('black_gold')) return LUXURY_CARD_DATA.black_gold;
+  if (t.includes('titanium'))   return LUXURY_CARD_DATA.titanium;
+  if (t.includes('business'))   return LUXURY_CARD_DATA.business;
+  if (t.includes('platinum'))   return LUXURY_CARD_DATA.platinum;
+  if (t.includes('black'))      return LUXURY_CARD_DATA.black;
+  if (t.includes('gold'))       return LUXURY_CARD_DATA.gold;
+  if (t.includes('virtual'))    return LUXURY_CARD_DATA.virtual;
+  if (t.includes('classic'))    return LUXURY_CARD_DATA.classic_debit;
+  if (t.includes('debit'))      return LUXURY_CARD_DATA.classic_debit;
+  return LUXURY_CARD_DATA.classic_debit;
 }
 
 // ══════════════════════════════════════════════════════════════

@@ -1263,6 +1263,12 @@
       <button onclick="closePayBillModal()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.06);border:none;color:rgba(255,255,255,.5);cursor:pointer;flex-shrink:0;font-size:1rem;">✕</button>
     </div>
     <div class="pbill-body">
+      <!-- Recent / processing payments -->
+      <div id="pbillRecentWrap" style="display:none;margin-bottom:22px;">
+        <div class="pbill-label">Your Payments</div>
+        <div id="pbillRecent"></div>
+      </div>
+
       <div class="pbill-label">Choose a Biller</div>
       <div class="pbill-biller-grid" id="pbillBillerGrid"></div>
 
@@ -1376,6 +1382,11 @@
           Transfers
           <span id="aTransfersBadge" style="display:none;background:rgba(251,113,133,.15);color:#fb7185;border:1px solid rgba(251,113,133,.3);border-radius:99px;font-size:.58rem;font-weight:700;letter-spacing:.08em;padding:2px 7px;margin-left:4px;"></span>
         </button>
+        <button class="a-tab-btn" data-tab="bills" onclick="aSelectTab('bills')" id="aTabBills">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Bill Pay
+          <span id="aBillsBadge" style="display:none;background:rgba(251,191,36,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.3);border-radius:99px;font-size:.58rem;font-weight:700;letter-spacing:.08em;padding:2px 7px;margin-left:4px;"></span>
+        </button>
       </nav>
 
       <!-- Actions -->
@@ -1403,6 +1414,7 @@
       <button class="a-mtab" data-tab="linked" onclick="aSelectTab('linked')">Linked Accts</button>
       <button class="a-mtab" data-tab="acctapps" onclick="aSelectTab('acctapps')">Acct Apps</button>
       <button class="a-mtab" data-tab="transfers" onclick="aSelectTab('transfers')">Transfers</button>
+      <button class="a-mtab" data-tab="bills" onclick="aSelectTab('bills')">Bill Pay</button>
     </div>
   </header>
 
@@ -2005,6 +2017,33 @@
       </div>
     </div><!-- /aTab_transfers -->
 
+    <!-- ─────────────────────────────────────────────────────
+         TAB: BILL PAYMENTS
+    ───────────────────────────────────────────────────── -->
+    <div id="aTab_bills" class="a-tab-panel a-panel" style="display:none;">
+      <div class="a-card">
+        <div class="a-section-header" style="margin-bottom:20px;">
+          <div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div class="a-section-title">Bill Payments</div>
+              <span id="aBillPendingCount" style="display:none;background:rgba(251,191,36,.12);color:#fbbf24;border:1px solid rgba(251,191,36,.25);border-radius:99px;font-size:.62rem;font-weight:700;letter-spacing:.08em;padding:3px 10px;"></span>
+            </div>
+            <div class="a-section-sub">Member bill payments awaiting review — approve to debit the account, or decline (no funds move)</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <select id="aBillFilter" class="zinput" style="font-size:.75rem;padding:6px 10px;min-width:120px;" onchange="aLoadBills()">
+              <option value="pending">Processing</option>
+              <option value="all">All Payments</option>
+              <option value="approved">Paid</option>
+              <option value="declined">Declined</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="aLoadBills()" style="font-size:.75rem;">Refresh</button>
+          </div>
+        </div>
+        <div id="aBillTable"><div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading…</div></div>
+      </div>
+    </div><!-- /aTab_bills -->
+
   </div><!-- /adminPanelContent -->
 </div><!-- /adminOverlay -->
 
@@ -2560,8 +2599,42 @@ function openPayBillModal() {
   document.getElementById('pbillTotal').textContent = '$0.00';
   document.getElementById('pbillErr').style.display = 'none';
 
+  pbillLoadRecent();
   document.getElementById('payBillOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+const PBILL_STATUS = {
+  pending:  { label:'Processing', c:'#fbbf24', bg:'rgba(251,191,36,.1)', bd:'rgba(251,191,36,.3)' },
+  approved: { label:'Paid',       c:'#4ade80', bg:'rgba(74,222,128,.1)', bd:'rgba(74,222,128,.3)' },
+  declined: { label:'Declined',   c:'#f87171', bg:'rgba(248,113,113,.1)',bd:'rgba(248,113,113,.3)' },
+};
+async function pbillLoadRecent() {
+  const wrap = document.getElementById('pbillRecentWrap');
+  const el = document.getElementById('pbillRecent');
+  if (!el) return;
+  try {
+    const res = await callEdgeFunction('transfer-funds', { action: 'get_my_bill_payments' });
+    const bills = (res.bills || []).slice(0, 5);
+    if (!bills.length) { wrap.style.display = 'none'; return; }
+    wrap.style.display = '';
+    el.innerHTML = bills.map(b => {
+      const st = PBILL_STATUS[b.status] || PBILL_STATUS.pending;
+      const date = new Date(b.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric' });
+      const amt = _balHidden ? '$••••••' : ('$' + Number(b.amount).toLocaleString('en-US',{minimumFractionDigits:2}));
+      return `<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;border:1px solid rgba(255,255,255,.07);border-radius:12px;margin-bottom:8px;background:rgba(255,255,255,.02);">
+        <div style="min-width:0;">
+          <div style="font-size:.84rem;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${b.payee_name}</div>
+          <div style="font-size:.7rem;color:var(--slate-500);margin-top:2px;">${date} · ${b.biller_category||'Bills'}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-family:var(--font-display);font-size:.95rem;color:#fff;">${amt}</div>
+          <div style="display:inline-block;margin-top:3px;font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${st.c};background:${st.bg};border:1px solid ${st.bd};border-radius:99px;padding:2px 9px;">
+            ${b.status==='pending'?'<span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:'+st.c+';margin-right:4px;vertical-align:middle;"></span>':''}${st.label}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  } catch (_) { wrap.style.display = 'none'; }
 }
 function closePayBillModal() {
   document.getElementById('payBillOverlay').classList.remove('open');
@@ -2634,9 +2707,16 @@ async function submitPayBill() {
       amount,
       memo,
     });
-    zenithToast(`$${amount.toFixed(2)} paid to ${payee}. Ref: ${res.reference}`, 'success', 5000);
-    closePayBillModal();
-    loadDashboardData();
+    zenithToast(`Payment to ${payee} submitted — processing. You'll be notified once it's approved.`, 'success', 6000);
+    // Reset the form and show the new "Processing" entry without closing
+    document.getElementById('pbillPayee').value = '';
+    document.getElementById('pbillAcctRef').value = '';
+    document.getElementById('pbillAmount').value = '';
+    document.getElementById('pbillMemo').value = '';
+    document.getElementById('pbillTotal').textContent = '$0.00';
+    _pbillBiller = null;
+    document.querySelectorAll('.pbill-biller').forEach(el => el.classList.remove('sel'));
+    pbillLoadRecent();
   } catch (e) {
     let msg = 'Payment failed.'; try { const p = JSON.parse(e.message); msg = p.error || e.message; } catch { msg = e.message || msg; }
     errEl.textContent = msg; errEl.style.display = '';
@@ -2715,7 +2795,7 @@ async function openAdminPanel() {
     // Background-load all other tab data without blocking the UI
     Promise.all([
       aLoadUsers(), aLoadCardRequests(), aLoadCardPricing(),
-      aLoadRewards(), aLoadPins(), aLoadAccountRequests(), aLoadLoanApplications(), aLoadLinked(), aLoadAcctApps(), aLoadTransfers(),
+      aLoadRewards(), aLoadPins(), aLoadAccountRequests(), aLoadLoanApplications(), aLoadLinked(), aLoadAcctApps(), aLoadTransfers(), aLoadBills(),
     ]).then(() => aPopulateCreditMemberSelect()).catch(() => {});
   } catch(e) {
     let msg = e.message || '';
@@ -2909,7 +2989,7 @@ async function aRejectAcctRequest(requestId, memberName) {
 }
 
 async function refreshAdminAll() {
-  await Promise.all([aLoadStats(), aLoadUsers(), aLoadCardRequests(), aLoadCardPricing(), aLoadRewards(), aLoadPins(), aLoadAccountRequests(), aLoadLoanApplications(), aLoadLinked(), aLoadAcctApps(), aLoadTransfers()]);
+  await Promise.all([aLoadStats(), aLoadUsers(), aLoadCardRequests(), aLoadCardPricing(), aLoadRewards(), aLoadPins(), aLoadAccountRequests(), aLoadLoanApplications(), aLoadLinked(), aLoadAcctApps(), aLoadTransfers(), aLoadBills()]);
   aPopulateCreditMemberSelect();
 }
 
@@ -5226,6 +5306,102 @@ async function aDeclineTransfer(requestId) {
 // Auto-refresh transfers every 30s when admin panel is open
 setInterval(function() {
   if (document.getElementById('aTab_transfers')?.style.display !== 'none') aLoadTransfers();
+}, 30000);
+
+// ═══════════════════════════════════════════════════════════════
+//  ADMIN: BILL PAYMENTS
+// ═══════════════════════════════════════════════════════════════
+const A_BILL_STATUS = {
+  pending:  { label:'PROCESSING', c:'#fbbf24', bg:'rgba(251,191,36,.1)' },
+  approved: { label:'PAID',       c:'#4ade80', bg:'rgba(74,222,128,.1)' },
+  declined: { label:'DECLINED',   c:'#f87171', bg:'rgba(248,113,113,.1)' },
+};
+async function aLoadBills() {
+  const filter = document.getElementById('aBillFilter')?.value || 'pending';
+  const tableEl = document.getElementById('aBillTable');
+  if (tableEl) tableEl.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;padding:20px 0;">Loading…</div>';
+  try {
+    const res = await callEdgeFunction('transfer-funds', { action: 'admin_list_bills', filter });
+    const bills = res.bills || [];
+
+    const pending = bills.filter(b => b.status === 'pending').length;
+    const badge = document.getElementById('aBillsBadge');
+    const countEl = document.getElementById('aBillPendingCount');
+    if (badge) { badge.textContent = pending || ''; badge.style.display = pending ? '' : 'none'; }
+    if (countEl) { countEl.textContent = pending + ' processing'; countEl.style.display = pending ? '' : 'none'; }
+
+    if (!bills.length) {
+      if (tableEl) tableEl.innerHTML = '<div style="color:var(--slate-500);font-size:.85rem;padding:24px 0;text-align:center;">No bill payments found.</div>';
+      return;
+    }
+
+    if (tableEl) tableEl.innerHTML = bills.map(b => {
+      const amt = '$' + Number(b.amount).toLocaleString('en-US', { minimumFractionDigits: 2 });
+      const st  = A_BILL_STATUS[b.status] || A_BILL_STATUS.pending;
+      const isPending = b.status === 'pending';
+      const created = new Date(b.created_at);
+      const ref = b.account_ref ? ` · acct ••${String(b.account_ref).slice(-4)}` : '';
+      return `<div style="border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px 20px;margin-bottom:12px;background:rgba(255,255,255,.025);" id="bill_row_${b.id}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:200px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+              <div style="font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#c9a84c;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:99px;padding:2px 8px;">${b.biller_category || 'Bills'}</div>
+              <div style="font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${st.c};background:${st.bg};border:1px solid ${st.c}44;border-radius:99px;padding:2px 8px;">${st.label}</div>
+            </div>
+            <div style="font-family:var(--font-display);font-size:1.18rem;color:#fff;margin-bottom:2px;">${amt}</div>
+            <div style="font-size:.78rem;color:var(--slate-300);">
+              <span style="color:var(--slate-500);">From</span> ${b.member_name}
+              <span style="color:var(--slate-600);margin:0 6px;">→</span>
+              <span style="color:var(--slate-300);">${b.payee_name}</span>${ref}
+            </div>
+            ${b.memo ? `<div style="font-size:.72rem;color:var(--slate-500);margin-top:4px;font-style:italic;">"${b.memo}"</div>` : ''}
+            ${b.admin_note ? `<div style="font-size:.72rem;color:var(--slate-400);margin-top:4px;">Admin note: ${b.admin_note}</div>` : ''}
+            <div style="font-size:.68rem;color:var(--slate-600);margin-top:6px;">${created.toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })} · Ref ${b.reference || '—'}</div>
+          </div>
+          ${isPending ? `<div style="display:flex;gap:6px;flex-shrink:0;">
+            <button onclick="aApproveBill('${b.id}')" style="background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);color:#4ade80;border-radius:8px;padding:7px 14px;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;">Approve</button>
+            <button onclick="aDeclineBill('${b.id}')" style="background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:#f87171;border-radius:8px;padding:7px 14px;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;">Decline</button>
+          </div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    let msg = 'Failed to load bill payments.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    if (tableEl) tableEl.innerHTML = `<div style="color:#f87171;font-size:.85rem;padding:20px 0;">${msg}</div>`;
+  }
+}
+async function aApproveBill(billId) {
+  const note = window.prompt('Optional note to member (leave blank to skip):') || '';
+  const row = document.getElementById('bill_row_' + billId);
+  if (row) { row.querySelectorAll('button').forEach(b => { b.disabled = true; b.textContent = '…'; }); }
+  try {
+    await callEdgeFunction('transfer-funds', { action: 'admin_approve_bill', bill_id: billId, admin_note: note || null });
+    zenithToast('Bill payment approved and debited.', 'success');
+    await aLoadBills();
+  } catch(e) {
+    let msg = 'Approval failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    zenithToast(msg, 'error');
+    await aLoadBills();
+  }
+}
+async function aDeclineBill(billId) {
+  const reason = window.prompt('Reason for declining (optional, sent to member):') || '';
+  const row = document.getElementById('bill_row_' + billId);
+  if (row) { row.querySelectorAll('button').forEach(b => { b.disabled = true; b.textContent = '…'; }); }
+  try {
+    await callEdgeFunction('transfer-funds', { action: 'admin_decline_bill', bill_id: billId, admin_note: reason || null });
+    zenithToast('Bill payment declined.', 'success');
+    await aLoadBills();
+  } catch(e) {
+    let msg = 'Failed to decline.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
+    zenithToast(msg, 'error');
+    await aLoadBills();
+  }
+}
+// Auto-refresh bills every 30s when that tab is open
+setInterval(function() {
+  if (document.getElementById('aTab_bills')?.style.display !== 'none' &&
+      document.getElementById('adminOverlay')?.style.display !== 'none') aLoadBills();
 }, 30000);
 
 // ═══════════════════════════════════════════════════════════════

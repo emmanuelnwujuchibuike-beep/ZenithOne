@@ -1812,10 +1812,18 @@ async function _pinSubmit() {
 //  INIT
 // ══════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', buildCatalog);
-document.addEventListener('supabaseReady', loadAllData, { once:true });
+// supabaseReady only fires once globally (on the very first native page load),
+// so on SPA navigation back to this page window._supabase is already set and
+// that event will never fire again — call loadAllData directly in that case,
+// otherwise the card list/pricing/balance never load and the page sits on
+// its loading state forever.
+if (window._supabase) loadAllData();
+else document.addEventListener('supabaseReady', loadAllData, { once:true });
 
 // Mobile sidebar
 (function(){
+  if (window.__znMobileNavWired) return;
+  window.__znMobileNavWired = true;
   const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
   const t=document.getElementById('sidebarToggle'),c=document.getElementById('sidebarClose');
   function openNav()  { s.classList.add('open');o.classList.add('open');document.body.style.overflow='hidden'; }

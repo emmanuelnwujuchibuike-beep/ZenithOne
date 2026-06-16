@@ -1721,6 +1721,8 @@ async function submitLinkCard(){
 
 // ── Mobile sidebar ────────────────────────────────────────────────────────────
 (function(){
+  if (window.__znMobileNavWired) return;
+  window.__znMobileNavWired = true;
   var s=document.getElementById('sidebar'), o=document.getElementById('sidebarOverlay');
   var t=document.getElementById('sidebarToggle'), c=document.getElementById('sidebarClose');
   function openNav(){ s.classList.add('open'); o.classList.add('open'); if(t) t.classList.add('is-open'); document.body.style.overflow='hidden'; }

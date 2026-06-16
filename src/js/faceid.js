@@ -386,6 +386,7 @@
       // Face ID is device-bound — treat as remember-me for 30 days
       localStorage.setItem('zo_remember', '1');
       localStorage.setItem('zo_remember_until', String(Date.now() + 30 * 24 * 60 * 60 * 1000));
+      localStorage.setItem('zo_last_activity', String(Date.now()));
       sessionStorage.removeItem('zo_session_only');
       showResult(true, 'Welcome Back', 'Signing you in…');
       setTimeout(() => {

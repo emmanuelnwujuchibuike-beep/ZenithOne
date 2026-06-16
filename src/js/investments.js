@@ -25,4 +25,5 @@ function renderInvestmentStats(data) {
 }
 
 document.addEventListener('DOMContentLoaded', loadInvestmentData);
-document.addEventListener('supabaseReady', loadInvestmentData);
+if (window._supabase) loadInvestmentData();
+else document.addEventListener('supabaseReady', loadInvestmentData);

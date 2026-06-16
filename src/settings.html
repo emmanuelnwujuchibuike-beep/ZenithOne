@@ -525,6 +525,8 @@ async function initFaceIdSettings() {
 }
 // Mobile sidebar
 (function(){
+  if (window.__znMobileNavWired) return;
+  window.__znMobileNavWired = true;
   const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
   const t=document.getElementById('sidebarToggle'),c=document.getElementById('sidebarClose');
   function openNav()  { s.classList.add('open');    o.classList.add('open');    t.classList.add('is-open');    document.body.style.overflow='hidden'; }

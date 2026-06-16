@@ -36,4 +36,5 @@ function renderCards(cards) {
 }
 
 document.addEventListener('DOMContentLoaded', loadCards);
-document.addEventListener('supabaseReady', loadCards);
+if (window._supabase) loadCards();
+else document.addEventListener('supabaseReady', loadCards);

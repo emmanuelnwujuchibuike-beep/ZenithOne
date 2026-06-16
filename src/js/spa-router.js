@@ -47,18 +47,19 @@
 
   function runPageScripts(extraCode, inlineCode) {
     var owned = { listeners: [], intervals: [], timeouts: [] };
-    var origAddWin = window.addEventListener.bind(window);
-    var origAddDoc = document.addEventListener.bind(document);
+    // Patched on EventTarget.prototype (not just window/document) because pages
+    // wire up listeners directly on persistent shell elements too (sidebar,
+    // sidebarToggle, topbar buttons) — those live outside #spaPageRoot and are
+    // never recreated, so without tracking them here they'd stack on every SPA
+    // visit to a page that re-wires them, and toggle-style handlers reading
+    // current state would cancel each other out on alternating clicks.
+    var origAdd = EventTarget.prototype.addEventListener;
     var origSetInterval = window.setInterval.bind(window);
     var origSetTimeout = window.setTimeout.bind(window);
 
-    window.addEventListener = function (type, fn, opts) {
-      owned.listeners.push({ target: window, type: type, fn: fn, opts: opts });
-      return origAddWin(type, fn, opts);
-    };
-    document.addEventListener = function (type, fn, opts) {
-      owned.listeners.push({ target: document, type: type, fn: fn, opts: opts });
-      return origAddDoc(type, fn, opts);
+    EventTarget.prototype.addEventListener = function (type, fn, opts) {
+      owned.listeners.push({ target: this, type: type, fn: fn, opts: opts });
+      return origAdd.call(this, type, fn, opts);
     };
     window.setInterval = function () {
       var id = origSetInterval.apply(null, arguments);
@@ -78,8 +79,7 @@
     } catch (err) {
       console.error('[spa-router] page script error', err);
     } finally {
-      window.addEventListener = origAddWin;
-      document.addEventListener = origAddDoc;
+      EventTarget.prototype.addEventListener = origAdd;
       window.setInterval = origSetInterval;
       window.setTimeout = origSetTimeout;
     }
@@ -100,7 +100,15 @@
     navInProgress = true;
     var bar = showBar();
     try {
-      var res = await fetch(url, { credentials: 'same-origin' });
+      // Page HTML and the page's extra script (if any) are independent resources —
+      // fire both requests together instead of awaiting one before starting the
+      // other, so pages with an extra script (cards/investments/settings) don't
+      // pay for a second sequential round-trip on every navigation.
+      var extraSrc = PAGE_EXTRA_SCRIPT[name];
+      var pagePromise = fetch(url, { credentials: 'same-origin' });
+      var extraPromise = extraSrc ? fetch(extraSrc, { credentials: 'same-origin' }) : null;
+
+      var res = await pagePromise;
       if (!res.ok) throw new Error('bad status ' + res.status);
       var html = await res.text();
       var doc = new DOMParser().parseFromString(html, 'text/html');
@@ -109,10 +117,9 @@
       var curRoot = document.getElementById('spaPageRoot');
       if (!newRoot || !curRoot) throw new Error('missing spaPageRoot');
 
-      var extraSrc = PAGE_EXTRA_SCRIPT[name];
       var extraCode = null;
-      if (extraSrc) {
-        var r2 = await fetch(extraSrc, { credentials: 'same-origin' });
+      if (extraPromise) {
+        var r2 = await extraPromise;
         extraCode = await r2.text();
       }
 

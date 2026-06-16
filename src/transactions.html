@@ -1163,6 +1163,8 @@ document.addEventListener('keydown', function(e) { if (e.key === 'Escape') close
 
 /* ── Mobile sidebar ── */
 (function() {
+  if (window.__znMobileNavWired) return;
+  window.__znMobileNavWired = true;
   var s = document.getElementById('sidebar');
   var o = document.getElementById('sidebarOverlay');
   var t = document.getElementById('sidebarToggle');

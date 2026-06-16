@@ -292,6 +292,8 @@ function openTradeModal() { zenithToast('Live trading is coming soon. Contact yo
 function openAdvisorModal() { zenithToast('Schedule a call with your ZenithOne Banking Advisor: 1-888-763-9000', 'info', 7000); }
 // Mobile sidebar
 (function(){
+  if (window.__znMobileNavWired) return;
+  window.__znMobileNavWired = true;
   const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
   const t=document.getElementById('sidebarToggle'),c=document.getElementById('sidebarClose');
   function openNav()  { s.classList.add('open');    o.classList.add('open');    t.classList.add('is-open');    document.body.style.overflow='hidden'; }

@@ -51,4 +51,5 @@ async function changePasswordRequest(newPassword) {
 }
 
 document.addEventListener('DOMContentLoaded', loadUserSettings);
-document.addEventListener('supabaseReady', loadUserSettings);
+if (window._supabase) loadUserSettings();
+else document.addEventListener('supabaseReady', loadUserSettings);

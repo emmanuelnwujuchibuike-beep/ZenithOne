@@ -200,6 +200,10 @@ if (loginForm) {
       } else {
         sessionStorage.setItem('zo_session_only', '1');
       }
+      // Fresh login always clears any stale lock-idle clock, otherwise the
+      // session-inactivity guard on the landing page re-locks immediately
+      // using the leftover timestamp from before this login.
+      localStorage.setItem('zo_last_activity', String(Date.now()));
       // Redirect: back to reauth target if there was one, otherwise dashboard
       const _t = localStorage.getItem('zo_reauth_target') || '';
       localStorage.removeItem('zo_reauth_target');

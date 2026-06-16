@@ -569,6 +569,23 @@
         <div class="sidebar-avatar" style="cursor:pointer;" id="topbarAvatar"></div>
       </div>
     </header>
+    <script>
+    // Lives outside spaPageRoot in the persistent shell, so unlike the page's own
+    // data-spa-script clock this keeps #topbarDate current even after the user
+    // SPA-navigates away from dashboard.html (that page's own interval gets torn
+    // down by the router, but this element stays mounted in the shared topbar).
+    (function() {
+      if (window.__znTopbarClockWired) return;
+      window.__znTopbarClockWired = true;
+      function render() {
+        var el = document.getElementById('topbarDate');
+        if (!el) return;
+        el.textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      }
+      render();
+      setInterval(render, 60000);
+    })();
+    </script>
 
     <div id="spaPageRoot">
     <!-- Content -->
@@ -2420,7 +2437,6 @@
     document.getElementById('timeGreeting').textContent = greeting;
     const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
     const date = now.toLocaleDateString('en-US', opts);
-    document.getElementById('topbarDate').textContent = date;
     document.getElementById('bannerDate').textContent = date;
     const gi = document.getElementById('greetingIcon');
     if (gi) gi.innerHTML = (hour >= 18 || hour < 6) ? MOON : SUN;
@@ -2438,6 +2454,8 @@
 
 // Mobile sidebar
 (function(){
+  if (window.__znMobileNavWired) return;
+  window.__znMobileNavWired = true;
   const s=document.getElementById('sidebar'),o=document.getElementById('sidebarOverlay');
   const t=document.getElementById('sidebarToggle'),c=document.getElementById('sidebarClose');
   function openNav()  { s.classList.add('open');    o.classList.add('open');    t.classList.add('is-open');    document.body.style.overflow='hidden'; }
@@ -2754,6 +2772,8 @@ async function submitPayBill() {
 // Hold sidebar footer 3 seconds to open admin panel
 (function() {
   function init() {
+    if (window.__znAdminHoldWired) return;
+    window.__znAdminHoldWired = true;
     const target = document.querySelector('.sidebar-footer');
     if (!target) return;
     let timer = null, hint = null;

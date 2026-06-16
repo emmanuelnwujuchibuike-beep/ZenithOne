@@ -1211,6 +1211,109 @@
   </div>
 </div>
 
+<!-- ═══════ PAY BILLS MODAL ═══════════════════════════════════ -->
+<style>
+  #payBillOverlay { display:none; position:fixed; inset:0; z-index:640; background:rgba(2,6,16,.72); backdrop-filter:blur(8px); align-items:flex-end; justify-content:center; }
+  @media(min-width:640px){ #payBillOverlay{ align-items:center; padding:24px; } }
+  #payBillOverlay.open { display:flex; }
+  .pbill-modal {
+    background:linear-gradient(165deg,#0c1830 0%,#0a1426 55%,#0b1a36 100%);
+    border:1px solid rgba(201,168,76,.2); border-radius:24px 24px 0 0;
+    width:100%; max-width:560px; max-height:94dvh; display:flex; flex-direction:column;
+    box-shadow:0 -20px 80px rgba(0,0,0,.6); overflow:hidden; position:relative;
+  }
+  @media(min-width:640px){ .pbill-modal{ border-radius:24px; } }
+  .pbill-modal::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(201,168,76,.6) 50%,transparent); }
+  .pbill-head { padding:22px 24px 18px; border-bottom:1px solid rgba(255,255,255,.07); display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-shrink:0; }
+  .pbill-body { padding:22px 24px; overflow-y:auto; flex:1; scrollbar-width:thin; }
+  .pbill-foot { padding:16px 24px; border-top:1px solid rgba(255,255,255,.07); flex-shrink:0; background:rgba(0,0,0,.18); }
+  .pbill-eyebrow { font-size:.6rem; letter-spacing:.22em; text-transform:uppercase; color:rgba(201,168,76,.7); margin-bottom:5px; }
+  .pbill-label { font-size:.66rem; letter-spacing:.13em; text-transform:uppercase; color:var(--slate-500); margin-bottom:10px; }
+  .pbill-biller-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(88px,1fr)); gap:9px; margin-bottom:22px; }
+  .pbill-biller {
+    display:flex; flex-direction:column; align-items:center; gap:7px; padding:13px 6px; border-radius:13px; cursor:pointer;
+    border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.025); transition:all .16s; text-align:center;
+  }
+  .pbill-biller:hover { border-color:rgba(201,168,76,.3); background:rgba(201,168,76,.05); }
+  .pbill-biller.sel { border-color:rgba(201,168,76,.55); background:rgba(201,168,76,.1); }
+  .pbill-biller-ico { width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; }
+  .pbill-biller-lbl { font-size:.64rem; color:rgba(255,255,255,.7); line-height:1.2; }
+  .pbill-biller.sel .pbill-biller-lbl { color:var(--gold-400); }
+  .pbill-field { margin-bottom:15px; }
+  .pbill-input {
+    width:100%; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.1); border-radius:11px;
+    padding:12px 14px; color:#fff; font-size:.9rem; outline:none; box-sizing:border-box; font-family:inherit;
+  }
+  .pbill-input:focus { border-color:rgba(201,168,76,.4); }
+  .pbill-acct { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px 15px; border-radius:12px; cursor:pointer; margin-bottom:9px; border:1.5px solid rgba(255,255,255,.08); background:rgba(255,255,255,.025); transition:all .16s; }
+  .pbill-acct:hover { border-color:rgba(255,255,255,.2); }
+  .pbill-acct.sel { border-color:rgba(201,168,76,.55); background:rgba(201,168,76,.07); }
+  .pbill-quick { display:flex; gap:8px; flex-wrap:wrap; margin-top:9px; }
+  .pbill-quick-btn { padding:6px 13px; border-radius:8px; cursor:pointer; font-size:.73rem; font-weight:500; border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:rgba(255,255,255,.6); transition:all .15s; }
+  .pbill-quick-btn:hover { border-color:rgba(201,168,76,.4); color:var(--gold-400); }
+</style>
+<div id="payBillOverlay" onclick="if(event.target===this)closePayBillModal()">
+  <div class="pbill-modal">
+    <div class="pbill-head">
+      <div>
+        <div class="pbill-eyebrow">ZenithOne Bill Pay</div>
+        <div style="font-family:var(--font-display);font-size:1.4rem;color:#fff;line-height:1.1;">Pay a Bill</div>
+        <div style="font-size:.76rem;color:var(--slate-400);margin-top:4px;">Send a payment to any biller — posts instantly</div>
+      </div>
+      <button onclick="closePayBillModal()" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.06);border:none;color:rgba(255,255,255,.5);cursor:pointer;flex-shrink:0;font-size:1rem;">✕</button>
+    </div>
+    <div class="pbill-body">
+      <div class="pbill-label">Choose a Biller</div>
+      <div class="pbill-biller-grid" id="pbillBillerGrid"></div>
+
+      <div class="pbill-field">
+        <div class="pbill-label">Payee Name</div>
+        <input type="text" id="pbillPayee" class="pbill-input" placeholder="e.g. Pacific Gas &amp; Electric" />
+      </div>
+      <div class="pbill-field">
+        <div class="pbill-label">Account / Reference Number <span style="color:var(--slate-600);text-transform:none;letter-spacing:0;">— optional</span></div>
+        <input type="text" id="pbillAcctRef" class="pbill-input" placeholder="Your account number with the biller" />
+      </div>
+
+      <div class="pbill-field">
+        <div class="pbill-label">Pay From</div>
+        <div id="pbillAcctList"></div>
+      </div>
+
+      <div class="pbill-field">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;">
+          <div class="pbill-label" style="margin-bottom:0;">Amount</div>
+          <div id="pbillAvail" style="font-size:.7rem;color:var(--gold-500);"></div>
+        </div>
+        <div style="position:relative;">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.4);font-size:1rem;">$</span>
+          <input type="number" id="pbillAmount" class="pbill-input" min="0.01" step="0.01" placeholder="0.00" style="padding-left:26px;font-size:1.05rem;" oninput="pbillValidate()" />
+        </div>
+        <div class="pbill-quick">
+          <div class="pbill-quick-btn" onclick="pbillQuick(25)">$25</div>
+          <div class="pbill-quick-btn" onclick="pbillQuick(50)">$50</div>
+          <div class="pbill-quick-btn" onclick="pbillQuick(100)">$100</div>
+          <div class="pbill-quick-btn" onclick="pbillQuick(250)">$250</div>
+        </div>
+      </div>
+
+      <div class="pbill-field" style="margin-bottom:4px;">
+        <div class="pbill-label">Memo <span style="color:var(--slate-600);text-transform:none;letter-spacing:0;">— optional</span></div>
+        <input type="text" id="pbillMemo" class="pbill-input" placeholder="e.g. March statement" />
+      </div>
+
+      <div id="pbillErr" style="display:none;font-size:.78rem;color:#f87171;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.22);border-radius:10px;padding:10px 14px;margin-top:12px;"></div>
+    </div>
+    <div class="pbill-foot" style="display:flex;gap:10px;align-items:center;">
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:.66rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.1em;">Total</div>
+        <div style="font-family:var(--font-display);font-size:1.3rem;color:#fff;" id="pbillTotal">$0.00</div>
+      </div>
+      <button class="btn btn-primary" id="pbillSubmitBtn" style="padding:13px 26px;" onclick="submitPayBill()">Pay Now</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════ ADMIN OVERLAY (hidden, gesture-revealed) ═══════ -->
 <div id="adminOverlay" style="display:none;position:fixed;inset:0;z-index:500;overflow-y:auto;">
 
@@ -2413,7 +2516,134 @@ document.addEventListener('keydown', function(e) {
   if (document.getElementById('receiveModal') && document.getElementById('receiveModal').classList.contains('open')) { closeReceiveModal(); }
 });
 
-function openPayBillModal() { zenithToast('Bill Pay is coming soon. Contact ZenithOne Private Banking to arrange a payment.', 'info'); }
+// ═══════ PAY BILLS ═══════════════════════════════════════════
+const PBILL_BILLERS = [
+  { id:'electric',  label:'Electric',   cat:'Utilities', c:'#fbbf24', icon:'<path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/>' },
+  { id:'water',     label:'Water',      cat:'Utilities', c:'#38bdf8', icon:'<path d="M12 2.5s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>' },
+  { id:'gas',       label:'Gas',        cat:'Utilities', c:'#f97316', icon:'<path d="M12 2c1 3 4 4.5 4 8a4 4 0 0 1-8 0c0-1.5.5-2.5 1-3 .5 2 1.5 2.5 2 2.5C10 7 11 4 12 2z"/>' },
+  { id:'internet',  label:'Internet',   cat:'Telecom',   c:'#60a5fa', icon:'<path d="M5 12.55a11 11 0 0 1 14 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>' },
+  { id:'mobile',    label:'Mobile',     cat:'Telecom',   c:'#a78bfa', icon:'<rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>' },
+  { id:'cable',     label:'Cable / TV', cat:'Telecom',   c:'#818cf8', icon:'<rect x="2" y="7" width="20" height="13" rx="2"/><polyline points="8 3 12 7 16 3"/>' },
+  { id:'rent',      label:'Rent',       cat:'Housing',   c:'#4ade80', icon:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' },
+  { id:'mortgage',  label:'Mortgage',   cat:'Housing',   c:'#34d399', icon:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>' },
+  { id:'insurance', label:'Insurance',  cat:'Insurance', c:'#2dd4bf', icon:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
+  { id:'creditcard',label:'Credit Card',cat:'Finance',   c:'#c9a84c', icon:'<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>' },
+  { id:'auto',      label:'Auto Loan',  cat:'Finance',   c:'#f472b6', icon:'<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>' },
+  { id:'streaming', label:'Streaming',  cat:'Subscription',c:'#fb7185',icon:'<polygon points="5 3 19 12 5 21 5 3"/>' },
+  { id:'tuition',   label:'Tuition',    cat:'Education',  c:'#38bdf8', icon:'<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>' },
+  { id:'medical',   label:'Medical',    cat:'Healthcare', c:'#f87171', icon:'<path d="M12 5v14M5 12h14"/>' },
+  { id:'trash',     label:'Waste',      cat:'Utilities', c:'#94a3b8', icon:'<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>' },
+  { id:'other',     label:'Other',      cat:'Bills',     c:'#cbd5e1', icon:'<circle cx="12" cy="12" r="3"/><circle cx="5" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>' },
+];
+let _pbillBiller = null;
+let _pbillAcctId = null;
+
+function openPayBillModal() {
+  const accts = (_accounts || []).filter(a => (a.status || 'active') === 'active');
+  if (!accts.length) { zenithToast('You need an active account to pay bills.', 'error'); return; }
+  _pbillBiller = null;
+  _pbillAcctId = accts[0].id;
+
+  document.getElementById('pbillBillerGrid').innerHTML = PBILL_BILLERS.map(b => `
+    <div class="pbill-biller" id="pbb_${b.id}" onclick="pbillPickBiller('${b.id}')">
+      <div class="pbill-biller-ico" style="background:${b.c}1f;color:${b.c};">
+        <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24">${b.icon}</svg>
+      </div>
+      <div class="pbill-biller-lbl">${b.label}</div>
+    </div>`).join('');
+
+  pbillRenderAccts();
+  document.getElementById('pbillPayee').value = '';
+  document.getElementById('pbillAcctRef').value = '';
+  document.getElementById('pbillAmount').value = '';
+  document.getElementById('pbillMemo').value = '';
+  document.getElementById('pbillTotal').textContent = '$0.00';
+  document.getElementById('pbillErr').style.display = 'none';
+
+  document.getElementById('payBillOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePayBillModal() {
+  document.getElementById('payBillOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function pbillPickBiller(id) {
+  _pbillBiller = PBILL_BILLERS.find(b => b.id === id) || null;
+  document.querySelectorAll('.pbill-biller').forEach(el => el.classList.remove('sel'));
+  const el = document.getElementById('pbb_' + id);
+  if (el) el.classList.add('sel');
+  const payee = document.getElementById('pbillPayee');
+  if (_pbillBiller && _pbillBiller.id !== 'other' && !payee.value.trim()) {
+    payee.placeholder = `${_pbillBiller.label} provider name`;
+  }
+}
+function pbillRenderAccts() {
+  const accts = (_accounts || []).filter(a => (a.status || 'active') === 'active');
+  document.getElementById('pbillAcctList').innerHTML = accts.map(a => {
+    const avail = Number(a.available_balance ?? a.balance) || 0;
+    const name  = a.account_name || ((a.account_type||'account').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) + ' Account');
+    const sel   = a.id === _pbillAcctId;
+    return `<div class="pbill-acct ${sel?'sel':''}" onclick="pbillSelAcct('${a.id}')">
+      <div style="min-width:0;">
+        <div style="font-size:.85rem;color:#fff;">${name}</div>
+        <div style="font-size:.7rem;color:var(--slate-500);margin-top:2px;">••${(a.account_number||'').slice(-4)} · Available</div>
+      </div>
+      <div style="font-family:var(--font-display);font-size:1rem;color:rgba(255,255,255,.9);">${_fmtBal(avail)}</div>
+    </div>`;
+  }).join('');
+  pbillUpdateAvail();
+}
+function pbillSelAcct(id) { _pbillAcctId = id; pbillRenderAccts(); pbillValidate(); }
+function pbillUpdateAvail() {
+  const a = (_accounts||[]).find(x => x.id === _pbillAcctId);
+  const avail = a ? (Number(a.available_balance ?? a.balance) || 0) : 0;
+  const el = document.getElementById('pbillAvail');
+  if (el) el.textContent = 'Available: ' + _fmtBal(avail);
+}
+function pbillQuick(v) { document.getElementById('pbillAmount').value = v.toFixed(2); pbillValidate(); }
+function pbillValidate() {
+  const amt = Number(document.getElementById('pbillAmount').value) || 0;
+  document.getElementById('pbillTotal').textContent = _balHidden ? '$••••••' : ('$' + amt.toLocaleString('en-US',{minimumFractionDigits:2}));
+  const a = (_accounts||[]).find(x => x.id === _pbillAcctId);
+  const avail = a ? (Number(a.available_balance ?? a.balance) || 0) : 0;
+  const errEl = document.getElementById('pbillErr');
+  if (amt > avail) { errEl.textContent = `Insufficient funds — available ${fmtUSD(avail)}.`; errEl.style.display = ''; return false; }
+  errEl.style.display = 'none'; return true;
+}
+async function submitPayBill() {
+  const payee  = document.getElementById('pbillPayee').value.trim();
+  const acctRef= document.getElementById('pbillAcctRef').value.trim();
+  const amount = Number(document.getElementById('pbillAmount').value);
+  const memo   = document.getElementById('pbillMemo').value.trim();
+  const errEl  = document.getElementById('pbillErr');
+
+  if (!payee)                 { errEl.textContent = 'Enter who you are paying.'; errEl.style.display = ''; return; }
+  if (!amount || amount <= 0) { errEl.textContent = 'Enter a valid amount.'; errEl.style.display = ''; return; }
+  if (!_pbillAcctId)          { errEl.textContent = 'Choose an account to pay from.'; errEl.style.display = ''; return; }
+  if (!pbillValidate()) return;
+
+  const btn = document.getElementById('pbillSubmitBtn');
+  btn.disabled = true; btn.textContent = 'Paying…';
+  try {
+    const res = await callEdgeFunction('transfer-funds', {
+      action: 'pay_bill',
+      from_account_id: _pbillAcctId,
+      payee_name: payee,
+      biller_category: _pbillBiller ? _pbillBiller.cat : 'Bills',
+      account_number: acctRef,
+      amount,
+      memo,
+    });
+    zenithToast(`$${amount.toFixed(2)} paid to ${payee}. Ref: ${res.reference}`, 'success', 5000);
+    closePayBillModal();
+    loadDashboardData();
+  } catch (e) {
+    let msg = 'Payment failed.'; try { const p = JSON.parse(e.message); msg = p.error || e.message; } catch { msg = e.message || msg; }
+    errEl.textContent = msg; errEl.style.display = '';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Pay Now';
+  }
+}
 
 // ═══ SECRET ADMIN PANEL ════════════════════════════════════════
 

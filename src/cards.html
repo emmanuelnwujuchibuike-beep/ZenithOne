@@ -84,10 +84,8 @@
     .cat-filter-btn:hover { border-color:rgba(255,255,255,.22); color:rgba(255,255,255,.8); background:rgba(255,255,255,.04); }
     .cat-filter-btn.active { background:rgba(201,168,76,.12); border-color:rgba(201,168,76,.45); color:var(--gold-400); }
 
-    /* ── Catalog grid ─────────────────────────────────────── */
-    .catalog-grid      { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
-    @media(max-width:1200px){ .catalog-grid { grid-template-columns:repeat(2,1fr); } }
-    @media(max-width:720px) { .catalog-grid { grid-template-columns:1fr; } }
+    /* ── Catalog grid (fluid, responsive on every device) ── */
+    .catalog-grid      { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr)); gap:24px; }
 
     /* ── Premium catalog card ─────────────────────────────── */
     .catalog-card      { border-radius:20px; border:1px solid rgba(255,255,255,.07); overflow:hidden; transition:transform .25s cubic-bezier(.23,1,.32,1),box-shadow .25s,border-color .25s; position:relative; background:rgba(255,255,255,.025); display:flex; flex-direction:column; }
@@ -451,54 +449,65 @@ const CARD_NETWORKS = [
   { name:'American Express', surcharge:120 },
 ];
 
+// Keys match the backend card-request catalog exactly (virtual, classic_debit,
+// gold, platinum, titanium, black, black_gold, business). Base fees mirror the
+// server's card_pricing defaults. Network surcharge is added on top at apply.
 const CARD_CATALOG = [
   {
-    key:'basic_debit', name:'Basic Debit', type:'Debit', category:'debit', fee:0, apr:null,
-    highlight:'No Fees', highlightSub:'Zero annual or monthly fees', ribbon:null,
-    gradient:'linear-gradient(135deg,#0a1428 0%,#162a52 60%,#0d1a36 100%)', accent:'#60a5fa',
-    benefits:['No monthly or annual fees','Free ATM access nationwide','Instant account-to-account transfers','Contactless & chip-enabled','Apple Pay & Google Pay','Real-time transaction alerts'],
+    key:'virtual', name:'ZenithOne Virtual', type:'Debit', category:'debit', fee:249, apr:null,
+    network:'Visa',
+    highlight:'Instant Digital', highlightSub:'Issued instantly for online use', ribbon:'New',
+    accent:'#60a5fa',
+    benefits:['Instant virtual issuance — use in seconds','Tokenized number for safe online shopping','Apple Pay & Google Pay ready','Freeze & unfreeze anytime in-app','Real-time transaction alerts','No physical card to lose'],
   },
   {
-    key:'rewards_debit', name:'Rewards Debit', type:'Debit', category:'debit', fee:99, apr:null,
-    highlight:'1.5% Cash Back', highlightSub:'On every purchase, every day', ribbon:'Best Value',
-    gradient:'linear-gradient(135deg,#1a0e00 0%,#6b4400 50%,#c9920a 88%)', accent:'#f5b823',
-    benefits:['1.5% cash back on all purchases','3× points at groceries & gas','No foreign transaction fees','Premium metal card design','Priority customer support','Monthly rewards dashboard'],
+    key:'classic_debit', name:'ZenithOne Classic', type:'Debit', category:'debit', fee:299, apr:null,
+    network:'Visa',
+    highlight:'Everyday Banking', highlightSub:'Your essential debit card', ribbon:null,
+    accent:'#94a3b8',
+    benefits:['Fee-free ATM access nationwide','Contactless tap-to-pay & chip','Instant account-to-account transfers','Zero liability fraud protection','Apple Pay & Google Pay','24/7 cardholder support'],
   },
   {
-    key:'platinum_credit', name:'Platinum Credit', type:'Credit', category:'credit', fee:299, apr:'18.99%',
-    highlight:'3× Points', highlightSub:'On all travel and dining', ribbon:"Editor's Choice",
-    gradient:'linear-gradient(135deg,#9298a0 0%,#cdd4da 22%,#eef2f5 40%,#a4abb4 100%)', accent:'#94a3b8',
-    benefits:['3× points on travel & dining','$200 annual travel statement credit','Global airport lounge access','Cell phone protection up to $1,000','No preset spending limit','Dedicated platinum concierge'],
+    key:'gold', name:'ZenithOne Gold', type:'Credit', category:'credit', fee:399, apr:'17.99%',
+    network:'Mastercard',
+    highlight:'2× Rewards', highlightSub:'On dining, groceries & gas', ribbon:'Best Value',
+    accent:'#f5b823',
+    benefits:['2× points on dining, groceries & gas','1× points on everything else','$150 welcome bonus after $1,000 spend','Cell phone protection up to $800','No foreign transaction fees','Complimentary FICO® score tracking'],
   },
   {
-    key:'cashback_credit', name:'Cashback Credit', type:'Credit', category:'credit', fee:149, apr:'21.99%',
-    highlight:'5% Cash Back', highlightSub:'On rotating bonus categories', ribbon:'Most Popular',
-    gradient:'linear-gradient(135deg,#002a10 0%,#006828 55%,#00a844 100%)', accent:'#4ade80',
-    benefits:['5% cash back on rotating categories','2% on dining & entertainment','1% on all other purchases','$200 welcome bonus after $500 spend','No annual fee the first year','Quarterly bonus cash back promotions'],
+    key:'platinum', name:'ZenithOne Platinum', type:'Credit', category:'credit', fee:549, apr:'18.99%',
+    network:'Mastercard',
+    highlight:'3× Travel', highlightSub:'On flights, hotels & dining', ribbon:"Editor's Choice",
+    accent:'#cbd5e1',
+    benefits:['3× points on travel & dining','$200 annual travel statement credit','Airport lounge access (4 visits/yr)','Trip cancellation & baggage insurance','No preset spending limit','Dedicated Platinum concierge line'],
   },
   {
-    key:'travel_credit', name:'Travel Rewards Credit', type:'Credit', category:'credit', fee:449, apr:'19.99%',
-    highlight:'5× Miles', highlightSub:'On flights, hotels & travel', ribbon:'Best for Travel',
-    gradient:'linear-gradient(135deg,#001840 0%,#003d8a 50%,#0080e8 100%)', accent:'#38bdf8',
-    benefits:['5× miles on flights & hotel bookings','3× miles on dining & all travel','$300 annual travel statement credit','Global Entry / TSA PreCheck credit ($100)','Priority boarding on partner airlines','24/7 travel concierge & trip protection'],
+    key:'titanium', name:'ZenithOne Titanium', type:'Credit', category:'credit', fee:749, apr:'19.99%',
+    network:'Visa',
+    highlight:'4× Travel', highlightSub:'Premium metal card', ribbon:'Premium',
+    accent:'#9ca3af',
+    benefits:['4× miles on all travel purchases','$300 annual travel credit','Unlimited airport lounge access','Global Entry / TSA PreCheck credit','Brushed-titanium metal card','Visa Infinite concierge & protections'],
   },
   {
-    key:'secured_credit', name:'Secured Credit', type:'Credit', category:'credit', fee:49, apr:'24.99%',
-    highlight:'Build Credit', highlightSub:'Monthly FICO® score reporting', ribbon:'Credit Builder',
-    gradient:'linear-gradient(135deg,#1a0030 0%,#450080 50%,#7700d8 100%)', accent:'#a78bfa',
-    benefits:['Build or rebuild your credit history','1% cash back on all purchases','Monthly FICO® credit score updates','Refundable security deposit','Automatic upgrade path to unsecured card','Real-time fraud protection & alerts'],
+    key:'black', name:'ZenithOne Black', type:'Credit', category:'credit', fee:999, apr:'16.99%',
+    network:'American Express',
+    highlight:'5× Everything', highlightSub:'Invitation-grade privileges', ribbon:'Most Popular',
+    accent:'#e5e7eb',
+    benefits:['5× points on travel, 3× on dining','$500 annual luxury travel credit','Unlimited lounge access + guest passes','24/7 elite concierge service','Fine Hotels & Resorts benefits','Obsidian-finish metal card'],
   },
   {
-    key:'business_debit', name:'Business Debit', type:'Debit', category:'business', fee:0, apr:null,
-    highlight:'5 Sub-Cards', highlightSub:'Employee cards with spend controls', ribbon:null,
-    gradient:'linear-gradient(135deg,#071228 0%,#143058 46%,#1c4070 100%)', accent:'#38bdf8',
-    benefits:['Up to 5 employee sub-cards included','Detailed expense categorization & reporting','Free business ATM withdrawals','QuickBooks & Xero integration','Dedicated business support line','Real-time per-card spend controls'],
+    key:'black_gold', name:'Black Gold Elite', type:'Credit', category:'credit', fee:1299, apr:'15.99%',
+    network:'American Express',
+    highlight:'Unlimited Elite', highlightSub:'The pinnacle of membership', ribbon:'Invitation Only',
+    accent:'#c9a84c',
+    benefits:['Unlimited 5× points on all spend','$1,000 annual travel & lifestyle credit','Private jet & yacht concierge','Global lounge access for you + 2 guests','Dedicated relationship manager','24k gold-accented metal card'],
   },
   {
-    key:'business_credit', name:'Business Credit', type:'Credit', category:'business', fee:499, apr:'17.99%',
-    highlight:'4× Points', highlightSub:'On every business purchase', ribbon:'Premium',
-    gradient:'linear-gradient(135deg,#0a0a0a 0%,#1c1813 28%,#221c12 74%,#0c0a07 100%)', accent:'#c9a84c',
-    benefits:['4× points on all business purchases','$400 annual business statement credits','Up to 10 employee cards included','Advanced expense management platform','Dedicated business relationship manager','No preset spending limit for eligible purchases'],
+    key:'business', name:'Business Platinum', type:'Credit', category:'business', fee:699, apr:'17.99%',
+    network:'Mastercard',
+    highlight:'4× Business', highlightSub:'Built for growing companies', ribbon:'For Business',
+    accent:'#7ec8e3',
+    benefits:['4× points on all business purchases','$400 annual business statement credits','Up to 10 employee cards included','Advanced expense management & reporting','Dedicated business relationship manager','QuickBooks & Xero integration'],
   },
 ];
 
@@ -506,92 +515,95 @@ const CARD_CATALOG = [
 //  LUXURY CARD STYLE DATA  (matched to inspo design system)
 // ══════════════════════════════════════════════════════════════
 const LUXURY_CARD_DATA = {
-  basic_debit: {
+  virtual: {
     frontBg:'linear-gradient(135deg,#0a1428 0%,#0f2040 35%,#162a52 60%,#0d1a36 100%)',
     mesh:'radial-gradient(ellipse 70% 60% at 20% 20%,rgba(96,165,250,.25) 0%,transparent 55%),radial-gradient(ellipse 55% 50% at 80% 80%,rgba(59,130,246,.2) 0%,transparent 55%)',
     backBg:'linear-gradient(135deg,#07101e 0%,#0c1830 100%)',
     edge:'#60a5fa', shimmer:'rgba(96,165,250,.3)', chip:'#c9a84c', accent:'#60a5fa',
     txt:'rgba(235,245,255,.94)', txt2:'rgba(120,170,230,.5)', netColor:'rgba(235,245,255,.9)', stripe:'#0a1428',
     glow:'96,165,250', holo:false, engraved:false,
-    material:'BASIC DEBIT · ZENITHONE', subtitle:'Foundation Card',
+    material:'VIRTUAL · ZENITHONE', subtitle:'Instant Digital Card',
   },
-  rewards_debit: {
+  classic_debit: {
+    frontBg:'linear-gradient(135deg,#1e293b 0%,#283549 30%,#36465e 55%,#1c2738 100%)',
+    mesh:'radial-gradient(ellipse 70% 60% at 20% 20%,rgba(148,163,184,.28) 0%,transparent 55%),radial-gradient(ellipse 55% 50% at 82% 82%,rgba(100,116,139,.22) 0%,transparent 55%)',
+    backBg:'linear-gradient(135deg,#161e2b 0%,#222d3e 100%)',
+    edge:'#94a3b8', shimmer:'rgba(203,213,225,.3)', chip:'#c9a84c', accent:'#cbd5e1',
+    txt:'rgba(236,242,250,.95)', txt2:'rgba(148,163,184,.55)', netColor:'rgba(236,242,250,.92)', stripe:'#161e2b',
+    glow:'148,163,184', holo:false, engraved:false,
+    material:'CLASSIC DEBIT · ZENITHONE', subtitle:'Everyday Banking',
+  },
+  gold: {
     frontBg:'linear-gradient(135deg,#1a0e00 0%,#3d2200 25%,#6b4400 50%,#9a6800 70%,#c9920a 88%,#f5b823 100%)',
     mesh:'radial-gradient(ellipse 65% 55% at 22% 18%,rgba(255,200,80,.45) 0%,transparent 52%),radial-gradient(ellipse 58% 50% at 80% 82%,rgba(180,110,10,.4) 0%,transparent 55%)',
     backBg:'linear-gradient(135deg,#180d00 0%,#3a2000 60%,#5a3500 100%)',
     edge:'#f5b823', shimmer:'rgba(245,200,80,.65)', chip:'#1a0e00', accent:'#f5b823',
     txt:'rgba(255,240,200,.96)', txt2:'rgba(220,170,60,.55)', netColor:'rgba(255,240,200,.9)', stripe:'#2a1800',
     glow:'245,184,35', holo:false, engraved:true,
-    material:'REWARDS DEBIT · 1.5% CASH BACK', subtitle:'Earn Every Purchase',
+    material:'GOLD REWARDS · 2× POINTS', subtitle:'Gold Membership',
   },
-  platinum_credit: {
+  platinum: {
     frontBg:'linear-gradient(135deg,#9298a0 0%,#cdd4da 22%,#eef2f5 40%,#b6bdc6 58%,#e2e7ec 76%,#a4abb4 100%)',
     mesh:'radial-gradient(ellipse 66% 58% at 20% 16%,rgba(255,255,255,.85) 0%,transparent 52%),radial-gradient(ellipse 58% 52% at 84% 86%,rgba(120,135,155,.4) 0%,transparent 56%)',
     backBg:'linear-gradient(135deg,#868d96 0%,#bcc3cb 60%,#d8dde2 100%)',
     edge:'#f4f8fc', shimmer:'rgba(255,255,255,.7)', chip:'#363c44', accent:'#0a1020',
     txt:'#0c1424', txt2:'rgba(20,30,55,.55)', netColor:'#0a1020', stripe:'#6e757e',
     glow:'210,225,245', holo:true, engraved:false,
-    material:'.9995 PURE PLATINUM · ELITE', subtitle:'Elite Membership',
+    material:'.9995 PURE PLATINUM · ELITE', subtitle:'Platinum Membership',
   },
-  cashback_credit: {
-    frontBg:'linear-gradient(135deg,#002a10 0%,#004a1e 30%,#006828 55%,#008a38 75%,#00a844 92%,#00c050 100%)',
-    mesh:'radial-gradient(ellipse 68% 58% at 18% 16%,rgba(74,222,128,.4) 0%,transparent 52%),radial-gradient(ellipse 58% 50% at 85% 85%,rgba(22,163,74,.3) 0%,transparent 55%),radial-gradient(circle at 65% 35%,rgba(134,239,172,.2) 0%,transparent 40%)',
-    backBg:'linear-gradient(135deg,#001a0a 0%,#003818 60%,#005a26 100%)',
-    edge:'#4ade80', shimmer:'rgba(74,222,128,.45)', chip:'#c9a84c', accent:'#4ade80',
-    txt:'rgba(240,255,245,.96)', txt2:'rgba(74,222,128,.55)', netColor:'rgba(240,255,245,.9)', stripe:'#001a0a',
-    glow:'74,222,128', holo:false, engraved:false,
-    material:'CASHBACK CREDIT · 5% REWARDS', subtitle:'Maximum Cash Back',
+  titanium: {
+    frontBg:'linear-gradient(135deg,#3a3f47 0%,#565d68 24%,#71798552 0%,#4b525c 52%,#6b7480 74%,#2e333b 100%)',
+    mesh:'radial-gradient(ellipse 66% 56% at 20% 16%,rgba(200,210,224,.4) 0%,transparent 52%),radial-gradient(ellipse 56% 50% at 84% 86%,rgba(120,130,145,.35) 0%,transparent 56%),radial-gradient(circle at 66% 34%,rgba(230,236,244,.16) 0%,transparent 40%)',
+    backBg:'linear-gradient(135deg,#2a2e35 0%,#3c424b 60%,#4d545f 100%)',
+    edge:'#c3cbd6', shimmer:'rgba(220,228,238,.45)', chip:'#d8b24a', accent:'#9ca3af',
+    txt:'rgba(238,242,248,.96)', txt2:'rgba(180,190,205,.55)', netColor:'rgba(238,242,248,.92)', stripe:'#2a2e35',
+    glow:'180,192,208', holo:true, engraved:true,
+    material:'BRUSHED TITANIUM · 4× TRAVEL', subtitle:'Titanium Membership',
   },
-  travel_credit: {
-    frontBg:'linear-gradient(135deg,#001840 0%,#002a62 25%,#003d8a 50%,#0050b0 68%,#0066cc 84%,#0080e8 100%)',
-    mesh:'radial-gradient(ellipse 70% 60% at 20% 18%,rgba(56,189,248,.45) 0%,transparent 52%),radial-gradient(ellipse 60% 52% at 82% 84%,rgba(14,165,233,.35) 0%,transparent 56%),radial-gradient(circle at 68% 32%,rgba(186,230,253,.25) 0%,transparent 40%)',
-    backBg:'linear-gradient(135deg,#001030 0%,#001e50 60%,#002e70 100%)',
-    edge:'#38bdf8', shimmer:'rgba(56,189,248,.5)', chip:'#c9a84c', accent:'#38bdf8',
-    txt:'rgba(224,247,255,.96)', txt2:'rgba(56,189,248,.55)', netColor:'rgba(224,247,255,.9)', stripe:'#001030',
-    glow:'56,189,248', holo:true, engraved:false,
-    material:'TRAVEL REWARDS · 5× MILES', subtitle:'World Explorer',
+  black: {
+    frontBg:'linear-gradient(135deg,#0a0a0c 0%,#16181d 30%,#1d2026 52%,#101216 78%,#050507 100%)',
+    mesh:'radial-gradient(ellipse 66% 56% at 20% 16%,rgba(140,150,165,.18) 0%,transparent 52%),radial-gradient(ellipse 56% 50% at 84% 86%,rgba(80,86,98,.16) 0%,transparent 56%)',
+    backBg:'linear-gradient(135deg,#060608 0%,#121317 60%,#1b1d22 100%)',
+    edge:'#9aa1ad', shimmer:'rgba(220,224,232,.28)', chip:'#c9a84c', accent:'#e5e7eb',
+    txt:'rgba(238,240,244,.95)', txt2:'rgba(150,156,168,.5)', netColor:'rgba(238,240,244,.92)', stripe:'#060608',
+    glow:'150,156,168', holo:true, engraved:true,
+    material:'OBSIDIAN BLACK · ELITE', subtitle:'Black Membership',
   },
-  secured_credit: {
-    frontBg:'linear-gradient(135deg,#1a0030 0%,#2d0055 25%,#450080 50%,#5800a8 70%,#6600c0 88%,#7700d8 100%)',
-    mesh:'radial-gradient(ellipse 68% 58% at 20% 18%,rgba(167,139,250,.45) 0%,transparent 52%),radial-gradient(ellipse 58% 50% at 84% 84%,rgba(109,40,217,.35) 0%,transparent 56%)',
-    backBg:'linear-gradient(135deg,#100020 0%,#200040 60%,#300060 100%)',
-    edge:'#a78bfa', shimmer:'rgba(167,139,250,.45)', chip:'#c9a84c', accent:'#a78bfa',
-    txt:'rgba(240,235,255,.96)', txt2:'rgba(167,139,250,.55)', netColor:'rgba(240,235,255,.9)', stripe:'#100020',
-    glow:'167,139,250', holo:false, engraved:false,
-    material:'SECURED CREDIT · FICO® REPORTING', subtitle:'Build Your Credit',
+  black_gold: {
+    frontBg:'linear-gradient(135deg,#0a0700 0%,#1c1405 26%,#2e2208 48%,#0f0c04 64%,#3a2c0a 82%,#0a0700 100%)',
+    mesh:'radial-gradient(ellipse 66% 56% at 20% 16%,rgba(201,168,76,.32) 0%,transparent 52%),radial-gradient(ellipse 56% 50% at 84% 86%,rgba(160,124,40,.26) 0%,transparent 56%),radial-gradient(circle at 64% 36%,rgba(255,225,150,.12) 0%,transparent 40%)',
+    backBg:'linear-gradient(135deg,#070500 0%,#1a1305 60%,#2a1f08 100%)',
+    edge:'#d4b35a', shimmer:'rgba(212,179,90,.5)', chip:'#f0d060', accent:'#c9a84c',
+    txt:'#ecd9a8', txt2:'rgba(201,168,76,.55)', netColor:'#e8cf86', stripe:'#0a0700',
+    glow:'201,168,76', holo:true, engraved:true,
+    material:'24K GOLD ACCENT · ELITE', subtitle:'The Pinnacle',
   },
-  business_debit: {
+  business: {
     frontBg:'linear-gradient(135deg,#071228 0%,#0c2046 24%,#143058 46%,#1c4070 62%,#102a52 80%,#08142c 100%)',
     mesh:'radial-gradient(ellipse 70% 60% at 18% 16%,rgba(80,180,255,.3) 0%,transparent 54%),radial-gradient(ellipse 58% 52% at 86% 84%,rgba(40,120,200,.28) 0%,transparent 58%),radial-gradient(circle at 66% 36%,rgba(120,220,255,.12) 0%,transparent 42%)',
     backBg:'linear-gradient(135deg,#050d1e 0%,#0e2044 60%,#16335c 100%)',
     edge:'#5cc4f8', shimmer:'rgba(90,196,248,.32)', chip:'#c9a84c', accent:'#7ec8e3',
     txt:'rgba(235,248,255,.95)', txt2:'rgba(90,196,248,.5)', netColor:'rgba(235,248,255,.92)', stripe:'#08142e',
     glow:'80,180,255', holo:false, engraved:false,
-    material:'BUSINESS DEBIT · CORPORATE', subtitle:'Business Excellence',
-  },
-  business_credit: {
-    frontBg:'linear-gradient(135deg,#0a0a0a 0%,#1c1813 28%,#100d09 52%,#221c12 74%,#0c0a07 100%)',
-    mesh:'radial-gradient(ellipse 66% 56% at 20% 16%,rgba(201,168,76,.26) 0%,transparent 52%),radial-gradient(ellipse 56% 50% at 84% 86%,rgba(140,110,40,.22) 0%,transparent 56%),radial-gradient(circle at 64% 36%,rgba(255,225,150,.08) 0%,transparent 40%)',
-    backBg:'linear-gradient(135deg,#080808 0%,#1a160f 60%,#241e14 100%)',
-    edge:'#d4b35a', shimmer:'rgba(212,179,90,.38)', chip:'#c9a84c', accent:'#c9a84c',
-    txt:'#ecd9a8', txt2:'rgba(201,168,76,.5)', netColor:'#d4b35a', stripe:'#1c1914',
-    glow:'201,168,76', holo:true, engraved:true,
-    material:'BUSINESS CREDIT · 4× REWARDS', subtitle:'Corporate Premium',
+    material:'BUSINESS PLATINUM · 4× POINTS', subtitle:'Business Excellence',
   },
 };
 
+// Map any card (catalog entry with .key, or an issued card row with card_tier /
+// card_name) to one of the 8 tier designs above.
 function _luxData(card) {
-  const t=(card.card_tier||card.key||card.card_name||'').toLowerCase().replace(/[\s-]/g,'_');
-  if(t.includes('business_credit')||(t.includes('business')&&t.includes('credit'))) return LUXURY_CARD_DATA.business_credit;
-  if(t.includes('business_debit')||(t.includes('business')&&t.includes('debit')))   return LUXURY_CARD_DATA.business_debit;
-  if(t.includes('business'))       return LUXURY_CARD_DATA.business_credit;
-  if(t.includes('travel'))         return LUXURY_CARD_DATA.travel_credit;
-  if(t.includes('cashback')||t.includes('cash_back')) return LUXURY_CARD_DATA.cashback_credit;
-  if(t.includes('secured'))        return LUXURY_CARD_DATA.secured_credit;
-  if(t.includes('platinum'))       return LUXURY_CARD_DATA.platinum_credit;
-  if(t.includes('rewards_debit')||(t.includes('rewards')&&!t.includes('credit'))) return LUXURY_CARD_DATA.rewards_debit;
-  if(t.includes('basic')||t.includes('debit')) return LUXURY_CARD_DATA.basic_debit;
-  return LUXURY_CARD_DATA.business_credit;
+  if (card && card.key && LUXURY_CARD_DATA[card.key]) return LUXURY_CARD_DATA[card.key];
+  const t = (card.card_type_key || card.card_tier || card.card_name || card.key || '')
+    .toLowerCase().replace(/[\s-]/g, '_');
+  if (t.includes('black_gold') || t.includes('black gold')) return LUXURY_CARD_DATA.black_gold;
+  if (t.includes('black'))    return LUXURY_CARD_DATA.black;
+  if (t.includes('titanium')) return LUXURY_CARD_DATA.titanium;
+  if (t.includes('platinum')) return LUXURY_CARD_DATA.platinum;
+  if (t.includes('gold'))     return LUXURY_CARD_DATA.gold;
+  if (t.includes('business')) return LUXURY_CARD_DATA.business;
+  if (t.includes('virtual'))  return LUXURY_CARD_DATA.virtual;
+  if (t.includes('classic') || t.includes('debit')) return LUXURY_CARD_DATA.classic_debit;
+  return LUXURY_CARD_DATA.platinum;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1365,7 +1377,7 @@ function buildCatalog() {
     const acRgb=lux.glow||'201,168,76';
 
     // Ribbon class map
-    const ribbonClassMap={'Best Value':'value','Editor\'s Choice':'editor','Most Popular':'popular','Best for Travel':'travel','Credit Builder':'builder','Premium':'premium'};
+    const ribbonClassMap={'Best Value':'value','Editor\'s Choice':'editor','Most Popular':'popular','Best for Travel':'travel','Credit Builder':'builder','Premium':'premium','New':'travel','Invitation Only':'premium','For Business':'editor'};
     const ribbonClass=c.ribbon?ribbonClassMap[c.ribbon]||'popular':'';
 
     let statusBadge='', actionBtn='';
@@ -1421,14 +1433,14 @@ function buildCatalog() {
               <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M8 12a4 4 0 0 1 4-4" stroke="${lux.txt}" stroke-width="1.7" stroke-linecap="round" opacity=".38"/><path d="M6 12a6 6 0 0 1 6-6" stroke="${lux.txt}" stroke-width="1.7" stroke-linecap="round" opacity=".62"/><path d="M4 12a8 8 0 0 1 8-8" stroke="${lux.txt}" stroke-width="1.7" stroke-linecap="round" opacity=".86"/><circle cx="12" cy="12" r="1.4" fill="${lux.txt}"/></svg>
             </div>
             <!-- PAN -->
-            <div style="font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.2em;color:${lux.txt};opacity:.72;">•••• •••• •••• ••••</div>
+            <div style="font-family:'Courier New',monospace;font-size:.6rem;letter-spacing:.2em;color:${lux.txt};opacity:.72;">${c.network==='American Express'?'•••• •••••• •••••':'•••• •••• •••• ••••'}</div>
             <!-- Bottom -->
-            <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:4px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:6px;">
               <div style="min-width:0;">
                 <div style="font-size:.28rem;color:${lux.txt2};letter-spacing:.2em;text-transform:uppercase;margin-bottom:2px;">Card Name</div>
                 <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:.68rem;font-weight:700;color:${lux.txt};letter-spacing:.1em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.name}</div>
               </div>
-              <div style="font-size:.3rem;color:${lux.txt2};letter-spacing:.18em;text-transform:uppercase;text-align:right;flex-shrink:0;">${c.type}</div>
+              <div style="flex-shrink:0;transform:scale(.92);transform-origin:right bottom;">${_networkLogo(c.network||'Visa', lux.netColor)}</div>
             </div>
           </div>
         </div>
@@ -1495,10 +1507,11 @@ function showPendingStatus(key) {
 // ══════════════════════════════════════════════════════════════
 function openApply(key) {
   const c=CARD_CATALOG.find(x=>x.key===key); if(!c) return;
-  _applyKey=key; _selectedNet='Visa';
+  _applyKey=key; _selectedNet=c.network||'Visa';
+  const lux=LUXURY_CARD_DATA[c.key]||_luxData(c);
   document.getElementById('applyTitle').textContent=`Apply — ${c.name}`;
   document.getElementById('applySubtitle').textContent='Select network · fee charged on approval';
-  document.getElementById('applyVisual').style.background=c.gradient;
+  document.getElementById('applyVisual').style.background=lux.frontBg;
   document.getElementById('applyHolder').textContent=(document.getElementById('sidebarName')?.textContent?.trim()||'CARD HOLDER').toUpperCase();
   document.getElementById('applyExpiry').textContent=_previewExpiry();
   document.getElementById('applyBenefits').innerHTML=c.benefits.map(b=>
@@ -1524,11 +1537,14 @@ function _renderNetworks(c) {
     const sel=n.name===_selectedNet;
     const label=n.name==='American Express'?'Amex':n.name;
     return `<div class="net-option${sel?' sel':''}" onclick="selectNet('${n.name}')">
-      <div style="display:flex;justify-content:space-between;">
-        <span style="font-size:.82rem;font-weight:600;color:${sel?'var(--gold-400)':'rgba(255,255,255,.85)'};">${label}</span>
-        ${sel?'<span style="color:var(--gold-400);">✓</span>':''}
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;height:24px;">
+        <div style="display:flex;align-items:center;transform:scale(.74);transform-origin:left center;">${_networkLogo(n.name, sel?'#fff':'rgba(255,255,255,.78)')}</div>
+        ${sel?'<span style="color:var(--gold-400);flex-shrink:0;">✓</span>':''}
       </div>
-      <div style="font-size:.74rem;color:${sel?'rgba(255,255,255,.75)':'var(--slate-400)'};margin-top:3px;">$${price}/yr</div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:6px;">
+        <span style="font-size:.74rem;font-weight:600;color:${sel?'var(--gold-400)':'rgba(255,255,255,.7)'};">${label}</span>
+        <span style="font-size:.74rem;color:${sel?'rgba(255,255,255,.8)':'var(--slate-400)'};">$${price}/yr</span>
+      </div>
     </div>`;
   }).join('');
   _updateApplyPricing(c);

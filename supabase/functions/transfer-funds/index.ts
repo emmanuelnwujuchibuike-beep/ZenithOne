@@ -454,6 +454,76 @@ Deno.serve(async (req: Request): Promise<Response> => {
     // ─────────────────────────────────────────────────────────────────────────
     // LEGACY SEND — user-to-user with PIN (kept for backward compatibility)
     // ─────────────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────────
+    // PAY_BILL — pay a biller/payee from a deposit account
+    // Debits the chosen account (trigger lowers balance), categorised as Bills.
+    // ─────────────────────────────────────────────────────────────────────────
+    if (action === 'pay_bill') {
+      const fromId   = body.from_account_id as string;
+      const payee    = ((body.payee_name as string) || '').trim();
+      const category = ((body.biller_category as string) || 'Bills').trim();
+      const acctRef  = ((body.account_number as string) || '').trim();
+      const amount   = Number(body.amount);
+      const memo     = ((body.memo as string) || '').trim();
+
+      if (!fromId)                throw new Error('Select an account to pay from.');
+      if (!payee)                 throw new Error('Enter who you are paying.');
+      if (!amount || amount <= 0) throw new Error('Enter a valid payment amount.');
+      if (amount > SINGLE_LIMIT)  throw new Error(`Single bill payment limit is $${SINGLE_LIMIT.toLocaleString()}.`);
+
+      const { data: fromAcc } = await supabase.from('accounts').select('*')
+        .eq('id', fromId).eq('user_id', user.id).eq('status', 'active').maybeSingle();
+      if (!fromAcc) throw new Error('Source account not found or inactive.');
+
+      const avail = Number(fromAcc.available_balance ?? fromAcc.balance ?? 0);
+      if (avail < amount) {
+        throw new Error(`Insufficient funds. Available: $${avail.toLocaleString('en-US', { minimumFractionDigits: 2 })}.`);
+      }
+
+      // Daily out-flow limit shared with transfers
+      const today = new Date().toISOString().split('T')[0];
+      const { data: todayTxns } = await supabase.from('transactions').select('amount')
+        .eq('user_id', user.id).in('transaction_type', ['transfer_out', 'debit'])
+        .gte('created_at', today + 'T00:00:00Z');
+      const todayTotal = (todayTxns || []).reduce((s: number, t: { amount: number }) => s + t.amount, 0);
+      if (todayTotal + amount > DAILY_LIMIT) throw new Error(`Daily payment limit of $${DAILY_LIMIT.toLocaleString()} exceeded.`);
+
+      const reference = 'BILL' + Date.now() + Math.floor(Math.random() * 1000);
+      const acctTail  = acctRef ? ` (acct ••${acctRef.slice(-4)})` : '';
+      const desc      = `Bill payment to ${payee}${acctTail}${memo ? ' — ' + memo : ''}`;
+
+      const { error: debitErr } = await supabase.from('transactions').insert({
+        account_id:       fromAcc.id,
+        user_id:          user.id,
+        transaction_type: 'debit',
+        category:         category || 'Bills',
+        description:      desc,
+        amount,
+        status:           'completed',
+        reference_number: reference,
+      });
+      if (debitErr) throw debitErr;
+
+      const newBalance = Math.round((avail - amount) * 100) / 100;
+
+      await supabase.from('notifications').insert({
+        user_id:  user.id,
+        title:    'Bill Payment Sent',
+        message:  `$${amount.toFixed(2)} paid to ${payee}. New balance $${newBalance.toFixed(2)}. Ref: ${reference}`,
+        type:     'transaction',
+        priority: amount >= 10000 ? 'high' : 'normal',
+      });
+
+      return json({
+        success:     true,
+        reference,
+        amount,
+        payee,
+        new_balance: newBalance,
+        processed:   new Date().toISOString(),
+      });
+    }
+
     if (action === 'send') {
       const fromId  = body.from_account_id as string;
       const acctNo  = ((body.to_account_number as string) || '').trim();

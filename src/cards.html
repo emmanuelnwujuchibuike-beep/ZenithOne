@@ -437,6 +437,7 @@
 
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/faceid.js"></script>
 <script src="js/cards.js"></script>
 <script>
 // ══════════════════════════════════════════════════════════════
@@ -1617,8 +1618,15 @@ let _pinMode    = '';      // 'create'|'verify'|'manage'|'change_old'|'change_ne
 let _pinCallback= null;    // called on successful verify
 
 function requirePin(callback) {
+  // Prefer the shared Face ID / PIN authorizer (biometric when enabled, else PIN).
+  if (window.zoAuthorizeTxn) {
+    window.zoAuthorizeTxn('Authorize this card action')
+      .then(() => { try { callback && callback(); } catch (_) {} })
+      .catch(() => {}); // cancelled / failed — do nothing
+    return;
+  }
+  // Fallback: built-in PIN modal
   if(!_pinSet) {
-    // No PIN yet — prompt to create first
     zenithToast('Please create a transaction PIN first.','info');
     openPinModal('create',callback);
     return;

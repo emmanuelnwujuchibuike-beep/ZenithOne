@@ -1430,6 +1430,17 @@ async function submitLoanPayment() {
 
   const bal       = Number(_payLoan.current_balance) || 0;
   const payInFull = amount >= bal - 0.005;
+
+  // Require Face ID or PIN to authorize the payment
+  if (window.zoAuthorizeTxn) {
+    try {
+      await window.zoAuthorizeTxn(`Authorize ${fmt(amount)} payment to ${_payLoan.loan_name}`);
+    } catch (e) {
+      zenithToast((e && e.message) || 'Authorization required.', 'error');
+      return;
+    }
+  }
+
   const btn = document.getElementById('paySubmitBtn');
   btn.disabled = true; btn.textContent = 'Processing…';
   try {
@@ -1516,6 +1527,7 @@ document.addEventListener('DOMContentLoaded', () => {
   else document.addEventListener('supabaseReady', loadCreditPage, { once: true });
 });
 </script>
+<script src="js/faceid.js"></script>
 <script src="js/notifications.js"></script>
 </body>
 </html>

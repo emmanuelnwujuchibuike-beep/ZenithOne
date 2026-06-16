@@ -2695,6 +2695,17 @@ async function submitPayBill() {
   if (!_pbillAcctId)          { errEl.textContent = 'Choose an account to pay from.'; errEl.style.display = ''; return; }
   if (!pbillValidate()) return;
 
+  // Require Face ID or PIN to authorize the payment
+  if (window.zoAuthorizeTxn) {
+    try {
+      await window.zoAuthorizeTxn(`Authorize $${amount.toFixed(2)} payment to ${payee}`);
+    } catch (e) {
+      errEl.textContent = (e && e.message) || 'Authorization required to pay.';
+      errEl.style.display = '';
+      return;
+    }
+  }
+
   const btn = document.getElementById('pbillSubmitBtn');
   btn.disabled = true; btn.textContent = 'Paying…';
   try {

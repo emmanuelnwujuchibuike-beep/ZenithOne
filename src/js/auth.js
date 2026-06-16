@@ -298,18 +298,33 @@ async function updatePassword(newPassword) {
 
 // ── Logout ────────────────────────────────────────────────────
 async function logout() {
-  localStorage.removeItem('zo_remember');
-  localStorage.removeItem('zo_remember_until');
-  localStorage.removeItem('zo_user_email');
-  localStorage.removeItem('zo_user_name');
+  const faceIdOn = window.ZenithFaceID && window.ZenithFaceID.isEnrolled();
+
   localStorage.removeItem('zo_reauth_target');
-  sessionStorage.removeItem('zo_session_only');
-  if (window._supabase) {
-    // If Face ID is enrolled on this device, sign out locally so the refresh
-    // token stays valid for biometric re-entry. Otherwise revoke globally.
-    const faceIdOn = window.ZenithFaceID && window.ZenithFaceID.isEnrolled();
-    try { await window._supabase.auth.signOut({ scope: faceIdOn ? 'local' : 'global' }); }
-    catch { await window._supabase.auth.signOut(); }
+  localStorage.removeItem('zo_user_name');
+
+  if (faceIdOn) {
+    // Biometric device: keep the 30-day remember-me window AND a valid refresh
+    // token so the member can sign back in with Face ID after this manual
+    // sign-out — without ever seeing "Session Expired". Just sign out locally.
+    if (window._supabase) {
+      try { await window.ZenithFaceID.captureToken(); } catch (_) {}
+      try { await window._supabase.auth.signOut({ scope: 'local' }); }
+      catch { try { await window._supabase.auth.signOut(); } catch (_) {} }
+    }
+    sessionStorage.removeItem('zo_session_only');
+    // NOTE: zo_remember / zo_remember_until / zo_user_email / zo_faceid_rt are
+    // intentionally preserved for the 30-day biometric re-entry path.
+  } else {
+    // No biometric: full sign-out and clear the remembered device.
+    localStorage.removeItem('zo_remember');
+    localStorage.removeItem('zo_remember_until');
+    localStorage.removeItem('zo_user_email');
+    sessionStorage.removeItem('zo_session_only');
+    if (window._supabase) {
+      try { await window._supabase.auth.signOut({ scope: 'global' }); }
+      catch { try { await window._supabase.auth.signOut(); } catch (_) {} }
+    }
   }
   window.location.href = 'login.html';
 }

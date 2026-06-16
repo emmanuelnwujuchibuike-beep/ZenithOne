@@ -218,12 +218,9 @@ document.getElementById('togglePwd').addEventListener('click', function() {
     };
     btn.addEventListener('click', doLogin);
 
-    // Auto-trigger the biometric prompt when the user was redirected here
-    // via "Sign In" while remember-me is active — skip the click step for them.
-    if (hasRemember) {
-      // Small delay so the page is fully visible before the system dialog appears
-      setTimeout(doLogin, 400);
-    }
+    // No auto-prompt: present a clean sign-in screen with both the email/password
+    // form and the biometric button, and let the member choose. (Auto-launching
+    // the system dialog here felt like an unexpected alert.)
   } else {
     // ── Not enrolled: offer setup path ──────────────────────────────────────
     if (lbl) lbl.textContent = 'Set up ' + label + ' for faster sign-in';

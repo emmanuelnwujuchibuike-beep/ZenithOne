@@ -391,6 +391,23 @@
     } catch { /* ignore */ }
   }
 
+  // Supabase rotates the refresh token on every refresh. Capture EVERY new token
+  // (initial sign-in + each silent refresh) so the biometric token can never go
+  // stale — this is what lets a 30-day device sign back in with Face ID after a
+  // manual sign-out without ever hitting "Session Expired".
+  let _tokenBound = false;
+  function bindTokenSync() {
+    if (_tokenBound || !global._supabase) return;
+    _tokenBound = true;
+    try {
+      global._supabase.auth.onAuthStateChange(function (_event, session) {
+        if (session && session.refresh_token && isEnrolled()) {
+          localStorage.setItem(LS_TOKEN, session.refresh_token);
+        }
+      });
+    } catch { /* ignore */ }
+  }
+
   function disable() {
     localStorage.removeItem(LS_CRED);
     localStorage.removeItem(LS_TOKEN);
@@ -400,16 +417,154 @@
 
   // ─── Auto-sync token on logged-in pages ─────────────────────────────────────
   function autoSync() {
-    if (global._supabase) setTimeout(syncToken, 1500);
-    else document.addEventListener('supabaseReady', () => setTimeout(syncToken, 1500), { once: true });
+    if (global._supabase) { bindTokenSync(); setTimeout(syncToken, 1500); }
+    else document.addEventListener('supabaseReady', () => { bindTokenSync(); setTimeout(syncToken, 1500); }, { once: true });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', autoSync);
   else autoSync();
 
+  // Grab the freshest refresh token right now (called at manual sign-out so the
+  // biometric path keeps a valid token even after a local sign-out).
+  async function captureToken() {
+    if (!isEnrolled() || !global._supabase) return;
+    try {
+      const { data: { session } } = await global._supabase.auth.getSession();
+      if (session?.refresh_token) localStorage.setItem(LS_TOKEN, session.refresh_token);
+    } catch { /* ignore */ }
+  }
+
+  // ─── Shared transaction authorization: Face ID → else PIN ───────────────────
+  const PIN_CSS = `
+    .zpin-overlay{position:fixed;inset:0;z-index:2100;background:rgba(2,5,14,.86);backdrop-filter:blur(14px);display:none;align-items:center;justify-content:center;padding:20px;}
+    .zpin-overlay.open{display:flex;}
+    .zpin-card{width:336px;max-width:100%;text-align:center;background:linear-gradient(165deg,#0b1829,#060e1c);border:1px solid rgba(201,168,76,.2);border-radius:24px;padding:30px 26px 24px;box-shadow:0 40px 120px rgba(0,0,0,.7);position:relative;}
+    .zpin-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.7) 50%,transparent);}
+    .zpin-ic{width:50px;height:50px;border-radius:14px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.22);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:#c9a84c;}
+    .zpin-title{font-family:'Cormorant Garamond','Georgia',serif;font-size:1.4rem;color:#fff;margin-bottom:5px;}
+    .zpin-sub{font-size:.77rem;color:rgba(255,255,255,.45);margin-bottom:20px;line-height:1.5;}
+    .zpin-dots{display:flex;justify-content:center;gap:15px;margin-bottom:16px;}
+    .zpin-dot{width:14px;height:14px;border-radius:50%;border:2px solid rgba(201,168,76,.4);transition:all .15s;}
+    .zpin-dot.on{background:#e8d07a;border-color:#e8d07a;}
+    .zpin-err{font-size:.75rem;color:#f87171;min-height:17px;margin-bottom:8px;}
+    .zpin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:12px;}
+    .zpin-key{height:50px;border-radius:13px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);color:#fff;font-size:1.15rem;cursor:pointer;transition:background .12s;display:flex;align-items:center;justify-content:center;}
+    .zpin-key:hover{background:rgba(201,168,76,.14);border-color:rgba(201,168,76,.3);}
+    .zpin-key.fn{font-size:.82rem;color:rgba(255,255,255,.5);}
+    .zpin-key.empty{background:transparent;border:none;cursor:default;}
+    .zpin-cancel{margin-top:4px;background:none;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.45);font-size:.78rem;padding:9px 0;border-radius:10px;cursor:pointer;width:100%;}
+  `;
+  let _pinEl = null, _pinResolve = null, _pinReject = null;
+  let _pinBuf = '', _pinFirst = '', _pinMode = 'verify'; // verify | create | confirm
+
+  function _pinBuild() {
+    if (_pinEl) return _pinEl;
+    if (!document.getElementById('zpinCSS')) {
+      const s = document.createElement('style'); s.id = 'zpinCSS'; s.textContent = PIN_CSS;
+      document.head.appendChild(s);
+    }
+    const el = document.createElement('div');
+    el.className = 'zpin-overlay';
+    el.innerHTML = `
+      <div class="zpin-card">
+        <div class="zpin-ic"><svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+        <div class="zpin-title" id="zpinTitle">Enter PIN</div>
+        <div class="zpin-sub" id="zpinSub">Confirm your 4-digit PIN to authorize</div>
+        <div class="zpin-dots">
+          <span class="zpin-dot" data-i="0"></span><span class="zpin-dot" data-i="1"></span>
+          <span class="zpin-dot" data-i="2"></span><span class="zpin-dot" data-i="3"></span>
+        </div>
+        <div class="zpin-err" id="zpinErr"></div>
+        <div class="zpin-pad" id="zpinPad">
+          ${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="zpin-key" data-k="${n}">${n}</button>`).join('')}
+          <button class="zpin-key empty"></button>
+          <button class="zpin-key" data-k="0">0</button>
+          <button class="zpin-key fn" data-k="del">⌫</button>
+        </div>
+        <button class="zpin-cancel" id="zpinCancel">Cancel</button>
+      </div>`;
+    document.body.appendChild(el);
+    el.querySelector('#zpinPad').addEventListener('click', function (e) {
+      const b = e.target.closest('[data-k]'); if (!b) return;
+      const k = b.getAttribute('data-k');
+      if (k === 'del') { _pinBuf = _pinBuf.slice(0, -1); _pinDots(); return; }
+      if (_pinBuf.length >= 4) return;
+      _pinBuf += k; _pinDots();
+      if (_pinBuf.length === 4) setTimeout(_pinAdvance, 120);
+    });
+    el.querySelector('#zpinCancel').addEventListener('click', () => _pinDone(false, 'cancelled'));
+    _pinEl = el;
+    return el;
+  }
+  function _pinDots() {
+    if (!_pinEl) return;
+    _pinEl.querySelectorAll('.zpin-dot').forEach(d => {
+      d.classList.toggle('on', Number(d.getAttribute('data-i')) < _pinBuf.length);
+    });
+  }
+  function _pinErr(m) { const e = _pinEl && _pinEl.querySelector('#zpinErr'); if (e) e.textContent = m || ''; }
+  function _pinSet(title, sub) {
+    if (!_pinEl) return;
+    _pinEl.querySelector('#zpinTitle').textContent = title;
+    _pinEl.querySelector('#zpinSub').textContent = sub;
+  }
+  async function _pinAdvance() {
+    const pin = _pinBuf;
+    if (_pinMode === 'create') {
+      _pinFirst = pin; _pinBuf = ''; _pinDots(); _pinErr('');
+      _pinMode = 'confirm'; _pinSet('Confirm PIN', 'Re-enter your new 4-digit PIN');
+      return;
+    }
+    if (_pinMode === 'confirm') {
+      if (pin !== _pinFirst) { _pinBuf = ''; _pinFirst = ''; _pinDots(); _pinMode = 'create'; _pinErr('PINs did not match — try again.'); _pinSet('Create a PIN', 'Choose a 4-digit transaction PIN'); return; }
+      try {
+        await callEdgeFunction('transaction-pin', { action: 'create_pin', pin });
+        _pinDone(true);
+      } catch (e) { _pinBuf=''; _pinDots(); _pinErr((e && e.message) ? _msg(e) : 'Could not set PIN.'); }
+      return;
+    }
+    // verify
+    try {
+      const res = await callEdgeFunction('transaction-pin', { action: 'verify_pin', pin });
+      if (res && res.valid) _pinDone(true);
+      else { _pinBuf=''; _pinDots(); _pinErr('Incorrect PIN. Try again.'); }
+    } catch (e) { _pinBuf=''; _pinDots(); _pinErr(_msg(e) || 'Verification failed.'); }
+  }
+  function _msg(e){ try { return JSON.parse(e.message).error || e.message; } catch { return e && e.message; } }
+  function _pinDone(ok, reason) {
+    if (_pinEl) { _pinEl.classList.remove('open'); document.body.style.overflow=''; }
+    const res = _pinResolve, rej = _pinReject;
+    _pinResolve = _pinReject = null; _pinBuf=''; _pinFirst='';
+    if (ok) { res && res(true); }
+    else { rej && rej(new Error(reason === 'cancelled' ? 'Authorization cancelled.' : 'Authorization failed.')); }
+  }
+  function _pinAuthorize(reason) {
+    return new Promise(async (resolve, reject) => {
+      _pinResolve = resolve; _pinReject = reject;
+      _pinBuild();
+      _pinBuf = ''; _pinFirst = ''; _pinDots(); _pinErr('');
+      // Does the user already have a PIN?
+      let pinSet = false;
+      try { const st = await callEdgeFunction('transaction-pin', { action: 'check_status' }); pinSet = !!(st && st.pin_set); }
+      catch { /* assume not set */ }
+      if (pinSet) { _pinMode = 'verify'; _pinSet('Enter PIN', reason || 'Confirm your 4-digit PIN to authorize'); }
+      else        { _pinMode = 'create'; _pinSet('Create a PIN', 'Set a 4-digit PIN to authorize payments'); }
+      _pinEl.classList.add('open'); document.body.style.overflow = 'hidden';
+    });
+  }
+
+  // Public: gate a transaction with Face ID (if enabled) else PIN. Resolves on
+  // success, rejects (with a friendly message) on cancel/failure.
+  async function authorizeTxn(reason) {
+    if (txEnabled()) { await verify(reason || 'Authorize this transaction'); return true; }
+    return await _pinAuthorize(reason);
+  }
+
   global.ZenithFaceID = {
     isAvailable, isEnrolled, enroll, verify, loginWithFaceId,
-    syncToken, disable,
+    syncToken, captureToken, disable, authorizeTxn,
     loginEnabled, setLoginEnabled, txEnabled, setTxEnabled,
     getBiometricLabel,
   };
+  // Convenience global used by transaction flows on every page.
+  global.zoAuthorizeTxn = authorizeTxn;
 })(window);

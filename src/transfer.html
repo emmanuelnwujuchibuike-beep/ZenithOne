@@ -491,9 +491,8 @@
         <div class="app-topbar-title">Transfer Funds</div>
       </div>
       <div class="app-topbar-right">
-        <button class="btn btn-icon btn-ghost" id="notifBtn" onclick="toggleNotifDd(event)">
+        <button class="btn btn-icon btn-ghost notif-dot" id="notifBtn">
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          <span class="notif-badge" id="notifBadge"></span>
         </button>
         <div class="sidebar-avatar" style="cursor:pointer;" id="topbarAvatar"></div>
       </div>
@@ -995,14 +994,7 @@
   <button class="xfr-toast-x" onclick="closeToast()">×</button>
 </div>
 
-<!-- ═══ NOTIFICATION DROPDOWN ═══ -->
-<div class="notif-dd" id="notifDd" style="display:none;">
-  <div class="notif-dd-head">
-    <span class="notif-dd-hd-title">Notifications</span>
-    <button class="notif-dd-mark" onclick="markAllRead()">Mark all read</button>
-  </div>
-  <div id="notifList"><div class="notif-dd-empty">Loading…</div></div>
-</div>
+<!-- Notifications are handled by the shared premium notification center (notifications.js) -->
 
 <!-- ═══ CONFIRM MODAL ═══ -->
 <div id="xfrConfirmOvl" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(6,18,37,.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;" onclick="closeConfirm(event)">
@@ -1797,8 +1789,11 @@ function closeToast(){
   setTimeout(function(){ el.style.display='none'; el.classList.remove('out'); }, 230);
 }
 
-// ── Notification center ───────────────────────────────────────────────────────
-var _notifUser=null, _notifs=[], _ddOpen=false, _notifChannel=null;
+// ── Transfer status watcher ───────────────────────────────────────────────────
+// The notification BELL + panel + toasts are now the shared premium center
+// (notifications.js). Here we keep only a lightweight realtime subscription so a
+// pending transfer's overlay/pill updates the instant an admin approves/declines.
+var _notifUser=null, _notifChannel=null;
 
 async function loadNotifications(){
   if(!window._supabase) return;
@@ -1806,10 +1801,6 @@ async function loadNotifications(){
     var s=await window._supabase.auth.getSession();
     if(!s.data.session) return;
     _notifUser=s.data.session.user.id;
-    var {data}=await window._supabase.from('notifications').select('*').eq('user_id',_notifUser).order('created_at',{ascending:false}).limit(25);
-    _notifs=data||[];
-    _renderNotifDd();
-    _updateBadge();
     _subscribeNotifs();
     // Resume any pending request from sessionStorage
     _resumePendingFromStorage();
@@ -1820,71 +1811,19 @@ function _subscribeNotifs(){
   if(!window._supabase||!_notifUser||_notifChannel) return;
   _notifChannel=window._supabase.channel('xfr-notifs-'+_notifUser)
     .on('postgres_changes',{event:'INSERT',schema:'public',table:'notifications',filter:'user_id=eq.'+_notifUser}, function(p){
-      _notifs.unshift(p.new);
-      _renderNotifDd();
-      _updateBadge();
-      // Detect transfer status updates
+      // Detect transfer status updates for the in-page overlay/pill.
+      // (Toast + bell are handled by the shared notification center.)
       var n=p.new;
       if(n.type==='transaction'||n.type==='admin'){
         var t=n.title||'';
         var isApproved=/approved|sent/i.test(t);
         var isDeclined=/declined|not approved/i.test(t);
-        var toastType=isApproved?'approved':isDeclined?'declined':'info';
-        showToast(toastType, t, n.message||'', 9000);
-        // If this relates to our pending request, update the overlay/pill
         if(_procReqId&&isApproved) _onApproved(n.message);
         else if(_procReqId&&isDeclined) _onDeclined(n.message);
       }
     })
     .subscribe();
 }
-
-function _renderNotifDd(){
-  var el=document.getElementById('notifList');
-  if(!_notifs.length){ el.innerHTML='<div class="notif-dd-empty">No notifications yet</div>'; return; }
-  function _ago(iso){
-    var d=Math.floor((Date.now()-new Date(iso))/1000);
-    if(d<60) return 'just now';
-    if(d<3600) return Math.floor(d/60)+'m ago';
-    if(d<86400) return Math.floor(d/3600)+'h ago';
-    return Math.floor(d/86400)+'d ago';
-  }
-  el.innerHTML=_notifs.slice(0,20).map(function(n){
-    var unread=!n.is_read;
-    return '<div class="notif-item'+(unread?' unread':'')+'">'+
-      '<div class="notif-dot'+(unread?'':' read')+'"></div>'+
-      '<div><div class="notif-item-title">'+_esc(n.title||'')+'</div>'+
-      '<div class="notif-item-msg">'+_esc(n.message||'')+'</div>'+
-      '<div class="notif-item-time">'+_ago(n.created_at)+'</div></div></div>';
-  }).join('');
-}
-
-function _updateBadge(){
-  var unread=_notifs.filter(function(n){return !n.is_read;}).length;
-  var b=document.getElementById('notifBadge');
-  b.style.display=unread?'block':'none';
-}
-
-function toggleNotifDd(e){
-  e.stopPropagation();
-  var dd=document.getElementById('notifDd');
-  _ddOpen=!_ddOpen;
-  dd.style.display=_ddOpen?'block':'none';
-  if(_ddOpen) _renderNotifDd();
-}
-
-async function markAllRead(){
-  if(!window._supabase||!_notifUser) return;
-  await window._supabase.from('notifications').update({is_read:true}).eq('user_id',_notifUser).eq('is_read',false);
-  _notifs.forEach(function(n){n.is_read=true;});
-  _renderNotifDd(); _updateBadge();
-}
-
-document.addEventListener('click', function(e){
-  if(_ddOpen && !document.getElementById('notifDd').contains(e.target) && e.target.id!=='notifBtn'){
-    _ddOpen=false; document.getElementById('notifDd').style.display='none';
-  }
-});
 
 // ── Restore pending transfer from sessionStorage ──────────────────────────────
 function _resumePendingFromStorage(){
@@ -1961,5 +1900,6 @@ window.addEventListener('load', function(){
     <div style="margin-top:16px;font-size:.72rem;color:rgba(255,255,255,.2);">Set or change your PIN in <a href="settings.html" style="color:rgba(201,168,76,.5);text-decoration:none;">Settings</a></div>
   </div>
 </div>
+<script src="js/notifications.js"></script>
 </body>
 </html>

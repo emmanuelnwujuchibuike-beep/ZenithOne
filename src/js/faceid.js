@@ -1,10 +1,20 @@
 (function (global) {
   'use strict';
 
-  const LS_CRED  = 'zo_faceid_cred';   // { id, email, userId }
-  const LS_TOKEN = 'zo_faceid_rt';     // Supabase refresh token (biometric-gated)
-  const LS_LOGIN = 'zo_faceid_login';  // '0' to disable Face ID sign-in (default on once enrolled)
-  const LS_TX    = 'zo_faceid_tx';     // '0' to disable Face ID for transactions (default on once enrolled)
+  const LS_CRED   = 'zo_faceid_cred';   // { id, email, userId }
+  const LS_TOKEN  = 'zo_faceid_rt';     // Supabase refresh token (biometric-gated)
+  const LS_ATOKEN = 'zo_faceid_at';     // Supabase access token (lets us restore via setSession)
+  const LS_LOGIN  = 'zo_faceid_login';  // '0' to disable Face ID sign-in (default on once enrolled)
+  const LS_TX     = 'zo_faceid_tx';     // '0' to disable Face ID for transactions (default on once enrolled)
+
+  // Persist the freshest tokens for biometric re-entry. Storing the access token
+  // too means re-entry can use setSession() (instant when the access token is
+  // still valid) and only fall back to the rotating refresh token when needed.
+  function _storeSession(session) {
+    if (!session) return;
+    if (session.refresh_token) localStorage.setItem(LS_TOKEN, session.refresh_token);
+    if (session.access_token)  localStorage.setItem(LS_ATOKEN, session.access_token);
+  }
 
   // ─── base64url <-> ArrayBuffer ──────────────────────────────────────────────
   function bufToB64u(buf) {
@@ -269,7 +279,7 @@
       if (!cred) throw new Error('Enrolment failed.');
 
       localStorage.setItem(LS_CRED, JSON.stringify({ id: bufToB64u(cred.rawId), email: user.email, userId: user.id }));
-      localStorage.setItem(LS_TOKEN, session.refresh_token);
+      _storeSession(session);
 
       showResult(true, getBiometricLabel() + ' Enabled', 'You can now sign in instantly.');
       setTimeout(hideOverlay, 1400);
@@ -345,21 +355,34 @@
       if (!assertion) throw new Error('Authentication failed.');
 
       const rt = localStorage.getItem(LS_TOKEN);
-      if (!rt) {
+      const at = localStorage.getItem(LS_ATOKEN);
+      if (!rt && !at) {
         showResult(false, 'Session Expired', 'Sign in with your password once to re-link ' + getBiometricLabel() + '.');
         setTimeout(() => { hideOverlay(); window.location.href = 'login.html'; }, 2400);
         throw new Error('session_expired');
       }
 
-      const { data, error } = await sb.auth.refreshSession({ refresh_token: rt });
+      // 1) Restore via setSession — instant when the access token is still valid,
+      //    and it transparently refreshes using the refresh token when needed.
+      //    This is far more reliable than refreshSession alone (which consumes a
+      //    single-use rotating token and fails if it was already rotated).
+      let data = null, error = null;
+      if (at && rt) {
+        ({ data, error } = await sb.auth.setSession({ access_token: at, refresh_token: rt }));
+      }
+      // 2) Fall back to a straight refresh if setSession could not restore.
+      if ((error || !data?.session) && rt) {
+        ({ data, error } = await sb.auth.refreshSession({ refresh_token: rt }));
+      }
       if (error || !data?.session) {
-        localStorage.removeItem(LS_TOKEN); // clear stale token; credential stays enrolled
+        localStorage.removeItem(LS_TOKEN);   // clear stale tokens; credential stays enrolled
+        localStorage.removeItem(LS_ATOKEN);
         showResult(false, 'Session Expired', 'Sign in with your password once to re-link ' + getBiometricLabel() + '.');
         setTimeout(() => { hideOverlay(); window.location.href = 'login.html'; }, 2400);
         throw new Error('session_expired');
       }
 
-      localStorage.setItem(LS_TOKEN, data.session.refresh_token); // keep fresh (rotation)
+      _storeSession(data.session); // keep both tokens fresh (rotation)
       // Face ID is device-bound — treat as remember-me for 30 days
       localStorage.setItem('zo_remember', '1');
       localStorage.setItem('zo_remember_until', String(Date.now() + 30 * 24 * 60 * 60 * 1000));
@@ -387,7 +410,7 @@
     if (!isEnrolled() || !global._supabase) return;
     try {
       const { data: { session } } = await global._supabase.auth.getSession();
-      if (session?.refresh_token) localStorage.setItem(LS_TOKEN, session.refresh_token);
+      _storeSession(session);
     } catch { /* ignore */ }
   }
 
@@ -401,9 +424,7 @@
     _tokenBound = true;
     try {
       global._supabase.auth.onAuthStateChange(function (_event, session) {
-        if (session && session.refresh_token && isEnrolled()) {
-          localStorage.setItem(LS_TOKEN, session.refresh_token);
-        }
+        if (session && isEnrolled()) _storeSession(session);
       });
     } catch { /* ignore */ }
   }
@@ -411,6 +432,7 @@
   function disable() {
     localStorage.removeItem(LS_CRED);
     localStorage.removeItem(LS_TOKEN);
+    localStorage.removeItem(LS_ATOKEN);
     localStorage.removeItem(LS_LOGIN);
     localStorage.removeItem(LS_TX);
   }
@@ -429,7 +451,7 @@
     if (!isEnrolled() || !global._supabase) return;
     try {
       const { data: { session } } = await global._supabase.auth.getSession();
-      if (session?.refresh_token) localStorage.setItem(LS_TOKEN, session.refresh_token);
+      _storeSession(session);
     } catch { /* ignore */ }
   }
 

@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="responsive.css" />
-  <style>
+  <style data-spa-style="page">
     /* ── Summary strip ── */
     .txn-summary-strip {
       display: grid;
@@ -439,6 +439,7 @@
       </div>
     </header>
 
+    <div id="spaPageRoot">
     <div class="app-content">
 
       <!-- ── 5-stat summary strip ── -->
@@ -563,10 +564,12 @@
     </button>
   </div>
 </div>
+</div>
 
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
-<script>
+<script src="js/faceid.js"></script>
+<script data-spa-script="page">
 'use strict';
 
 /* ════════════════════════════════════════════════
@@ -1179,5 +1182,6 @@ document.addEventListener('keydown', function(e) { if (e.key === 'Escape') close
 window.addEventListener('load', loadAll);
 </script>
 <script src="js/notifications.js"></script>
+<script src="js/spa-router.js"></script>
 </body>
 </html>

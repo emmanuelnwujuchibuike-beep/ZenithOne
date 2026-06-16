@@ -9,7 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="responsive.css" />
-  <style>
+  <style data-spa-style="page">
     .chart-container { position:relative; height:220px; width:100%; }
     .mini-chart { display:flex; align-items:flex-end; gap:6px; height:60px; }
     .mini-bar { flex:1; border-radius:3px 3px 0 0; min-width:6px; transition:all .3s; }
@@ -570,6 +570,7 @@
       </div>
     </header>
 
+    <div id="spaPageRoot">
     <!-- Content -->
     <div class="app-content">
 
@@ -800,7 +801,7 @@
       </div>
 
       <!-- Card + Wealth Snapshot -->
-          <style>
+          <style data-spa-style="page">
             /* ══ Ultra-Premium Card ═══════════════════════════════════════ */
             #dashLuxCard {
               transform-style:preserve-3d;
@@ -956,7 +957,7 @@
           <!-- Card column -->
           <div class="dash-card-col">
             <!-- No-card CTA -->
-            <div id="dashNoCard" style="border-radius:16px;background:linear-gradient(135deg,rgba(201,168,76,.05),rgba(36,71,110,.08));border:1px solid rgba(201,168,76,.15);padding:26px 20px;text-align:center;cursor:pointer;width:100%;" onclick="window.location.href='cards.html'">
+            <div id="dashNoCard" style="border-radius:16px;background:linear-gradient(135deg,rgba(201,168,76,.05),rgba(36,71,110,.08));border:1px solid rgba(201,168,76,.15);padding:26px 20px;text-align:center;cursor:pointer;width:100%;" onclick="spaNavigate('cards.html')">
               <div style="width:48px;height:48px;border-radius:12px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;">
                 <svg width="20" height="20" fill="none" stroke="#c9a84c" stroke-width="1.8" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
               </div>
@@ -968,7 +969,7 @@
             <!-- Ultra-luxury card -->
             <div id="dashLuxCard"
                  style="display:none;width:100%;max-width:380px;aspect-ratio:1.586;position:relative;border-radius:22px;cursor:pointer;"
-                 onclick="window.location.href='cards.html'"
+                 onclick="spaNavigate('cards.html')"
                  onmousemove="(function(e){var r=this.getBoundingClientRect();var x=(e.clientX-r.left)/r.width-.5;var y=(e.clientY-r.top)/r.height-.5;this.style.transform='perspective(900px) rotateY('+(x*14)+'deg) rotateX('+(-y*9)+'deg) scale(1.02)';}).call(this,event)"
                  onmouseleave="this.style.transform='perspective(900px) rotateY(0) rotateX(0) scale(1)'">
               <div class="luxc-inner">
@@ -1213,7 +1214,7 @@
 </div>
 
 <!-- ═══════ PAY BILLS MODAL ═══════════════════════════════════ -->
-<style>
+<style data-spa-style="page">
   #payBillOverlay { display:none; position:fixed; inset:0; z-index:640; background:rgba(2,6,16,.72); backdrop-filter:blur(8px); align-items:flex-end; justify-content:center; }
   @media(min-width:640px){ #payBillOverlay{ align-items:center; padding:24px; } }
   #payBillOverlay.open { display:flex; }
@@ -2400,10 +2401,11 @@
     </div>
   </div>
 </div>
+</div>
 
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
-<script>
+<script data-spa-script="page">
 // Date/time greeting + icon from the device clock, re-evaluated every minute
 // so a dashboard left open across midnight or a morning/afternoon/evening
 // boundary never shows a stale greeting or date.
@@ -5708,5 +5710,6 @@ function copyText(text, btn) {
 </script>
 <script src="js/faceid.js"></script>
 <script src="js/notifications.js"></script>
+<script src="js/spa-router.js"></script>
 </body>
 </html>

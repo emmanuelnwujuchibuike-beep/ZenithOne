@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="responsive.css" />
-  <style>
+  <style data-spa-style="page">
     .holding-row { display:grid; grid-template-columns:1fr 100px 100px 100px 100px 80px; align-items:center; gap:16px; padding:14px 16px; border-radius:12px; transition:background var(--transition); }
     .holding-row:hover { background:rgba(255,255,255,.03); }
     .holding-row-header { grid-template-columns:1fr 100px 100px 100px 100px 80px; }
@@ -71,6 +71,7 @@
       </div>
     </header>
 
+    <div id="spaPageRoot">
     <div class="app-content">
 
       <!-- Mobile action strip (shown on mobile, hidden on desktop) -->
@@ -169,11 +170,13 @@
     </div>
   </main>
 </div>
+</div>
 
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/faceid.js"></script>
 <script src="js/investments.js"></script>
-<script>
+<script data-spa-script="page">
 // Real data loader — overwrites demo table when ready
 async function loadInvestmentsData() {
   try {
@@ -303,5 +306,6 @@ function openAdvisorModal() { zenithToast('Schedule a call with your ZenithOne B
 })();
 </script>
 <script src="js/notifications.js"></script>
+<script src="js/spa-router.js"></script>
 </body>
 </html>

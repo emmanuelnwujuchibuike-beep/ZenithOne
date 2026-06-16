@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="responsive.css" />
-  <style>
+  <style data-spa-style="page">
     /* ═══════════════════════════════════════════════════════
        CREDIT & LOANS — ULTRA PREMIUM STYLES
     ═══════════════════════════════════════════════════════ */
@@ -478,10 +478,11 @@
         <div class="app-topbar-title">Credit &amp; Loans</div>
       </div>
       <div class="app-topbar-right">
-        <div class="sidebar-avatar" id="topbarAvatar" style="cursor:pointer;" onclick="location.href='settings.html'">—</div>
+        <div class="sidebar-avatar" id="topbarAvatar" style="cursor:pointer;" onclick="spaNavigate('settings.html')">—</div>
       </div>
     </header>
 
+    <div id="spaPageRoot">
     <div class="app-content" id="pageContent">
       <!-- Populated by JS -->
       <div style="padding:80px 24px;text-align:center;color:var(--slate-500);">
@@ -616,10 +617,11 @@
     </div>
   </div>
 </div>
+</div>
 
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
-<script>
+<script data-spa-script="page">
 // ── Constants ─────────────────────────────────────────────────────────────────
 const SCORE_TIERS = [
   { min:800, max:850, label:'Exceptional', color:'#c9a84c', bg:'rgba(201,168,76,.15)', border:'rgba(201,168,76,.4)' },
@@ -1531,5 +1533,6 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 <script src="js/faceid.js"></script>
 <script src="js/notifications.js"></script>
+<script src="js/spa-router.js"></script>
 </body>
 </html>

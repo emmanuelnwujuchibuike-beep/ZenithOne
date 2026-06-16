@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="responsive.css" />
-  <style>
+  <style data-spa-style="page">
     /* ── 3D Card Flip + Ultra-Premium Tilt ───────────────── */
     /* JS rAF-lerp drives the tilt transform every frame — no CSS transition (would fight the lerp) */
     .cv-wrap           { width:100%; position:relative; border-radius:20px; transform-origin:center center; will-change:transform; backface-visibility:hidden; }
@@ -258,6 +258,7 @@
       </div>
     </header>
 
+    <div id="spaPageRoot">
     <div class="app-content">
       <!-- Page header -->
       <div style="margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid rgba(255,255,255,.06);">
@@ -458,12 +459,13 @@
     </div>
   </div>
 </div>
+</div>
 
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/faceid.js"></script>
 <script src="js/cards.js"></script>
-<script>
+<script data-spa-script="page">
 // ══════════════════════════════════════════════════════════════
 //  CONSTANTS
 // ══════════════════════════════════════════════════════════════
@@ -1828,5 +1830,6 @@ document.addEventListener('supabaseReady', loadAllData, { once:true });
 })();
 </script>
 <script src="js/notifications.js"></script>
+<script src="js/spa-router.js"></script>
 </body>
 </html>

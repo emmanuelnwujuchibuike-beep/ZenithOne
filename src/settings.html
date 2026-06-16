@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="responsive.css" />
-  <style>
+  <style data-spa-style="page">
     .settings-layout { display:grid; grid-template-columns:220px 1fr; gap:28px; }
     .settings-nav .settings-nav-item { display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; font-size:.875rem; color:var(--slate-400); cursor:pointer; transition:all var(--transition); margin-bottom:2px; }
     .settings-nav .settings-nav-item:hover { background:rgba(255,255,255,.04); color:var(--white); }
@@ -80,6 +80,7 @@
       </div>
     </header>
 
+    <div id="spaPageRoot">
     <div class="app-content">
       <!-- Mobile save button (shown at ≤480px when topbar Save Changes is hidden) -->
       <button class="btn btn-primary settings-save-mobile" id="saveSettingsMobile" onclick="saveSettings()" style="width:100%;justify-content:center;margin-bottom:20px;">
@@ -309,11 +310,12 @@
     </div>
   </main>
 </div>
+</div>
 
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/settings.js"></script>
-<script>
+<script data-spa-script="page">
 function showSection(id, el) {
   document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.settings-nav-item').forEach(i => i.classList.remove('active'));
@@ -538,5 +540,6 @@ async function initFaceIdSettings() {
 </script>
 <script src="js/faceid.js"></script>
 <script src="js/notifications.js"></script>
+<script src="js/spa-router.js"></script>
 </body>
 </html>

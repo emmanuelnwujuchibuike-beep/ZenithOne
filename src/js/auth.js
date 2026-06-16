@@ -348,25 +348,13 @@ function subscribeToRealtimeUpdates(userId) {
 }
 
 // ── Bootstrap ─────────────────────────────────────────────────
+// Never substitute a fake identity on a private banking page if Supabase is
+// slow/unreachable — wait for the real session instead of showing a stranger's name.
 document.addEventListener('DOMContentLoaded', () => {
   if (window._supabase) {
     checkAuthGuard();
   } else {
     document.addEventListener('supabaseReady', checkAuthGuard);
-
-    // Demo mode: if Supabase isn't configured after 1 s, populate with demo data
-    setTimeout(() => {
-      if (!window._supabase) {
-        const page = window.location.pathname.split('/').pop() || '';
-        if (PRIVATE_PAGES.some(p => page.includes(p))) {
-          populateUserUI({
-            email: 'demo@zenithone.com',
-            user_metadata: { full_name: 'Alexandra Reynolds' },
-            last_sign_in_at: new Date().toISOString(),
-          });
-        }
-      }
-    }, 1000);
   }
 });
 

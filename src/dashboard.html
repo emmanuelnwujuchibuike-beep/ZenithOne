@@ -2695,10 +2695,11 @@ async function submitPayBill() {
   if (!_pbillAcctId)          { errEl.textContent = 'Choose an account to pay from.'; errEl.style.display = ''; return; }
   if (!pbillValidate()) return;
 
-  // Require Face ID or PIN to authorize the payment
-  if (window.zoAuthorizeTxn) {
+  // Authorize with the transaction PIN (verified server-side before any debit).
+  let _pin = null;
+  if (window.zoAuthorizePin) {
     try {
-      await window.zoAuthorizeTxn(`Authorize $${amount.toFixed(2)} payment to ${payee}`);
+      _pin = await window.zoAuthorizePin(`Authorize $${amount.toFixed(2)} payment to ${payee}`);
     } catch (e) {
       errEl.textContent = (e && e.message) || 'Authorization required to pay.';
       errEl.style.display = '';
@@ -2717,6 +2718,7 @@ async function submitPayBill() {
       account_number: acctRef,
       amount,
       memo,
+      pin: _pin,
     });
     zenithToast(`Payment to ${payee} submitted — processing. You'll be notified once it's approved.`, 'success', 6000);
     // Reset the form and show the new "Processing" entry without closing

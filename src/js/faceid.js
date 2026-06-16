@@ -518,23 +518,23 @@
       if (pin !== _pinFirst) { _pinBuf = ''; _pinFirst = ''; _pinDots(); _pinMode = 'create'; _pinErr('PINs did not match — try again.'); _pinSet('Create a PIN', 'Choose a 4-digit transaction PIN'); return; }
       try {
         await callEdgeFunction('transaction-pin', { action: 'create_pin', pin });
-        _pinDone(true);
+        _pinDone(true, null, pin);
       } catch (e) { _pinBuf=''; _pinDots(); _pinErr((e && e.message) ? _msg(e) : 'Could not set PIN.'); }
       return;
     }
     // verify
     try {
       const res = await callEdgeFunction('transaction-pin', { action: 'verify_pin', pin });
-      if (res && res.valid) _pinDone(true);
+      if (res && res.valid) _pinDone(true, null, pin);
       else { _pinBuf=''; _pinDots(); _pinErr('Incorrect PIN. Try again.'); }
     } catch (e) { _pinBuf=''; _pinDots(); _pinErr(_msg(e) || 'Verification failed.'); }
   }
   function _msg(e){ try { return JSON.parse(e.message).error || e.message; } catch { return e && e.message; } }
-  function _pinDone(ok, reason) {
+  function _pinDone(ok, reason, pinVal) {
     if (_pinEl) { _pinEl.classList.remove('open'); document.body.style.overflow=''; }
     const res = _pinResolve, rej = _pinReject;
     _pinResolve = _pinReject = null; _pinBuf=''; _pinFirst='';
-    if (ok) { res && res(true); }
+    if (ok) { res && res(pinVal || true); }
     else { rej && rej(new Error(reason === 'cancelled' ? 'Authorization cancelled.' : 'Authorization failed.')); }
   }
   function _pinAuthorize(reason) {
@@ -559,12 +559,22 @@
     return await _pinAuthorize(reason);
   }
 
+  // Public: for SERVER-ENFORCED money movements. Always collects the 4-digit PIN
+  // (creating one if the member has none) and resolves the verified PIN string so
+  // the caller can pass it to the edge function for server-side verification.
+  // A PIN is the factor the server can cryptographically check; Face ID unlocks
+  // the device but cannot be verified server-side here.
+  async function authorizePin(reason) {
+    return await _pinAuthorize(reason);
+  }
+
   global.ZenithFaceID = {
     isAvailable, isEnrolled, enroll, verify, loginWithFaceId,
-    syncToken, captureToken, disable, authorizeTxn,
+    syncToken, captureToken, disable, authorizeTxn, authorizePin,
     loginEnabled, setLoginEnabled, txEnabled, setTxEnabled,
     getBiometricLabel,
   };
-  // Convenience global used by transaction flows on every page.
+  // Convenience globals used by transaction flows on every page.
   global.zoAuthorizeTxn = authorizeTxn;
+  global.zoAuthorizePin = authorizePin;
 })(window);

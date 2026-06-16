@@ -99,10 +99,35 @@ Deno.serve(async (req: Request): Promise<Response> => {
       // ── Close / Disband card ──────────────────────────────────────────────
       case 'close': {
         if (!card_id) throw new Error('card_id required');
+
+        // A card holding funds (debit balance) or carrying a credit balance owed
+        // cannot be closed — the member must withdraw/settle it first.
+        const { data: closing, error: closeFetchErr } = await supabase
+          .from('cards')
+          .select('id, card_type, available_credit, current_balance, status')
+          .eq('id', card_id).eq('user_id', user.id).single();
+        if (closeFetchErr || !closing) throw new Error('Card not found.');
+
+        const avail = Number(closing.available_credit) || 0;
+        const owed  = Number(closing.current_balance)  || 0;
+        if (closing.card_type === 'debit' && avail > 0) {
+          throw new Error(`This card still holds $${avail.toFixed(2)}. Withdraw the balance to your account before closing it.`);
+        }
+        if (owed > 0) {
+          throw new Error(`This card has an outstanding balance of $${owed.toFixed(2)}. Pay it off before closing the card.`);
+        }
+
         const { error } = await supabase.from('cards')
           .update({ status: 'cancelled', updated_at: new Date().toISOString() })
           .eq('id', card_id).eq('user_id', user.id);
         if (error) throw error;
+
+        // Mark the originating request as closed so the Explore catalog stops
+        // showing this card as owned/manageable — it's permanently closed.
+        await supabase.from('card_requests')
+          .update({ status: 'closed', updated_at: new Date().toISOString() })
+          .eq('card_id', card_id).eq('user_id', user.id);
+
         await supabase.from('notifications').insert({ user_id: user.id, title: 'Card Closed', message: 'Your card has been permanently closed. Any remaining balance will be returned within 5–7 business days.', type: 'account', priority: 'high' });
         return json({ success: true, status: 'cancelled', message: 'Card has been permanently closed.' });
       }

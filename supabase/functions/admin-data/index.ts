@@ -7,6 +7,12 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { cors, json, errJson, getAuthToken } from '../_shared/cors.ts';
 import { generateCardNumber, formatPan } from '../_shared/cards.ts';
 
+// Transaction-PIN hash — MUST match the algorithm in transaction-pin/index.ts.
+async function hashPin(userId: string, pin: string): Promise<string> {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${userId}:${pin}:zenithone`));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
 // ── Credit limit defaults per card type ────────────────────────────────────────
 const CARD_LIMITS: Record<string, number> = {
   virtual: 0, classic_debit: 0, gold: 5000, platinum: 15000,
@@ -320,12 +326,19 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     // ── USER ACTION: make a payment toward a loan (any time, any amount) ────────
     if (action === 'pay_loan') {
-      const { loan_id, account_id, amount, pay_in_full } = body as {
+      const { loan_id, account_id, amount, pay_in_full, pin } = body as {
         action: string; loan_id: string; account_id: string;
-        amount?: number; pay_in_full?: boolean;
+        amount?: number; pay_in_full?: boolean; pin?: string;
       };
       if (!loan_id)    throw new Error('loan_id is required.');
       if (!account_id) throw new Error('Please choose an account to pay from.');
+
+      // ── Server-side authorization: verify the member's transaction PIN ──
+      if (!/^\d{4}$/.test(pin || '')) throw new Error('Enter your 4-digit PIN to authorize this payment.');
+      const { data: payerProfile } = await supabase
+        .from('profiles').select('transaction_pin').eq('id', user.id).single();
+      if (!payerProfile?.transaction_pin) throw new Error('No transaction PIN set. Create one to authorize payments.');
+      if ((await hashPin(user.id, pin as string)) !== payerProfile.transaction_pin) throw new Error('Incorrect PIN.');
 
       // Loan must belong to caller and be active
       const { data: loan, error: loanErr } = await supabase

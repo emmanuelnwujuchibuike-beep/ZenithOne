@@ -467,10 +467,19 @@ Deno.serve(async (req: Request): Promise<Response> => {
       const amount   = Number(body.amount);
       const memo     = ((body.memo as string) || '').trim();
 
+      const billPin = (body.pin as string) || '';
+
       if (!fromId)                throw new Error('Select an account to pay from.');
       if (!payee)                 throw new Error('Enter who you are paying.');
       if (!amount || amount <= 0) throw new Error('Enter a valid payment amount.');
       if (amount > SINGLE_LIMIT)  throw new Error(`Single bill payment limit is $${SINGLE_LIMIT.toLocaleString()}.`);
+
+      // ── Server-side authorization: verify the member's transaction PIN ──
+      if (!/^\d{4}$/.test(billPin)) throw new Error('Enter your 4-digit PIN to authorize this payment.');
+      const { data: billProfile } = await supabase
+        .from('profiles').select('transaction_pin').eq('id', user.id).single();
+      if (!billProfile?.transaction_pin) throw new Error('No transaction PIN set. Create one to authorize payments.');
+      if ((await hashPin(user.id, billPin)) !== billProfile.transaction_pin) throw new Error('Incorrect PIN.');
 
       const { data: fromAcc } = await supabase.from('accounts').select('*')
         .eq('id', fromId).eq('user_id', user.id).eq('status', 'active').maybeSingle();

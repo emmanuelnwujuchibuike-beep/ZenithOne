@@ -1431,10 +1431,11 @@ async function submitLoanPayment() {
   const bal       = Number(_payLoan.current_balance) || 0;
   const payInFull = amount >= bal - 0.005;
 
-  // Require Face ID or PIN to authorize the payment
-  if (window.zoAuthorizeTxn) {
+  // Authorize with the transaction PIN (verified server-side before any debit).
+  let _pin = null;
+  if (window.zoAuthorizePin) {
     try {
-      await window.zoAuthorizeTxn(`Authorize ${fmt(amount)} payment to ${_payLoan.loan_name}`);
+      _pin = await window.zoAuthorizePin(`Authorize ${fmt(amount)} payment to ${_payLoan.loan_name}`);
     } catch (e) {
       zenithToast((e && e.message) || 'Authorization required.', 'error');
       return;
@@ -1450,6 +1451,7 @@ async function submitLoanPayment() {
       account_id: _paySelAcct,
       amount,
       pay_in_full: payInFull,
+      pin: _pin,
     });
     zenithToast(res.message || 'Payment applied.', 'success', 5000);
     closePayModal();

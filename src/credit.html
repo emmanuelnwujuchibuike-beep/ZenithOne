@@ -314,6 +314,115 @@
     @media (max-width: 400px) {
       .ltype-grid { grid-template-columns: repeat(2, 1fr); }
     }
+
+    /* ═══════════════════════════════════════════════════════
+       LOAN HISTORY — premium actions + payment history
+    ═══════════════════════════════════════════════════════ */
+    .loan-actions { display:flex; gap:10px; margin-top:18px; padding-top:18px; border-top:1px solid rgba(255,255,255,.06); flex-wrap:wrap; }
+    .loan-act-btn {
+      display:inline-flex; align-items:center; gap:7px; cursor:pointer;
+      padding:9px 16px; border-radius:10px; font-size:.78rem; font-weight:600;
+      letter-spacing:.02em; border:1px solid transparent; transition:all .18s; background:none;
+    }
+    .loan-act-pay {
+      background:linear-gradient(135deg,#c9a84c,#e8d07a); color:#0a1322;
+      box-shadow:0 6px 18px -8px rgba(201,168,76,.6);
+    }
+    .loan-act-pay:hover { filter:brightness(1.06); transform:translateY(-1px); }
+    .loan-act-payoff {
+      background:rgba(74,222,128,.08); border-color:rgba(74,222,128,.28); color:#4ade80;
+    }
+    .loan-act-payoff:hover { background:rgba(74,222,128,.14); }
+    .loan-act-history {
+      background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.1); color:rgba(255,255,255,.65);
+    }
+    .loan-act-history:hover { background:rgba(255,255,255,.08); color:#fff; }
+    .loan-paid-chip {
+      display:inline-flex; align-items:center; gap:7px; margin-top:18px; padding-top:18px;
+      border-top:1px solid rgba(255,255,255,.06); color:#c9a84c; font-size:.82rem; font-weight:500;
+    }
+    .loan-pay-history {
+      margin-top:14px; border-top:1px dashed rgba(255,255,255,.08); padding-top:14px; display:none;
+    }
+    .loan-pay-history.open { display:block; }
+    .lph-row {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:9px 0; border-bottom:1px solid rgba(255,255,255,.04); font-size:.78rem;
+    }
+    .lph-row:last-child { border-bottom:none; }
+    .lph-left  { color:rgba(255,255,255,.55); }
+    .lph-amt   { font-family:var(--font-display); color:#4ade80; }
+
+    /* ═══════════════════════════════════════════════════════
+       LOAN PRODUCT CATALOG — choose the loan you're fit for
+    ═══════════════════════════════════════════════════════ */
+    .lcat-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:20px; }
+    .lcat-tab {
+      padding:8px 16px; border-radius:99px; cursor:pointer; font-size:.76rem; font-weight:500;
+      letter-spacing:.02em; border:1px solid rgba(255,255,255,.09); background:rgba(255,255,255,.03);
+      color:rgba(255,255,255,.55); transition:all .18s; white-space:nowrap;
+    }
+    .lcat-tab:hover { border-color:rgba(201,168,76,.3); color:#fff; }
+    .lcat-tab.on { background:rgba(201,168,76,.12); border-color:rgba(201,168,76,.45); color:#c9a84c; }
+    .lprod-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px; }
+    .lprod-card {
+      position:relative; overflow:hidden; border-radius:18px; padding:22px 22px 20px;
+      background:linear-gradient(150deg,rgba(255,255,255,.045),rgba(255,255,255,.015));
+      border:1px solid rgba(255,255,255,.08); transition:border-color .2s, box-shadow .2s, transform .2s;
+      display:flex; flex-direction:column;
+    }
+    .lprod-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:2px;
+      background:linear-gradient(90deg,transparent,var(--lpc,#c9a84c),transparent); opacity:.5;
+    }
+    .lprod-card:hover { border-color:var(--lpc-bd,rgba(201,168,76,.3)); transform:translateY(-2px); box-shadow:0 16px 40px -18px rgba(0,0,0,.6); }
+    .lprod-top { display:flex; align-items:flex-start; gap:13px; margin-bottom:14px; }
+    .lprod-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .lprod-name { font-family:var(--font-display); font-size:1.12rem; color:#fff; line-height:1.15; }
+    .lprod-blurb { font-size:.74rem; color:var(--slate-400); margin-top:3px; line-height:1.45; }
+    .lprod-meta { display:grid; grid-template-columns:1fr 1fr; gap:10px 14px; margin:6px 0 14px; }
+    .lprod-meta-l { font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--slate-500); margin-bottom:2px; }
+    .lprod-meta-v { font-size:.84rem; color:rgba(255,255,255,.85); font-weight:500; }
+    .lprod-elig {
+      display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:9px;
+      font-size:.72rem; font-weight:600; margin-bottom:14px; align-self:flex-start;
+    }
+    .lprod-reqs { font-size:.72rem; color:var(--slate-400); line-height:1.6; margin-bottom:16px; }
+    .lprod-reqs b { color:rgba(255,255,255,.7); font-weight:500; }
+    .lprod-foot { margin-top:auto; }
+    .lprod-apply {
+      width:100%; padding:11px; border-radius:11px; cursor:pointer; font-size:.82rem; font-weight:600;
+      border:1px solid var(--lpc-bd,rgba(201,168,76,.35)); background:var(--lpc-bg,rgba(201,168,76,.1));
+      color:var(--lpc,#c9a84c); transition:all .18s;
+    }
+    .lprod-apply:hover:not(:disabled) { background:var(--lpc,#c9a84c); color:#0a1322; }
+    .lprod-apply:disabled { opacity:.4; cursor:not-allowed; }
+    @media (max-width:600px){ .lprod-grid { grid-template-columns:1fr; } }
+
+    /* Product summary banner inside the apply modal */
+    .lapply-prod {
+      display:flex; align-items:center; gap:13px; padding:14px 16px; border-radius:13px;
+      background:rgba(201,168,76,.06); border:1px solid rgba(201,168,76,.2); margin-bottom:18px;
+    }
+    .lapply-prod-ico { width:42px; height:42px; border-radius:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+
+    /* Pay-from account picker */
+    .pay-acct {
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:13px 15px; border-radius:12px; cursor:pointer; margin-bottom:9px;
+      border:1.5px solid rgba(255,255,255,.08); background:rgba(255,255,255,.025); transition:all .16s;
+    }
+    .pay-acct:hover { border-color:rgba(255,255,255,.2); }
+    .pay-acct.sel { border-color:rgba(201,168,76,.55); background:rgba(201,168,76,.07); }
+    .pay-acct-name { font-size:.85rem; color:#fff; }
+    .pay-acct-sub  { font-size:.7rem; color:var(--slate-500); margin-top:2px; }
+    .pay-acct-bal  { font-family:var(--font-display); font-size:1rem; color:rgba(255,255,255,.9); }
+    .pay-quick { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    .pay-quick-btn {
+      padding:6px 13px; border-radius:8px; cursor:pointer; font-size:.73rem; font-weight:500;
+      border:1px solid rgba(255,255,255,.1); background:rgba(255,255,255,.04); color:rgba(255,255,255,.6); transition:all .16s;
+    }
+    .pay-quick-btn:hover { border-color:rgba(201,168,76,.4); color:#c9a84c; }
   </style>
 </head>
 <body>
@@ -394,9 +503,14 @@
       <button onclick="closeLoanModal()" style="background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;padding:4px;line-height:1;">✕</button>
     </div>
     <div class="lapply-body">
+      <!-- Selected product banner (shown when applying from the catalog) -->
+      <div id="lapplyProdBanner" style="display:none;"></div>
+
       <!-- Step 1: Loan type -->
-      <div style="font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-500);margin-bottom:10px;">Select Loan Type</div>
-      <div class="ltype-grid" id="ltypeGrid"></div>
+      <div id="ltypeSection">
+        <div style="font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-500);margin-bottom:10px;">Select Loan Type</div>
+        <div class="ltype-grid" id="ltypeGrid"></div>
+      </div>
 
       <!-- Requirements display -->
       <div id="lapplyReqs" style="margin-bottom:20px;">
@@ -459,6 +573,50 @@
   </div>
 </div>
 
+<!-- ── Loan Payment Modal ─────────────────────────────────────── -->
+<div class="lapply-overlay" id="payOverlay" onclick="if(event.target===this)closePayModal()">
+  <div class="lapply-modal" style="max-width:520px;" onclick="event.stopPropagation()">
+    <div class="lapply-header">
+      <div>
+        <div style="font-family:var(--font-display);font-size:1.25rem;color:#fff;margin-bottom:3px;">Make a Payment</div>
+        <div style="font-size:.78rem;color:var(--slate-400);">Pay toward your loan any time — no early-payment penalty</div>
+      </div>
+      <button onclick="closePayModal()" style="background:none;border:none;color:var(--slate-400);cursor:pointer;font-size:1.2rem;padding:4px;line-height:1;">✕</button>
+    </div>
+    <div class="lapply-body">
+      <!-- Loan summary -->
+      <div class="lapply-prod" id="payLoanSummary" style="margin-bottom:18px;"></div>
+
+      <!-- Source account -->
+      <div style="font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--slate-500);margin-bottom:10px;">Pay From</div>
+      <div id="payAcctList" style="margin-bottom:18px;"></div>
+
+      <!-- Amount -->
+      <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:5px;">
+        <div style="font-size:.7rem;color:var(--slate-400);letter-spacing:.06em;text-transform:uppercase;">Payment Amount</div>
+        <div id="payRemain" style="font-size:.7rem;color:var(--gold-500);"></div>
+      </div>
+      <div style="position:relative;">
+        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.4);font-size:.95rem;">$</span>
+        <input type="number" id="payAmount" min="1" step="50" placeholder="0.00"
+          style="width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 14px 12px 26px;color:#fff;font-size:1rem;outline:none;box-sizing:border-box;"
+          oninput="payValidate()" />
+      </div>
+      <div class="pay-quick">
+        <div class="pay-quick-btn" onclick="paySetQuick(0.25)">25%</div>
+        <div class="pay-quick-btn" onclick="paySetQuick(0.5)">50%</div>
+        <div class="pay-quick-btn" onclick="paySetMonthly()" id="payMonthlyBtn" style="display:none;">Monthly Payment</div>
+        <div class="pay-quick-btn" onclick="paySetQuick(1)" style="border-color:rgba(74,222,128,.35);color:#4ade80;">Pay In Full</div>
+      </div>
+      <div id="payErr" style="display:none;font-size:.75rem;color:#f87171;margin-top:10px;"></div>
+    </div>
+    <div class="lapply-footer" style="display:flex;gap:10px;">
+      <button class="btn btn-primary" style="flex:1;" id="paySubmitBtn" onclick="submitLoanPayment()">Confirm Payment</button>
+      <button class="btn btn-ghost" onclick="closePayModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
 <script>
@@ -505,9 +663,64 @@ const APP_STATUS_CFG = {
   declined: { label:'Declined',     c:'#f87171', b:'rgba(248,113,113,.12)', bd:'rgba(248,113,113,.35)' },
 };
 
+// ── US Loan Product Catalog ────────────────────────────────────────────────────
+// Each product maps to a canonical backend loan_type. apr=[low,high] %,
+// term=[low,high] months (null = revolving), amount=[min,max] $.
+const LOAN_CATEGORIES = [
+  { key:'all',       label:'All Loans' },
+  { key:'personal',  label:'Personal' },
+  { key:'auto',      label:'Auto & Vehicle' },
+  { key:'home',      label:'Home & Property' },
+  { key:'education', label:'Education' },
+  { key:'business',  label:'Business' },
+  { key:'credit',    label:'Lines of Credit' },
+];
+const LOAN_PRODUCTS = [
+  // ── Personal & lifestyle ──
+  { id:'personal',       cat:'personal',  type:'personal',    name:'Personal Loan',          minScore:580, apr:[7.99,24.99], term:[12,84],  amount:[1000,50000],   blurb:'Flexible funds for almost any purpose.', reqs:['Proof of income','Valid government ID','Debt-to-income under 45%'] },
+  { id:'debt_consol',    cat:'personal',  type:'personal',    name:'Debt Consolidation Loan',minScore:600, apr:[8.99,23.99], term:[24,84],  amount:[5000,75000],   blurb:'Combine high-interest debt into one fixed payment.', reqs:['Proof of income','List of debts to consolidate','2+ yrs credit history'] },
+  { id:'home_improve',   cat:'personal',  type:'personal',    name:'Home Improvement Loan',  minScore:640, apr:[7.49,19.99], term:[12,144], amount:[2000,100000],  blurb:'Renovate without tapping home equity.', reqs:['Proof of income','Project estimate','Homeownership preferred'] },
+  { id:'medical',        cat:'personal',  type:'personal',    name:'Medical Expense Loan',   minScore:580, apr:[6.99,22.99], term:[12,72],  amount:[1000,50000],   blurb:'Cover procedures and bills insurance won’t.', reqs:['Proof of income','Provider invoice (optional)'] },
+  { id:'wedding',        cat:'personal',  type:'personal',    name:'Wedding Loan',           minScore:600, apr:[8.49,21.99], term:[12,60],  amount:[2000,40000],   blurb:'Finance your special day on your terms.', reqs:['Proof of income','Valid government ID'] },
+  { id:'credit_builder', cat:'personal',  type:'personal',    name:'Credit Builder Loan',    minScore:300, apr:[9.99,16.99], term:[6,24],   amount:[300,3000],     blurb:'Build credit safely — funds held until paid.', reqs:['Active ZenithOne account','No minimum score required'], secured:true },
+  // ── Auto & vehicle ──
+  { id:'auto_new',       cat:'auto',      type:'auto',        name:'New Auto Loan',          minScore:600, apr:[4.99,12.99], term:[24,84],  amount:[5000,150000],  blurb:'Competitive rates on brand-new vehicles.', reqs:['Proof of income','Vehicle details / VIN','Full-coverage insurance'] },
+  { id:'auto_used',      cat:'auto',      type:'auto',        name:'Used Auto Loan',         minScore:600, apr:[5.99,15.99], term:[24,72],  amount:[3000,100000],  blurb:'Financing for pre-owned cars and trucks.', reqs:['Proof of income','Vehicle under 10 yrs old','Full-coverage insurance'] },
+  { id:'auto_refi',      cat:'auto',      type:'auto',        name:'Auto Refinance',         minScore:620, apr:[4.49,13.49], term:[24,84],  amount:[5000,100000],  blurb:'Lower your rate or monthly car payment.', reqs:['Current loan details','Proof of income'] },
+  { id:'motorcycle',     cat:'auto',      type:'auto',        name:'Motorcycle Loan',        minScore:600, apr:[6.99,17.99], term:[12,72],  amount:[2000,50000],   blurb:'For street bikes, cruisers and more.', reqs:['Proof of income','Vehicle details'] },
+  { id:'rv',             cat:'auto',      type:'auto',        name:'RV Loan',                minScore:660, apr:[6.49,14.99], term:[36,240], amount:[10000,500000], blurb:'Hit the road in a motorhome or camper.', reqs:['Proof of income','Down payment may apply'] },
+  { id:'boat',          cat:'auto',      type:'auto',        name:'Boat & Marine Loan',     minScore:660, apr:[6.99,15.99], term:[36,240], amount:[10000,500000], blurb:'Finance boats, jet skis and watercraft.', reqs:['Proof of income','Marine survey for older vessels'] },
+  // ── Home & property ──
+  { id:'mortgage_conv',  cat:'home',      type:'mortgage',    name:'Conventional Mortgage',  minScore:620, apr:[5.99,7.99],  term:[120,360],amount:[50000,1500000],blurb:'Standard 15–30 yr home financing.', reqs:['2 yrs employment history','Down payment 3–20%','DTI under 43%'] },
+  { id:'mortgage_fha',   cat:'home',      type:'mortgage',    name:'FHA Home Loan',          minScore:580, apr:[5.49,7.49],  term:[180,360],amount:[50000,750000], blurb:'Low down payment, first-time-buyer friendly.', reqs:['3.5% down payment','Primary residence','Mortgage insurance'] },
+  { id:'mortgage_va',    cat:'home',      type:'mortgage',    name:'VA Home Loan',           minScore:580, apr:[5.25,7.25],  term:[180,360],amount:[50000,1000000],blurb:'No-down-payment loans for veterans.', reqs:['Certificate of Eligibility','Primary residence'] },
+  { id:'mortgage_jumbo', cat:'home',      type:'mortgage',    name:'Jumbo Mortgage',         minScore:700, apr:[6.25,8.25],  term:[180,360],amount:[766551,3000000],blurb:'Financing above conforming limits.', reqs:['Strong credit (700+)','Cash reserves','Larger down payment'] },
+  { id:'mortgage_refi',  cat:'home',      type:'mortgage',    name:'Mortgage Refinance',     minScore:620, apr:[5.75,7.75],  term:[120,360],amount:[50000,1500000],blurb:'Refinance to a better rate or cash out.', reqs:['Current mortgage details','Home appraisal','Proof of income'] },
+  { id:'heloc',          cat:'home',      type:'heloc',       name:'HELOC',                  minScore:660, apr:[7.25,12.50], term:null,     amount:[10000,500000], blurb:'Revolving credit line against home equity.', reqs:['15%+ home equity','DTI under 43%','Home appraisal'] },
+  { id:'home_equity',    cat:'home',      type:'heloc',       name:'Home Equity Loan',       minScore:660, apr:[6.99,12.99], term:[60,240], amount:[10000,500000], blurb:'Lump-sum second mortgage, fixed rate.', reqs:['15%+ home equity','Proof of income','Home appraisal'] },
+  // ── Education ──
+  { id:'student',        cat:'education', type:'student',     name:'Student Loan',           minScore:560, apr:[4.99,13.99], term:[60,180], amount:[1000,100000],  blurb:'Fund tuition, housing and supplies.', reqs:['Enrollment verification','Cosigner may be required'] },
+  { id:'student_refi',   cat:'education', type:'student',     name:'Student Loan Refinance', minScore:650, apr:[4.49,9.99],  term:[60,240], amount:[5000,300000],  blurb:'Consolidate and lower your student debt.', reqs:['Graduated / enrolled half-time','Proof of income'] },
+  { id:'parent_plus',    cat:'education', type:'student',     name:'Parent Loan',            minScore:650, apr:[7.99,11.99], term:[120,300],amount:[1000,150000],  blurb:'Help finance your child’s education.', reqs:['Proof of income','Student enrollment'] },
+  // ── Business ──
+  { id:'biz_term',       cat:'business',  type:'business',    name:'Business Term Loan',     minScore:640, apr:[7.99,24.99], term:[12,120], amount:[5000,500000],  blurb:'Lump-sum capital for growth.', reqs:['6+ months in business','Business bank statements','Annual revenue $50k+'] },
+  { id:'sba',            cat:'business',  type:'business',    name:'SBA 7(a) Loan',          minScore:660, apr:[10.5,14.5],  term:[60,300], amount:[30000,5000000],blurb:'Government-backed small-business funding.', reqs:['2+ yrs in business','Strong personal credit','Business plan'] },
+  { id:'equipment',      cat:'business',  type:'business',    name:'Equipment Financing',    minScore:620, apr:[6.99,18.99], term:[12,84],  amount:[5000,1000000], blurb:'Finance machinery, vehicles and tech.', reqs:['Equipment quote','Business bank statements'] },
+  { id:'cre',            cat:'business',  type:'business',    name:'Commercial Real Estate', minScore:680, apr:[6.49,11.99], term:[60,300], amount:[100000,5000000],blurb:'Purchase or refinance commercial property.', reqs:['Property appraisal','2+ yrs in business','Down payment 20–30%'] },
+  // ── Lines of credit ──
+  { id:'biz_loc',        cat:'credit',    type:'credit_line', name:'Business Line of Credit',minScore:640, apr:[9.99,24.99], term:null,     amount:[5000,250000],  blurb:'Draw funds as needed, pay interest only on what you use.', reqs:['6+ months in business','Business bank statements'] },
+  { id:'personal_loc',   cat:'credit',    type:'credit_line', name:'Personal Line of Credit',minScore:600, apr:[9.99,22.99], term:null,     amount:[1000,50000],   blurb:'Flexible revolving credit for ongoing needs.', reqs:['Proof of income','Valid government ID'] },
+];
+
 // Page-level state
 let _creditProfile = null;
 let _myApplications = [];
+let _myLoans = [];
+let _myAccounts = [];
+let _loanPayments = [];
+let _catFilter = 'all';
+let _payLoan = null;
+let _paySelAcct = null;
 
 // ── Gauge SVG builder ─────────────────────────────────────────────────────────
 // 270° arc gauge. r=90, cx=cy=110. Full circle circumference = 2π×90 ≈ 565.49.
@@ -571,6 +784,7 @@ function factorImpact(val, type) {
 function renderCreditPage(cp, loans, applications) {
   _creditProfile  = cp || null;
   _myApplications = applications || [];
+  _myLoans        = loans || [];
   const score = cp?.credit_score ?? null;
   const tier  = score ? scoreTier(score) : null;
   const totalDebt  = (loans||[]).filter(l=>l.status==='active').reduce((s,l)=>s+(l.current_balance||0),0);
@@ -580,9 +794,10 @@ function renderCreditPage(cp, loans, applications) {
   document.getElementById('pageContent').innerHTML = `
     ${!cp ? renderNoCredit() : renderHero(cp, score, tier)}
     ${renderStats(cp, totalDebt, monthlyDue, utilization)}
-    ${cp ? renderFactors(cp) : ''}
-    ${renderApplicationsSection(_myApplications, cp)}
     ${renderLoans(loans||[])}
+    ${renderApplicationsSection(_myApplications, cp)}
+    ${cp ? renderFactors(cp) : ''}
+    ${renderCatalog()}
   `;
 
   if (cp && score) {
@@ -747,19 +962,24 @@ function renderFactors(cp) {
 
 function renderLoans(loans) {
   const hasLoans = loans.length > 0;
+  const active   = loans.filter(l => l.status === 'active').length;
   return `
-  <div>
+  <div style="margin-bottom:28px;">
     <div class="section-header">
       <div>
-        <div class="section-title">Loans &amp; Lines of Credit</div>
-        <div class="section-sub">${hasLoans ? `${loans.length} account${loans.length!==1?'s':''} on file` : 'No loan accounts'}</div>
+        <div class="section-title">My Loans &amp; Payment History</div>
+        <div class="section-sub">${hasLoans ? `${loans.length} loan${loans.length!==1?'s':''} on file · ${active} active` : 'No loan accounts yet'}</div>
       </div>
-      <button class="btn btn-primary btn-sm" onclick="openLoanModal()" style="flex-shrink:0;">Apply for a Loan</button>
+      <button class="btn btn-primary btn-sm" onclick="scrollToCatalog()" style="flex-shrink:0;">Explore Loans</button>
     </div>
     ${hasLoans ? loans.map(renderLoanCard).join('') : `
-      <div class="credit-empty" style="padding:40px 24px;">
-        <div class="credit-empty-title" style="font-size:1rem;">No Loan Records</div>
-        <div class="credit-empty-sub">You have no active loans or lines of credit on file with ZenithOne.</div>
+      <div class="credit-empty" style="padding:44px 24px;">
+        <div class="credit-empty-icon">
+          <svg width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.1" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        </div>
+        <div class="credit-empty-title" style="font-size:1.05rem;">No Loans Yet</div>
+        <div class="credit-empty-sub">When a loan is approved it appears here with full payment history.<br/>Browse the products below to find one you qualify for.</div>
+        <button class="btn btn-primary btn-sm" style="margin-top:20px;" onclick="scrollToCatalog()">Explore Loan Products</button>
       </div>`}
   </div>`;
 }
@@ -775,6 +995,21 @@ function renderLoanCard(loan) {
   const remainMos = termMos ? Math.max(0, termMos - paidMos) : null;
   const remainStr = remainMos != null ? (remainMos > 12 ? `${Math.ceil(remainMos/12)}yr remaining` : `${remainMos}mo remaining`) : '';
   const openedStr = loan.opened_date ? fmtDate(loan.opened_date) : '—';
+  const isActive  = loan.status === 'active' && bal > 0;
+  const isPaid    = loan.status === 'paid_off' || bal <= 0;
+
+  // Payment history for this loan
+  const pays = _loanPayments.filter(p => p.loan_id === loan.id);
+  const payHistory = pays.length ? `
+    <div class="loan-pay-history" id="lph_${loan.id}">
+      <div style="font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--slate-500);margin-bottom:6px;">Payment History</div>
+      ${pays.map(p => `
+        <div class="lph-row">
+          <div class="lph-left">${fmtDate(p.created_at)} · ${p.payment_type === 'payoff' ? 'Final payoff' : 'Payment'}${p.balance_after != null ? ` · bal ${fmt(p.balance_after)}` : ''}</div>
+          <div class="lph-amt">−${fmt(p.amount)}</div>
+        </div>`).join('')}
+    </div>` : '';
+
   return `
   <div class="loan-card">
     <div class="loan-header">
@@ -813,10 +1048,33 @@ function renderLoanCard(loan) {
       </div>
       <div>
         <div class="loan-detail-label">Next Payment</div>
-        <div class="loan-detail-value">${fmtDate(loan.next_payment_date)}</div>
+        <div class="loan-detail-value">${isPaid ? '—' : fmtDate(loan.next_payment_date)}</div>
       </div>
     </div>
+    ${isActive ? `
+      <div class="loan-actions">
+        <button class="loan-act-btn loan-act-pay" onclick="openPayModal('${loan.id}')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          Make a Payment
+        </button>
+        <button class="loan-act-btn loan-act-payoff" onclick="openPayModal('${loan.id}', true)">Pay Off ${fmt(bal)}</button>
+        ${pays.length ? `<button class="loan-act-btn loan-act-history" onclick="togglePayHistory('${loan.id}')">History (${pays.length})</button>` : ''}
+      </div>` : isPaid ? `
+      <div class="loan-paid-chip">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Paid in full — thank you${pays.length ? ` · <span style="color:var(--slate-400);cursor:pointer;text-decoration:underline;" onclick="togglePayHistory('${loan.id}')">view history</span>` : ''}
+      </div>` : ''}
+    ${payHistory}
   </div>`;
+}
+
+function togglePayHistory(loanId) {
+  const el = document.getElementById('lph_' + loanId);
+  if (el) el.classList.toggle('open');
+}
+function scrollToCatalog() {
+  const el = document.getElementById('loanCatalog');
+  if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 // ── Applications section render ───────────────────────────────────────────────
@@ -851,22 +1109,138 @@ function renderApplicationsSection(apps, cp) {
   </div>`;
 }
 
+// ── Loan product catalog ──────────────────────────────────────────────────────
+function fmtShort(n) {
+  if (n >= 1e6) return '$' + (n/1e6).toFixed(n % 1e6 === 0 ? 0 : 1) + 'M';
+  if (n >= 1e3) return '$' + Math.round(n/1e3) + 'K';
+  return '$' + n;
+}
+function termLabel(term) {
+  if (!term) return 'Revolving';
+  const lo = term[0] >= 12 ? `${Math.round(term[0]/12)}yr` : `${term[0]}mo`;
+  const hi = term[1] >= 12 ? `${Math.round(term[1]/12)}yr` : `${term[1]}mo`;
+  return `${lo}–${hi}`;
+}
+// Server enforces a minimum score per canonical loan_type at apply time.
+// Effective requirement is the stricter of the product's advertised score
+// and this floor, so the UI never promises approval the server would reject.
+const CANON_FLOOR = { personal:580, auto:600, mortgage:620, student:560, business:640, heloc:640, credit_line:600 };
+function effMin(p) { return Math.max(p.minScore, CANON_FLOOR[p.type] || 580); }
+
+function eligibilityFor(p) {
+  const score = _creditProfile?.credit_score ?? null;
+  const min   = effMin(p);
+  if (score == null) return { label:'Credit profile needed', color:'#94a3b8', bg:'rgba(148,163,184,.12)', canApply:false };
+  if (score >= min) return { label:'You qualify', color:'#4ade80', bg:'rgba(74,222,128,.12)', canApply:true };
+  const gap = min - score;
+  if (gap <= 30) return { label:`Almost — ${gap} pts to go`, color:'#f97316', bg:'rgba(249,115,22,.12)', canApply:false };
+  return { label:`Needs ${min}+ score`, color:'#f87171', bg:'rgba(248,113,113,.12)', canApply:false };
+}
+
+function renderCatalog() {
+  const tabs = LOAN_CATEGORIES.map(c =>
+    `<div class="lcat-tab ${c.key === _catFilter ? 'on' : ''}" onclick="setCatFilter('${c.key}')">${c.label}</div>`
+  ).join('');
+  const list = _catFilter === 'all' ? LOAN_PRODUCTS : LOAN_PRODUCTS.filter(p => p.cat === _catFilter);
+  const cards = list.map(p => {
+    const cfg  = LOAN_CFG[p.type] || LOAN_CFG.personal;
+    const el   = eligibilityFor(p);
+    return `
+    <div class="lprod-card" style="--lpc:${cfg.color};--lpc-bd:${cfg.color}55;--lpc-bg:${cfg.bg};">
+      <div class="lprod-top">
+        <div class="lprod-icon" style="background:${cfg.bg};color:${cfg.color};">${cfg.icon}</div>
+        <div style="min-width:0;">
+          <div class="lprod-name">${p.name}</div>
+          <div class="lprod-blurb">${p.blurb}</div>
+        </div>
+      </div>
+      <div class="lprod-elig" style="background:${el.bg};color:${el.color};">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24">${el.canApply ? '<polyline points="20 6 9 17 4 12"/>' : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}</svg>
+        ${el.label}
+      </div>
+      <div class="lprod-meta">
+        <div><div class="lprod-meta-l">Est. APR</div><div class="lprod-meta-v">${p.apr[0].toFixed(2)}–${p.apr[1].toFixed(2)}%</div></div>
+        <div><div class="lprod-meta-l">Term</div><div class="lprod-meta-v">${termLabel(p.term)}</div></div>
+        <div><div class="lprod-meta-l">Amount</div><div class="lprod-meta-v">${fmtShort(p.amount[0])}–${fmtShort(p.amount[1])}</div></div>
+        <div><div class="lprod-meta-l">Min. Score</div><div class="lprod-meta-v">${effMin(p)}</div></div>
+      </div>
+      <div class="lprod-reqs"><b>Requirements:</b> ${p.reqs.join(' · ')}</div>
+      <div class="lprod-foot">
+        <button class="lprod-apply" ${el.canApply ? '' : 'disabled'} onclick="openLoanModal('${p.id}')">
+          ${el.canApply ? 'Apply Now' : (_creditProfile ? 'Not Eligible Yet' : 'Profile Required')}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+  return `
+  <div id="loanCatalog" style="margin-bottom:8px;">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Explore Loan Products</div>
+        <div class="section-sub">Every major U.S. loan type — find the one you’re fit for</div>
+      </div>
+    </div>
+    <div class="lcat-tabs">${tabs}</div>
+    <div class="lprod-grid">${cards}</div>
+  </div>`;
+}
+function setCatFilter(key) {
+  _catFilter = key;
+  const cat = document.getElementById('loanCatalog');
+  if (cat) {
+    // Re-render just the catalog block in place
+    cat.outerHTML = renderCatalog();
+  }
+}
+
 // ── Loan application modal ────────────────────────────────────────────────────
 let _selectedLoanType = 'personal';
+let _selectedProduct  = null;
 
-function openLoanModal() {
+function openLoanModal(productId) {
   const cp = _creditProfile;
   if (!cp) {
     zenithToast('No credit profile found. Contact your branch officer.', 'error');
     return;
   }
-  // Build type grid
-  const types = Object.entries(LOAN_CFG);
-  document.getElementById('ltypeGrid').innerHTML = types.map(([key, cfg]) => `
-    <div class="ltype-opt ${key === _selectedLoanType ? 'sel' : ''}" onclick="selectLoanType('${key}')" id="ltype_${key}">
-      <div class="ltype-opt-icon" style="color:${cfg.color};">${cfg.icon}</div>
-      <div class="ltype-opt-label">${cfg.label}</div>
-    </div>`).join('');
+  _selectedProduct = productId ? (LOAN_PRODUCTS.find(p => p.id === productId) || null) : null;
+
+  const banner    = document.getElementById('lapplyProdBanner');
+  const typeSec   = document.getElementById('ltypeSection');
+  const nameInput = document.getElementById('lapplyName');
+  const termInput = document.getElementById('lapplyTerm');
+  const amtInput  = document.getElementById('lapplyAmount');
+
+  if (_selectedProduct) {
+    // Product-driven: lock the canonical type, prefill name/term, show summary banner
+    const p   = _selectedProduct;
+    const cfg = LOAN_CFG[p.type] || LOAN_CFG.personal;
+    _selectedLoanType = p.type;
+    banner.style.display = '';
+    banner.innerHTML = `
+      <div class="lapply-prod">
+        <div class="lapply-prod-ico" style="background:${cfg.bg};color:${cfg.color};">${cfg.icon}</div>
+        <div style="min-width:0;">
+          <div style="font-family:var(--font-display);font-size:1.05rem;color:#fff;">${p.name}</div>
+          <div style="font-size:.74rem;color:var(--slate-400);margin-top:2px;">Est. ${p.apr[0].toFixed(2)}–${p.apr[1].toFixed(2)}% APR · ${termLabel(p.term)} · ${fmtShort(p.amount[0])}–${fmtShort(p.amount[1])}</div>
+        </div>
+      </div>`;
+    typeSec.style.display = 'none';
+    if (nameInput) nameInput.value = p.name;
+    if (termInput) termInput.value = p.term ? p.term[0] : '';
+    if (amtInput)  amtInput.placeholder = `${p.amount[0].toLocaleString()} – ${p.amount[1].toLocaleString()}`;
+  } else {
+    // Generic: show the type picker grid
+    banner.style.display = 'none';
+    typeSec.style.display = '';
+    const types = Object.entries(LOAN_CFG);
+    document.getElementById('ltypeGrid').innerHTML = types.map(([key, cfg]) => `
+      <div class="ltype-opt ${key === _selectedLoanType ? 'sel' : ''}" onclick="selectLoanType('${key}')" id="ltype_${key}">
+        <div class="ltype-opt-icon" style="color:${cfg.color};">${cfg.icon}</div>
+        <div class="ltype-opt-label">${cfg.label}</div>
+      </div>`).join('');
+  }
+
   updateLoanTypeUI();
   document.getElementById('lapplyOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -970,6 +1344,112 @@ async function submitLoanApplication() {
   }
 }
 
+// ── Loan payment modal ────────────────────────────────────────────────────────
+function openPayModal(loanId, payInFull) {
+  const loan = _myLoans.find(l => l.id === loanId);
+  if (!loan) { zenithToast('Loan not found.', 'error'); return; }
+  if (!_myAccounts.length) { zenithToast('You need an active account to make a payment.', 'error'); return; }
+  _payLoan = loan;
+  _paySelAcct = _myAccounts[0].id;
+  const cfg = LOAN_CFG[loan.loan_type] || LOAN_CFG.personal;
+  const bal = Number(loan.current_balance) || 0;
+
+  document.getElementById('payLoanSummary').innerHTML = `
+    <div class="lapply-prod-ico" style="background:${cfg.bg};color:${cfg.color};">${cfg.icon}</div>
+    <div style="min-width:0;flex:1;">
+      <div style="font-family:var(--font-display);font-size:1.05rem;color:#fff;">${loan.loan_name}</div>
+      <div style="font-size:.74rem;color:var(--slate-400);margin-top:2px;">Balance ${fmt(bal)} · ${fmt(loan.monthly_payment)}/mo · ${((loan.interest_rate||0)*100).toFixed(2)}% APR</div>
+    </div>`;
+
+  document.getElementById('payRemain').textContent = `Balance: ${fmt(bal)}`;
+  renderPayAccounts();
+
+  const monthlyBtn = document.getElementById('payMonthlyBtn');
+  if (Number(loan.monthly_payment) > 0) { monthlyBtn.style.display = ''; }
+  else { monthlyBtn.style.display = 'none'; }
+
+  const amtInput = document.getElementById('payAmount');
+  amtInput.value = payInFull ? bal.toFixed(2) : '';
+  amtInput.max = bal;
+  document.getElementById('payErr').style.display = 'none';
+
+  document.getElementById('payOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closePayModal() {
+  document.getElementById('payOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+  _payLoan = null; _paySelAcct = null;
+}
+function renderPayAccounts() {
+  const el = document.getElementById('payAcctList');
+  el.innerHTML = _myAccounts.map(a => {
+    const avail = Number(a.available_balance ?? a.balance) || 0;
+    const name  = a.account_name || ((a.account_type||'account').replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase()) + ' Account');
+    return `<div class="pay-acct ${a.id === _paySelAcct ? 'sel' : ''}" onclick="paySelectAcct('${a.id}')">
+      <div style="min-width:0;">
+        <div class="pay-acct-name">${name}</div>
+        <div class="pay-acct-sub">••${(a.account_number||'').slice(-4)} · Available</div>
+      </div>
+      <div class="pay-acct-bal">${fmt(avail)}</div>
+    </div>`;
+  }).join('');
+}
+function paySelectAcct(id) { _paySelAcct = id; renderPayAccounts(); payValidate(); }
+function paySetQuick(frac) {
+  if (!_payLoan) return;
+  const bal = Number(_payLoan.current_balance) || 0;
+  document.getElementById('payAmount').value = (Math.round(bal * frac * 100) / 100).toFixed(2);
+  payValidate();
+}
+function paySetMonthly() {
+  if (!_payLoan) return;
+  const m   = Number(_payLoan.monthly_payment) || 0;
+  const bal = Number(_payLoan.current_balance) || 0;
+  document.getElementById('payAmount').value = Math.min(m, bal).toFixed(2);
+  payValidate();
+}
+function payValidate() {
+  const errEl = document.getElementById('payErr');
+  const val   = Number(document.getElementById('payAmount').value);
+  const bal   = Number(_payLoan?.current_balance) || 0;
+  const acct  = _myAccounts.find(a => a.id === _paySelAcct);
+  const avail = acct ? (Number(acct.available_balance ?? acct.balance) || 0) : 0;
+  let msg = '';
+  if (val > bal + 0.005) msg = `Amount exceeds the loan balance of ${fmt(bal)}.`;
+  else if (val > avail)  msg = `Insufficient funds — available ${fmt(avail)}.`;
+  if (msg) { errEl.textContent = msg; errEl.style.display = ''; return false; }
+  errEl.style.display = 'none'; return true;
+}
+async function submitLoanPayment() {
+  if (!_payLoan) return;
+  const amount = Number(document.getElementById('payAmount').value);
+  if (!amount || amount <= 0) { zenithToast('Enter a payment amount.', 'error'); return; }
+  if (!_paySelAcct) { zenithToast('Choose an account to pay from.', 'error'); return; }
+  if (!payValidate()) return;
+
+  const bal       = Number(_payLoan.current_balance) || 0;
+  const payInFull = amount >= bal - 0.005;
+  const btn = document.getElementById('paySubmitBtn');
+  btn.disabled = true; btn.textContent = 'Processing…';
+  try {
+    const res = await callEdgeFunction('admin-data', {
+      action: 'pay_loan',
+      loan_id: _payLoan.id,
+      account_id: _paySelAcct,
+      amount,
+      pay_in_full: payInFull,
+    });
+    zenithToast(res.message || 'Payment applied.', 'success', 5000);
+    closePayModal();
+    loadCreditPage();
+  } catch (e) {
+    zenithToast(e.message || 'Payment failed. Try again.', 'error');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Confirm Payment';
+  }
+}
+
 // ── Data loading ──────────────────────────────────────────────────────────────
 async function loadCreditPage() {
   try {
@@ -979,6 +1459,9 @@ async function loadCreditPage() {
     if (!session) { location.href = 'index.html'; return; }
 
     const uid = session.user.id;
+
+    // Active accounts available to pay from
+    _myAccounts = (summaryRes.accounts || []).filter(a => a.status === 'active');
 
     // Hydrate sidebar
     const initials = (summaryRes.full_name||'').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase()||'?';
@@ -992,13 +1475,15 @@ async function loadCreditPage() {
       }
     });
 
-    // Fetch credit data + applications in parallel
-    const [{ data: cp }, { data: loans }, appsRes] = await Promise.all([
+    // Fetch credit data + applications + loan payment history in parallel
+    const [{ data: cp }, { data: loans }, appsRes, payRes] = await Promise.all([
       sb.from('credit_profiles').select('*').eq('user_id', uid).maybeSingle(),
       sb.from('loans').select('*').eq('user_id', uid).order('created_at', { ascending: false }),
       callEdgeFunction('admin-data', { action: 'get_my_loan_applications' }).catch(() => ({ applications: [] })),
+      callEdgeFunction('admin-data', { action: 'get_my_loan_payments' }).catch(() => ({ payments: [] })),
     ]);
 
+    _loanPayments = payRes?.payments || [];
     renderCreditPage(cp, loans || [], appsRes?.applications || []);
   } catch(e) {
     console.error('loadCreditPage:', e);

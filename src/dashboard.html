@@ -1144,9 +1144,13 @@
         </div>
         <div id="creditScoreNone" style="font-size:.85rem;color:var(--slate-400);padding:8px 0 18px;">No credit profile on file. Contact your branch officer to establish credit.</div>
 
-        <!-- My Loan Applications -->
+        <!-- My Loans -->
         <div id="myLoansSection" style="border-top:1px solid rgba(255,255,255,.06);padding-top:18px;margin-top:4px;">
-          <div style="font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;">My Loan Applications</div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div style="font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:.06em;text-transform:uppercase;">My Loans</div>
+            <a href="credit.html" style="font-size:.74rem;color:var(--gold-400);font-weight:500;display:inline-flex;align-items:center;gap:5px;">Manage &amp; Pay
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          </div>
           <div id="myLoansList" style="font-size:.84rem;color:var(--slate-400);">Loading…</div>
         </div>
       </div>
@@ -4579,7 +4583,7 @@ async function loadDashboardData() {
       }
 
       // Credit score + loan applications
-      renderCreditSection(summary.credit_profile || null, summary.loan_applications || []);
+      renderCreditSection(summary.credit_profile || null, summary.loan_applications || [], summary.loans || []);
     }
 
     // Real balance history
@@ -4636,9 +4640,11 @@ function renderFicoGauge(score) {
 }
 
 let _myCreditProfile = null;
+let _myLoansData = [];
 
-function renderCreditSection(cp, apps) {
+function renderCreditSection(cp, apps, loans) {
   _myCreditProfile = cp;
+  _myLoansData = loans || [];
 
   const noneEl  = document.getElementById('creditScoreNone');
   const dispEl  = document.getElementById('creditScoreDisplay');
@@ -4666,14 +4672,14 @@ function renderCreditSection(cp, apps) {
     if (applyBtn) applyBtn.style.display = cp.credit_score >= 580 ? '' : 'none';
   }
 
-  renderMyLoans(apps || []);
+  renderMyLoans(loans || [], apps || []);
 }
 
 // Legacy: kept so apply-modal refresh still works after submitting
 async function loadMyCreditData() {
   try {
     const summary = await callEdgeFunction('account-summary', {});
-    renderCreditSection(summary.credit_profile || null, summary.loan_applications || []);
+    renderCreditSection(summary.credit_profile || null, summary.loan_applications || [], summary.loans || []);
   } catch (e) {
     const el = document.getElementById('myLoansList');
     if (el) el.textContent = 'Unable to reload.';
@@ -4681,30 +4687,98 @@ async function loadMyCreditData() {
 }
 
 const LOAN_MIN_SCORES = { personal:580, auto:600, mortgage:620, student:560, business:640, heloc:640, credit_line:600 };
+const DASH_LOAN_CFG = {
+  personal:    { c:'#c9a84c', icon:'<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' },
+  auto:        { c:'#a78bfa', icon:'<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>' },
+  mortgage:    { c:'#60a5fa', icon:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' },
+  student:     { c:'#34d399', icon:'<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>' },
+  business:    { c:'#f97316', icon:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>' },
+  heloc:       { c:'#818cf8', icon:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 22V12"/>' },
+  credit_line: { c:'#2dd4bf', icon:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>' },
+};
+const DASH_LOAN_STATUS = {
+  active:{l:'Active',c:'#4ade80'}, paid_off:{l:'Paid Off',c:'#c9a84c'}, delinquent:{l:'Delinquent',c:'#f97316'},
+  deferred:{l:'Deferred',c:'#60a5fa'}, in_default:{l:'In Default',c:'#f87171'},
+};
 
-function renderMyLoans(apps) {
+function renderMyLoans(loans, apps) {
   const el = document.getElementById('myLoansList');
   if (!el) return;
-  if (!apps.length) {
-    el.innerHTML = '<div style="color:var(--slate-500);padding:4px 0;">No loan applications yet.</div>';
+  const lf = n => '$' + (Number(n)||0).toLocaleString('en-US', { minimumFractionDigits:2 });
+
+  // Applications still awaiting a decision (approved ones become loans)
+  const pendingApps = (apps || []).filter(a => a.status === 'pending' || a.status === 'declined');
+
+  if (!loans.length && !pendingApps.length) {
+    el.innerHTML = `<div style="color:var(--slate-500);padding:6px 0;">No loans yet. <a href="credit.html" style="color:var(--gold-400);">Explore loan products →</a></div>`;
     return;
   }
-  const STATUS_COLORS = { pending:'#fbbf24', approved:'#4ade80', declined:'#f87171' };
-  el.innerHTML = apps.map(a => {
-    const color  = STATUS_COLORS[a.status] || '#94a3b8';
-    const date   = new Date(a.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-    const amount = '$' + Number(a.requested_amount).toLocaleString('en-US', { minimumFractionDigits:2 });
-    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05);">
-      <div>
-        <div style="font-size:.86rem;color:rgba(255,255,255,.85);font-weight:500;">${a.loan_name || a.loan_type}</div>
-        <div style="font-size:.72rem;color:var(--slate-500);margin-top:3px;">${date} · ${(a.loan_type||'').replace('_',' ')}</div>
-      </div>
-      <div style="text-align:right;flex-shrink:0;margin-left:16px;">
-        <div style="font-family:var(--font-display);font-size:.92rem;">${amount}</div>
-        <div style="font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:${color};margin-top:3px;">${a.status}</div>
-      </div>
-    </div>`;
-  }).join('');
+
+  let html = '';
+
+  // ── Active / on-file loans (premium mini-cards) ──
+  if (loans.length) {
+    html += loans.map(l => {
+      const cfg  = DASH_LOAN_CFG[l.loan_type] || DASH_LOAN_CFG.personal;
+      const st   = DASH_LOAN_STATUS[l.status] || DASH_LOAN_STATUS.active;
+      const orig = Number(l.original_amount) || 1;
+      const bal  = Number(l.current_balance) || 0;
+      const paid = Math.max(0, Math.min(100, ((orig - bal) / orig) * 100));
+      const isActive = l.status === 'active' && bal > 0;
+      return `
+      <div style="background:linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 18px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:13px;">
+          <div style="width:40px;height:40px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:${cfg.c}1f;color:${cfg.c};">
+            <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" viewBox="0 0 24 24">${cfg.icon}</svg>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <span style="font-size:.9rem;color:#fff;font-weight:500;">${l.loan_name||'Loan'}</span>
+              <span style="font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:${st.c};">${st.l}</span>
+            </div>
+            <div style="font-size:.72rem;color:var(--slate-500);margin-top:2px;">${((l.interest_rate||0)*100).toFixed(2)}% APR · ${lf(l.monthly_payment)}/mo</div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-family:var(--font-display);font-size:1.05rem;color:#fff;">${lf(bal)}</div>
+            <div style="font-size:.66rem;color:var(--slate-500);margin-top:1px;">of ${lf(orig)}</div>
+          </div>
+        </div>
+        <div style="height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:12px;">
+          <div style="height:100%;width:${paid.toFixed(1)}%;border-radius:3px;background:linear-gradient(90deg,${cfg.c}99,${cfg.c});"></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;">
+          <span style="font-size:.68rem;color:var(--slate-500);">${paid.toFixed(0)}% paid off${l.next_payment_date && isActive ? ' · next '+new Date(l.next_payment_date).toLocaleDateString('en-US',{month:'short',day:'numeric'}) : ''}</span>
+          ${isActive
+            ? `<a href="credit.html" style="font-size:.72rem;font-weight:600;color:#c9a84c;display:inline-flex;align-items:center;gap:5px;">Make a payment
+                 <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>`
+            : `<span style="font-size:.7rem;color:#c9a84c;">Paid in full ✓</span>`}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Pending / declined applications ──
+  if (pendingApps.length) {
+    const STATUS_COLORS = { pending:'#fbbf24', declined:'#f87171' };
+    html += `<div style="font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--slate-500);margin:14px 0 8px;">Applications</div>`;
+    html += pendingApps.map(a => {
+      const color  = STATUS_COLORS[a.status] || '#94a3b8';
+      const date   = new Date(a.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+      const label  = a.status === 'pending' ? 'Under Review' : 'Declined';
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.05);">
+        <div>
+          <div style="font-size:.85rem;color:rgba(255,255,255,.85);font-weight:500;">${a.loan_name || a.loan_type}</div>
+          <div style="font-size:.71rem;color:var(--slate-500);margin-top:3px;">${date} · ${(a.loan_type||'').replace('_',' ')}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;margin-left:16px;">
+          <div style="font-family:var(--font-display);font-size:.9rem;">${lf(a.requested_amount)}</div>
+          <div style="font-size:.66rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:${color};margin-top:3px;">${label}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  el.innerHTML = html;
 }
 
 function openLoanModal() {

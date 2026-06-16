@@ -80,6 +80,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
+    // Active / on-file loans (the member's real loan accounts + history)
+    const { data: loans } = await supabase
+      .from('loans')
+      .select('id, loan_type, loan_name, lender, account_number, original_amount, current_balance, interest_rate, monthly_payment, next_payment_date, term_months, paid_months, opened_date, status, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
     // Unread notifications
     const { count: unreadNotifications } = await supabase
       .from('notifications')
@@ -157,6 +164,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       last_updated:         new Date().toISOString(),
       credit_profile:       creditProfile ?? null,
       loan_applications:    loanApplications ?? [],
+      loans:                loans ?? [],
     });
 
   } catch (err) {

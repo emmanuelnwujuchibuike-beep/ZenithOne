@@ -305,6 +305,127 @@ Deno.serve(async (req: Request): Promise<Response> => {
       return json({ applications: data ?? [] });
     }
 
+    // ── USER ACTION: fetch own loan payment history ────────────────────────────
+    if (action === 'get_my_loan_payments') {
+      const { loan_id } = body as { action: string; loan_id?: string };
+      let q = supabase
+        .from('loan_payments').select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      if (loan_id) q = q.eq('loan_id', loan_id);
+      const { data, error: selErr } = await q;
+      if (selErr) throw selErr;
+      return json({ payments: data ?? [] });
+    }
+
+    // ── USER ACTION: make a payment toward a loan (any time, any amount) ────────
+    if (action === 'pay_loan') {
+      const { loan_id, account_id, amount, pay_in_full } = body as {
+        action: string; loan_id: string; account_id: string;
+        amount?: number; pay_in_full?: boolean;
+      };
+      if (!loan_id)    throw new Error('loan_id is required.');
+      if (!account_id) throw new Error('Please choose an account to pay from.');
+
+      // Loan must belong to caller and be active
+      const { data: loan, error: loanErr } = await supabase
+        .from('loans').select('*')
+        .eq('id', loan_id).eq('user_id', user.id).single();
+      if (loanErr || !loan)            throw new Error('Loan not found.');
+      if (loan.status === 'paid_off')  throw new Error('This loan is already paid off.');
+      if (loan.status === 'in_default') throw new Error('This loan is in default — please contact your branch officer.');
+
+      const currentBalance = Number(loan.current_balance) || 0;
+      if (currentBalance <= 0) throw new Error('This loan has no outstanding balance.');
+
+      // Source account must belong to caller and be active
+      const { data: acct, error: acctErr } = await supabase
+        .from('accounts')
+        .select('id, account_type, account_number, balance, available_balance')
+        .eq('id', account_id).eq('user_id', user.id).eq('status', 'active').single();
+      if (acctErr || !acct) throw new Error('Payment account not found or inactive.');
+
+      // Determine payment amount
+      let pay = pay_in_full ? currentBalance : Number(amount);
+      if (!pay || pay <= 0) throw new Error('Enter a valid payment amount.');
+      pay = Math.round(pay * 100) / 100;
+      if (pay > currentBalance) pay = currentBalance; // never overpay the loan
+
+      const avail = Number(acct.available_balance ?? acct.balance) || 0;
+      if (avail < pay) {
+        throw new Error(`Insufficient funds. Available: $${avail.toLocaleString('en-US',{minimumFractionDigits:2})}.`);
+      }
+
+      // 1. Debit the account (trg_update_balance lowers balance + available_balance)
+      const { data: txn, error: txnErr } = await supabase.from('transactions').insert({
+        user_id:          user.id,
+        account_id:       acct.id,
+        transaction_type: 'debit',
+        amount:           pay,
+        description:      `${loan.loan_name || 'Loan'} payment`,
+        category:         'other',
+        status:           'completed',
+      }).select('id').single();
+      if (txnErr) throw txnErr;
+
+      // 2. Reduce the loan balance; mark paid off when it reaches zero
+      const newBalance = Math.round((currentBalance - pay) * 100) / 100;
+      const paidOff    = newBalance <= 0;
+      const monthly    = Number(loan.monthly_payment) || 0;
+      const loanUpdate: Record<string, unknown> = {
+        current_balance: paidOff ? 0 : newBalance,
+        status:          paidOff ? 'paid_off' : 'active',
+        updated_at:      new Date().toISOString(),
+      };
+      // Count it as a scheduled month when at least one monthly payment is covered
+      if (!paidOff && monthly > 0 && pay >= monthly) {
+        loanUpdate.paid_months = (Number(loan.paid_months) || 0) + 1;
+        const nd = new Date();
+        loanUpdate.next_payment_date = new Date(nd.getFullYear(), nd.getMonth() + 1, 1)
+          .toISOString().split('T')[0];
+      }
+      const { error: updErr } = await supabase.from('loans').update(loanUpdate).eq('id', loan.id);
+      if (updErr) throw updErr;
+
+      // 3. Record the payment in history
+      await supabase.from('loan_payments').insert({
+        loan_id:        loan.id,
+        user_id:        user.id,
+        account_id:     acct.id,
+        transaction_id: txn?.id ?? null,
+        amount:         pay,
+        principal:      pay,
+        interest:       0,
+        balance_after:  paidOff ? 0 : newBalance,
+        payment_type:   paidOff ? 'payoff' : 'manual',
+        status:         'completed',
+      });
+
+      // 4. Notify
+      const fmtMoney = (n: number) => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      try {
+        await supabase.from('notifications').insert({
+          user_id: user.id,
+          title:   paidOff ? 'Loan Paid Off 🎉' : 'Loan Payment Received',
+          message: paidOff
+            ? `Congratulations! Your ${loan.loan_name} is now fully paid off. A final payment of ${fmtMoney(pay)} was applied.`
+            : `A payment of ${fmtMoney(pay)} was applied to your ${loan.loan_name}. Remaining balance: ${fmtMoney(newBalance)}.`,
+          type:    paidOff ? 'success' : 'transaction',
+          read:    false,
+        });
+      } catch { /* ignore */ }
+
+      return json({
+        success:        true,
+        paid_off:       paidOff,
+        amount:         pay,
+        new_balance:    paidOff ? 0 : newBalance,
+        message:        paidOff
+          ? `${loan.loan_name} paid off in full.`
+          : `${fmtMoney(pay)} applied. Remaining balance ${fmtMoney(newBalance)}.`,
+      });
+    }
+
     // ── USER ACTION: close (delete) an account ──────────────────────────────────
     if (action === 'delete_account') {
       const { account_id } = body as { action: string; account_id: string };

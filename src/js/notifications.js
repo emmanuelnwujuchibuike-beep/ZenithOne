@@ -33,7 +33,22 @@
 
   // ─── State ─────────────────────────────────────────────────────────────────
   let _notes = [], _filter = 'all', _userId = null, _channel = null;
-  const _toasted = new Set();
+  // Persistent set of notification IDs already shown as a toast, so an alert
+  // appears only ONCE on screen — never again on subsequent logins/visits.
+  let _toastKey = 'zn_toasted_anon';
+  let _toasted = new Set();
+  function _loadToasted() {
+    try {
+      const arr = JSON.parse(localStorage.getItem(_toastKey) || '[]');
+      _toasted = new Set(Array.isArray(arr) ? arr : []);
+    } catch { _toasted = new Set(); }
+  }
+  function _saveToasted() {
+    try {
+      // Cap at the 200 most-recent IDs to keep storage bounded.
+      localStorage.setItem(_toastKey, JSON.stringify([..._toasted].slice(-200)));
+    } catch {}
+  }
 
   // ─── CSS (injected once into <head>) ───────────────────────────────────────
   const CSS = `
@@ -409,6 +424,7 @@
   function showToast(n) {
     if (_toasted.has(n.id)) return;
     _toasted.add(n.id);
+    _saveToasted(); // persist so this alert never toasts again, even after re-login
     const wrap = document.getElementById('znToasts');
     if (!wrap) return;
     const c = tc(n.type);
@@ -465,14 +481,11 @@
       _notes = data || [];
       updateBadge();
       if (document.getElementById('znPanel')?.classList.contains('open')) renderPanel();
-      // Show toast for newest unread once per session
-      const sk = `znseen_${_userId}`;
-      const lastSeen = sessionStorage.getItem(sk);
-      const fresh = _notes.filter(n => !n.read && (!lastSeen || new Date(n.created_at) > new Date(lastSeen)));
-      if (fresh.length) {
-        setTimeout(() => showToast(fresh[0]), 900);
-        sessionStorage.setItem(sk, new Date().toISOString());
-      }
+      // Toast the newest unread alert that has never been shown on this device.
+      // Persisted in localStorage, so a given alert appears only once — it will
+      // NOT pop up again on the next login.
+      const fresh = _notes.filter(n => !n.read && !_toasted.has(n.id));
+      if (fresh.length) setTimeout(() => showToast(fresh[0]), 900);
     } catch {}
   }
 
@@ -574,6 +587,8 @@
       const { data: { session } } = await window._supabase.auth.getSession();
       if (!session) return;
       _userId = session.user.id;
+      _toastKey = `zn_toasted_${_userId}`;
+      _loadToasted();
       await fetchNotifications();
       subscribeRealtime();
     } catch {}

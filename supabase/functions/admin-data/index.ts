@@ -1745,23 +1745,63 @@ body { background:#f4f0eb; margin:0; padding:0; font-family:'Inter','Helvetica N
       }).eq('id', application_id);
       if (updErr) throw updErr;
 
+      // ── Disburse approved loan funds into the member's account ────────────────
+      // Prefer the primary checking account; fall back to the first active account.
+      const { data: acctRows } = await supabase
+        .from('accounts')
+        .select('id, account_type, account_number')
+        .eq('user_id', app.user_id)
+        .eq('status', 'active')
+        .order('created_at', { ascending: true });
+      type AcctRow = { id: string; account_type: string; account_number: string };
+      const rows = (acctRows || []) as AcctRow[];
+      const disburseAcct =
+        rows.find((a: AcctRow) => a.account_type === 'checking') ||
+        rows[0] || null;
+
+      let disbursed = false;
+      if (disburseAcct) {
+        // The trg_update_balance trigger credits balance + available_balance
+        // automatically when a 'credit' transaction is inserted.
+        const { error: depErr } = await supabase.from('transactions').insert({
+          user_id:          app.user_id,
+          account_id:       disburseAcct.id,
+          transaction_type: 'credit',
+          amount:           app.requested_amount,
+          description:      `${app.loan_name || 'Loan'} disbursement`,
+          category:         'other',
+          status:           'completed',
+        });
+        if (depErr) throw depErr;
+        disbursed = true;
+      }
+
       // Notify member
       const typeLabel: Record<string, string> = {
         personal:'Personal', auto:'Auto', mortgage:'Mortgage',
         student:'Student', business:'Business', heloc:'HELOC', credit_line:'Line of Credit',
       };
       const fmt = (n: number) => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2 });
+      const depositMsg = disbursed
+        ? ` ${fmt(app.requested_amount)} has been deposited into your account ending ${(disburseAcct!.account_number||'').slice(-4)||'••••'}.`
+        : '';
       try {
         await supabase.from('notifications').insert({
           user_id: app.user_id,
           title:   'Loan Approved',
-          message: `Your ${typeLabel[app.loan_type]||app.loan_type} loan of ${fmt(app.requested_amount)} has been approved and is now active.`,
+          message: `Your ${typeLabel[app.loan_type]||app.loan_type} loan of ${fmt(app.requested_amount)} has been approved and is now active.${depositMsg}`,
           type:    'success',
           read:    false,
         });
       } catch { /* ignore */ }
 
-      return json({ success: true, message: 'Loan application approved and loan created.' });
+      return json({
+        success: true,
+        disbursed,
+        message: disbursed
+          ? `Loan approved and ${fmt(app.requested_amount)} disbursed to the member's account.`
+          : 'Loan application approved and loan created (no active account found to disburse funds).',
+      });
     }
 
     // ── Decline a loan application (admin) ────────────────────────────────────

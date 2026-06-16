@@ -106,6 +106,25 @@
 .xfr-inp::placeholder{color:rgba(255,255,255,.22);}
 .xfr-inp.mono{font-family:'SF Mono','Fira Code',monospace;letter-spacing:.08em;}
 
+/* Native date input — normalise rendering across iOS / Android / desktop so it
+   matches the other fields (left-aligned value, dark-theme calendar icon, no
+   overflow on small screens). WebKit centers the value by default. */
+.xfr-inp[type="date"]{
+  -webkit-appearance:none; appearance:none;
+  min-height:46px; line-height:1.2; text-align:left;
+  font-variant-numeric:tabular-nums; position:relative;
+}
+.xfr-inp[type="date"]::-webkit-date-and-time-value{ text-align:left; margin:0; padding:0; }
+.xfr-inp[type="date"]::-webkit-datetime-edit{ padding:0; color:var(--white); }
+.xfr-inp[type="date"]::-webkit-datetime-edit-fields-wrapper{ padding:0; }
+.xfr-inp[type="date"]::-webkit-calendar-picker-indicator{
+  filter:invert(.85); opacity:.55; cursor:pointer; margin-left:auto;
+}
+.xfr-inp[type="date"]::-webkit-calendar-picker-indicator:hover{ opacity:.95; }
+/* Firefox / others: keep value left-aligned and clear placeholder styling */
+.xfr-inp[type="date"]:in-range,
+.xfr-inp[type="date"]:out-of-range{ color:var(--white); }
+
 /* Swap */
 .xfr-swap-row{display:flex;align-items:center;gap:12px;margin:10px 0;}
 .xfr-swap-line{flex:1;height:1px;background:rgba(255,255,255,.06);}

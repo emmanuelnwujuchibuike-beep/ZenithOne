@@ -921,13 +921,13 @@ function _renderMyCards() {
                   <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1;border-radius:20px;">${_particles(lux.glow,12)}</div>
 
                   <!-- Content -->
-                  <div class="cv-content" style="position:absolute;inset:0;padding:16px 20px 13px;display:flex;flex-direction:column;justify-content:space-between;z-index:9;will-change:transform;">
+                  <div class="cv-content" style="position:absolute;inset:0;padding:22px 24px 16px;display:flex;flex-direction:column;justify-content:space-between;z-index:9;will-change:transform;">
 
                     <!-- TOP ROW: subtitle + ZENITHONE (left) · holo badge (right) -->
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
                       <div>
-                        <div style="font-size:.33rem;letter-spacing:.32em;color:${lux.txt2};text-transform:uppercase;margin-bottom:4px;font-weight:500;">${lux.subtitle||'Premium Card'}</div>
-                        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.2rem;font-style:italic;font-weight:700;letter-spacing:.28em;color:${lux.txt};text-transform:uppercase;line-height:1.05;${lux.engraved?'text-shadow:0 1px 0 rgba(255,255,255,.18),0 -1px 0 rgba(0,0,0,.5);':''}">ZENITHONE</div>
+                        <div style="font-size:.34rem;letter-spacing:.32em;color:${lux.txt2};text-transform:uppercase;margin-bottom:6px;font-weight:500;">${lux.subtitle||'Premium Card'}</div>
+                        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.2rem;font-style:italic;font-weight:700;letter-spacing:.24em;color:${lux.txt};text-transform:uppercase;line-height:1.15;${lux.engraved?'text-shadow:0 1px 0 rgba(255,255,255,.18),0 -1px 0 rgba(0,0,0,.5);':''}">ZENITHONE</div>
                       </div>
                       ${lux.holo?_holoBadge():''}
                     </div>

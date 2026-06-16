@@ -310,13 +310,18 @@
   .dash-right-panel { grid-template-columns: 1fr !important; }
 }
 @media (max-width: 480px) {
-  .dash-stat-grid { grid-template-columns: 1fr 1fr !important; }
   .quick-actions-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 8px !important; }
   .quick-action { padding: 12px 6px !important; }
   .quick-action-icon { width: 38px !important; height: 38px !important; }
   .quick-action-label { font-size: .68rem !important; }
   .chart-container { height: 180px !important; }
   #balanceChart { height: 180px !important; }
+}
+@media (max-width: 540px) {
+  /* Stat cards: one full-width card per row so values/labels never get clipped */
+  .dash-stat-grid { grid-template-columns: 1fr !important; }
+  .dash-card-col,
+  .dash-wealth-col { padding: 18px !important; }
 }
 
 /* Dashboard inline grid overrides */

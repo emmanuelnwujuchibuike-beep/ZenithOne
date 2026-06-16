@@ -456,11 +456,12 @@
     }
     .dsc-value {
       font-family:var(--font-display);font-size:1.6rem;color:#fff;line-height:1;
-      margin-bottom:6px;position:relative;z-index:1;
+      margin-bottom:6px;position:relative;z-index:1;overflow-wrap:break-word;
     }
     .dsc-label {
       font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
       color:rgba(255,255,255,.35);margin-bottom:8px;position:relative;z-index:1;
+      overflow-wrap:break-word;
     }
     .dsc-sub { font-size:.75rem;position:relative;z-index:1; }
 
@@ -1058,25 +1059,25 @@
             </div>
             <div style="display:flex;flex-direction:column;gap:0;">
               <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06);">
-                <div style="display:flex;align-items:center;gap:12px;">
+                <div style="display:flex;align-items:center;gap:12px;min-width:0;flex:1;">
                   <div style="width:36px;height:36px;border-radius:10px;background:rgba(74,222,128,.1);display:flex;align-items:center;justify-content:center;color:#4ade80;flex-shrink:0;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div>
-                  <div style="font-size:.84rem;color:var(--slate-300);">Portfolio Value</div>
+                  <div style="font-size:.84rem;color:var(--slate-300);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Portfolio Value</div>
                 </div>
-                <div style="font-family:var(--font-display);font-size:1.05rem;color:#fff;" id="snapPortfolio">$0.00</div>
+                <div style="font-family:var(--font-display);font-size:1.05rem;color:#fff;flex-shrink:0;white-space:nowrap;margin-left:10px;" id="snapPortfolio">$0.00</div>
               </div>
               <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06);">
-                <div style="display:flex;align-items:center;gap:12px;">
+                <div style="display:flex;align-items:center;gap:12px;min-width:0;flex:1;">
                   <div style="width:36px;height:36px;border-radius:10px;background:rgba(96,165,250,.1);display:flex;align-items:center;justify-content:center;color:#60a5fa;flex-shrink:0;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg></div>
-                  <div style="font-size:.84rem;color:var(--slate-300);">Available Credit</div>
+                  <div style="font-size:.84rem;color:var(--slate-300);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Available Credit</div>
                 </div>
-                <div style="font-family:var(--font-display);font-size:1.05rem;color:#fff;" id="snapCredit">$0.00</div>
+                <div style="font-family:var(--font-display);font-size:1.05rem;color:#fff;flex-shrink:0;white-space:nowrap;margin-left:10px;" id="snapCredit">$0.00</div>
               </div>
               <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;">
-                <div style="display:flex;align-items:center;gap:12px;">
+                <div style="display:flex;align-items:center;gap:12px;min-width:0;flex:1;">
                   <div style="width:36px;height:36px;border-radius:10px;background:rgba(201,168,76,.1);display:flex;align-items:center;justify-content:center;color:var(--gold-400);flex-shrink:0;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
-                  <div style="font-size:.84rem;color:var(--slate-300);">Reward Points</div>
+                  <div style="font-size:.84rem;color:var(--slate-300);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Reward Points</div>
                 </div>
-                <div style="font-family:var(--font-display);font-size:1.05rem;color:var(--gold-400);" id="snapPoints">0</div>
+                <div style="font-family:var(--font-display);font-size:1.05rem;color:var(--gold-400);flex-shrink:0;white-space:nowrap;margin-left:10px;" id="snapPoints">0</div>
               </div>
             </div>
           </div>
@@ -4747,7 +4748,7 @@ function _renderRecentTxns(txns) {
         <div class="transaction-name">${t.description}</div>
         <div class="transaction-date">${dateStr} · ${t.category}</div>
       </div>
-      <div>
+      <div style="flex-shrink:0;">
         <div class="transaction-amount ${isCredit ? 'credit' : 'debit'}">${amt}</div>
         <div class="transaction-status completed">Completed</div>
       </div>
@@ -4769,10 +4770,10 @@ function _renderSpending(entries, total) {
         const disp = _balHidden ? '••••••' : ('$' + amt.toLocaleString('en-US', { minimumFractionDigits:2 }));
         return `<div class="spending-row">
           <div class="spending-dot" style="background:${COLORS[i]};"></div>
-          <div style="flex:1;">
-            <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:5px;">
-              <span style="color:var(--slate-300);">${name}</span>
-              <span style="color:var(--white);">${disp}</span>
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:5px;gap:8px;">
+              <span style="color:var(--slate-300);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</span>
+              <span style="color:var(--white);flex-shrink:0;white-space:nowrap;">${disp}</span>
             </div>
             <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${COLORS[i]};opacity:.8;"></div></div>
           </div>

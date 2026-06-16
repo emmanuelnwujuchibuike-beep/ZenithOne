@@ -305,7 +305,8 @@
 @media (max-width: 768px) {
   .dash-stat-grid { grid-template-columns: 1fr 1fr !important; }
   .dash-bottom-row { grid-template-columns: 1fr !important; }
-  .welcome-banner { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; padding: 18px 20px !important; }
+  #welcomeBanner { padding: 20px 22px !important; }
+  #welcomeBannerRow { gap: 16px !important; }
   .dash-right-panel { grid-template-columns: 1fr !important; }
 }
 @media (max-width: 480px) {
@@ -652,16 +653,34 @@
     text-overflow: ellipsis;
     max-width: 140px !important;
   }
+  /* Harmonize icon button sizes (eye-toggle/bell/avatar were 40/44/40px —
+     uneven heights read as sloppy in a tight row) so the whole right cluster
+     lines up like a single control group. */
+  .app-topbar-right .btn-icon { width: 38px !important; height: 38px !important; }
+  .app-topbar-right .zn-bell  { width: 38px !important; height: 38px !important; margin-right: 2px !important; }
+  .app-topbar-right .sidebar-avatar { width: 36px !important; height: 36px !important; }
 }
 
-/* ── 28. DASHBOARD — Welcome banner compact ──────────────────── */
+/* ── 28. DASHBOARD — Welcome banner: stacked, Chase-style mobile card ── */
 @media (max-width: 640px) {
-  .welcome-banner { padding: 16px 18px !important; gap: 12px !important; }
+  #welcomeBanner { padding: 18px 20px !important; }
+  /* Stack greeting (top) and net-worth/session (bottom) instead of wrapping
+     mid-row — a divider makes the split read as two deliberate sections
+     rather than overflow. */
+  #welcomeBannerRow { flex-direction: column !important; align-items: stretch !important; gap: 16px !important; }
+  #welcomeBannerLeft { gap: 14px !important; }
+  #welcomeBannerRight {
+    width: 100% !important; flex-wrap: nowrap !important;
+    justify-content: space-between !important;
+    padding-top: 14px !important; border-top: 1px solid rgba(255,255,255,.08) !important;
+  }
+  #welcomeBannerRight > div:first-child { text-align: left !important; }
 }
 @media (max-width: 480px) {
-  /* Hide last-login section, keep the greeting */
-  .welcome-banner > div:last-child { display: none !important; }
-  .welcome-banner [style*="font-size:1.5rem"] { font-size: 1.1rem !important; }
+  #welcomeBanner { padding: 16px 18px !important; border-radius: 18px !important; }
+  #greetingIcon { width: 42px !important; height: 42px !important; border-radius: 12px !important; }
+  #welcomeBannerLeft [style*="font-size:1.75rem"] { font-size: 1.35rem !important; }
+  #bannerNetWorth { font-size: 1.25rem !important; }
 }
 
 /* ── 29. ACCOUNTS — Large inline balance amounts ─────────────── */

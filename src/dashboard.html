@@ -577,20 +577,20 @@
         <!-- Mesh overlays -->
         <div style="position:absolute;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 55% 70% at 0% 0%,rgba(201,168,76,.12) 0%,transparent 60%),radial-gradient(ellipse 45% 55% at 100% 100%,rgba(56,120,200,.12) 0%,transparent 60%);"></div>
         <div style="position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,168,76,.65) 50%,transparent);"></div>
-        <div style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+        <div id="welcomeBannerRow" style="position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
           <!-- Left: Greeting -->
-          <div style="display:flex;align-items:center;gap:16px;">
+          <div id="welcomeBannerLeft" style="display:flex;align-items:center;gap:16px;min-width:0;">
             <div id="greetingIcon" style="width:50px;height:50px;border-radius:14px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.22);display:flex;align-items:center;justify-content:center;color:var(--gold-400);flex-shrink:0;box-shadow:0 4px 16px rgba(201,168,76,.12);">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
             </div>
-            <div>
+            <div style="min-width:0;">
               <div style="font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(201,168,76,.65);margin-bottom:6px;">ZenithOne Private Banking</div>
               <div style="font-family:var(--font-display);font-size:1.75rem;line-height:1.1;color:#fff;">Good <span id="timeGreeting">morning</span>, <span id="welcomeName" style="color:var(--gold-300);"></span></div>
-              <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-top:5px;"><span id="bannerDate">Today</span> · <span id="lastLogin" style="color:rgba(255,255,255,.5);">—</span></div>
+              <div style="font-size:.8rem;color:rgba(255,255,255,.4);margin-top:5px;white-space:nowrap;"><span id="bannerDate">Today</span> · <span id="lastLogin" style="color:rgba(255,255,255,.5);">—</span></div>
             </div>
           </div>
           <!-- Right: Session badge + net worth hint -->
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div id="welcomeBannerRight" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
             <div style="text-align:right;">
               <div style="font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:4px;">Total Net Worth</div>
               <div style="font-family:var(--font-display);font-size:1.55rem;color:#fff;line-height:1;" id="bannerNetWorth">—</div>
@@ -2403,25 +2403,33 @@
 <script src="js/supabase-config.js"></script>
 <script src="js/auth.js"></script>
 <script>
-// Date/time greeting + icon + instant name from localStorage
+// Date/time greeting + icon from the device clock, re-evaluated every minute
+// so a dashboard left open across midnight or a morning/afternoon/evening
+// boundary never shows a stale greeting or date.
 (function() {
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
-  document.getElementById('timeGreeting').textContent = greeting;
-  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
-  const date = new Date().toLocaleDateString('en-US', opts);
-  document.getElementById('topbarDate').textContent = date;
-  document.getElementById('bannerDate').textContent = date;
+  const SUN = '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>';
+  const MOON = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+
+  function render() {
+    const now = new Date();
+    const hour = now.getHours();
+    const greeting = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+    document.getElementById('timeGreeting').textContent = greeting;
+    const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+    const date = now.toLocaleDateString('en-US', opts);
+    document.getElementById('topbarDate').textContent = date;
+    document.getElementById('bannerDate').textContent = date;
+    const gi = document.getElementById('greetingIcon');
+    if (gi) gi.innerHTML = (hour >= 18 || hour < 6) ? MOON : SUN;
+  }
+  render();
+  setInterval(render, 60000);
+
   // Instant name — zo_user_name is set at login; avoids waiting for API/cache
   const storedName = localStorage.getItem('zo_user_name');
   if (storedName) {
     const wn = document.getElementById('welcomeName');
     if (wn) wn.textContent = storedName.split(' ')[0];
-  }
-  // Swap greeting icon to moon for evening/night
-  if (hour >= 18 || hour < 6) {
-    var gi = document.getElementById('greetingIcon');
-    if (gi) gi.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
   }
 })();
 

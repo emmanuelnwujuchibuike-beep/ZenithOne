@@ -84,8 +84,11 @@
     .cat-filter-btn:hover { border-color:rgba(255,255,255,.22); color:rgba(255,255,255,.8); background:rgba(255,255,255,.04); }
     .cat-filter-btn.active { background:rgba(201,168,76,.12); border-color:rgba(201,168,76,.45); color:var(--gold-400); }
 
-    /* ── Catalog grid (fluid, responsive on every device) ── */
-    .catalog-grid      { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr)); gap:24px; }
+    /* ── Catalog grid (fluid, responsive on every device) ──
+       min column width raised to 380px so a card never has to squeeze
+       into a cramped 2-up layout on tablets/large phones — it only
+       multi-columns once there's genuinely enough room to breathe. */
+    .catalog-grid      { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr)); gap:24px; }
 
     /* ── Premium catalog card ─────────────────────────────── */
     .catalog-card      { border-radius:20px; border:1px solid rgba(255,255,255,.07); overflow:hidden; transition:transform .25s cubic-bezier(.23,1,.32,1),box-shadow .25s,border-color .25s; position:relative; background:rgba(255,255,255,.025); display:flex; flex-direction:column; }
@@ -167,12 +170,33 @@
     /* ── Empty state ──────────────────────────────────────── */
     .empty-card-state { text-align:center; padding:60px 20px; }
 
-    @media(max-width:600px){
+    /* Safety net: never allow a 2-up squeeze on tablets/large phones,
+       even if the viewport briefly measures wide enough for the grid math. */
+    @media(max-width:820px){
       .catalog-grid { grid-template-columns:1fr; }
+    }
+    @media(max-width:600px){
+      .catalog-grid     { gap:20px; }
+      .catalog-card      { border-radius:18px; }
       .card-actions-row { gap:7px; }
       .cact-btn { min-width:56px; padding:12px 8px; font-size:.65rem; }
       .cact-btn .icon-circle { width:34px; height:34px; }
       .card-stats-row { grid-template-columns:repeat(2,1fr); }
+
+      /* Give every element inside the catalog card room to breathe */
+      .cat-ribbon       { top:14px; left:14px; font-size:.6rem; padding:5px 12px; }
+      .cat-status-badge { top:14px; right:14px; font-size:.6rem; padding:5px 12px; }
+      .cat-body         { padding:22px 20px 24px; }
+      .cat-header       { margin-bottom:16px; }
+      .cat-name         { font-size:1.15rem; line-height:1.3; }
+      .cat-type-badge   { font-size:.62rem; padding:4px 11px; }
+      .cat-highlight    { padding:15px 17px; margin-bottom:18px; }
+      .cat-hl-value     { font-size:1.6rem; }
+      .cat-hl-sub       { font-size:.74rem; margin-top:5px; }
+      .cat-benefits     { gap:10px; margin-bottom:18px; }
+      .cat-benefit      { font-size:.8rem; line-height:1.55; }
+      .cat-pricing      { padding:13px 16px; margin-bottom:18px; }
+      .cat-price-val    { font-size:.95rem; }
     }
     @media(max-width:900px){
       .my-cards-grid { grid-template-columns:1fr; }
@@ -1445,7 +1469,7 @@ function buildCatalog() {
             <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:6px;">
               <div style="min-width:0;">
                 <div style="font-size:.28rem;color:${lux.txt2};letter-spacing:.2em;text-transform:uppercase;margin-bottom:2px;">Card Name</div>
-                <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:.68rem;font-weight:700;color:${lux.txt};letter-spacing:.1em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.name}</div>
+                <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:.78rem;font-weight:700;color:${lux.txt};letter-spacing:.06em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${c.name}</div>
               </div>
               <div style="flex-shrink:0;transform:scale(.92);transform-origin:right bottom;">${_networkLogo(c.network||'Visa', lux.netColor)}</div>
             </div>

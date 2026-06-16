@@ -1041,4 +1041,39 @@
 
 /* Admin overlay scrollbar hidden (scroll still works, no visual bar) */
 #adminOverlay::-webkit-scrollbar { display: none; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   52. PREMIUM BALANCE CHART / TRANSACTIONS / SPENDING — responsive
+   ══════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .bal-chart-head { flex-wrap: wrap !important; gap: 12px !important; }
+  .bal-chart-canvas-wrap { height: 200px !important; }
+}
+@media (max-width: 640px) {
+  .bal-chart-title-row { gap: 10px !important; }
+  .bal-chart-icon { width: 34px !important; height: 34px !important; }
+  .bal-chart-stat { font-size: .78rem !important; padding: 5px 10px !important; }
+  .tx-row { padding: 11px 4px !important; gap: 11px !important; }
+  .tx-badge { width: 42px !important; height: 42px !important; border-radius: 12px !important; }
+  .tx-name { font-size: .87rem !important; }
+  .tx-amt { font-size: 1rem !important; }
+  .spend-icon { width: 34px !important; height: 34px !important; }
+}
+@media (max-width: 480px) {
+  .bal-chart-canvas-wrap { height: 170px !important; }
+  .bal-chart-title-row .bal-chart-icon { display: none !important; }
+  .tx-row { gap: 9px !important; }
+  .tx-badge { width: 38px !important; height: 38px !important; border-radius: 11px !important; }
+  .tx-badge-fallback { font-size: .85rem !important; }
+  .tx-sub { font-size: .7rem !important; }
+  .tx-amt { font-size: .92rem !important; }
+  .tx-status { font-size: .6rem !important; }
+  .spend-row { padding: 11px 0 !important; gap: 11px !important; }
+  .spend-icon { width: 30px !important; height: 30px !important; border-radius: 9px !important; }
+  .spend-top { font-size: .78rem !important; }
+  .spend-pct { display: none !important; }
+}
+@media (max-width: 375px) {
+  .bal-chart-canvas-wrap { height: 150px !important; }
+}
 #adminOverlay { scrollbar-width: none; }

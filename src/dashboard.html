@@ -22,6 +22,51 @@
     .spending-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.04); }
     .spending-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
     .market-ticker { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+
+    /* ═══════ PREMIUM BALANCE HISTORY ═══════ */
+    .bal-chart-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap; gap:14px; }
+    .bal-chart-title-row { display:flex; align-items:center; gap:14px; }
+    .bal-chart-icon { width:40px; height:40px; border-radius:12px; background:linear-gradient(150deg,rgba(201,168,76,.24),rgba(201,168,76,.05)); border:1px solid rgba(201,168,76,.32); display:flex; align-items:center; justify-content:center; color:var(--gold-400); flex-shrink:0; box-shadow:0 4px 14px rgba(201,168,76,.12); }
+    .bal-chart-stat { display:none; align-items:center; gap:6px; padding:6px 13px; border-radius:99px; font-size:.74rem; font-weight:600; background:rgba(74,222,128,.1); border:1px solid rgba(74,222,128,.25); color:var(--green-400); white-space:nowrap; }
+    .bal-chart-stat.is-down { background:rgba(248,113,113,.1); border-color:rgba(248,113,113,.25); color:var(--red-400); }
+    .bal-chart-canvas-wrap { position:relative; border-radius:16px; background:radial-gradient(ellipse 75% 90% at 50% 0%,rgba(201,168,76,.06),transparent 65%); }
+
+    /* ═══════ PREMIUM TRANSACTION ROWS ═══════ */
+    .tx-row { display:flex; align-items:center; gap:14px; padding:13px 8px; border-radius:14px; transition:background .2s ease,transform .2s ease; }
+    .tx-row:hover { background:rgba(255,255,255,.035); transform:translateX(2px); }
+    .tx-badge { position:relative; width:48px; height:48px; border-radius:14px; flex-shrink:0; display:flex; align-items:center; justify-content:center; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.05); }
+    .tx-badge-fallback { font-family:var(--font-display); font-weight:600; font-size:1.05rem; letter-spacing:.02em; position:relative; z-index:1; }
+    .tx-badge-logo { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#fff; padding:10px; opacity:0; transition:opacity .3s ease; z-index:2; }
+    .tx-info { flex:1; min-width:0; }
+    .tx-name { font-size:.92rem; font-weight:600; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; letter-spacing:.01em; }
+    .tx-sub { font-size:.75rem; color:var(--slate-500); margin-top:3px; display:flex; align-items:center; gap:6px; }
+    .tx-sub-dot { width:3px; height:3px; border-radius:50%; background:var(--slate-600); flex-shrink:0; display:inline-block; }
+    .tx-right { flex-shrink:0; text-align:right; }
+    .tx-amt { font-family:var(--font-display); font-size:1.08rem; font-weight:500; white-space:nowrap; }
+    .tx-amt.credit { color:var(--green-400); }
+    .tx-amt.debit { color:#fff; }
+    .tx-status { display:inline-flex; align-items:center; gap:4px; font-size:.66rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase; margin-top:5px; color:var(--slate-500); }
+    .tx-status::before { content:''; width:5px; height:5px; border-radius:50%; background:var(--slate-500); flex-shrink:0; }
+    .tx-status.completed::before { background:var(--green-400); }
+    .tx-status.pending { color:var(--gold-400); }
+    .tx-status.pending::before { background:var(--gold-400); }
+    .tx-status.failed { color:var(--red-400); }
+    .tx-status.failed::before { background:var(--red-400); }
+
+    /* ═══════ PREMIUM SPENDING ROWS ═══════ */
+    .spend-row { display:flex; align-items:center; gap:14px; padding:13px 0; border-bottom:1px solid rgba(255,255,255,.04); }
+    .spend-row:last-child { border-bottom:none; }
+    .spend-icon { width:38px; height:38px; border-radius:11px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+    .spend-body { flex:1; min-width:0; }
+    .spend-top { display:flex; justify-content:space-between; gap:8px; font-size:.84rem; margin-bottom:7px; }
+    .spend-name { color:var(--slate-200); font-weight:500; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .spend-amt { color:#fff; font-weight:600; flex-shrink:0; white-space:nowrap; font-family:var(--font-display); }
+    .spend-bar-row { display:flex; align-items:center; gap:8px; }
+    .spend-bar { background:rgba(255,255,255,.05); border-radius:99px; height:7px; overflow:hidden; position:relative; flex:1; }
+    .spend-bar-fill { height:100%; border-radius:99px; position:relative; overflow:hidden; transition:width 1.1s cubic-bezier(.16,1,.3,1); }
+    .spend-bar-fill::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.4),transparent); transform:translateX(-100%); animation:spendShine 2.6s ease-in-out infinite; }
+    .spend-pct { font-size:.68rem; color:var(--slate-500); flex-shrink:0; min-width:32px; text-align:right; }
+    @keyframes spendShine { 0%{transform:translateX(-100%)} 100%{transform:translateX(220%)} }
     .welcome-banner { background:linear-gradient(135deg,rgba(201,168,76,.1),rgba(36,71,110,.2)); border:1px solid rgba(201,168,76,.2); border-radius:16px; padding:24px 28px; margin-bottom:28px; display:flex; align-items:center; justify-content:space-between; }
 
     /* ═══════ PREMIUM ACCOUNT HERO ═══════ */
@@ -728,18 +773,28 @@
 
         <!-- Account Balance Chart -->
         <div class="card card-elevated">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
-            <div>
-              <div style="font-family:var(--font-display);font-size:1.25rem;">Balance History</div>
-              <div style="font-size:.8rem;color:var(--slate-400);margin-top:2px;">Reconstructed from your transactions</div>
+          <div class="bal-chart-head">
+            <div class="bal-chart-title-row">
+              <div class="bal-chart-icon">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+              </div>
+              <div>
+                <div style="font-family:var(--font-display);font-size:1.25rem;">Balance History</div>
+                <div style="font-size:.8rem;color:var(--slate-400);margin-top:2px;">Reconstructed from your transactions</div>
+              </div>
             </div>
-            <div class="tabs" style="width:auto;flex:none;">
-              <div class="tab-item active" onclick="switchChart('1M',this)">1M</div>
-              <div class="tab-item" onclick="switchChart('3M',this)">3M</div>
-              <div class="tab-item" onclick="switchChart('1Y',this)">1Y</div>
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <div class="bal-chart-stat" id="balChartStat"></div>
+              <div class="tabs" style="width:auto;flex:none;">
+                <div class="tab-item active" onclick="switchChart('1M',this)">1M</div>
+                <div class="tab-item" onclick="switchChart('3M',this)">3M</div>
+                <div class="tab-item" onclick="switchChart('1Y',this)">1Y</div>
+              </div>
             </div>
           </div>
-          <canvas id="balanceChart" class="chart-container" height="220"></canvas>
+          <div class="bal-chart-canvas-wrap">
+            <canvas id="balanceChart" class="chart-container" height="220"></canvas>
+          </div>
         </div>
 
         <!-- Quick Actions + My Accounts -->
@@ -792,9 +847,17 @@
 
         <!-- Recent Transactions -->
         <div class="card card-elevated">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-            <div style="font-family:var(--font-display);font-size:1.25rem;">Recent Transactions</div>
-            <a href="transactions.html" style="font-size:.75rem;color:var(--gold-500);">View all</a>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div class="bal-chart-icon" style="width:40px;height:40px;">
+                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+              </div>
+              <div style="font-family:var(--font-display);font-size:1.25rem;">Recent Transactions</div>
+            </div>
+            <a href="transactions.html" style="font-size:.75rem;color:var(--gold-500);font-weight:500;display:flex;align-items:center;gap:4px;">
+              View all
+              <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
           </div>
           <div id="recentTransactions">
             <!-- populated by JS -->
@@ -804,10 +867,15 @@
         <!-- Spending by Category -->
         <div class="card card-elevated">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-            <div style="font-family:var(--font-display);font-size:1.25rem;">Spending</div>
-            <div style="font-size:.75rem;color:var(--slate-500);">This Month</div>
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div class="bal-chart-icon" style="width:40px;height:40px;">
+                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 12a9 9 0 11-9-9"/><path d="M21 12A9 9 0 0012 3v9z"/></svg>
+              </div>
+              <div style="font-family:var(--font-display);font-size:1.25rem;">Spending</div>
+            </div>
+            <div style="font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--slate-500);">This Month</div>
           </div>
-          <div style="margin-bottom:20px;">
+          <div style="margin-bottom:22px;">
             <div style="font-family:var(--font-display);font-size:1.8rem;" id="totalSpent">$0.00</div>
             <div style="font-size:.75rem;color:var(--slate-400);margin-top:2px;">Total spent this month</div>
           </div>
@@ -2473,10 +2541,15 @@
 function drawBalanceChart(data) {
   const canvas = document.getElementById('balanceChart');
   const ctx = canvas.getContext('2d');
-  canvas.width = canvas.parentElement.offsetWidth;
-  canvas.height = 220;
+  // Read the actual CSS-rendered box (set by .chart-container / responsive.css
+  // breakpoints) rather than hardcoding 220 — otherwise the canvas's internal
+  // pixel buffer doesn't match its on-screen size on mobile and the browser
+  // stretches the raster, distorting the line/grid.
+  canvas.width  = canvas.clientWidth  || canvas.parentElement.offsetWidth;
+  canvas.height = canvas.clientHeight || 220;
   const W = canvas.width, H = canvas.height;
-  const pad = { top:20, right:20, bottom:36, left:60 };
+  const compact = W < 420;
+  const pad = { top:20, right: compact ? 10 : 20, bottom:36, left: compact ? 44 : 60 };
   const cW = W - pad.left - pad.right;
   const cH = H - pad.top - pad.bottom;
   const rawMin = Math.min(...data), rawMax = Math.max(...data);
@@ -2484,27 +2557,31 @@ function drawBalanceChart(data) {
   const max = rawMax * 1.02;
   const range = (max - min) || 1;   // guard: flat/zero series → avoid divide-by-zero (NaN)
   const denom = Math.max(1, data.length - 1);
+  const fontSm = (compact ? '10px' : '11px') + ' Inter';
 
   ctx.clearRect(0,0,W,H);
 
-  // Grid lines
+  // Grid lines — subtle hairlines, solid baseline
   for (let i = 0; i <= 4; i++) {
     const y = pad.top + (cH / 4) * i;
-    ctx.strokeStyle = 'rgba(255,255,255,.04)';
+    const isBaseline = i === 4;
+    ctx.strokeStyle = isBaseline ? 'rgba(255,255,255,.09)' : 'rgba(255,255,255,.045)';
     ctx.lineWidth = 1;
-    ctx.setLineDash([4,4]);
+    ctx.setLineDash(isBaseline ? [] : [3,5]);
     ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
     const val = max - (range/4)*i;
     ctx.fillStyle = '#64748b';
-    ctx.font = '11px Inter';
+    ctx.font = fontSm;
+    ctx.textAlign = 'left';
     ctx.fillText('$'+Math.round(val/1000)+'k', 0, y+4);
   }
   ctx.setLineDash([]);
 
-  // Gradient fill
+  // Premium multi-stop gradient fill
   const grad = ctx.createLinearGradient(0, pad.top, 0, H - pad.bottom);
-  grad.addColorStop(0, 'rgba(201,168,76,.18)');
-  grad.addColorStop(1, 'rgba(201,168,76,0)');
+  grad.addColorStop(0,   'rgba(201,168,76,.30)');
+  grad.addColorStop(.55, 'rgba(201,168,76,.08)');
+  grad.addColorStop(1,   'rgba(201,168,76,0)');
 
   // Points
   const pts = data.map((v,i) => ({
@@ -2526,7 +2603,10 @@ function drawBalanceChart(data) {
   ctx.fillStyle = grad;
   ctx.fill();
 
-  // Line
+  // Glowing line
+  ctx.save();
+  ctx.shadowColor = 'rgba(201,168,76,.5)';
+  ctx.shadowBlur = compact ? 6 : 10;
   ctx.beginPath();
   ctx.moveTo(pts[0].x, pts[0].y);
   for (let i=1;i<pts.length;i++) {
@@ -2534,27 +2614,47 @@ function drawBalanceChart(data) {
     const cp2x=(pts[i-1].x+pts[i].x)/2,cp2y=pts[i].y;
     ctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,pts[i].x,pts[i].y);
   }
-  ctx.strokeStyle = '#c9a84c';
-  ctx.lineWidth = 2.5;
+  ctx.strokeStyle = '#e8c96b';
+  ctx.lineWidth = compact ? 2 : 2.5;
   ctx.stroke();
+  ctx.restore();
 
-  // Month labels
+  // Month labels — thin out on narrow screens so they never overlap
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   pts.forEach((p,i) => {
+    if (compact && i % 2 !== 0 && i !== pts.length - 1) return;
     ctx.fillStyle = '#64748b';
-    ctx.font = '11px Inter';
+    ctx.font = fontSm;
     ctx.textAlign = 'center';
     ctx.fillText(months[i % 12], p.x, H - 6);
   });
 
-  // Dot on last point
+  // Endpoint glow halo + dot
+  const last = pts[pts.length-1];
+  const halo = ctx.createRadialGradient(last.x,last.y,0,last.x,last.y,14);
+  halo.addColorStop(0,'rgba(201,168,76,.45)');
+  halo.addColorStop(1,'rgba(201,168,76,0)');
+  ctx.beginPath(); ctx.arc(last.x,last.y,14,0,Math.PI*2); ctx.fillStyle = halo; ctx.fill();
+
   ctx.beginPath();
-  ctx.arc(pts[pts.length-1].x, pts[pts.length-1].y, 5, 0, Math.PI*2);
-  ctx.fillStyle = '#c9a84c';
+  ctx.arc(last.x, last.y, compact ? 4 : 5, 0, Math.PI*2);
+  ctx.fillStyle = '#e8c96b';
   ctx.fill();
   ctx.strokeStyle = '#fff';
   ctx.lineWidth = 2;
   ctx.stroke();
+
+  // Premium "this period" change badge in the card header
+  const statEl = document.getElementById('balChartStat');
+  if (statEl && data.length > 1) {
+    const firstV = data[0], lastV = data[data.length-1];
+    const diff = lastV - firstV;
+    const pct = firstV !== 0 ? (diff/Math.abs(firstV))*100 : 0;
+    const up = diff >= 0;
+    statEl.style.display = 'inline-flex';
+    statEl.classList.toggle('is-down', !up);
+    statEl.innerHTML = (up ? '▲' : '▼') + ' ' + (up ? '+' : '') + pct.toFixed(1) + '%';
+  }
 }
 
 const chartData = {
@@ -4584,6 +4684,130 @@ function _acctTypeIcon(t) {
   return m[t] || '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>';
 }
 
+// ═══ PREMIUM TRANSACTION BADGES — real merchant/biller logos + person avatars ═══
+// Bill payments and transfer memos carry real free-text (payee names, recipient
+// names), so we can recognize well-known brands in them and show an actual logo
+// (via a public logo API, with a graceful colored-initial fallback on error) —
+// the same look real banking apps (Chase, etc.) use for transaction rows.
+var _BRAND_DB = [
+  { re:/amazon/i,                  domain:'amazon.com',           color:'#FF9900' },
+  { re:/\bapple\b/i,                domain:'apple.com',            color:'#A2AAAD' },
+  { re:/netflix/i,                  domain:'netflix.com',          color:'#E50914' },
+  { re:/spotify/i,                  domain:'spotify.com',          color:'#1DB954' },
+  { re:/uber\s*eats/i,              domain:'ubereats.com',         color:'#06C167' },
+  { re:/\buber\b/i,                 domain:'uber.com',             color:'#000000' },
+  { re:/\blyft\b/i,                 domain:'lyft.com',             color:'#FF00BF' },
+  { re:/starbucks/i,                domain:'starbucks.com',        color:'#00704A' },
+  { re:/walmart/i,                  domain:'walmart.com',          color:'#0071CE' },
+  { re:/\btarget\b/i,               domain:'target.com',           color:'#CC0000' },
+  { re:/costco/i,                   domain:'costco.com',           color:'#005DAA' },
+  { re:/whole\s*foods/i,            domain:'wholefoodsmarket.com', color:'#00674B' },
+  { re:/trader\s*joe/i,             domain:'traderjoes.com',       color:'#D2232A' },
+  { re:/\bshell\b/i,                domain:'shell.com',            color:'#FBCE07' },
+  { re:/chevron/i,                  domain:'chevron.com',          color:'#0066B2' },
+  { re:/\bexxon/i,                  domain:'exxon.com',            color:'#D40E14' },
+  { re:/delta\s*(air)?/i,           domain:'delta.com',            color:'#003366' },
+  { re:/united\s*airlines/i,        domain:'united.com',           color:'#005DAA' },
+  { re:/southwest/i,                domain:'southwest.com',        color:'#304CB2' },
+  { re:/airbnb/i,                   domain:'airbnb.com',           color:'#FF5A5F' },
+  { re:/marriott/i,                 domain:'marriott.com',         color:'#A6192E' },
+  { re:/hilton/i,                   domain:'hilton.com',           color:'#104C97' },
+  { re:/doordash/i,                 domain:'doordash.com',         color:'#FF3008' },
+  { re:/grubhub/i,                  domain:'grubhub.com',          color:'#FF8000' },
+  { re:/best\s*buy/i,               domain:'bestbuy.com',          color:'#0046BE' },
+  { re:/home\s*depot/i,             domain:'homedepot.com',        color:'#F96302' },
+  { re:/lowe'?s/i,                  domain:'lowes.com',            color:'#004990' },
+  { re:/\bcvs\b/i,                  domain:'cvs.com',              color:'#CC0000' },
+  { re:/walgreens/i,                domain:'walgreens.com',        color:'#E31837' },
+  { re:/mcdonald/i,                 domain:'mcdonalds.com',        color:'#FFC72C' },
+  { re:/chipotle/i,                 domain:'chipotle.com',         color:'#A81612' },
+  { re:/paypal/i,                   domain:'paypal.com',           color:'#003087' },
+  { re:/venmo/i,                    domain:'venmo.com',            color:'#3D95CE' },
+  { re:/\bat&t\b/i,                 domain:'att.com',              color:'#00A8E0' },
+  { re:/verizon/i,                  domain:'verizon.com',          color:'#CD040B' },
+  { re:/t-mobile/i,                 domain:'t-mobile.com',         color:'#E20074' },
+  { re:/xfinity|comcast/i,          domain:'xfinity.com',          color:'#6E10A0' },
+  { re:/\bhulu\b/i,                 domain:'hulu.com',             color:'#1CE783' },
+  { re:/disney/i,                   domain:'disneyplus.com',       color:'#113CCF' },
+  { re:/\bhbo\b|max\s*streaming/i,  domain:'max.com',              color:'#9013FE' },
+  { re:/google/i,                   domain:'google.com',           color:'#4285F4' },
+  { re:/microsoft/i,                domain:'microsoft.com',        color:'#00A4EF' },
+  { re:/\bnike\b/i,                 domain:'nike.com',             color:'#111111' },
+  { re:/\bikea\b/i,                 domain:'ikea.com',             color:'#0058A3' },
+  { re:/geico/i,                    domain:'geico.com',            color:'#005DAA' },
+  { re:/state\s*farm/i,             domain:'statefarm.com',        color:'#D03A2D' },
+  { re:/allstate/i,                 domain:'allstate.com',         color:'#0033A0' },
+  { re:/progressive/i,              domain:'progressive.com',      color:'#0072CE' },
+  { re:/pacific\s*gas|pg&e/i,       domain:'pge.com',              color:'#0072CE' },
+  { re:/con\s?edison/i,             domain:'coned.com',            color:'#0072CE' },
+  { re:/duke\s*energy/i,            domain:'duke-energy.com',      color:'#00A8E8' },
+  { re:/chase\b/i,                  domain:'chase.com',            color:'#117ACA' },
+  { re:/wells\s*fargo/i,            domain:'wellsfargo.com',       color:'#D71E2B' },
+  { re:/bank\s*of\s*america/i,      domain:'bankofamerica.com',    color:'#012169' },
+  { re:/\bciti\b|citibank/i,        domain:'citi.com',             color:'#003D7C' },
+  { re:/capital\s*one/i,            domain:'capitalone.com',       color:'#004977' },
+  { re:/american\s*express|amex/i, domain:'americanexpress.com',  color:'#006FCF' },
+  { re:/discover\b/i,               domain:'discover.com',         color:'#FF6000' },
+];
+
+function _matchBrand(desc) {
+  if (!desc) return null;
+  for (var i = 0; i < _BRAND_DB.length; i++) { if (_BRAND_DB[i].re.test(desc)) return _BRAND_DB[i]; }
+  return null;
+}
+
+var _AVATAR_PALETTE = ['#c9a84c','#60a5fa','#a78bfa','#34d399','#f472b6','#fb923c','#38bdf8','#f87171'];
+function _hashStr(s) { var h = 0; for (var i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; } return Math.abs(h); }
+function _avatarColor(name) { return _AVATAR_PALETTE[_hashStr(name) % _AVATAR_PALETTE.length]; }
+function _initialsOf(name) {
+  var parts = name.trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return '?';
+  return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+}
+
+// Pulls a counterparty's name out of P2P transfer descriptions ("Sent to Jane
+// Doe", "Received from John Smith — rent") so we can render a Venmo/Chase-style
+// initials avatar instead of a generic transfer icon.
+function _extractPerson(desc) {
+  if (!desc) return null;
+  var m = desc.match(/^(?:Sent to|Received from|Received)\s+([^—\n]+?)(?:\s*—.*)?$/i);
+  if (m && m[1]) {
+    var name = m[1].trim();
+    if (!/^(checking|savings|money market|account)$/i.test(name)) return name;
+  }
+  return null;
+}
+
+function _esc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+  });
+}
+
+function _txBadge(t) {
+  var desc = t.description || '';
+  var brand = _matchBrand(desc);
+  if (brand) {
+    var letter = (desc.match(/[A-Za-z]/) || ['?'])[0].toUpperCase();
+    return '<div class="tx-badge" style="background:' + brand.color + '1A;border:1px solid ' + brand.color + '40;">'
+      + '<span class="tx-badge-fallback" style="color:' + brand.color + ';">' + letter + '</span>'
+      + '<img class="tx-badge-logo" src="https://logo.clearbit.com/' + brand.domain + '?size=64" alt="" loading="lazy" '
+      + 'onload="this.style.opacity=1" onerror="this.style.display=\'none\'">'
+      + '</div>';
+  }
+  var person = _extractPerson(desc);
+  if (person) {
+    var color = _avatarColor(person);
+    return '<div class="tx-badge" style="background:linear-gradient(150deg,' + color + '33,' + color + '14);border:1px solid ' + color + '40;">'
+      + '<span class="tx-badge-fallback" style="color:' + color + ';">' + _initialsOf(person) + '</span>'
+      + '</div>';
+  }
+  var cfg = _CAT_CFG[t.category] || _CAT_DEFAULT;
+  return '<div class="tx-badge" style="background:' + cfg.bg + ';border:1px solid ' + cfg.c + '40;">'
+    + '<svg width="18" height="18" fill="none" stroke="' + cfg.c + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">' + cfg.p + '</svg>'
+    + '</div>';
+}
+
 // ═══ ACCOUNT STATE (premium hero + switcher + send/receive) ═══
 let _accounts   = [];
 let _selAcct    = 0;
@@ -4754,25 +4978,27 @@ function _renderRecentTxns(txns) {
   _lastTxns = txns;
   const el = document.getElementById('recentTransactions');
   if (!el) return;
-  if (!txns || !txns.length) { el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--slate-500);">No transactions yet.</div>'; return; }
+  if (!txns || !txns.length) { el.innerHTML = '<div style="padding:32px 8px;text-align:center;color:var(--slate-500);font-size:.85rem;">No transactions yet.</div>'; return; }
   const now = new Date();
   el.innerHTML = txns.slice(0, 5).map(t => {
     const isCredit = ['credit','transfer_in','interest','refund'].includes(t.transaction_type);
     const amt = _fmtAmt(t.amount, isCredit);
-    const icon = _txCatIcon(t.category);
+    const badge = _txBadge(t);
     const d = new Date(t.created_at);
     const dateStr = d.toDateString() === now.toDateString() ? 'Today'
       : d.toDateString() === new Date(now - 864e5).toDateString() ? 'Yesterday'
       : d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
-    return `<div class="transaction-item">
-      <div class="transaction-icon">${icon}</div>
-      <div class="transaction-info">
-        <div class="transaction-name">${t.description}</div>
-        <div class="transaction-date">${dateStr} · ${t.category}</div>
+    const status = t.status === 'pending' ? 'pending' : t.status === 'failed' ? 'failed' : 'completed';
+    const statusLabel = status === 'pending' ? 'Pending' : status === 'failed' ? 'Failed' : 'Completed';
+    return `<div class="tx-row">
+      ${badge}
+      <div class="tx-info">
+        <div class="tx-name">${_esc(t.description)}</div>
+        <div class="tx-sub">${dateStr}<span class="tx-sub-dot"></span>${_esc(t.category)}</div>
       </div>
-      <div style="flex-shrink:0;">
-        <div class="transaction-amount ${isCredit ? 'credit' : 'debit'}">${amt}</div>
-        <div class="transaction-status completed">Completed</div>
+      <div class="tx-right">
+        <div class="tx-amt ${isCredit ? 'credit' : 'debit'}">${amt}</div>
+        <div class="tx-status ${status}">${statusLabel}</div>
       </div>
     </div>`;
   }).join('');
@@ -4780,24 +5006,29 @@ function _renderRecentTxns(txns) {
 
 function _renderSpending(entries, total) {
   _lastSpending = { entries, total };
-  const COLORS = ['#c9a84c','#60a5fa','#a78bfa','#4ade80','#f87171'];
   const catTotal = entries.reduce((s,[,v]) => s + v, 0) || 1;
   const totalEl = document.getElementById('totalSpent');
   if (totalEl) totalEl.textContent = _balHidden ? '••••••' : ('$' + total.toLocaleString('en-US', { minimumFractionDigits:2 }));
   const catEl = document.getElementById('spendingCategories');
   if (catEl) catEl.innerHTML = entries.length === 0
-    ? '<div style="color:var(--slate-500);font-size:.85rem;padding:8px 0;">No spending this month.</div>'
-    : entries.map(([name, amt], i) => {
+    ? '<div style="color:var(--slate-500);font-size:.85rem;padding:24px 0;text-align:center;">No spending this month.</div>'
+    : entries.map(([name, amt]) => {
+        const cfg  = _CAT_CFG[name] || _CAT_DEFAULT;
         const pct  = Math.round((amt / catTotal) * 100);
         const disp = _balHidden ? '••••••' : ('$' + amt.toLocaleString('en-US', { minimumFractionDigits:2 }));
-        return `<div class="spending-row">
-          <div class="spending-dot" style="background:${COLORS[i]};"></div>
-          <div style="flex:1;min-width:0;">
-            <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:5px;gap:8px;">
-              <span style="color:var(--slate-300);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${name}</span>
-              <span style="color:var(--white);flex-shrink:0;white-space:nowrap;">${disp}</span>
+        return `<div class="spend-row">
+          <div class="spend-icon" style="background:${cfg.bg};">
+            <svg width="17" height="17" fill="none" stroke="${cfg.c}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">${cfg.p}</svg>
+          </div>
+          <div class="spend-body">
+            <div class="spend-top">
+              <span class="spend-name">${_esc(name)}</span>
+              <span class="spend-amt">${disp}</span>
             </div>
-            <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${COLORS[i]};opacity:.8;"></div></div>
+            <div class="spend-bar-row">
+              <div class="spend-bar"><div class="spend-bar-fill" style="width:${pct}%;background:linear-gradient(90deg,${cfg.c},${cfg.c}cc);"></div></div>
+              <span class="spend-pct">${pct}%</span>
+            </div>
           </div>
         </div>`;
       }).join('');

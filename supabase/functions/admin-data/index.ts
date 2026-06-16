@@ -1719,7 +1719,7 @@ body { background:#f4f0eb; margin:0; padding:0; font-family:'Inter','Helvetica N
       const nextPayment = new Date(now.getFullYear(), now.getMonth() + 1, 1)
         .toISOString().split('T')[0];
 
-      const { error: loanErr } = await supabase.from('loans').insert({
+      const { data: newLoan, error: loanErr } = await supabase.from('loans').insert({
         user_id:          app.user_id,
         loan_type:        app.loan_type,
         loan_name:        app.loan_name,
@@ -1733,7 +1733,7 @@ body { background:#f4f0eb; margin:0; padding:0; font-family:'Inter','Helvetica N
         paid_months:      0,
         opened_date:      openDate,
         status:           'active',
-      });
+      }).select('id').single();
       if (loanErr) throw loanErr;
 
       const { error: updErr } = await supabase.from('loan_applications').update({
@@ -1774,6 +1774,10 @@ body { background:#f4f0eb; margin:0; padding:0; font-family:'Inter','Helvetica N
         });
         if (depErr) throw depErr;
         disbursed = true;
+        // Mark the loan as disbursed so the one-time backfill never re-credits it.
+        if (newLoan?.id) {
+          await supabase.from('loans').update({ disbursed: true }).eq('id', newLoan.id);
+        }
       }
 
       // Notify member

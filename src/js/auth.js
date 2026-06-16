@@ -363,7 +363,17 @@ document.addEventListener('DOMContentLoaded', () => {
 // Locks after 5 min idle; requires Face ID or password to unlock.
 (function () {
   const TIMEOUT_MS = 300000;
-  let _timer = null, _locked = false, _el = null;
+  const LAST_ACTIVITY_KEY = 'zo_last_activity';
+  let _timer = null, _locked = false, _el = null, _lastWrite = 0;
+
+  // Idle time is persisted so a refresh (which wipes the in-memory _locked
+  // flag) can't bypass an already-expired session — re-check on every load.
+  function _recordActivity() {
+    const now = Date.now();
+    if (now - _lastWrite < 2000) return;
+    _lastWrite = now;
+    localStorage.setItem(LAST_ACTIVITY_KEY, String(now));
+  }
 
   const FID_SVG = '<svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M9 10h.01M15 10h.01"/><path d="M9.5 15a3.5 3.5 0 0 0 5 0"/></svg>';
 
@@ -433,15 +443,29 @@ document.addEventListener('DOMContentLoaded', () => {
     _locked = false;
     if (_el) _el.style.display = 'none';
     document.body.style.overflow = '';
+    _recordActivity();
     _arm();
   }
 
   function _arm() { clearTimeout(_timer); _timer = setTimeout(_show, TIMEOUT_MS); }
-  function _ping() { if (!_locked) _arm(); }
+  function _ping() {
+    if (_locked) return;
+    _recordActivity();
+    _arm();
+  }
 
   const EVS = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'];
   window._startSessionLock = function () {
     EVS.forEach(e => window.addEventListener(e, _ping, { passive: true, capture: true }));
-    _arm();
+    const last = parseInt(localStorage.getItem(LAST_ACTIVITY_KEY) || '0', 10);
+    const idle = last ? Date.now() - last : 0;
+    if (idle >= TIMEOUT_MS) {
+      // Stay locked — do NOT touch the stored timestamp, otherwise a second
+      // refresh while still locked would wrongly look "recent" and unlock.
+      _show();
+    } else {
+      _recordActivity();
+      _arm();
+    }
   };
 })();

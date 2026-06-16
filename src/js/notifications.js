@@ -45,6 +45,14 @@
   }
   function _saveToasted() {
     try {
+      // Merge with whatever is currently on disk instead of blindly overwriting —
+      // this app has no SPA routing, so every navigation reloads this script in a
+      // fresh tab-like context. Without the merge, two pages that both toasted a
+      // different alert around the same time would each save a snapshot missing
+      // the other's ID, silently un-deduping it for the next page load.
+      let onDisk = [];
+      try { onDisk = JSON.parse(localStorage.getItem(_toastKey) || '[]'); } catch {}
+      if (Array.isArray(onDisk)) onDisk.forEach(id => _toasted.add(id));
       // Cap at the 200 most-recent IDs to keep storage bounded.
       localStorage.setItem(_toastKey, JSON.stringify([..._toasted].slice(-200)));
     } catch {}
@@ -357,6 +365,16 @@
     return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:diff>365?'numeric':undefined});
   }
 
+  // renderPanel() stamps each card's relative time once, at render time — left
+  // alone, "2m ago" would freeze at "2m ago" for as long as the panel stays
+  // open without a new fetch/insert triggering a re-render. Re-stamp the
+  // existing nodes in place on a timer so it tracks real elapsed time.
+  function tickTimes() {
+    document.querySelectorAll('.zn-card-time[data-iso]').forEach(el => {
+      el.textContent = relTime(el.dataset.iso);
+    });
+  }
+
   // ─── Render panel body ─────────────────────────────────────────────────────
   function renderPanel() {
     const body = document.getElementById('znBody');
@@ -396,7 +414,7 @@
             <div class="zn-card-title">${esc(n.title)}</div>
             <div class="zn-card-msg">${esc(n.message||'')}</div>
             <div class="zn-card-foot">
-              <span class="zn-card-time">${relTime(n.created_at)}</span>
+              <span class="zn-card-time" data-iso="${n.created_at}">${relTime(n.created_at)}</span>
               <span class="zn-card-type-lbl" style="--nc:${c.c};--nb:${c.bg};">${c.lbl}</span>
             </div>
           </div>
@@ -421,10 +439,12 @@
   }
 
   // ─── Toast ─────────────────────────────────────────────────────────────────
-  function showToast(n) {
-    if (_toasted.has(n.id)) return;
-    _toasted.add(n.id);
-    _saveToasted(); // persist so this alert never toasts again, even after re-login
+  function showToast(n, alreadyClaimed) {
+    if (!alreadyClaimed) {
+      if (_toasted.has(n.id)) return;
+      _toasted.add(n.id);
+      _saveToasted(); // persist so this alert never toasts again, even after re-login
+    }
     const wrap = document.getElementById('znToasts');
     if (!wrap) return;
     const c = tc(n.type);
@@ -482,10 +502,17 @@
       updateBadge();
       if (document.getElementById('znPanel')?.classList.contains('open')) renderPanel();
       // Toast the newest unread alert that has never been shown on this device.
-      // Persisted in localStorage, so a given alert appears only once — it will
-      // NOT pop up again on the next login.
-      const fresh = _notes.filter(n => !n.read && !_toasted.has(n.id));
-      if (fresh.length) setTimeout(() => showToast(fresh[0]), 900);
+      // Claim it (mark toasted + persist) right away, synchronously — this app
+      // reloads the whole page on every navigation, so if the claim happened
+      // only inside the delayed callback below, navigating away inside that
+      // 900ms window would cancel the timer before the claim was saved, and
+      // the same alert would come back as "fresh" again on the next page load.
+      const fresh = _notes.find(n => !n.read && !_toasted.has(n.id));
+      if (fresh) {
+        _toasted.add(fresh.id);
+        _saveToasted();
+        setTimeout(() => showToast(fresh, true), 900);
+      }
     } catch {}
   }
 
@@ -600,6 +627,7 @@
     injectPanel();
     if (window._supabase) boot();
     else document.addEventListener('supabaseReady', boot, { once: true });
+    setInterval(tickTimes, 30000);
   }
 
   // ─── Expose globals ─────────────────────────────────────────────────────────

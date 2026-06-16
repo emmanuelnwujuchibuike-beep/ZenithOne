@@ -782,9 +782,15 @@ function switchCardsTab(tab) {
 //  LOAD & RENDER
 // ══════════════════════════════════════════════════════════════
 async function loadAllData() {
-  await fetchUserCardState();
-  await _loadPricingAndBalance();
-  await _loadMyCards();
+  // fetchUserCardState/_loadPricingAndBalance/_loadMyCards are independent
+  // network calls — run them concurrently instead of one after another so
+  // the page loads in the time of the slowest call, not the sum of all of
+  // them. buildCatalog() only needs the first two, so it doesn't wait on
+  // _loadMyCards (which renders its own tab independently).
+  const cardStateP = fetchUserCardState();
+  const pricingP   = _loadPricingAndBalance();
+  _loadMyCards();
+  await Promise.allSettled([cardStateP, pricingP]);
   buildCatalog();
 }
 
@@ -800,25 +806,31 @@ async function fetchUserCardState() {
 }
 
 async function _loadPricingAndBalance() {
-  try {
-    const p=await callEdgeFunction('card-operations',{action:'pricing'});
+  // Three independent edge-function calls — fire them together rather than
+  // waiting on each in turn (cuts this stage from ~3 round-trips to ~1).
+  const [priceRes, balRes, accRes] = await Promise.allSettled([
+    callEdgeFunction('card-operations',{action:'pricing'}),
+    callEdgeFunction('account-summary',{}),
+    callEdgeFunction('card-operations',{action:'get_accounts'}),
+  ]);
+  if (priceRes.status==='fulfilled') {
+    const p=priceRes.value;
     if(p?.prices)     for(const c of CARD_CATALOG) if(p.prices[c.key]!=null)     c.fee=Number(p.prices[c.key]);
     if(p?.surcharges) for(const n of CARD_NETWORKS) if(p.surcharges[n.name]!=null) n.surcharge=Number(p.surcharges[n.name]);
-  } catch {}
-  try {
-    const s=await callEdgeFunction('account-summary',{});
+  }
+  if (balRes.status==='fulfilled') {
+    const s=balRes.value;
     // Use total_balance so any account type counts toward card fee affordability
     _userBalance=typeof s.total_balance==='number'?s.total_balance:null;
     _pinSet=!!s.pin_set;
     _totalPoints=s.reward_points||0;
     _updatePinLabel();
     _updateRewardsBanner();
-  } catch {}
-  // Load individual accounts for the fund/withdraw account selector
-  try {
-    const res=await callEdgeFunction('card-operations',{action:'get_accounts'});
-    _userAccounts=res?.accounts||[];
-  } catch {}
+  }
+  if (accRes.status==='fulfilled') {
+    // Individual accounts, for the fund/withdraw account selector
+    _userAccounts=accRes.value?.accounts||[];
+  }
 }
 
 function _updatePinLabel() {
@@ -1449,12 +1461,12 @@ function buildCatalog() {
           <!-- Mouse shine -->
           <div class="csh-cat" style="position:absolute;inset:0;z-index:6;pointer-events:none;border-radius:20px 20px 0 0;opacity:0;transition:opacity .4s;mix-blend-mode:soft-light;"></div>
           <!-- Card content -->
-          <div style="position:absolute;inset:0;padding:16px 18px 14px;display:flex;flex-direction:column;justify-content:space-between;z-index:5;">
+          <div style="position:absolute;inset:0;padding:${(c.ribbon||statusBadge)?'40px':'18px'} 20px 16px;display:flex;flex-direction:column;justify-content:space-between;z-index:5;">
             <!-- Top -->
-            <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
               <div>
-                <div style="font-size:.3rem;letter-spacing:.28em;color:${lux.txt2};text-transform:uppercase;margin-bottom:4px;">${lux.subtitle||''}</div>
-                <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.1rem;font-style:italic;font-weight:700;letter-spacing:.28em;color:${lux.txt};text-transform:uppercase;line-height:1;${lux.engraved?'text-shadow:0 1px 0 rgba(255,255,255,.18),0 -1px 0 rgba(0,0,0,.5);':''}">ZENITHONE</div>
+                <div style="font-size:.32rem;letter-spacing:.3em;color:${lux.txt2};text-transform:uppercase;margin-bottom:5px;">${lux.subtitle||''}</div>
+                <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.1rem;font-style:italic;font-weight:700;letter-spacing:.22em;color:${lux.txt};text-transform:uppercase;line-height:1.15;${lux.engraved?'text-shadow:0 1px 0 rgba(255,255,255,.18),0 -1px 0 rgba(0,0,0,.5);':''}">ZENITHONE</div>
               </div>
               ${lux.holo?`<div style="width:24px;height:24px;border-radius:50%;background:conic-gradient(from 0deg,#ff0080,#ff8c00,#ffd700,#00ff88,#00cfff,#8000ff,#ff0080);animation:holoPulse 3s ease-in-out infinite;box-shadow:0 0 8px rgba(255,255,255,.22);flex-shrink:0;"></div>`:''}
             </div>

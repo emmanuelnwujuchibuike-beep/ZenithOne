@@ -15,49 +15,45 @@ const _EDGE = 'https://tfxuhnusogtwqukfypxb.supabase.co/functions/v1';
 let _resolveReady;
 const _ready = new Promise(res => { _resolveReady = res; });
 
-// ── Bootstrap: fetch credentials from edge function, then init client ─────────
-(async function _bootstrap() {
-  try {
-    const res = await fetch(`${_EDGE}/get-public-config`, { cache: 'no-store' });
-    if (!res.ok) throw new Error('config fetch failed');
-    const { url, anon_key } = await res.json();
-    _loadClient(url, anon_key);
-  } catch {
-    console.warn('ZenithOne: Supabase unreachable — running in demo mode.');
-    _resolveReady(false);
-  }
-})();
-
-function _loadClient(url, anonKey) {
-  if (window._supabase) { _resolveReady(true); return; }
-
-  function _create() {
-    // Store anon key on window so callEdgeFunction can add it as the apikey header.
-    // This is intentional: the anon key is a public credential designed for browser use.
-    window._supabaseAnonKey = anonKey;
-    window._supabase = window.supabase.createClient(url, anonKey, {
-      auth: {
-        autoRefreshToken:   true,
-        persistSession:     true,
-        detectSessionInUrl: true, // handles magic-link & password-recovery callbacks
-      },
-    });
-    document.dispatchEvent(new Event('supabaseReady'));
-    _resolveReady(true);
-  }
-
-  if (window.supabase) {
-    _create();
-  } else {
+// ── Bootstrap: fetch credentials + load the supabase-js bundle in parallel ────
+// These two are independent network fetches; loading them one after another
+// (the old behavior) added a full extra round-trip of latency before any page
+// could start fetching its own data. Race them, then create the client.
+(function _bootstrap() {
+  let scriptFailed = false;
+  const scriptReady = window.supabase ? Promise.resolve() : new Promise((resolve) => {
     const s   = document.createElement('script');
     s.src     = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-    s.onload  = _create;
-    s.onerror = () => {
-      console.warn('ZenithOne: Supabase CDN unavailable — demo mode.');
-      _resolveReady(false);
-    };
+    s.onload  = () => resolve();
+    s.onerror = () => { scriptFailed = true; resolve(); };
     document.head.appendChild(s);
-  }
+  });
+  const configReady = fetch(`${_EDGE}/get-public-config`, { cache: 'no-store' })
+    .then(res => { if (!res.ok) throw new Error('config fetch failed'); return res.json(); });
+
+  Promise.all([configReady, scriptReady]).then(([config]) => {
+    if (scriptFailed || !window.supabase) throw new Error('supabase-js failed to load');
+    _create(config.url, config.anon_key);
+  }).catch(() => {
+    console.warn('ZenithOne: Supabase unreachable — running in demo mode.');
+    _resolveReady(false);
+  });
+})();
+
+function _create(url, anonKey) {
+  if (window._supabase) { _resolveReady(true); return; }
+  // Store anon key on window so callEdgeFunction can add it as the apikey header.
+  // This is intentional: the anon key is a public credential designed for browser use.
+  window._supabaseAnonKey = anonKey;
+  window._supabase = window.supabase.createClient(url, anonKey, {
+    auth: {
+      autoRefreshToken:   true,
+      persistSession:     true,
+      detectSessionInUrl: true, // handles magic-link & password-recovery callbacks
+    },
+  });
+  document.dispatchEvent(new Event('supabaseReady'));
+  _resolveReady(true);
 }
 
 // ── Authenticated edge-function caller ────────────────────────────────────────

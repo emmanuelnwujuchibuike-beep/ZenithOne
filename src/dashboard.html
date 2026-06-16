@@ -674,7 +674,13 @@
           <!-- Bottom: balance · routing · actions -->
           <div class="acct-hero-bottom">
             <div>
-              <div class="acct-hero-metric-label">Available Balance</div>
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+                <div class="acct-hero-metric-label" style="margin-bottom:0;">Available Balance</div>
+                <button id="heroBalToggle" onclick="toggleBalances()" title="Hide balance"
+                  style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:rgba(255,255,255,.45);cursor:pointer;transition:all .15s;padding:0;flex-shrink:0;">
+                  <svg id="heroBalEye" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
               <div class="acct-hero-balance" id="heroBalance">$0.00</div>
             </div>
             <div>
@@ -696,41 +702,7 @@
         </div>
       </div>
 
-      <!-- Stat Cards -->
-      <div class="grid-4" style="gap:20px;margin-bottom:28px;">
-        <div class="stat-card">
-          <div class="stat-icon gold">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          </div>
-          <div class="stat-value" id="totalBalance">$0.00</div>
-          <div class="stat-label">Total Balance</div>
-          <div class="stat-change" id="balanceChange" style="color:var(--slate-500);">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon green">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
-          </div>
-          <div class="stat-value" id="portfolioValue">$0.00</div>
-          <div class="stat-label">Portfolio Value</div>
-          <div class="stat-change" id="portfolioChange" style="color:var(--slate-500);">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon blue">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
-          </div>
-          <div class="stat-value" id="creditAvailable">$0.00</div>
-          <div class="stat-label">Available Credit</div>
-          <div class="stat-change" id="creditCardHint" style="color:var(--slate-500);">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon gold">
-            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          </div>
-          <div class="stat-value" id="rewardPoints">0</div>
-          <div class="stat-label">Reward Points</div>
-          <div class="stat-change" id="rewardChange" style="color:var(--slate-500);">—</div>
-        </div>
-      </div>
+      <!-- (old stat-card grid removed — replaced by .dash-stat-grid above) -->
 
       <!-- Middle row -->
       <div class="dash-middle-row" style="display:grid;grid-template-columns:1fr 380px;gap:24px;margin-bottom:24px;">
@@ -2286,7 +2258,7 @@
 <script src="js/auth.js"></script>
 <script src="js/dashboard.js"></script>
 <script>
-// Date/time greeting + icon
+// Date/time greeting + icon + instant name from localStorage
 (function() {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
@@ -2295,6 +2267,12 @@
   const date = new Date().toLocaleDateString('en-US', opts);
   document.getElementById('topbarDate').textContent = date;
   document.getElementById('bannerDate').textContent = date;
+  // Instant name — zo_user_name is set at login; avoids waiting for API/cache
+  const storedName = localStorage.getItem('zo_user_name');
+  if (storedName) {
+    const wn = document.getElementById('welcomeName');
+    if (wn) wn.textContent = storedName.split(' ')[0];
+  }
   // Swap greeting icon to moon for evening/night
   if (hour >= 18 || hour < 6) {
     var gi = document.getElementById('greetingIcon');
@@ -4260,16 +4238,21 @@ const _fmtBal   = n => _balHidden ? '$••••••' : fmtUSD(n);
 const _fmtAmt   = (n, credit) => _balHidden ? (credit ? '+' : '−') + '••••••' : (credit ? '+' : '−') + '$' + Math.abs(Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2});
 const fmtAcctNo = s => (s || '').replace(/(\d{4})(?=\d)/g, '$1 ').trim();
 
-// Initialise the balance toggle button icon on load
+// Initialise the balance toggle button icon on load (runs immediately — script is at bottom of body)
 (function _initBalToggle() {
-  document.addEventListener('DOMContentLoaded', function() {
+  if (_balHidden) {
+    const EYE_OFF_PATHS = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
     const btn = document.getElementById('balToggleBtn');
-    if (btn && _balHidden) {
+    if (btn) {
       btn.setAttribute('aria-pressed', 'true');
       btn.title = 'Show balances';
-      btn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+      btn.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">' + EYE_OFF_PATHS + '</svg>';
     }
-  });
+    const heroEye = document.getElementById('heroBalEye');
+    if (heroEye) heroEye.innerHTML = EYE_OFF_PATHS;
+    const heroBtn = document.getElementById('heroBalToggle');
+    if (heroBtn) heroBtn.style.color = 'rgba(255,255,255,.75)';
+  }
 })();
 
 function renderHero() {
@@ -4372,6 +4355,15 @@ function toggleBalances() {
     btn.setAttribute('aria-pressed', _balHidden ? 'true' : 'false');
     btn.title = _balHidden ? 'Show balances' : 'Hide balances';
   }
+  // Sync the inline hero balance toggle button
+  const heroEye = document.getElementById('heroBalEye');
+  if (heroEye) {
+    heroEye.innerHTML = _balHidden
+      ? '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
+      : '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>';
+  }
+  const heroBtn = document.getElementById('heroBalToggle');
+  if (heroBtn) heroBtn.style.color = _balHidden ? 'rgba(255,255,255,.75)' : 'rgba(255,255,255,.45)';
   refreshBalanceDisplays();
 }
 
@@ -4385,6 +4377,13 @@ function refreshBalanceDisplays() {
   set('snapPortfolio',   _fmtBal(_summary.portfolio_value));
   set('snapCredit',      _fmtBal(_summary.credit_available));
   set('bannerNetWorth',  _fmtBal(_summary.total_balance));
+  // portfolio gain/loss — mask when hidden
+  const _gain = Number(_summary.portfolio_gain) || 0;
+  const _gEl = _s('portfolioChange');
+  if (_gEl && (_summary.portfolio_value > 0 || _gain !== 0)) {
+    _gEl.textContent = _balHidden ? '——' : ((_gain >= 0 ? '+' : '−') + fmtUSD(Math.abs(_gain)).slice(1) + ' total');
+    _gEl.style.color = _gain >= 0 ? 'var(--green-400)' : 'var(--red-400)';
+  }
   renderHero();
   renderAccountsList();
   // Re-render recent transactions so amounts are masked

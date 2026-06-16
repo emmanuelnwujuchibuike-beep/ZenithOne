@@ -1315,7 +1315,7 @@ async function searchZelle(mode){
       document.getElementById('zelleSubmitBtn').querySelector('.xfr-btn-txt').textContent='Send via Zelle';
     } else {
       _zelleVerified=false; _zelleRecipInfo=null;
-      showSearchState(stateId,'err','No ZenithOne Zelle account found for that '+(mode==='email'?'email address':'phone number')+'.');
+      showSearchState(stateId,'err','No Zelle account found for that '+(mode==='email'?'email address':'phone number')+'.');
       document.getElementById('zelleSubmitBtn').disabled=true;
       document.getElementById('zelleSubmitBtn').querySelector('.xfr-btn-txt').textContent='Search Recipient to Continue';
     }

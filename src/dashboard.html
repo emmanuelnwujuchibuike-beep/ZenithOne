@@ -4667,6 +4667,14 @@ var _CAT_CFG = {
   Entertainment: { bg:'rgba(249,115,22,.12)',   c:'#f97316', p:'<circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>' },
   Health:        { bg:'rgba(248,113,113,.12)',  c:'#f87171', p:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>' },
   Fee:           { bg:'rgba(248,113,113,.10)',  c:'#f87171', p:'<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>' },
+  Healthcare:    { bg:'rgba(248,113,113,.12)',  c:'#f87171', p:'<path d="M12 5v14M5 12h14"/>' },
+  Insurance:     { bg:'rgba(45,212,191,.12)',   c:'#2dd4bf', p:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
+  Telecom:       { bg:'rgba(96,165,250,.12)',   c:'#60a5fa', p:'<path d="M5 12.55a11 11 0 0114 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>' },
+  Housing:       { bg:'rgba(74,222,128,.12)',   c:'#4ade80', p:'<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' },
+  Finance:       { bg:'rgba(201,168,76,.12)',   c:'#c9a84c', p:'<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>' },
+  Subscription:  { bg:'rgba(251,113,133,.12)',  c:'#fb7185', p:'<polygon points="5 3 19 12 5 21 5 3"/>' },
+  Education:     { bg:'rgba(56,189,248,.12)',   c:'#38bdf8', p:'<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>' },
+  Bills:         { bg:'rgba(203,213,225,.12)',  c:'#cbd5e1', p:'<path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/>' },
 };
 var _CAT_DEFAULT = { bg:'rgba(100,116,139,.12)', c:'#94a3b8', p:'<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>' };
 
@@ -4748,11 +4756,49 @@ var _BRAND_DB = [
   { re:/capital\s*one/i,            domain:'capitalone.com',       color:'#004977' },
   { re:/american\s*express|amex/i, domain:'americanexpress.com',  color:'#006FCF' },
   { re:/discover\b/i,               domain:'discover.com',         color:'#FF6000' },
+  { re:/blue\s*cross|blue\s*shield|\bbcbs\b/i, domain:'bcbs.com',   color:'#0072CE' },
+  { re:/\baetna\b/i,                domain:'aetna.com',            color:'#7B2D8E' },
+  { re:/\bcigna\b/i,                domain:'cigna.com',            color:'#00945F' },
+  { re:/united\s*health/i,          domain:'uhc.com',              color:'#002677' },
+  { re:/kaiser\s*permanente/i,      domain:'kaiserpermanente.org', color:'#005EB8' },
+  { re:/\bhumana\b/i,               domain:'humana.com',           color:'#54B848' },
+  { re:/\banthem\b/i,               domain:'anthem.com',           color:'#00549A' },
+  { re:/metlife/i,                  domain:'metlife.com',          color:'#00A9E0' },
+  { re:/molina\s*health/i,          domain:'molinahealthcare.com', color:'#00833E' },
 ];
 
 function _matchBrand(desc) {
   if (!desc) return null;
   for (var i = 0; i < _BRAND_DB.length; i++) { if (_BRAND_DB[i].re.test(desc)) return _BRAND_DB[i]; }
+  return null;
+}
+
+// Bill payments carry a free-text payee name the member typed in (e.g. "City
+// Water Dept", "ABC Family Dental") that won't match a known public brand —
+// but the biller *type* they picked still tells us what icon to show, so we
+// recognize the type from keywords in that name (mirrors the icon set used
+// in the Pay Bill picker) rather than falling back to a generic bill icon.
+var _BILL_TYPE_DB = [
+  { re:/electric|power\s*co|energy/i,                          c:'#fbbf24', p:'<path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/>' },
+  { re:/\bwater\b/i,                                            c:'#38bdf8', p:'<path d="M12 2.5s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>' },
+  { re:/\bgas\b/i,                                              c:'#f97316', p:'<path d="M12 2c1 3 4 4.5 4 8a4 4 0 0 1-8 0c0-1.5.5-2.5 1-3 .5 2 1.5 2.5 2 2.5C10 7 11 4 12 2z"/>' },
+  { re:/internet|broadband|fiber/i,                             c:'#60a5fa', p:'<path d="M5 12.55a11 11 0 0 1 14 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>' },
+  { re:/mobile|wireless|cellular/i,                             c:'#a78bfa', p:'<rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>' },
+  { re:/cable|\btv\b/i,                                         c:'#818cf8', p:'<rect x="2" y="7" width="20" height="13" rx="2"/><polyline points="8 3 12 7 16 3"/>' },
+  { re:/\brent\b|landlord|apartment/i,                          c:'#4ade80', p:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' },
+  { re:/mortgage/i,                                             c:'#34d399', p:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>' },
+  { re:/insurance|\bpremium\b/i,                                c:'#2dd4bf', p:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
+  { re:/credit\s*card/i,                                        c:'#c9a84c', p:'<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>' },
+  { re:/auto\s*loan|car\s*loan|auto\s*finance/i,                c:'#f472b6', p:'<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>' },
+  { re:/streaming|subscription/i,                               c:'#fb7185', p:'<polygon points="5 3 19 12 5 21 5 3"/>' },
+  { re:/tuition|university|college/i,                           c:'#38bdf8', p:'<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>' },
+  { re:/medical|health|clinic|hospital|doctor|dental|vision|pharmacy/i, c:'#f87171', p:'<path d="M12 5v14M5 12h14"/>' },
+  { re:/trash|waste|sanitation/i,                               c:'#94a3b8', p:'<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>' },
+];
+
+function _matchBillType(desc) {
+  if (!desc) return null;
+  for (var i = 0; i < _BILL_TYPE_DB.length; i++) { if (_BILL_TYPE_DB[i].re.test(desc)) return _BILL_TYPE_DB[i]; }
   return null;
 }
 
@@ -4793,6 +4839,12 @@ function _txBadge(t) {
       + '<span class="tx-badge-fallback" style="color:' + brand.color + ';">' + letter + '</span>'
       + '<img class="tx-badge-logo" src="https://logo.clearbit.com/' + brand.domain + '?size=64" alt="" loading="lazy" '
       + 'onload="this.style.opacity=1" onerror="this.style.display=\'none\'">'
+      + '</div>';
+  }
+  var billType = _matchBillType(desc);
+  if (billType) {
+    return '<div class="tx-badge" style="background:' + billType.c + '1A;border:1px solid ' + billType.c + '40;">'
+      + '<svg width="18" height="18" fill="none" stroke="' + billType.c + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">' + billType.p + '</svg>'
       + '</div>';
   }
   var person = _extractPerson(desc);

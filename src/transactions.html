@@ -660,6 +660,14 @@ var _ICONS = {
   Health:        { bg:'rgba(251,113,133,.12)', c:'#fb7185', p:'<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>' },
   Investment:    { bg:'rgba(129,140,248,.12)', c:'#818cf8', p:'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>' },
   Fee:           { bg:'rgba(248,113,113,.12)', c:'#f87171', p:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>' },
+  Healthcare:    { bg:'rgba(248,113,113,.12)', c:'#f87171', p:'<path d="M12 5v14M5 12h14"/>' },
+  Insurance:     { bg:'rgba(45,212,191,.12)',  c:'#2dd4bf', p:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
+  Telecom:       { bg:'rgba(96,165,250,.12)',  c:'#60a5fa', p:'<path d="M5 12.55a11 11 0 0 1 14 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>' },
+  Housing:       { bg:'rgba(74,222,128,.12)',  c:'#4ade80', p:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' },
+  Finance:       { bg:'rgba(201,168,76,.12)',  c:'#c9a84c', p:'<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>' },
+  Subscription:  { bg:'rgba(251,113,133,.12)', c:'#fb7185', p:'<polygon points="5 3 19 12 5 21 5 3"/>' },
+  Education:     { bg:'rgba(56,189,248,.12)',  c:'#38bdf8', p:'<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>' },
+  Bills:         { bg:'rgba(203,213,225,.12)', c:'#cbd5e1', p:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>' },
 };
 var _ICON_DEFAULT = { bg:'rgba(255,255,255,.06)', c:'var(--slate-400)', p:'<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>' };
 
@@ -668,6 +676,168 @@ function _catSvg(cat, sz) {
   var cfg = _ICONS[cat] || _ICON_DEFAULT;
   return '<div class="txn-cat-icon" style="width:'+sz+'px;height:'+sz+'px;background:'+cfg.bg+';">'
     + '<svg width="19" height="19" fill="none" stroke="'+cfg.c+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">'+cfg.p+'</svg>'
+    + '</div>';
+}
+
+/* ── PREMIUM TRANSACTION BADGES — real merchant/biller logos + person avatars ──
+   Bill payments and transfer memos carry real free-text (payee names,
+   recipient names), so well-known brands are recognized and shown with an
+   actual logo (public logo API, with a colored-initial fallback on error) —
+   the same look real banking apps use for transaction rows. */
+var _BRAND_DB = [
+  { re:/amazon/i,                  domain:'amazon.com',           color:'#FF9900' },
+  { re:/\bapple\b/i,                domain:'apple.com',            color:'#A2AAAD' },
+  { re:/netflix/i,                  domain:'netflix.com',          color:'#E50914' },
+  { re:/spotify/i,                  domain:'spotify.com',          color:'#1DB954' },
+  { re:/uber\s*eats/i,              domain:'ubereats.com',         color:'#06C167' },
+  { re:/\buber\b/i,                 domain:'uber.com',             color:'#000000' },
+  { re:/\blyft\b/i,                 domain:'lyft.com',             color:'#FF00BF' },
+  { re:/starbucks/i,                domain:'starbucks.com',        color:'#00704A' },
+  { re:/walmart/i,                  domain:'walmart.com',          color:'#0071CE' },
+  { re:/\btarget\b/i,               domain:'target.com',           color:'#CC0000' },
+  { re:/costco/i,                   domain:'costco.com',           color:'#005DAA' },
+  { re:/whole\s*foods/i,            domain:'wholefoodsmarket.com', color:'#00674B' },
+  { re:/trader\s*joe/i,             domain:'traderjoes.com',       color:'#D2232A' },
+  { re:/\bshell\b/i,                domain:'shell.com',            color:'#FBCE07' },
+  { re:/chevron/i,                  domain:'chevron.com',          color:'#0066B2' },
+  { re:/\bexxon/i,                  domain:'exxon.com',            color:'#D40E14' },
+  { re:/delta\s*(air)?/i,           domain:'delta.com',            color:'#003366' },
+  { re:/united\s*airlines/i,        domain:'united.com',           color:'#005DAA' },
+  { re:/southwest/i,                domain:'southwest.com',        color:'#304CB2' },
+  { re:/airbnb/i,                   domain:'airbnb.com',           color:'#FF5A5F' },
+  { re:/marriott/i,                 domain:'marriott.com',         color:'#A6192E' },
+  { re:/hilton/i,                   domain:'hilton.com',           color:'#104C97' },
+  { re:/doordash/i,                 domain:'doordash.com',         color:'#FF3008' },
+  { re:/grubhub/i,                  domain:'grubhub.com',          color:'#FF8000' },
+  { re:/best\s*buy/i,               domain:'bestbuy.com',          color:'#0046BE' },
+  { re:/home\s*depot/i,             domain:'homedepot.com',        color:'#F96302' },
+  { re:/lowe'?s/i,                  domain:'lowes.com',            color:'#004990' },
+  { re:/\bcvs\b/i,                  domain:'cvs.com',              color:'#CC0000' },
+  { re:/walgreens/i,                domain:'walgreens.com',        color:'#E31837' },
+  { re:/mcdonald/i,                 domain:'mcdonalds.com',        color:'#FFC72C' },
+  { re:/chipotle/i,                 domain:'chipotle.com',         color:'#A81612' },
+  { re:/paypal/i,                   domain:'paypal.com',           color:'#003087' },
+  { re:/venmo/i,                    domain:'venmo.com',            color:'#3D95CE' },
+  { re:/\bat&t\b/i,                 domain:'att.com',              color:'#00A8E0' },
+  { re:/verizon/i,                  domain:'verizon.com',          color:'#CD040B' },
+  { re:/t-mobile/i,                 domain:'t-mobile.com',         color:'#E20074' },
+  { re:/xfinity|comcast/i,          domain:'xfinity.com',          color:'#6E10A0' },
+  { re:/\bhulu\b/i,                 domain:'hulu.com',             color:'#1CE783' },
+  { re:/disney/i,                   domain:'disneyplus.com',       color:'#113CCF' },
+  { re:/\bhbo\b|max\s*streaming/i,  domain:'max.com',              color:'#9013FE' },
+  { re:/google/i,                   domain:'google.com',           color:'#4285F4' },
+  { re:/microsoft/i,                domain:'microsoft.com',        color:'#00A4EF' },
+  { re:/\bnike\b/i,                 domain:'nike.com',             color:'#111111' },
+  { re:/\bikea\b/i,                 domain:'ikea.com',             color:'#0058A3' },
+  { re:/geico/i,                    domain:'geico.com',            color:'#005DAA' },
+  { re:/state\s*farm/i,             domain:'statefarm.com',        color:'#D03A2D' },
+  { re:/allstate/i,                 domain:'allstate.com',         color:'#0033A0' },
+  { re:/progressive/i,              domain:'progressive.com',      color:'#0072CE' },
+  { re:/pacific\s*gas|pg&e/i,       domain:'pge.com',              color:'#0072CE' },
+  { re:/con\s?edison/i,             domain:'coned.com',            color:'#0072CE' },
+  { re:/duke\s*energy/i,            domain:'duke-energy.com',      color:'#00A8E8' },
+  { re:/chase\b/i,                  domain:'chase.com',            color:'#117ACA' },
+  { re:/wells\s*fargo/i,            domain:'wellsfargo.com',       color:'#D71E2B' },
+  { re:/bank\s*of\s*america/i,      domain:'bankofamerica.com',    color:'#012169' },
+  { re:/\bciti\b|citibank/i,        domain:'citi.com',             color:'#003D7C' },
+  { re:/capital\s*one/i,            domain:'capitalone.com',       color:'#004977' },
+  { re:/american\s*express|amex/i, domain:'americanexpress.com',  color:'#006FCF' },
+  { re:/discover\b/i,               domain:'discover.com',         color:'#FF6000' },
+  { re:/blue\s*cross|blue\s*shield|\bbcbs\b/i, domain:'bcbs.com',   color:'#0072CE' },
+  { re:/\baetna\b/i,                domain:'aetna.com',            color:'#7B2D8E' },
+  { re:/\bcigna\b/i,                domain:'cigna.com',            color:'#00945F' },
+  { re:/united\s*health/i,          domain:'uhc.com',              color:'#002677' },
+  { re:/kaiser\s*permanente/i,      domain:'kaiserpermanente.org', color:'#005EB8' },
+  { re:/\bhumana\b/i,               domain:'humana.com',           color:'#54B848' },
+  { re:/\banthem\b/i,               domain:'anthem.com',           color:'#00549A' },
+  { re:/metlife/i,                  domain:'metlife.com',          color:'#00A9E0' },
+  { re:/molina\s*health/i,          domain:'molinahealthcare.com', color:'#00833E' },
+];
+function _matchBrand(desc) {
+  if (!desc) return null;
+  for (var i = 0; i < _BRAND_DB.length; i++) { if (_BRAND_DB[i].re.test(desc)) return _BRAND_DB[i]; }
+  return null;
+}
+
+/* Bill payments carry a free-text payee name the member typed in that won't
+   match a known public brand — recognize the biller *type* from keywords
+   (mirrors the icon set used in the dashboard's Pay Bill picker) instead of
+   falling back to a generic bill icon. */
+var _BILL_TYPE_DB = [
+  { re:/electric|power\s*co|energy/i,                          c:'#fbbf24', p:'<path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/>' },
+  { re:/\bwater\b/i,                                            c:'#38bdf8', p:'<path d="M12 2.5s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>' },
+  { re:/\bgas\b/i,                                              c:'#f97316', p:'<path d="M12 2c1 3 4 4.5 4 8a4 4 0 0 1-8 0c0-1.5.5-2.5 1-3 .5 2 1.5 2.5 2 2.5C10 7 11 4 12 2z"/>' },
+  { re:/internet|broadband|fiber/i,                             c:'#60a5fa', p:'<path d="M5 12.55a11 11 0 0 1 14 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>' },
+  { re:/mobile|wireless|cellular/i,                             c:'#a78bfa', p:'<rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>' },
+  { re:/cable|\btv\b/i,                                         c:'#818cf8', p:'<rect x="2" y="7" width="20" height="13" rx="2"/><polyline points="8 3 12 7 16 3"/>' },
+  { re:/\brent\b|landlord|apartment/i,                          c:'#4ade80', p:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' },
+  { re:/mortgage/i,                                             c:'#34d399', p:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>' },
+  { re:/insurance|\bpremium\b/i,                                c:'#2dd4bf', p:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' },
+  { re:/credit\s*card/i,                                        c:'#c9a84c', p:'<rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/>' },
+  { re:/auto\s*loan|car\s*loan|auto\s*finance/i,                c:'#f472b6', p:'<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>' },
+  { re:/streaming|subscription/i,                               c:'#fb7185', p:'<polygon points="5 3 19 12 5 21 5 3"/>' },
+  { re:/tuition|university|college/i,                           c:'#38bdf8', p:'<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>' },
+  { re:/medical|health|clinic|hospital|doctor|dental|vision|pharmacy/i, c:'#f87171', p:'<path d="M12 5v14M5 12h14"/>' },
+  { re:/trash|waste|sanitation/i,                               c:'#94a3b8', p:'<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>' },
+];
+function _matchBillType(desc) {
+  if (!desc) return null;
+  for (var i = 0; i < _BILL_TYPE_DB.length; i++) { if (_BILL_TYPE_DB[i].re.test(desc)) return _BILL_TYPE_DB[i]; }
+  return null;
+}
+
+var _AVATAR_PALETTE = ['#c9a84c','#60a5fa','#a78bfa','#34d399','#f472b6','#fb923c','#38bdf8','#f87171'];
+function _hashStr(s) { var h = 0; for (var i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) | 0; } return Math.abs(h); }
+function _avatarColor(name) { return _AVATAR_PALETTE[_hashStr(name) % _AVATAR_PALETTE.length]; }
+function _initialsOf(name) {
+  var parts = name.trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return '?';
+  return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+}
+/* Pulls a counterparty's name out of P2P transfer descriptions ("Sent to Jane
+   Doe", "Received from John Smith — rent") to render an initials avatar
+   instead of a generic transfer icon. */
+function _extractPerson(desc) {
+  if (!desc) return null;
+  var m = desc.match(/^(?:Sent to|Received from|Received)\s+([^—\n]+?)(?:\s*—.*)?$/i);
+  if (m && m[1]) {
+    var name = m[1].trim();
+    if (!/^(checking|savings|money market|account)$/i.test(name)) return name;
+  }
+  return null;
+}
+
+function _txBadgeHtml(t, sz, cls) {
+  sz = sz || 44;
+  cls = cls || 'txn-cat-icon';
+  var sizeStyle = cls === 'txn-cat-icon' ? 'width:'+sz+'px;height:'+sz+'px;' : '';
+  var desc = t.description || '';
+  var brand = _matchBrand(desc);
+  if (brand) {
+    var letter = (desc.match(/[A-Za-z]/) || ['?'])[0].toUpperCase();
+    return '<div class="'+cls+'" style="'+sizeStyle+'position:relative;overflow:hidden;background:'+brand.color+'1A;border:1px solid '+brand.color+'40;">'
+      + '<span style="position:relative;z-index:1;color:'+brand.color+';font-family:var(--font-display);font-weight:600;font-size:'+Math.round(sz*0.32)+'px;">'+letter+'</span>'
+      + '<img src="https://logo.clearbit.com/'+brand.domain+'?size=64" alt="" loading="lazy" '
+      + 'style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:'+Math.round(sz*0.2)+'px;opacity:0;transition:opacity .3s ease;z-index:2;" '
+      + 'onload="this.style.opacity=1" onerror="this.style.display=\'none\'">'
+      + '</div>';
+  }
+  var billType = _matchBillType(desc);
+  if (billType) {
+    return '<div class="'+cls+'" style="'+sizeStyle+'background:'+billType.c+'1A;border:1px solid '+billType.c+'40;">'
+      + '<svg width="'+Math.round(sz*0.43)+'" height="'+Math.round(sz*0.43)+'" fill="none" stroke="'+billType.c+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">'+billType.p+'</svg>'
+      + '</div>';
+  }
+  var person = _extractPerson(desc);
+  if (person) {
+    var color = _avatarColor(person);
+    return '<div class="'+cls+'" style="'+sizeStyle+'background:linear-gradient(150deg,'+color+'33,'+color+'14);border:1px solid '+color+'40;">'
+      + '<span style="color:'+color+';font-family:var(--font-display);font-weight:600;font-size:'+Math.round(sz*0.26)+'px;">'+_initialsOf(person)+'</span>'
+      + '</div>';
+  }
+  var cfg = _ICONS[t.category] || _ICON_DEFAULT;
+  return '<div class="'+cls+'" style="'+sizeStyle+'background:'+cfg.bg+';">'
+    + '<svg width="'+Math.round(sz*0.43)+'" height="'+Math.round(sz*0.43)+'" fill="none" stroke="'+cfg.c+'" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">'+cfg.p+'</svg>'
     + '</div>';
 }
 
@@ -934,7 +1104,7 @@ function _render() {
       var ref     = t.reference_number ? '#' + t.reference_number : '#' + (t.id || '').slice(0, 8).toUpperCase();
 
       html += '<div class="txn-row ' + rowCls + '" onclick="openDrawer(\'' + t.id + '\')">'
-        + _catSvg(t.category)
+        + _txBadgeHtml(t, 44)
         + '<div class="txn-meta">'
         + '<div class="txn-name">' + _esc(t.description || '—') + '</div>'
         + '<div class="txn-sub"><span class="s-dot ' + dotCls + '"></span>'
@@ -1000,7 +1170,6 @@ function openDrawer(id) {
   var failed  = t.status === 'failed';
   var amtStr  = (credit ? '+' : '−') + _usd(t.amount);
   var amtClr  = credit ? 'var(--green-400)' : (failed ? 'var(--red-400)' : 'var(--white)');
-  var cfg     = _ICONS[t.category] || _ICON_DEFAULT;
   var ref     = t.reference_number ? t.reference_number : (t.id || '').slice(0, 8).toUpperCase();
 
   /* Status badge */
@@ -1050,9 +1219,7 @@ function openDrawer(id) {
 
   document.getElementById('drawerBody').innerHTML =
     '<div class="txn-drawer-amt">'
-    + '<div class="txn-drawer-icon" style="background:' + cfg.bg + ';">'
-    + '<svg width="26" height="26" fill="none" stroke="' + cfg.c + '" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">' + cfg.p + '</svg>'
-    + '</div>'
+    + _txBadgeHtml(t, 58, 'txn-drawer-icon')
     + '<div class="txn-drawer-num" style="color:' + amtClr + ';">' + amtStr + '</div>'
     + '<div class="txn-drawer-desc">' + _esc(t.description || '') + '</div>'
     + '<span style="display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:12px;font-size:.68rem;font-weight:700;letter-spacing:.06em;background:' + badgeBg + ';color:' + badgeClr + ';border:1px solid ' + badgeBrd + ';">'

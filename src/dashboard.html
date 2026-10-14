@@ -2486,6 +2486,21 @@
     </div>
   </div>
 </div>
+
+<!-- ═══════ SEND RESULT MODAL (pending / successful) ═══════ -->
+<div id="sendResultModal" class="zmodal" onclick="if(event.target===this)closeSendResult()">
+  <div class="zsheet" style="text-align:center;">
+    <div class="zsheet-body" style="padding-top:28px;">
+      <div id="sendResIcon" style="width:64px;height:64px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;"></div>
+      <div id="sendResTitle" style="font-family:var(--font-display);font-size:1.5rem;color:#fff;margin-bottom:6px;"></div>
+      <div id="sendResAmt" style="font-family:var(--font-display);font-size:2.2rem;color:var(--gold-400,#c9a84c);margin-bottom:6px;"></div>
+      <div id="sendResTo" style="font-size:.82rem;color:var(--slate-300);margin-bottom:12px;"></div>
+      <div id="sendResMsg" style="font-size:.78rem;color:var(--slate-400);line-height:1.6;margin-bottom:12px;"></div>
+      <div id="sendResRef" style="font-family:'Courier New',monospace;font-size:.7rem;color:var(--slate-500);margin-bottom:18px;"></div>
+      <button class="zbtn-primary" onclick="closeSendResult()">Done</button>
+    </div>
+  </div>
+</div>
 </div>
 
 <script src="js/supabase-config.js"></script>
@@ -5940,7 +5955,7 @@ async function submitSend() {
   const btn = document.getElementById('sendSubmitBtn');
   btn.disabled = true; btn.textContent = 'Submitting…';
   try {
-    await callEdgeFunction('transfer-funds', {
+    const res = await callEdgeFunction('transfer-funds', {
       action: 'request', transfer_type: 'send',
       from_account_id, to_account_number, amount, memo,
       recipient_name: _sendRecipientName || null,
@@ -5948,14 +5963,57 @@ async function submitSend() {
       routing_number: _sendExtRouting || null,
       bank_name: _sendExtBank || null,
     });
+    const recipLabel = (_sendRecipientName || 'Recipient') + (_sendIsExternal && _sendExtBank ? ' · ' + _sendExtBank : '') + ' · ••••' + to_account_number.slice(-4);
     closeSendModal();
-    zenithToast('Transfer request submitted. Our team will review and process it shortly.', 'info', 7000);
-    await loadDashboardData();
+    btn.disabled = false; btn.textContent = 'Submit Transfer Request';
+    openSendResult(amount, recipLabel, res && res.request_id);
   } catch (e) {
     let msg = 'Transfer failed.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
     errEl.textContent = msg;
     btn.disabled = false; btn.textContent = 'Submit Transfer Request';
   }
+}
+
+// Shown after a Send submit instead of closing silently + reloading the dashboard.
+// Starts as "Pending" and flips to "Successful" when an admin approves.
+let _sendResReqId = null, _sendResPoll = null;
+function _setSendResState(state, msg) {
+  const ok = state === 'approved', bad = state === 'declined';
+  const color = ok ? '#4ade80' : bad ? '#f87171' : '#fbbf24';
+  document.getElementById('sendResIcon').style.cssText += `;background:${color}1f;border:1px solid ${color}55;`;
+  document.getElementById('sendResIcon').innerHTML = ok
+    ? `<svg width="28" height="28" fill="none" stroke="${color}" stroke-width="2.4" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>`
+    : bad
+      ? `<svg width="26" height="26" fill="none" stroke="${color}" stroke-width="2.4" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
+      : `<svg width="28" height="28" fill="none" stroke="${color}" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`;
+  document.getElementById('sendResTitle').textContent = ok ? 'Transfer Successful' : bad ? 'Transfer Declined' : 'Transfer Pending';
+  document.getElementById('sendResMsg').textContent = msg || (ok
+    ? 'Your transfer has been authorized and sent.'
+    : bad ? 'This transfer was not authorized. No funds were deducted.'
+    : 'Submitted successfully and awaiting authorization. You\'ll be notified as soon as it\'s processed.');
+}
+function openSendResult(amount, recipLabel, reqId) {
+  _sendResReqId = reqId || null;
+  document.getElementById('sendResAmt').textContent = fmtUSD(amount);
+  document.getElementById('sendResTo').textContent = 'To ' + recipLabel;
+  document.getElementById('sendResRef').textContent = reqId ? 'Ref: ' + reqId : '';
+  _setSendResState('pending');
+  document.getElementById('sendResultModal').classList.add('open');
+  clearInterval(_sendResPoll);
+  if (_sendResReqId) _sendResPoll = setInterval(async () => {
+    try {
+      const r = await callEdgeFunction('transfer-funds', { action: 'check_status', request_id: _sendResReqId });
+      if (r && (r.status === 'approved' || r.status === 'declined')) {
+        clearInterval(_sendResPoll);
+        _setSendResState(r.status, r.admin_note || null);
+      }
+    } catch { /* keep polling */ }
+  }, 10000);
+}
+function closeSendResult() {
+  clearInterval(_sendResPoll); _sendResReqId = null;
+  document.getElementById('sendResultModal').classList.remove('open');
+  loadDashboardData();
 }
 
 // ═══════════════════════════════════════════════════════════════

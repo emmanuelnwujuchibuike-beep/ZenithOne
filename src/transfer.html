@@ -1207,6 +1207,8 @@ async function searchMember(){
   var acct=document.getElementById('sendAcctNo').value.trim();
   if(acct.length<4){ showSearchState('sendRecipState','err','Please enter a valid account number.'); return; }
 
+  // Re-pressing Verify while this number's external-bank form is open must not wipe it
+  if(_sendIsExternal&&!_sendVerified&&document.getElementById('extBankPanel')&&_extPanelNum===acct) return;
   document.getElementById('sendSearchBtn').disabled=true;
   _sendVerified=false; _extBankVerified=false; _sendExtRouting=''; _sendExtBank='';
 
@@ -1236,7 +1238,9 @@ async function searchMember(){
   document.getElementById('sendSearchBtn').disabled=false;
 }
 
+var _extPanelNum='';
 function showExternalRecipientEntry(acct){
+  _extPanelNum=acct;
   var el=document.getElementById('sendRecipState');
   var a=_esc(acct);
   el.innerHTML=
@@ -1258,7 +1262,7 @@ function showExternalRecipientEntry(acct){
     '<div id="extBankDetected" style="display:none;margin-top:7px;align-items:center;gap:8px;background:rgba(74,222,128,.06);border:1px solid rgba(74,222,128,.18);border-radius:8px;padding:8px 12px;">'+
     '<svg width="11" height="11" fill="none" stroke="#4ade80" stroke-width="2.6" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>'+
     '<span id="extBankNameTxt" style="font-size:.78rem;font-weight:600;color:#fff;"></span>'+
-    '<span style="font-size:.66rem;color:var(--slate-500);margin-left:2px;">· Verified</span>'+
+    '<span id="extBankTag" style="font-size:.66rem;color:var(--slate-500);margin-left:2px;">· Verified</span>'+
     '</div></div>'+
     // Account holder name
     '<div>'+
@@ -1275,10 +1279,14 @@ function onExtRoutingInput(acct){
   if(document.getElementById('extRouting')) document.getElementById('extRouting').value=rn;
   var detEl=document.getElementById('extBankDetected');
   var nameEl=document.getElementById('extBankNameTxt');
-  if(rn.length===9 && ABA_TABLE[rn]){
-    _extBankVerified=true; _sendExtBank=ABA_TABLE[rn]; _sendExtRouting=rn;
+  // Any 9-digit routing number is accepted (admin reviews every external transfer);
+  // ABA_TABLE only supplies a friendly name for well-known banks.
+  if(rn.length===9){
+    var known=ABA_TABLE[rn];
+    _extBankVerified=true; _sendExtBank=known||'External Bank'; _sendExtRouting=rn;
     if(detEl){ detEl.style.display='flex'; }
-    if(nameEl){ nameEl.textContent=ABA_TABLE[rn]; }
+    if(nameEl){ nameEl.textContent=known||('External Bank · ABA '+rn); }
+    var tagEl=document.getElementById('extBankTag'); if(tagEl) tagEl.style.display=known?'':'none';
   } else {
     _extBankVerified=false; _sendExtBank=''; _sendExtRouting='';
     if(detEl){ detEl.style.display='none'; }
@@ -1300,7 +1308,7 @@ function confirmExternalRecipient(acct){
   var name=((document.getElementById('extRecipName')||{}).value||'').trim();
   var routing=((document.getElementById('extRouting')||{}).value||'').trim();
   if(!name){ showSearchState('sendRecipState','err','Please enter the account holder\'s name.'); return; }
-  if(!routing||routing.length!==9||!ABA_TABLE[routing]){ showSearchState('sendRecipState','err','Please enter a valid 9-digit routing number.'); return; }
+  if(!routing||routing.length!==9){ showSearchState('sendRecipState','err','Please enter a valid 9-digit routing number.'); return; }
   var bank=ABA_TABLE[routing]||'External Bank';
   _sendVerified=true; _sendRecipName=name; _sendIsExternal=true; _sendExtRouting=routing; _sendExtBank=bank;
   showSearchState('sendRecipState','found',name,bank,'Account ••••'+acct.slice(-4));

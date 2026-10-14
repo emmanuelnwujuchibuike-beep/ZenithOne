@@ -5821,6 +5821,9 @@ async function verifyRecipient() {
   errEl.textContent = '';
   if (num.length < 4) { errEl.textContent = 'Enter a valid account number.'; return; }
   const vbtn = document.getElementById('sendVerifyBtn');
+  // Re-pressing Verify while the external-bank form for this same number is open
+  // must not redraw it (that wiped the routing number / name already typed).
+  if (_sendIsExternal && !_sendVerified && document.getElementById('dashExtPanel') && _dashExtNum === num) return;
   vbtn.textContent = '…'; vbtn.style.pointerEvents = 'none';
   _sendVerified = false; _sendIsExternal = false; _sendExtRouting = ''; _sendExtBank = ''; _dashExtBankVerified = false;
 
@@ -5850,7 +5853,9 @@ async function verifyRecipient() {
   updateSendBtn();
 }
 
+let _dashExtNum = '';
 function _showDashExternalEntry(num) {
+  _dashExtNum = num;
   const last4 = num.slice(-4);
   document.getElementById('sendRecipBox').innerHTML = `
     <div id="dashExtPanel" style="border:1px solid rgba(201,168,76,.18);border-radius:12px;overflow:hidden;margin-top:10px;background:rgba(0,0,0,.15);">
@@ -5870,7 +5875,7 @@ function _showDashExternalEntry(num) {
           <div id="dashExtBankFound" style="display:none;margin-top:7px;align-items:center;gap:8px;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.18);border-radius:8px;padding:8px 12px;">
             <svg width="11" height="11" fill="none" stroke="#4ade80" stroke-width="2.6" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
             <span id="dashExtBankName" style="font-size:.78rem;font-weight:600;color:#fff;"></span>
-            <span style="font-size:.66rem;color:var(--slate-500);margin-left:2px;">· Verified</span>
+            <span id="dashExtBankTag" style="font-size:.66rem;color:var(--slate-500);margin-left:2px;">· Verified</span>
           </div>
         </div>
         <div>
@@ -5889,10 +5894,15 @@ function onDashExtRoutingInput(num) {
   const rn = el.value;
   const bankFoundEl = document.getElementById('dashExtBankFound');
   const bankNameEl = document.getElementById('dashExtBankName');
-  if (rn.length === 9 && _DASH_ABA[rn]) {
-    _dashExtBankVerified = true; _sendExtRouting = rn; _sendExtBank = _DASH_ABA[rn];
+  // Any 9-digit routing number is accepted (admin reviews every external transfer);
+  // the built-in table only supplies a friendly bank name for well-known banks.
+  if (rn.length === 9) {
+    const known = _DASH_ABA[rn];
+    _dashExtBankVerified = true; _sendExtRouting = rn; _sendExtBank = known || 'External Bank';
     if (bankFoundEl) { bankFoundEl.style.display = 'flex'; }
-    if (bankNameEl) bankNameEl.textContent = _DASH_ABA[rn];
+    if (bankNameEl) bankNameEl.textContent = known || ('External Bank · ABA ' + rn);
+    const tagEl = document.getElementById('dashExtBankTag');
+    if (tagEl) tagEl.style.display = known ? '' : 'none';
   } else {
     _dashExtBankVerified = false; _sendExtRouting = ''; _sendExtBank = '';
     if (bankFoundEl) bankFoundEl.style.display = 'none';

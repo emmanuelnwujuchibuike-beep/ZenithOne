@@ -78,7 +78,7 @@ async function callEdgeFunction(name, body = {}) {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ message: res.statusText }));
-    throw new Error(err.message || `Edge function "${name}" failed`);
+    throw new Error(err.message || err.error || `Edge function "${name}" failed`);
   }
   return res.json();
 }

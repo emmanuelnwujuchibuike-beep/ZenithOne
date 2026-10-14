@@ -34,6 +34,29 @@
     }, 150);
   }
 
+  // Page-level overlays (modals, drawers, the transfer processing screen) live
+  // as <body> children between .app-layout and the first <script>, outside
+  // #spaPageRoot. They must be swapped along with the page, or the new page's
+  // scripts look them up by id and find nothing (no confirm / success screen).
+  function pageOverlays(root) {
+    var out = [];
+    var layout = root.querySelector('body > .app-layout');
+    for (var el = layout && layout.nextElementSibling; el && el.tagName !== 'SCRIPT'; el = el.nextElementSibling) out.push(el);
+    return out;
+  }
+
+  function swapOverlays(doc) {
+    document.querySelectorAll('[data-spa-overlay]').forEach(function (el) { el.remove(); });
+    var anchor = document.querySelector('body > .app-layout');
+    if (!anchor) return;
+    pageOverlays(doc).forEach(function (el) {
+      var node = document.importNode(el, true);
+      node.setAttribute('data-spa-overlay', '');
+      anchor.parentNode.insertBefore(node, anchor.nextSibling);
+      anchor = node;
+    });
+  }
+
   function teardownCurrent() {
     var o = current.owned;
     if (!o) return;
@@ -73,9 +96,14 @@
     };
 
     var indirectEval = window.eval;
+    // A leading 'use strict' would make indirect eval keep the page's functions
+    // local to the eval, so inline onclick="..." handlers (which resolve against
+    // globals) find nothing. A fresh load's classic <script> still declares them
+    // globally, so drop the directive to match that behaviour.
+    function sloppy(code) { return code.replace(/^\s*(['"])use strict\1;?/, ''); }
     try {
-      if (extraCode) indirectEval(extraCode);
-      if (inlineCode) indirectEval(inlineCode);
+      if (extraCode) indirectEval(sloppy(extraCode));
+      if (inlineCode) indirectEval(sloppy(inlineCode));
     } catch (err) {
       console.error('[spa-router] page script error', err);
     } finally {
@@ -131,6 +159,7 @@
       });
 
       curRoot.innerHTML = newRoot.innerHTML;
+      swapOverlays(doc);
 
       if (doc.title) document.title = doc.title;
       var newTopbarTitle = doc.querySelector('.app-topbar-title');
@@ -174,6 +203,8 @@
     if (e.state && e.state.spaUrl) navigate(e.state.spaUrl, false);
     else location.reload();
   });
+
+  pageOverlays(document).forEach(function (el) { el.setAttribute('data-spa-overlay', ''); });
 
   window.spaNavigate = function (url) { navigate(url, true); };
 

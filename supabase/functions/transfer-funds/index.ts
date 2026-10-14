@@ -114,7 +114,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // REQUEST — submit a transfer for admin approval (5-minute window)
+    // REQUEST — submit a transfer for admin approval (stays pending until reviewed)
     // ─────────────────────────────────────────────────────────────────────────
     if (action === 'request') {
       const {
@@ -148,8 +148,6 @@ Deno.serve(async (req: Request): Promise<Response> => {
       const { data: prof } = await supabase
         .from('profiles').select('full_name').eq('id', user.id).single();
 
-      const expires_at = new Date(Date.now() + 5 * 60 * 1000).toISOString();
-
       const { data: row, error: insErr } = await supabase
         .from('transfer_requests')
         .insert({
@@ -167,7 +165,6 @@ Deno.serve(async (req: Request): Promise<Response> => {
           wire_type:          wire_type          || null,
           memo:               memo               || null,
           is_external:        Boolean(is_external),
-          expires_at,
         })
         .select('id')
         .single();
@@ -198,7 +195,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
           admins.map((a: { id: string }) => ({
             user_id:  a.id,
             title:    `Transfer Request — ${typeLabel}`,
-            message:  `${senderName} submitted a $${Number(amount).toFixed(2)} ${typeLabel.toLowerCase()} transfer${recipient_name ? ' to ' + String(recipient_name) : ''}. Pending approval · expires in 5 min.`,
+            message:  `${senderName} submitted a $${Number(amount).toFixed(2)} ${typeLabel.toLowerCase()} transfer${recipient_name ? ' to ' + String(recipient_name) : ''}. Pending approval.`,
             type:     'admin',
             priority: Number(amount) >= 10_000 ? 'high' : 'normal',
           })),
@@ -223,16 +220,6 @@ Deno.serve(async (req: Request): Promise<Response> => {
       if (row.user_id !== user.id) {
         const { data: p } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
         if (!p?.is_admin) throw new Error('Unauthorized');
-      }
-
-      // Auto-expire if past window and still pending
-      if (row.status === 'pending' && new Date(row.expires_at) < new Date()) {
-        await supabase.from('transfer_requests').update({ status: 'expired' }).eq('id', requestId);
-        await supabase.from('transactions')
-          .update({ status: 'failed', description: 'Transfer Expired — not authorized in time' })
-          .eq('reference_number', 'REQ_' + requestId)
-          .eq('status', 'pending');
-        return json({ status: 'expired', amount: row.amount });
       }
 
       return json({ status: row.status, admin_note: row.admin_note || null, amount: row.amount });
@@ -306,13 +293,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
       const { data: row } = await supabase
         .from('transfer_requests').select('*').eq('id', requestId).maybeSingle();
       if (!row) throw new Error('Request not found.');
-      if (row.status !== 'pending') throw new Error('Request is no longer pending.');
-
-      // Check expiry
-      if (new Date(row.expires_at) < new Date()) {
-        await supabase.from('transfer_requests').update({ status: 'expired' }).eq('id', requestId);
-        throw new Error('Request has expired (past 5-minute window).');
-      }
+      // 'expired' is accepted so requests auto-expired under the old 5-minute window can still be approved
+      if (row.status !== 'pending' && row.status !== 'expired') throw new Error('Request is no longer pending.');
 
       const reference = 'TRF' + Date.now() + Math.floor(Math.random() * 1000);
       const pendingRef = 'REQ_' + requestId;
@@ -341,11 +323,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
         // Fetch destination and credit it
         const { data: toAcc } = await supabase.from('accounts').select('*').eq('id', row.to_account_id).single();
         if (toAcc) {
-          await supabase.from('accounts').update({
-            balance:           Number(toAcc.balance) + Number(row.amount),
-            available_balance: Number(toAcc.available_balance ?? toAcc.balance) + Number(row.amount),
-          }).eq('id', toAcc.id);
-          // Insert credit for destination account
+          // Insert credit for destination account (trg_update_balance credits the balance)
           await supabase.from('transactions').insert({
             account_id:       toAcc.id,           user_id:           toAcc.user_id,
             transaction_type: 'transfer_in',       category:          'Transfer',
@@ -367,10 +345,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
           .eq('id', fromAcc.id);
         // Credit recipient
         if (toAcc) {
-          await supabase.from('accounts').update({
-            balance:           Number(toAcc.balance) + Number(row.amount),
-            available_balance: Number(toAcc.available_balance ?? toAcc.balance) + Number(row.amount),
-          }).eq('id', toAcc.id);
+          // trg_update_balance credits the balance on insert of this completed row
           await supabase.from('transactions').insert({
             account_id:       toAcc.id,   user_id:          toAcc.user_id,
             transaction_type: 'transfer_in', category:      'Transfer',
@@ -425,7 +400,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       const { data: row } = await supabase
         .from('transfer_requests').select('user_id, amount, status').eq('id', requestId).maybeSingle();
       if (!row) throw new Error('Request not found.');
-      if (row.status !== 'pending') throw new Error('Request is no longer pending.');
+      if (row.status !== 'pending' && row.status !== 'expired') throw new Error('Request is no longer pending.');
 
       await supabase.from('transfer_requests').update({
         status:      'declined',

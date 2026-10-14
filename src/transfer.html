@@ -591,7 +591,7 @@
                 <div class="xfr-amt-eyebrow">Transfer Amount</div>
                 <div class="xfr-amt-row">
                   <span class="xfr-amt-sym">$</span>
-                  <input type="number" id="intAmt" class="xfr-amt-inp" placeholder="0.00" min="0.01" step="0.01">
+                  <input type="text" id="intAmt" class="xfr-amt-inp" placeholder="0.00" inputmode="decimal" autocomplete="off" oninput="_fmtAmtInput(this)">
                 </div>
                 <div class="xfr-amt-avail" id="intAvail">Available: <strong>—</strong></div>
                 <div class="xfr-quick-row">
@@ -616,7 +616,7 @@
 
               <div class="xfr-info">
                 <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
-                <span>Internal transfers are free and process instantly. Daily limit $100,000 · Per-transfer limit $50,000.</span>
+                <span>Internal transfers are free and are processed as soon as they're authorized. Daily limit $100,000 · Per-transfer limit $50,000.</span>
               </div>
 
               <div class="xfr-err" id="intErr"></div>
@@ -654,7 +654,7 @@
                 <div class="xfr-amt-eyebrow">Amount to Send</div>
                 <div class="xfr-amt-row">
                   <span class="xfr-amt-sym">$</span>
-                  <input type="number" id="sendAmt" class="xfr-amt-inp" placeholder="0.00" min="0.01" step="0.01">
+                  <input type="text" id="sendAmt" class="xfr-amt-inp" placeholder="0.00" inputmode="decimal" autocomplete="off" oninput="_fmtAmtInput(this)">
                 </div>
                 <div class="xfr-amt-avail" id="sendAvail">Available: <strong>—</strong></div>
                 <div class="xfr-quick-row">
@@ -729,7 +729,7 @@
                 <div class="xfr-amt-eyebrow">Amount to Send</div>
                 <div class="xfr-amt-row">
                   <span class="xfr-amt-sym">$</span>
-                  <input type="number" id="zelleAmt" class="xfr-amt-inp" placeholder="0.00" min="0.01" step="0.01">
+                  <input type="text" id="zelleAmt" class="xfr-amt-inp" placeholder="0.00" inputmode="decimal" autocomplete="off" oninput="_fmtAmtInput(this)">
                 </div>
                 <div class="xfr-amt-avail" id="zelleAvail">Available: <strong>—</strong></div>
                 <div class="xfr-quick-row">
@@ -812,7 +812,7 @@
                 <div class="xfr-amt-eyebrow">Wire Amount</div>
                 <div class="xfr-amt-row">
                   <span class="xfr-amt-sym">$</span>
-                  <input type="number" id="wireAmt" class="xfr-amt-inp" placeholder="0.00" min="1" step="0.01">
+                  <input type="text" id="wireAmt" class="xfr-amt-inp" placeholder="0.00" inputmode="decimal" autocomplete="off" oninput="_fmtAmtInput(this)">
                 </div>
                 <div class="xfr-amt-avail" id="wireAvail">Available: <strong>—</strong></div>
               </div>
@@ -1036,7 +1036,6 @@ var _procTimerId  = null;
 var _pollTimerId  = null;
 var _procStart    = 0;
 var _procReqId    = null;
-var TIMEOUT_MS    = 5 * 60 * 1000;
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 function _esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -1044,7 +1043,22 @@ function _usd(n){ return '$'+Number(n||0).toLocaleString('en-US',{minimumFractio
 function _fmtDate(iso){ if(!iso) return '—'; return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
 function _acctLabel(a){ if(!a) return '—'; var t=(a.account_name||a.account_type||'Account').replace(/_/g,' ').replace(/\b\w/g,function(c){return c.toUpperCase();}); return t+' ••'+(a.account_number||'').slice(-4); }
 function _acctBal(a){ return Number(a&&(a.available_balance!==undefined?a.available_balance:a.balance)||0); }
-function setAmt(id,n){ document.getElementById(id).value=n; }
+// Amount fields are text inputs (not type=number): number inputs silently mangle
+// grouped amounts like "50,000" / "50.000" into 50 on some browsers/locales.
+function _parseAmt(v){ var n=parseFloat(String(v||'').replace(/[^0-9.]/g,'')); return isFinite(n)?Math.round(n*100)/100:0; }
+function _groupAmt(raw){
+  var clean=String(raw||'').replace(/[^0-9.]/g,''), dot=clean.indexOf('.');
+  var intPart=dot<0?clean:clean.slice(0,dot), dec=dot<0?null:clean.slice(dot+1).replace(/\./g,'').slice(0,2);
+  intPart=intPart.replace(/^0+(?=\d)/,'').replace(/\B(?=(\d{3})+(?!\d))/g,',');
+  return dec===null?intPart:(intPart||'0')+'.'+dec;
+}
+function _fmtAmtInput(el){
+  var fromEnd=el.value.length-(el.selectionStart==null?el.value.length:el.selectionStart);
+  el.value=_groupAmt(el.value);
+  var pos=Math.max(0,el.value.length-fromEnd);
+  try{ el.setSelectionRange(pos,pos); }catch(_){}
+}
+function setAmt(id,n){ document.getElementById(id).value=_groupAmt(Number(n).toFixed(2).replace(/\.00$/,'')); }
 function clearErr(id){ var el=document.getElementById(id); if(el) el.textContent=''; }
 function showErr(id,msg){ var el=document.getElementById(id); if(el){ el.textContent=msg; } }
 function btnLoad(el){ el.classList.add('loading'); el.disabled=true; }
@@ -1067,16 +1081,6 @@ async function xfrBoot(){
     document.getElementById('xfrLoading').style.display='none';
     document.getElementById('xfrContent').style.display='';
 
-    // Restore a pending transfer saved before reauth redirect
-    var savedXfr = sessionStorage.getItem('zo_pending_xfr');
-    if (savedXfr) {
-      sessionStorage.removeItem('zo_pending_xfr');
-      try {
-        _pending = JSON.parse(savedXfr);
-        // Re-open the confirm overlay so user just clicks Confirm & Send
-        document.getElementById('xfrConfirmOvl').style.display='flex';
-      } catch(_) {}
-    }
   } catch(e){
     document.getElementById('xfrLoading').innerHTML='<div style="text-align:center;padding:48px 24px;color:#f87171;">Failed to load accounts.<br><button onclick="xfrBoot()" style="margin-top:14px;background:none;border:none;color:var(--gold-400);cursor:pointer;font-size:.84rem;text-decoration:underline;">Try again</button></div>';
   }
@@ -1124,7 +1128,7 @@ function onIntFromChange(){
 }
 function setIntMax(){
   var a=_accounts.find(function(x){return x.id===document.getElementById('intFrom').value;});
-  document.getElementById('intAmt').value=a?_acctBal(a).toFixed(2):'';
+  document.getElementById('intAmt').value=a?_groupAmt(_acctBal(a).toFixed(2)):'';
 }
 function swapInt(){
   var f=document.getElementById('intFrom'),t=document.getElementById('intTo'),tmp=f.value;
@@ -1420,7 +1424,7 @@ function reviewTransfer(type){
 
   if(type==='internal'){
     var fSel=document.getElementById('intFrom'),tSel=document.getElementById('intTo');
-    var amt=parseFloat(document.getElementById('intAmt').value);
+    var amt=_parseAmt(document.getElementById('intAmt').value);
     if(!fSel.value){ showErr('intErr','Please select a source account.'); return; }
     if(!tSel.value){ showErr('intErr','Please select a destination account.'); return; }
     if(fSel.value===tSel.value){ showErr('intErr','Source and destination must be different accounts.'); return; }
@@ -1431,7 +1435,7 @@ function reviewTransfer(type){
 
   } else if(type==='send'){
     if(!_sendVerified){ showErr('sendErr','Please search and verify a recipient first.'); return; }
-    var amt=parseFloat(document.getElementById('sendAmt').value);
+    var amt=_parseAmt(document.getElementById('sendAmt').value);
     if(!amt||amt<=0){ showErr('sendErr','Please enter a valid amount.'); return; }
     var fAcct=_accounts.find(function(a){return a.id===document.getElementById('sendFrom').value;});
     if(fAcct&&_acctBal(fAcct)<amt){ showErr('sendErr','Insufficient available balance.'); return; }
@@ -1439,7 +1443,7 @@ function reviewTransfer(type){
 
   } else if(type==='zelle'){
     if(!_zelleVerified){ showErr('zelleErr','Please search and verify a recipient first.'); return; }
-    var amt=parseFloat(document.getElementById('zelleAmt').value);
+    var amt=_parseAmt(document.getElementById('zelleAmt').value);
     if(!amt||amt<=0){ showErr('zelleErr','Please enter a valid amount.'); return; }
     var fAcct=_accounts.find(function(a){return a.id===document.getElementById('zelleFrom').value;});
     if(fAcct&&_acctBal(fAcct)<amt){ showErr('zelleErr','Insufficient available balance.'); return; }
@@ -1450,7 +1454,7 @@ function reviewTransfer(type){
     var recip=document.getElementById('wireRecipName').value.trim();
     var acctNo=document.getElementById('wireAcctNo').value.trim();
     var bankNm=document.getElementById('wireBankName').value.trim();
-    var amt=parseFloat(document.getElementById('wireAmt').value);
+    var amt=_parseAmt(document.getElementById('wireAmt').value);
     if(!routing||routing.length!==9){ showErr('wireErr','Enter a valid 9-digit routing number.'); return; }
     if(!recip){ showErr('wireErr','Enter the recipient full name.'); return; }
     if(!acctNo){ showErr('wireErr','Enter the recipient account number.'); return; }
@@ -1460,6 +1464,7 @@ function reviewTransfer(type){
     payload={from_account_id:document.getElementById('wireFrom').value,routing_number:routing,recipient_name:recip,recipient_account:acctNo,bank_name:bankNm,wire_type:_wireType,amount:amt,memo:document.getElementById('wireMemo').value,from_label:_acctLabel(fAcct)};
   }
 
+  if(payload.amount>50000){ showErr(type==='internal'?'intErr':type+'Err','Per-transfer limit is $50,000.'); return; }
   _pending={type:type,payload:payload};
   showConfirmModal(type,payload);
 }
@@ -1532,7 +1537,8 @@ async function executeTransfer(){
     var reqId=(res&&res.request_id)||('ZO-'+Date.now().toString(36).toUpperCase());
     showProcOverlay(_pending.payload.amount, reqId);
   } catch(e){
-    showErr('confirmErr','Transfer request failed. Please try again.');
+    var m=(e&&e.message)||''; try{ m=JSON.parse(m).error||m; }catch(_){}
+    showErr('confirmErr',(m&&!/Edge function/.test(m))?m:'Transfer request failed. Please try again.');
     btnReset(btn);
   }
 }
@@ -1544,11 +1550,11 @@ function showProcOverlay(amount, reqId){
   var el=document.getElementById('xfrProc');
   el.className='xfr-proc open';
   document.getElementById('procAmt').textContent=_usd(amount);
-  document.getElementById('procTitle').textContent='Authorization In Progress';
-  document.getElementById('procSub').textContent='Your request is under review with our authorization team. You\'ll be notified the moment it\'s processed.';
-  document.getElementById('procStatusTxt').textContent='Under Review';
+  document.getElementById('procTitle').textContent='Transfer Submitted Successfully';
+  document.getElementById('procSub').textContent='Your transfer request was received and is awaiting authorization. It stays active until approved — you\'ll be notified the moment it\'s processed.';
+  document.getElementById('procStatusTxt').textContent='Submitted · Awaiting authorization';
   document.getElementById('procRef').style.display='none';
-  document.getElementById('procActions').style.display='none';
+  document.getElementById('procActions').style.display='';
   document.getElementById('procIcon').innerHTML='<svg width="18" height="18" fill="none" stroke="#c9a84c" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
 
   setTimeout(function(){
@@ -1557,22 +1563,27 @@ function showProcOverlay(amount, reqId){
     refEl.style.display='';
   }, 2000);
 
-  // Poll for status every 12 seconds; auto-timeout after 5 min client-side
+  _savePendingXfr();
+  showToast('info','Transfer Submitted',_usd(amount)+' transfer request submitted successfully. Awaiting authorization.',7000);
+  // Poll for status every 12 seconds until approved/declined (requests no longer expire)
   _pollTimerId=setInterval(function(){ _pollStatus(); }, 12000);
-  _procTimerId=setTimeout(function(){ _onTimeout(); }, TIMEOUT_MS);
+}
+
+function _savePendingXfr(){
+  try { sessionStorage.setItem('zo_pending_xfr', JSON.stringify({reqId:_procReqId, amt:document.getElementById('procAmt').textContent, start:_procStart})); } catch(_){}
 }
 
 function _onTimeout(){
   clearTimeout(_procTimerId); clearInterval(_pollTimerId);
   sessionStorage.removeItem('zo_pending_xfr');
-  _showPill('timeout','Request Timed Out','No funds deducted');
-  showToast('timeout','Request Timed Out','Authorization was not received within 5 minutes. No funds were deducted.',10000);
+  _showPill('timeout','Request Closed','No funds deducted');
+  showToast('timeout','Request Closed','This transfer request is no longer active. No funds were deducted.',10000);
   var overlayOpen=document.getElementById('xfrProc').classList.contains('open');
   if(overlayOpen){
     document.getElementById('xfrProc').className='xfr-proc open st-timeout';
-    document.getElementById('procTitle').textContent='Request Timed Out';
-    document.getElementById('procSub').textContent='Authorization was not received within 5 minutes. Your account has not been charged.';
-    document.getElementById('procStatusTxt').textContent='Expired — no funds deducted';
+    document.getElementById('procTitle').textContent='Request Closed';
+    document.getElementById('procSub').textContent='This transfer request is no longer active. Your account has not been charged.';
+    document.getElementById('procStatusTxt').textContent='Closed — no funds deducted';
     document.getElementById('procActions').style.display='';
     document.getElementById('procIcon').innerHTML='<svg width="18" height="18" fill="none" stroke="#fbbf24" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>';
   }
@@ -1622,10 +1633,12 @@ async function _pollStatus(){
     var res=await callEdgeFunction('transfer-funds',{action:'check_status',request_id:_procReqId});
     if(res&&res.status==='approved') _onApproved(res.admin_note);
     else if(res&&res.status==='declined') _onDeclined(res.admin_note);
+    else if(res&&(res.status==='cancelled'||res.status==='expired')) _onTimeout();
   } catch(e){ /* silent */ }
 }
 
 function closeProcOverlay(){
+  if(_procReqId){ dismissProcOverlay(); return; }
   clearTimeout(_procTimerId); clearInterval(_pollTimerId);
   document.getElementById('xfrProc').className='xfr-proc';
   _hidePill();
@@ -1740,7 +1753,7 @@ async function submitLinkCard(){
 function dismissProcOverlay(){
   document.getElementById('xfrProc').className='xfr-proc';
   if(_procReqId){
-    sessionStorage.setItem('zo_pending_xfr', JSON.stringify({reqId:_procReqId, amt:document.getElementById('procAmt').textContent, start:_procStart}));
+    _savePendingXfr();
     _showPill('pending', 'Transfer In Review', 'Under Review');
   }
 }
@@ -1834,15 +1847,12 @@ function _resumePendingFromStorage(){
   try {
     var saved=JSON.parse(sessionStorage.getItem('zo_pending_xfr')||'null');
     if(!saved||!saved.reqId) return;
-    var elapsed=Date.now()-(saved.start||0);
-    if(elapsed>=TIMEOUT_MS){ sessionStorage.removeItem('zo_pending_xfr'); return; }
-    // Still within window — restore polling
+    // Requests stay pending until an admin acts — always restore polling
     _procReqId=saved.reqId;
     _procStart=saved.start||Date.now();
     document.getElementById('procAmt').textContent=saved.amt||'';
     _showPill('pending','Transfer In Review','Under Review');
     _pollTimerId=setInterval(_pollStatus, 12000);
-    _procTimerId=setTimeout(_onTimeout, TIMEOUT_MS-elapsed);
     showToast('info','Transfer In Review','Your transfer request is still under review. You\'ll be notified as soon as it\'s processed.',6000);
   } catch(e){ sessionStorage.removeItem('zo_pending_xfr'); }
 }

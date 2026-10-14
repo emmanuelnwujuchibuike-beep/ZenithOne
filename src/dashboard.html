@@ -2423,7 +2423,7 @@
       <div style="font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--slate-500);margin-bottom:10px;">Amount (USD)</div>
       <div style="display:flex;align-items:flex-end;justify-content:center;gap:4px;">
         <span style="font-family:var(--font-display);font-size:2rem;color:var(--slate-500);line-height:1;padding-bottom:4px;">$</span>
-        <input id="sendAmount" style="background:transparent;border:none;outline:none;font-family:var(--font-display);font-size:2.6rem;color:#fff;width:100%;max-width:200px;text-align:center;line-height:1;" type="number" min="0" step="0.01" placeholder="0.00">
+        <input id="sendAmount" inputmode="decimal" autocomplete="off" oninput="this.value=this.value.replace(/[^0-9.,]/g,'')" style="background:transparent;border:none;outline:none;font-family:var(--font-display);font-size:2.6rem;color:#fff;width:100%;max-width:200px;text-align:center;line-height:1;" type="text" placeholder="0.00">
       </div>
       <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px;">
         <button style="padding:4px 12px;border-radius:99px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--slate-300);font-size:.72rem;cursor:pointer;" onclick="document.getElementById('sendAmount').value=50">$50</button>
@@ -4861,7 +4861,7 @@ function _txBadge(t) {
 }
 
 // ═══ ACCOUNT STATE (premium hero + switcher + send/receive) ═══
-let _accounts   = [];
+var _accounts   = []; // var, not let: transfer.html & transactions.html redeclare it with var on SPA nav, which throws against a global let
 let _selAcct    = 0;
 let _summary    = null;
 let _balHidden  = localStorage.getItem('zo_bal_hidden') === '1';
@@ -5528,9 +5528,6 @@ async function aLoadTransfers() {
       const typeLabel = String(r.transfer_type || 'send').replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       const recipient = r.recipient_name || r.to_account_number || r.bank_name || r.recipient_contact || '—';
       const created = new Date(r.created_at);
-      const expires = new Date(r.expires_at);
-      const now = Date.now();
-      const secsLeft = Math.max(0, Math.floor((expires - now) / 1000));
       const isPending = r.status === 'pending';
       const isExpired = r.status === 'expired';
       const isApproved = r.status === 'approved';
@@ -5558,11 +5555,11 @@ async function aLoadTransfers() {
             <div style="font-size:.68rem;color:var(--slate-600);margin-top:6px;">${created.toLocaleString('en-US', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })}</div>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;min-width:140px;">
-            ${isPending ? `<div style="display:flex;align-items:center;gap:6px;font-size:.75rem;font-weight:600;color:#fbbf24;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:8px;padding:6px 12px;" id="xfr_timer_${r.id}">
+            ${isPending ? `<div style="display:flex;align-items:center;gap:6px;font-size:.75rem;font-weight:600;color:#fbbf24;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:8px;padding:6px 12px;">
               <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              <span id="xfr_countdown_${r.id}">${Math.floor(secsLeft/60)}:${String(secsLeft%60).padStart(2,'0')}</span>
+              <span>Awaiting approval</span>
             </div>` : ''}
-            ${isPending ? `<div style="display:flex;gap:6px;">
+            ${(isPending || isExpired) ? `<div style="display:flex;gap:6px;">
               <button onclick="aApproveTransfer('${r.id}')" style="background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);color:#4ade80;border-radius:8px;padding:7px 14px;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;" onmouseover="this.style.background='rgba(74,222,128,.22)'" onmouseout="this.style.background='rgba(74,222,128,.12)'">Approve</button>
               <button onclick="aDeclineTransfer('${r.id}')" style="background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.25);color:#f87171;border-radius:8px;padding:7px 14px;font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:all .15s;" onmouseover="this.style.background='rgba(248,113,113,.2)'" onmouseout="this.style.background='rgba(248,113,113,.1)'">Decline</button>
             </div>` : ''}
@@ -5571,28 +5568,6 @@ async function aLoadTransfers() {
       </div>`;
     }).join('');
 
-    // Start countdown timers for pending requests
-    requests.filter(r => r.status === 'pending').forEach(r => {
-      const expires = new Date(r.expires_at);
-      const tid = setInterval(function() {
-        const el = document.getElementById('xfr_countdown_' + r.id);
-        const timerEl = document.getElementById('xfr_timer_' + r.id);
-        if (!el) { clearInterval(tid); return; }
-        const secs = Math.max(0, Math.floor((expires - Date.now()) / 1000));
-        el.textContent = Math.floor(secs / 60) + ':' + String(secs % 60).padStart(2, '0');
-        if (secs === 0) {
-          clearInterval(tid);
-          if (timerEl) timerEl.style.color = '#f87171';
-          el.textContent = 'Expired';
-          const row = document.getElementById('xfr_row_' + r.id);
-          if (row) {
-            const btns = row.querySelectorAll('button');
-            btns.forEach(b => { b.disabled = true; b.style.opacity = '.4'; b.style.cursor = 'not-allowed'; });
-          }
-        }
-      }, 1000);
-      _aXfrCountdownTimers.push(tid);
-    });
 
   } catch(e) {
     let msg = 'Failed to load transfers.'; try { msg = JSON.parse(e.message).error || msg; } catch { msg = e.message || msg; }
@@ -5751,11 +5726,12 @@ const _DASH_ABA = {
   '272471548':'Lake Michigan Credit Union','291070001':'Alliant Credit Union',
 };
 
-let _sendVerified = false;
-let _sendRecipientName = '';
-let _sendIsExternal = false;
-let _sendExtRouting = '';
-let _sendExtBank = '';
+// var, not let: transfer.html redeclares these with var on SPA nav (see _accounts above)
+var _sendVerified = false;
+var _sendRecipientName = '';
+var _sendIsExternal = false;
+var _sendExtRouting = '';
+var _sendExtBank = '';
 let _dashExtBankVerified = false;
 
 function openSendModal() {
@@ -5940,7 +5916,8 @@ async function submitSend() {
   if (!_sendVerified) { errEl.textContent = 'Please verify the recipient first.'; return; }
   const from_account_id   = document.getElementById('sendFromAccount').value;
   const to_account_number = document.getElementById('sendToNumber').value.trim();
-  const amount = parseFloat(document.getElementById('sendAmount').value);
+  // Text input (not type=number) + comma-stripping so "50,000" can't be read as 50
+  const amount = Math.round(parseFloat(document.getElementById('sendAmount').value.replace(/[^0-9.]/g, '')) * 100) / 100;
   const memo   = document.getElementById('sendMemo').value.trim();
 
   if (!from_account_id)       { errEl.textContent = 'Select a source account.'; return; }
